@@ -27,7 +27,7 @@ function profileLines(profile) {
     CAPACITY_STEPS: sc.capacity.steps_tasks.join(" "),
     CAPACITY_STEP_SEC: env("CAPACITY_STEP_SEC", pick(sc.capacity.step_measure_sec)),
     CAPACITY_RPS: sc.capacity.rps,
-    NORMAL_TASKS: wl.data_volume.normal_tasks,
+    NORMAL_TASKS: env("NORMAL_TASKS", wl.data_volume.normal_tasks),
     ITERATIONS: wl.iterations,
   };
 }
