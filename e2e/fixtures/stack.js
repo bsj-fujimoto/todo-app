@@ -1,6 +1,6 @@
 // 各テストが専用のスタック（backend プロセス + frontend 配信サーバー + 一時 DB + 空きポート）を持つ fixture。
 // テスト間で状態・ポート・ファイルを共有しないので、並列実行しても汚染しない（docs/03-test-spec.md §12）。
-import { test as base, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { corruptDbFile, readRows, seedTasks, sha256File } from "../../backend/test-support/index.js";
 import { createLogBuffer, startBackendProcess, stopChild } from "./backend-process.js";
 import { startFrontendServer } from "./frontend-server.js";
+import { test as observedTest } from "./observe.js";
 import { TodoApp } from "./todo-app.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -97,10 +98,10 @@ async function createStack() {
   return stack;
 }
 
-export const test = base.extend({
-  // eslint-disable-next-line no-empty-pattern
-  stack: async ({}, use, testInfo) => {
+export const test = observedTest.extend({
+  stack: async ({ observed }, use, testInfo) => {
     const stack = await createStack();
+    observed.source = () => stack.requests; // 観察値（通信の記録）として使う
     try {
       await use(stack);
     } finally {

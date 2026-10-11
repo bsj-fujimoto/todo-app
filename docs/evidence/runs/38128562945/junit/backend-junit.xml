@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite name="並行リクエスト" time="0.630391" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:10.233Z" hostname="runnervmmprz5">
+		<testcase name="[TC-064] 20 件の同時追加がすべて 201 で、id は互いに異なり、欠落・重複なく保存順どおりに並ぶ" time="0.584165" classname="並行リクエスト" file="/home/runner/work/todo-app/todo-app/backend/test/api/concurrency.test.js"/>
+		<testcase name="[TC-065] 同じ id への 10 件の同時削除は、204 がちょうど 1 件・404 が 9 件・500 なし" time="0.043436" classname="並行リクエスト" file="/home/runner/work/todo-app/todo-app/backend/test/api/concurrency.test.js"/>
+	</testsuite>
+	<testsuite name="契約（openapi.yaml）と応答の一致" time="0.590770" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:10.693Z" hostname="runnervmmprz5">
+		<testcase name="[TC-037] 一覧・追加の応答が契約の TaskList / Task に合い、余分なキーがなく、id は UUID v4・createdAt は UTC" time="0.327868" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] ルート一覧（実装が登録したもの）が openapi の paths と一致する" time="0.021191" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] リクエスト本文: 契約のスキーマに合う本文は 400 にならず、合わない本文は 400 になる" time="0.238772" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] エラーコードの列挙と文言が実装（ERROR_DEFS）と一致する" time="0.000890" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<testsuite name="契約検証ヘルパの自己検査（ずれたら落ちること）" time="0.003638" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.280Z" hostname="runnervmmprz5">
+		<testcase name="[契約] 契約どおりの応答は通る" time="0.000457" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] 余分なキー・型違い・UUID/日時の形式違い・必須の欠落を検出する" time="0.001890" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] 宣言のない status・content-type の違い・本文なしのはずの本文を検出する" time="0.001084" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<testsuite name="GET /api/v1/health（実プロセス）" time="0.450322" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:10.833Z" hostname="runnervmmprz5">
+		<testcase name="[TC-075] 200 で {status, version, commit, db} の 4 キーだけ。version は package.json、commit は 40 桁 16 進か unknown" time="0.450109" classname="GET /api/v1/health（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<testsuite name="POST /api/v1/tasks 入力検証" time="0.628013" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:10.740Z" hostname="runnervmmprz5">
+		<testsuite name="空の DB（DS-001）から" time="0.611976" disabled="0" errors="0" tests="6" failures="0" skipped="0" timestamp="2026-10-11T09:30:10.757Z" hostname="runnervmmprz5">
+			<testcase name="[TC-030] 100 文字（a×100・😀×100）は 201 で追加でき、Location は付かず、コードポイントで 100" time="0.335529" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+			<testcase name="[TC-032] 空・空白のみ・タブ・改行だけは 422 TITLE_REQUIRED で、何も保存されない" time="0.196920" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+			<testcase name="[TC-033] 改行を含むと 422 TITLE_MULTILINE で、一覧は空のまま" time="0.016526" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+			<testcase name="[TC-034] 前後の空白は除去されて保存される（応答・一覧・title 列のすべて）" time="0.015898" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+			<testcase name="[TC-035] 本文なし・{}・title が null/数値・配列は 400 INVALID_REQUEST（422 や 500 にならない）" time="0.031127" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+			<testcase name="[TC-036] 未知のフィールド・不正な JSON は 400 INVALID_REQUEST（無視せず拒否）で、一覧は空のまま" time="0.014149" classname="POST /api/v1/tasks 入力検証.空の DB（DS-001）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+		</testsuite>
+		<testsuite name="標準タスク 3 件（DS-002）から" time="0.015514" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.353Z" hostname="runnervmmprz5">
+			<testcase name="[TC-031] 101 文字以上（巨大な 10 万文字を含む）は 422 TITLE_TOO_LONG で、backend は落ちず一覧も変わらない" time="0.015325" classname="POST /api/v1/tasks 入力検証.標準タスク 3 件（DS-002）から" file="/home/runner/work/todo-app/todo-app/backend/test/api/create-validation.test.js"/>
+		</testsuite>
+	</testsuite>
+	<testsuite name="① SQLite ファイルとして読めない DB（DS-007）" time="0.296908" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.171Z" hostname="runnervmmprz5">
+		<testcase name="[TC-052] 一覧は 500 DATA_CORRUPT（空配列の 200 を返さない）で、DB ファイルは書き換えられない" time="0.171795" classname="① SQLite ファイルとして読めない DB（DS-007）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-053] 追加・完了切替・削除も 500 DATA_CORRUPT（PATCH・DELETE は 404 にならない）で、DB は変わらない" time="0.068697" classname="① SQLite ファイルとして読めない DB（DS-007）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-054] 起動・停止を繰り返しても破損ファイルを書き換えず、health は 503/degraded、正常な DB に替えれば 200" time="0.054920" classname="① SQLite ファイルとして読めない DB（DS-007）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+	</testsuite>
+	<testsuite name="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" time="0.308798" disabled="0" errors="0" tests="13" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.466Z" hostname="runnervmmprz5">
+		<testcase name="[TC-052] [TC-053] title が空: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.042977" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] title が空白だけ: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.041483" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] title が 101 コードポイント: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.020461" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] title に改行を含む: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.024683" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] title の前後に空白が残っている: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.019353" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] created_at が ISO 8601 でない: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.020415" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] created_at がミリ秒・Z のない日付だけ: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.027436" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] created_at が存在しない日付: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.019267" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] completed が 0/1 でない（数値 2）: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.020725" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] completed が 0/1 でない（文字列）: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.024607" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[TC-052] [TC-053] id が UUID でない: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない" time="0.018431" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[補助] 正常な行は壊れた行とみなさない（title の途中の連続空白・タブは有効）" time="0.019885" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+		<testcase name="[補助] DB が空・ファイル未作成なら初回起動として正常（テーブルを作り空一覧）" time="0.007684" classname="② 開けるが行が検証に通らない DB（CHECK 制約を迂回して直接挿入）" file="/home/runner/work/todo-app/todo-app/backend/test/api/data-corrupt.test.js"/>
+	</testsuite>
+	<testsuite name="GET /api/v1/tasks 並び順" time="0.302550" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.523Z" hostname="runnervmmprz5">
+		<testcase name="[TC-038] 挿入順ではなく createdAt の降順で返し、新規追加は先頭に来る" time="0.190594" classname="GET /api/v1/tasks 並び順" file="/home/runner/work/todo-app/todo-app/backend/test/api/list-order.test.js"/>
+		<testcase name="[TC-039] 同時刻のタスクは保存順の新しいものが先で、繰り返しても再起動しても同じ" time="0.066578" classname="GET /api/v1/tasks 並び順" file="/home/runner/work/todo-app/todo-app/backend/test/api/list-order.test.js"/>
+		<testcase name="[補助] API で連続追加した順（時刻が進む）でも降順で返り、完了切替で並びは変わらない" time="0.043651" classname="GET /api/v1/tasks 並び順" file="/home/runner/work/todo-app/todo-app/backend/test/api/list-order.test.js"/>
+	</testsuite>
+	<testsuite name="src/main.js（実プロセス）" time="2.006531" disabled="0" errors="0" tests="5" failures="0" skipped="0" timestamp="2026-10-11T09:30:11.633Z" hostname="runnervmmprz5">
+		<testcase name="[補助] SIGTERM・SIGINT で正常終了（終了コード 0）し、終了ログを出す" time="0.517763" classname="src/main.js（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/main-process.test.js"/>
+		<testcase name="[補助] DB_PATH の親ディレクトリが無くても作り、初回起動として空の一覧を返す" time="0.291536" classname="src/main.js（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/main-process.test.js"/>
+		<testcase name="[補助] 破損 DB でも起動でき（health 503）、起動ログに error が出て、ファイルは書き換えない" time="0.253226" classname="src/main.js（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/main-process.test.js"/>
+		<testcase name="[補助] 不正な環境変数（PORT・LOG_LEVEL）では起動せず、非 0 で終了する" time="0.433421" classname="src/main.js（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/main-process.test.js"/>
+		<testcase name="[補助] 使用中のポートでは起動に失敗して非 0 で終了する" time="0.508486" classname="src/main.js（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/main-process.test.js"/>
+	</testsuite>
+	<testsuite name="マイグレーション" time="0.033636" disabled="0" errors="0" tests="5" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.657Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 空の DB に v1 を適用し、schema_migrations に記録する（tasks は契約どおりの列と制約）" time="0.012217" classname="マイグレーション" file="/home/runner/work/todo-app/todo-app/backend/test/api/migrations.test.js"/>
+		<testcase name="[補助] 冪等: 2 回目は何も適用せず、applied_at も変わらない（適用済みなら DB を書かない）" time="0.006323" classname="マイグレーション" file="/home/runner/work/todo-app/todo-app/backend/test/api/migrations.test.js"/>
+		<testcase name="[補助] 前進のみ: 後から足した v2 だけが適用され、既存データは保たれる" time="0.005508" classname="マイグレーション" file="/home/runner/work/todo-app/todo-app/backend/test/api/migrations.test.js"/>
+		<testcase name="[補助] トランザクション内: 途中で失敗した migration は巻き戻り、バージョンも記録されない" time="0.003851" classname="マイグレーション" file="/home/runner/work/todo-app/todo-app/backend/test/api/migrations.test.js"/>
+		<testcase name="[補助] schema_migrations が無い既存の tasks（v1 相当）にも冪等に v1 を記録できる" time="0.004499" classname="マイグレーション" file="/home/runner/work/todo-app/todo-app/backend/test/api/migrations.test.js"/>
+	</testsuite>
+	<testsuite name="x-request-id とログ" time="0.274584" disabled="0" errors="0" tests="5" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.416Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 受け取った x-request-id を応答ヘッダとログにそのまま使う" time="0.143036" classname="x-request-id とログ" file="/home/runner/work/todo-app/todo-app/backend/test/api/observability.test.js"/>
+		<testcase name="[補助] 無ければ（注入された採番で）採番し、危険な値（改行・長すぎる値）は採用しない" time="0.028476" classname="x-request-id とログ" file="/home/runner/work/todo-app/todo-app/backend/test/api/observability.test.js"/>
+		<testcase name="[補助] エラー応答（400・404・422）にも x-request-id が付き、リクエストごとに別の値になる" time="0.048749" classname="x-request-id とログ" file="/home/runner/work/todo-app/todo-app/backend/test/api/observability.test.js"/>
+		<testcase name="[補助] タイトルなどの利用者データはログに出ない（成功・検証エラー・保存失敗のいずれでも）" time="0.037350" classname="x-request-id とログ" file="/home/runner/work/todo-app/todo-app/backend/test/api/observability.test.js"/>
+		<testcase name="[補助] ログは pino の JSON 行で、完了ログに reqId・statusCode・応答時間がある" time="0.015128" classname="x-request-id とログ" file="/home/runner/work/todo-app/todo-app/backend/test/api/observability.test.js"/>
+	</testsuite>
+	<testsuite name="性能（DS-006: 1,000 件）" time="0.510993" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.180Z" hostname="runnervmmprz5">
+		<testcase name="[TC-073] 一覧 20 回・追加 10 回の 95 パーセンタイルが暫定しきい値以内で、件数と並びが正しい" time="0.509717" classname="性能（DS-006: 1,000 件）" file="/home/runner/work/todo-app/todo-app/backend/test/api/performance.test.js"/>
+	</testsuite>
+	<testsuite name="再起動後の永続性（実プロセス）" time="0.659444" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.031Z" hostname="runnervmmprz5">
+		<testcase name="[TC-042] 追加・完了切替の結果が再起動の前後で完全に一致し、起動は 10 秒以内でエラーログなし" time="0.657939" classname="再起動後の永続性（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/persistence.test.js"/>
+	</testsuite>
+	<testsuite name="入力の堅牢性" time="0.745615" disabled="0" errors="0" tests="6" failures="0" skipped="0" timestamp="2026-10-11T09:30:12.946Z" hostname="runnervmmprz5">
+		<testsuite name="本文サイズ超過（bodyLimit 1 MiB）" time="0.658593" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.033Z" hostname="runnervmmprz5">
+			<testcase name="[補助] fetch で 3 MiB の本文を送っても、400 INVALID_REQUEST を毎回確実に受け取れる" time="0.359054" classname="入力の堅牢性.本文サイズ超過（bodyLimit 1 MiB）" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+			<testcase name="[補助] Connection: close のクライアント（Content-Length あり・3 MiB）でも応答を確実に受け取れる" time="0.129411" classname="入力の堅牢性.本文サイズ超過（bodyLimit 1 MiB）" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+			<testcase name="[補助] Content-Length なし（chunked）で上限超過（3 MiB）でも応答を確実に受け取れる" time="0.158790" classname="入力の堅牢性.本文サイズ超過（bodyLimit 1 MiB）" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+			<testcase name="[補助] 宣言された Content-Length が読み捨て上限を超える場合は、本文を待たず 400 を返して接続を閉じる" time="0.009955" classname="入力の堅牢性.本文サイズ超過（bodyLimit 1 MiB）" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		</testsuite>
+		<testcase name="[補助] 1 万文字のタイトルは 422 TITLE_TOO_LONG で返せる（bodyLimit に掛からない）" time="0.008970" classname="入力の堅牢性" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		<testcase name="[補助] Content-Type 違い・本文なしの POST/PATCH は 400 INVALID_REQUEST" time="0.019288" classname="入力の堅牢性" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		<testcase name="[補助] 本文が JSON の null・文字列・数値、__proto__ を含むオブジェクトも 400 INVALID_REQUEST" time="0.020729" classname="入力の堅牢性" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		<testcase name="[補助] 契約にないパス・メソッドは 404 ROUTE_NOT_FOUND（エラー封筒で返る）" time="0.020770" classname="入力の堅牢性" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		<testcase name="[補助] 末尾スラッシュ付きのパスも同じ operation として扱う" time="0.016113" classname="入力の堅牢性" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+	</testsuite>
+	<testsuite name="想定外の障害" time="0.027814" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.682Z" hostname="runnervmmprz5">
+		<testcase name="[補助] ストアが分類できない例外を投げたら 500 INTERNAL_ERROR で、error ログに errorCode が付く" time="0.015194" classname="想定外の障害" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+		<testcase name="[補助] ストアが投げた AppError（DATA_CORRUPT・STORAGE_FAILURE）は、コードどおりの status と文言で返る" time="0.012300" classname="想定外の障害" file="/home/runner/work/todo-app/todo-app/backend/test/api/robustness.test.js"/>
+	</testsuite>
+	<testsuite name="セキュリティ（直接 API・不正入力）" time="0.305081" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.464Z" hostname="runnervmmprz5">
+		<testcase name="[TC-059] 認証なしで全操作でき（401/403・WWW-Authenticate・Set-Cookie なし）、画面を経由しない不正入力は backend が断る" time="0.218202" classname="セキュリティ（直接 API・不正入力）" file="/home/runner/work/todo-app/todo-app/backend/test/api/security.test.js"/>
+		<testcase name="[TC-060] HTML・SQL の断片を含むタイトルは、そのまま（変換・除去・実行なしで）保存され、そのまま返る" time="0.083364" classname="セキュリティ（直接 API・不正入力）" file="/home/runner/work/todo-app/todo-app/backend/test/api/security.test.js"/>
+	</testsuite>
+	<testsuite name="DS-008 書込み不可環境" time="0.451610" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:13.944Z" hostname="runnervmmprz5">
+		<testcase name="[TC-050] 追加は 503 STORAGE_FAILURE で DB に一切書かれず、権限を戻すと同じ操作が 1 回だけ成功する" time="0.188674" classname="DS-008 書込み不可環境" file="/home/runner/work/todo-app/todo-app/backend/test/api/storage-failure.test.js"/>
+		<testcase name="[TC-051] 完了切替・削除も 503 STORAGE_FAILURE で、行は部分的にも変わらず、それぞれ error ログが出る" time="0.241820" classname="DS-008 書込み不可環境" file="/home/runner/work/todo-app/todo-app/backend/test/api/storage-failure.test.js"/>
+		<testcase name="[補助] 読み取り（一覧・health）は書込み不可でも成功し、権限を戻せば再起動なしで完了切替できる" time="0.019586" classname="DS-008 書込み不可環境" file="/home/runner/work/todo-app/todo-app/backend/test/api/storage-failure.test.js"/>
+	</testsuite>
+	<testsuite name="PATCH / DELETE /api/v1/tasks/:id" time="0.448349" disabled="0" errors="0" tests="5" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.005Z" hostname="runnervmmprz5">
+		<testcase name="[TC-009] 完了切替: 同値の再送もエラーにならず、title・createdAt は変わらず、並びも変わらない" time="0.384117" classname="PATCH / DELETE /api/v1/tasks/:id" file="/home/runner/work/todo-app/todo-app/backend/test/api/update-delete.test.js"/>
+		<testcase name="[TC-010] 完了切替以外の変更・空本文・型違いは 400 INVALID_REQUEST で、何も変わらない" time="0.019840" classname="PATCH / DELETE /api/v1/tasks/:id" file="/home/runner/work/todo-app/todo-app/backend/test/api/update-delete.test.js"/>
+		<testcase name="[TC-011] 形式が有効で未登録・削除済みの id は 404 TASK_NOT_FOUND（404 はサーバー障害ではない）" time="0.020446" classname="PATCH / DELETE /api/v1/tasks/:id" file="/home/runner/work/todo-app/todo-app/backend/test/api/update-delete.test.js"/>
+		<testcase name="[TC-012] id が UUID の形式でなければ 404 ではなく 400 INVALID_REQUEST" time="0.012267" classname="PATCH / DELETE /api/v1/tasks/:id" file="/home/runner/work/todo-app/todo-app/backend/test/api/update-delete.test.js"/>
+		<testcase name="[TC-015] 削除は 204（本文なし）で対象だけが消え、同じ id の再削除は 404" time="0.009860" classname="PATCH / DELETE /api/v1/tasks/:id" file="/home/runner/work/todo-app/todo-app/backend/test/api/update-delete.test.js"/>
+	</testsuite>
+	<testsuite name="保存行の検証（DATA_CORRUPT の判定材料）" time="0.003525" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.640Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 正しい行は問題なし、Task への変換は completed を真偽値にする" time="0.001777" classname="保存行の検証（DATA_CORRUPT の判定材料）" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 壊れた列の名前を返す（値は返さない）" time="0.000339" classname="保存行の検証（DATA_CORRUPT の判定材料）" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 100 コードポイントちょうどの title・大文字の UUID は正しい行" time="0.000140" classname="保存行の検証（DATA_CORRUPT の判定材料）" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] isUuid / isCanonicalIsoUtc" time="0.000109" classname="保存行の検証（DATA_CORRUPT の判定材料）" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="リクエストの構造検査" time="0.001458" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.642Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 正しい本文・id は値を返し、それ以外は INVALID_REQUEST を投げる" time="0.001372" classname="リクエストの構造検査" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="SQLite 例外の分類" time="0.001014" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.642Z" hostname="runnervmmprz5">
+		<testcase name="[補助] ファイルの破損（CORRUPT=11・NOTADB=26）は DATA_CORRUPT" time="0.000323" classname="SQLite 例外の分類" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 読取専用・容量不足・ロック・I/O 障害・開けないは STORAGE_FAILURE（拡張コードは下位 8 ビットで判定）" time="0.000198" classname="SQLite 例外の分類" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 分類できない例外（制約違反・SQLite 以外）は INTERNAL_ERROR、AppError はそのまま" time="0.000191" classname="SQLite 例外の分類" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 原因（cause）と検出内容（detail）を保持する" time="0.000097" classname="SQLite 例外の分類" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="エラーコードと HTTP 写像" time="0.000360" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.643Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 封筒は {error: {code, message}} で、status は契約の宣言どおり" time="0.000270" classname="エラーコードと HTTP 写像" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="環境変数の解釈" time="0.000947" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.643Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 未指定は既定値（PORT 3000・HOST 0.0.0.0・DB_PATH /data/todo.db・COMMIT_SHA unknown・LOG_LEVEL info）" time="0.000365" classname="環境変数の解釈" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 指定した値を使う" time="0.000176" classname="環境変数の解釈" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+		<testcase name="[補助] 不正な PORT・LOG_LEVEL は例外" time="0.000249" classname="環境変数の解釈" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="test-support の決定的な供給元" time="0.000489" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.644Z" hostname="runnervmmprz5">
+		<testcase name="[補助] fixedClock・steppingClock・連番 ID" time="0.000408" classname="test-support の決定的な供給元" file="/home/runner/work/todo-app/todo-app/backend/test/unit/domain-and-config.test.js"/>
+	</testsuite>
+	<testsuite name="観察値の採取" time="0.030395" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.614Z" hostname="runnervmmprz5">
+		<testcase name="[補助] 文字数（コードポイント）で切り、UUID は {uuid} に伏せる" time="0.010869" classname="観察値の採取" file="/home/runner/work/todo-app/todo-app/backend/test/unit/observe.test.js"/>
+		<testcase name="[補助] API 呼び出しは method path → status と、応答・要求の要約（大きな本文は長さだけ）" time="0.002193" classname="観察値の採取" file="/home/runner/work/todo-app/todo-app/backend/test/unit/observe.test.js"/>
+		<testcase name="[補助] 上限を超える呼び出し・note・表は切り、切った件数を残す。TC-ID はタイトルから取る" time="0.008394" classname="観察値の採取" file="/home/runner/work/todo-app/todo-app/backend/test/unit/observe.test.js"/>
+		<testcase name="[補助] 同じ TC の複数テストは 1 つのファイルの entries に並び、再実行しても増えない" time="0.007434" classname="観察値の採取" file="/home/runner/work/todo-app/todo-app/backend/test/unit/observe.test.js"/>
+	</testsuite>
+	<testsuite name="@todo-app/backend/test-support" time="0.015960" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.629Z" hostname="runnervmmprz5">
+		<testcase name="[補助] workspace の名前で読み込め、README に書いた関数・データセットが export されている" time="0.014829" classname="@todo-app/backend/test-support" file="/home/runner/work/todo-app/todo-app/backend/test/unit/test-support-exports.test.js"/>
+	</testsuite>
+	<testsuite name="validateTitle" time="0.020858" disabled="0" errors="0" tests="10" failures="0" skipped="0" timestamp="2026-10-11T09:30:14.624Z" hostname="runnervmmprz5">
+		<testcase name="[TC-021] 0 文字・空白のみは TITLE_REQUIRED（保存用の title は返らない）" time="0.002899" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-022] 下限の 1 文字と 2 文字は合格し、入力と同一の title を返す" time="0.002962" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-023] 上限ちょうど前の 99 文字と、ちょうどの 100 文字は合格する" time="0.004110" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-024] 上限の 1 つ先（101・102 文字）は TITLE_TOO_LONG" time="0.000887" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-025] 文字数は UTF-16 の長さでも書記素でもなくコードポイントで数える" time="0.000592" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-026] 長さは前後の空白を除去した後で判定し、title は除去後の値を返す" time="0.000651" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-027] 改行（LF・CRLF）を含むと TITLE_MULTILINE" time="0.000548" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-028] 前後の空白の範囲は暫定で String.prototype.trim() と同じ（未決 UNK-006）" time="0.000444" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] 検証順は 必須 → 長さ → 改行で、返るエラーは 1 つだけ" time="0.004007" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+		<testcase name="[補助] 文字列以外が渡されても例外にならず、入力なしとして TITLE_REQUIRED にする" time="0.000303" classname="validateTitle" file="/home/runner/work/todo-app/todo-app/backend/test/unit/validate-title.test.js"/>
+	</testsuite>
+	<!-- tests 103 -->
+	<!-- suites 30 -->
+	<!-- pass 103 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 4550.077334 -->
+</testsuites>

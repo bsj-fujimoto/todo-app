@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-055",
+  "entries": [
+    {
+      "title": "[TC-055] 保存データが壊れていると、メッセージを出して操作を停止し、DB ファイルを上書きしない",
+      "test_case_ids": [
+        "TC-055"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:42.547Z",
+      "finished_at": "2026-10-11T09:30:43.413Z",
+      "duration_ms": 859,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": true,
+        "save_error": "保存データを読み込めませんでした",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

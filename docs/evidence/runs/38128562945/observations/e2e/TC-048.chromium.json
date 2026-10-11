@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-048",
+  "entries": [
+    {
+      "title": "[TC-048] 通信断では入力値を保持し、復帰後の同じ操作で 1 件だけ追加される",
+      "test_case_ids": [
+        "TC-048"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:41.833Z",
+      "finished_at": "2026-10-11T09:30:42.445Z",
+      "duration_ms": 605,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 4,
+        "rows": [
+          {
+            "text": "資料を印刷する",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "title-input"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:42.410Z\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

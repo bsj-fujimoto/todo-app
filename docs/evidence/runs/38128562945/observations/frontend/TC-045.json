@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-045",
+  "entries": [
+    {
+      "title": "[TC-045] 保存失敗は上部に文言を出し、入力値を保持し、一覧は変えない",
+      "test_case_ids": [
+        "TC-045"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.165Z",
+      "finished_at": "2026-10-11T09:30:15.176Z",
+      "duration_ms": 11,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 3 行 [タスク3(未), タスク2(済), タスク1(未)]、入力欄=\"資料を印刷する\"、入力エラー=なし、保存エラー=\"保存できませんでした。もう一度お試しください\"、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → create(\"資料を印刷する\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-045] 保存失敗は上部エラー。一覧は変わらない",
+      "test_case_ids": [
+        "TC-045"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.447Z",
+      "finished_at": "2026-10-11T09:30:15.447Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "状態",
+          "value": "phase=ready 件数=1 上部エラー=\"STORAGE_FAILURE\" 入力エラー=なし 送信中=false 通信中の行=0"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

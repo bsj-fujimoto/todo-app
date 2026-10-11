@@ -15,3 +15,6 @@ reports/
 contract-report/
 ci-summary*.json
 regression-selection.json
+
+# 取得した証跡（docs/evidence）は、上の生成物の除外（ci-summary*.json・regression-selection.json・security-findings/）に当たっても管理対象にする
+!docs/evidence/**

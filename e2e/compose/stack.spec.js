@@ -1,12 +1,13 @@
 // docker compose の本物の nginx・コンテナ・ボリューム（@compose。直列実行）: TC-043、TC-044、TC-076、TC-077。
 // 専用のプロジェクト名 todoapp-e2e と空きポートで起動し、各テストの前後で `down -v` して独立させる。
-import { test as base, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { execFile } from "node:child_process";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { freePort } from "../fixtures/backend-process.js";
+import { test as observedTest } from "../fixtures/observe.js";
 import { TodoApp } from "../fixtures/todo-app.js";
 
 const exec = promisify(execFile);
@@ -64,7 +65,7 @@ async function createCompose() {
   };
 }
 
-const test = base.extend({
+const test = observedTest.extend({
   // eslint-disable-next-line no-empty-pattern
   compose: async ({}, use, testInfo) => {
     const compose = await createCompose();
@@ -147,7 +148,7 @@ test.describe("docker compose（本物の nginx・コンテナ・ボリューム
   test(
     "[TC-043] backend の再起動・スタック全体の再起動の後も、タスクが保持される",
     { tag: ["@compose", "@resilience"] },
-    async ({ compose, app, page }) => {
+    async ({ compose, app, page, observe }) => {
       await compose.up();
       await app.open();
       await app.add("買い物");
@@ -161,10 +162,7 @@ test.describe("docker compose（本物の nginx・コンテナ・ボリューム
       // backend だけ再起動
       await compose.run("restart", "backend");
       const restartMs = await compose.waitHealthy(60_000);
-      test.info().annotations.push({
-        type: "実測(ms)",
-        description: `backend 再起動後の health 200 まで: ${restartMs}`,
-      });
+      observe("backend 再起動後の health 200 まで(ms)", restartMs);
       await page.reload();
       await app.expectTitles(["資料を印刷する", "買い物"]);
       await app.expectStrikethrough("資料を印刷する", true);
@@ -214,13 +212,14 @@ test.describe("docker compose（本物の nginx・コンテナ・ボリューム
   test(
     "[TC-077] backend を止めると外形監視（health）が 502/504 で検知でき、画面は保存失敗を示し、起動後 30 秒以内に回復する",
     { tag: ["@compose", "@resilience"] },
-    async ({ compose, app }) => {
+    async ({ compose, app, observe }) => {
       await compose.up();
       expect((await compose.get("/api/v1/health")).status).toBe(200);
       await app.open();
 
       await compose.run("stop", "backend");
       const stopped = await compose.get("/api/v1/health");
+      observe("backend 停止中の health", stopped.status);
       expect([502, 504]).toContain(stopped.status);
 
       await app.add("買い物");
@@ -230,10 +229,7 @@ test.describe("docker compose（本物の nginx・コンテナ・ボリューム
 
       await compose.run("start", "backend");
       const recoveredMs = await compose.waitHealthy(30_000);
-      test.info().annotations.push({
-        type: "実測(ms)",
-        description: `start backend から health 200 まで: ${recoveredMs}`,
-      });
+      observe("start backend から health 200 まで(ms)", recoveredMs);
       expect((await compose.tasks()).body.tasks).toEqual([]);
     },
   );

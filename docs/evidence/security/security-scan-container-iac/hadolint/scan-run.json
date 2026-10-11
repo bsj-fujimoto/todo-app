@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "scan": "hadolint",
+  "check_kind": "container",
+  "tool": {
+    "name": "hadolint",
+    "version": "2.15.1",
+    "image": "hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d"
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:03:06Z",
+  "finished_at": "2026-10-11T09:03:07.937Z",
+  "command": "docker run hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d hadolint --config security/hadolint.yaml --format sarif backend/Dockerfile frontend/Dockerfile ",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0,
+    1
+  ],
+  "config_ref": "security/hadolint.yaml",
+  "rules_ref": null,
+  "exclusions": [],
+  "thresholds": null,
+  "coverage": {
+    "languages": [],
+    "paths": [
+      "backend/Dockerfile frontend/Dockerfile "
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/hadolint",
+  "output_files": [
+    {
+      "path": "security-results/hadolint/hadolint.sarif",
+      "bytes": 1325,
+      "sha256": "63a956275de99ff08b23e751ec7399c642a72eba8985d141c99a97adbc0d75f4"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": null
+}

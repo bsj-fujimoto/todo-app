@@ -1,0 +1,246 @@
+<testsuites id="" name="" tests="36" failures="0" skipped="0" errors="0" time="19.92684">
+<testsuite name="a11y-responsive.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="3" failures="0" skipped="0" time="4.076" errors="0">
+<testcase name="[TC-068] キーボードだけで追加・完了・削除ができ、フォーカス順が視覚順と一致し、フォーカスが見える" classname="a11y-responsive.spec.js" time="0.993">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 4 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-069] 入力欄にラベル、各行の操作にタイトルを含む名前があり、axe-core の重大な違反がない" classname="a11y-responsive.spec.js" time="1.5">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-069] エラー表示中・保存失敗表示中も axe-core の違反がない" classname="a11y-responsive.spec.js" time="1.583">
+<properties>
+<property name="observed" value="一覧 0 行、保存できませんでした。もう一度お試しください、API 1 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="add-task.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="11" failures="0" skipped="0" time="7.531" errors="0">
+<testcase name="[TC-002] ペアワイズ PW-01 Enter キー / 360px / 既存 0 件" classname="add-task.spec.js" time="0.619">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-003] ペアワイズ PW-02 追加ボタン / 1280px / 既存 3 件" classname="add-task.spec.js" time="0.695">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-004] ペアワイズ PW-03 Enter キー / 1280px / 既存 3 件" classname="add-task.spec.js" time="0.681">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-005] ペアワイズ PW-04 追加ボタン / 360px / 既存 0 件" classname="add-task.spec.js" time="0.692">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-006] ペアワイズ PW-05 Enter キー / 360px / 既存 3 件" classname="add-task.spec.js" time="0.78">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-007] ペアワイズ PW-06 追加ボタン / 1280px / 既存 0 件" classname="add-task.spec.js" time="0.701">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-016] 空欄・空白のみは入力欄の直下にエラーを出し、追加しない" classname="add-task.spec.js" time="0.665">
+<properties>
+<property name="observed" value="一覧 0 行、タスク名を入力してください、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-017] 101 文字は長さのエラーを出し、追加しない" classname="add-task.spec.js" time="0.647">
+<properties>
+<property name="observed" value="一覧 3 行、タスク名は100文字以内で入力してください、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-018] 100 文字ちょうどは追加できる" classname="add-task.spec.js" time="0.632">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-019] エラー表示のあとに有効な入力で追加すると、エラーが消える" classname="add-task.spec.js" time="0.67">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-020] 同じタイトルを 2 回追加すると別 ID の 2 件になる" classname="add-task.spec.js" time="0.749">
+<properties>
+<property name="observed" value="一覧 2 行、エラー表示なし、API 3 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="concurrency.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="2" failures="0" skipped="0" time="1.661" errors="0">
+<testcase name="[TC-063] 追加ボタンの連打は送信中に無効化され、1 件だけ追加される" classname="concurrency.spec.js" time="0.781">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 3 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-066] 別タブで削除済みの行を操作すると保存失敗の文言を出し、再読込で一覧が揃う" classname="concurrency.spec.js" time="0.88">
+<properties>
+<property name="observed" value="一覧 2 行、エラー表示なし、API 5 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="main-flow.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="3" failures="0" skipped="0" time="3.014" errors="0">
+<testcase name="[TC-001] 追加・完了切替・削除・再読込が一連で動き、結果が保持される" classname="main-flow.spec.js" time="1.167">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 6 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-041] 追加・完了切替・削除の結果が、再読込のたびに保持される" classname="main-flow.spec.js" time="1.045">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 8 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-070] 3 ブラウザで同じ結果になる（追加→完了→再読込→削除）" classname="main-flow.spec.js" time="0.802">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 5 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="order.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="1" failures="0" skipped="0" time="0.735" errors="0">
+<testcase name="[TC-040] 同時刻のタスクは保存順の新しいものが先に並び、再読込しても同じ" classname="order.spec.js" time="0.735">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.53" errors="0">
+<testcase name="[TC-074] 1,000 件でも表示は 2,000ms 以内、追加・完了・削除は 1,000ms 以内に反映される" classname="performance.spec.js" time="1.53">
+<properties>
+<property name="observed" value="表示完了(ms): 265">
+</property>
+<property name="observed" value="追加(ms): 440">
+</property>
+<property name="observed" value="完了切替(ms): 118">
+</property>
+<property name="observed" value="削除(ms): 188">
+</property>
+<property name="observed" value="一覧 1000 行、エラー表示なし、API 4 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="save-failure.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="5" failures="0" skipped="0" time="4.054" errors="0">
+<testcase name="画面から見た保存失敗（503 STORAGE_FAILURE を注入） › [TC-045] 追加の保存失敗は上部に文言を出し、入力値を保持し、一覧は変わらない" classname="save-failure.spec.js" time="0.816">
+<properties>
+<property name="observed" value="一覧 3 行、保存できませんでした。もう一度お試しください、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="画面から見た保存失敗（503 STORAGE_FAILURE を注入） › [TC-046] 完了切替の保存失敗は上部に文言を出し、チェックは通信中も失敗後も変化しない" classname="save-failure.spec.js" time="0.88">
+<properties>
+<property name="observed" value="一覧 3 行、保存できませんでした。もう一度お試しください、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="画面から見た保存失敗（503 STORAGE_FAILURE を注入） › [TC-047] 削除の保存失敗は上部に文言を出し、行は残る" classname="save-failure.spec.js" time="0.642">
+<properties>
+<property name="observed" value="一覧 3 行、保存できませんでした。もう一度お試しください、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-048] 通信断では入力値を保持し、復帰後の同じ操作で 1 件だけ追加される" classname="save-failure.spec.js" time="0.699">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-049] backend 停止中は保存失敗を表示し、再起動後の同じ操作で重複なく追加される" classname="save-failure.spec.js" time="1.017">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 3 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="screen-states.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="5" failures="0" skipped="0" time="3.517" errors="0">
+<testcase name="[TC-055] 保存データが壊れていると、メッセージを出して操作を停止し、DB ファイルを上書きしない" classname="screen-states.spec.js" time="0.942">
+<properties>
+<property name="observed" value="一覧 0 行、保存データを読み込めませんでした、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-056] 初回起動（空の DB）は見出し・入力欄・追加ボタンと「タスクはありません」を表示する" classname="screen-states.spec.js" time="0.598">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-057] 一覧の取得が終わるまで「読み込み中…」を出し、「タスクはありません」は出さず、取得後に一覧を表示する" classname="screen-states.spec.js" time="0.644">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-058] 一覧の取得に失敗したときは 0 件と誤認させず、エラーを表示し、再読込で回復する" classname="screen-states.spec.js" time="0.694">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-058] 取得失敗のあと「再読み込み」ボタンで一覧が表示され、入力・追加が有効になる" classname="screen-states.spec.js" time="0.639">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="security.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="1" failures="0" skipped="0" time="0.882" errors="0">
+<testcase name="[TC-061] 悪意ある文字列はテキストのまま表示され、要素にも dialog にもならない" classname="security.spec.js" time="0.882">
+<properties>
+<property name="observed" value="一覧 4 行、エラー表示なし、API 6 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="toggle-delete.spec.js" timestamp="2026-10-11T09:30:30.588Z" hostname="chromium" tests="4" failures="0" skipped="0" time="7.609" errors="0">
+<testcase name="[TC-008] 完了にして未完了に戻すと、チェックと取り消し線が切り替わり、並びは変わらない [ST-02, ST-03]" classname="toggle-delete.spec.js" time="0.708">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 3 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-008] 通信中はチェック・取り消し線が元のままで、成功後にだけ切り替わる。連打は 1 回だけ、別の行の操作は妨げない" classname="toggle-delete.spec.js" time="2.879">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 3 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-013] 削除は確認なしで即時に対象の行だけが消える [ST-06]" classname="toggle-delete.spec.js" time="1.178">
+<properties>
+<property name="observed" value="一覧 2 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-014] 全件を削除すると「タスクはありません」になり、再読込後も同じ [ST-06, ST-07]" classname="toggle-delete.spec.js" time="2.844">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 5 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+</testsuites>

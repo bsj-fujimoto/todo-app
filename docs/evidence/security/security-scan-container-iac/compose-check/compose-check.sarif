@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "compose-check",
+          "semanticVersion": "1.0.0",
+          "informationUri": "scripts/security/check-compose.mjs",
+          "rules": [
+            {
+              "id": "COMPOSE-006",
+              "name": "公開ポートを全インターフェースに bind",
+              "shortDescription": {
+                "text": "公開ポートを全インターフェースに bind"
+              },
+              "help": {
+                "text": "ローカル専用なら 127.0.0.1 に bind する。"
+              },
+              "properties": {
+                "tags": [
+                  "misconfiguration",
+                  "compose"
+                ],
+                "security-severity": "3"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "COMPOSE-006",
+          "level": "note",
+          "message": {
+            "text": "公開ポートを全インターフェースに bind: services.frontend（8080:8080 が全インターフェース）"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docker-compose.yml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "3",
+            "component": "services.frontend"
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2026-10-11T09:03:10.102Z",
+          "startTimeUtc": "2026-10-11T09:03:07Z",
+          "commandLine": "docker compose -f docker-compose.yml config --format json | node scripts/security/check-compose.mjs"
+        }
+      ],
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
+          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+          "branch": "main"
+        }
+      ],
+      "properties": {
+        "scan": "compose-check",
+        "image_digest": null,
+        "config_ref": null
+      }
+    }
+  ]
+}

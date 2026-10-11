@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "scan": "gitleaks",
+  "check_kind": "secret",
+  "tool": {
+    "name": "gitleaks",
+    "version": "8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f"
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:02:50Z",
+  "finished_at": "2026-10-11T09:02:55.266Z",
+  "command": "docker run ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f gitleaks git --config security/gitleaks.toml --report-format sarif --report-path security-results/gitleaks/gitleaks.sarif --redact --exit-code 2 --no-banner --no-color /repo",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0,
+    2
+  ],
+  "config_ref": "security/gitleaks.toml",
+  "rules_ref": null,
+  "exclusions": [
+    "security/gitleaks.toml の allowlist（理由はファイル内）"
+  ],
+  "thresholds": "検出は triage.mjs で判定。critical/high の未解決は失敗",
+  "coverage": {
+    "languages": [],
+    "paths": [
+      "git 履歴全体（全 branch の全 commit）"
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/gitleaks",
+  "output_files": [
+    {
+      "path": "security-results/gitleaks/gitleaks.log",
+      "bytes": 1108,
+      "sha256": "8adf2f80e3ee2f6d61b3002a7455f5cc9aa094c6b80e99ed5b5b4c8e4356c2a5"
+    },
+    {
+      "path": "security-results/gitleaks/gitleaks.sarif",
+      "bytes": 59013,
+      "sha256": "38c308b6aa341c7bcaf7b5d3ee1c22675d8941dc6f0da1f975f3d5c198294190"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": null
+}

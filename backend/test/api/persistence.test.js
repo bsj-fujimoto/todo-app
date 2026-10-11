@@ -5,7 +5,7 @@ import { STANDARD_TASKS } from "../../test-support/datasets.js";
 import { readRows, seedTasks } from "../../test-support/db.js";
 import { spawnBackend } from "../../test-support/process.js";
 import { createSandbox } from "../../test-support/sandbox.js";
-import { createClient } from "../helpers/harness.js";
+import { createClient, observe } from "../helpers/harness.js";
 
 const RESTART_BUDGET_MS = 10_000;
 const [MILK] = STANDARD_TASKS;
@@ -41,6 +41,10 @@ describe("再起動後の永続性（実プロセス）", () => {
 
     assert.equal(after.status, 200);
     assert.deepEqual(after.body, recorded.body);
+    observe(
+      "再起動",
+      `SIGTERM の終了コード ${exit.code}、再起動から GET 200 まで ${Math.round(elapsed)}ms、再起動前後の一覧 ${after.body.tasks.length} 件で一致`,
+    );
     assert.ok(elapsed <= RESTART_BUDGET_MS, `再起動から GET 200 まで ${Math.round(elapsed)}ms`);
     const rows = readRows(sandbox.dbPath);
     assert.equal(rows.length, 4);

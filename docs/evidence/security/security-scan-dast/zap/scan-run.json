@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "scan": "zap",
+  "check_kind": "dast",
+  "tool": {
+    "name": "zap",
+    "version": "2.17.0",
+    "image": "ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2"
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:02:48Z",
+  "finished_at": "2026-10-11T09:04:19.394Z",
+  "command": "docker run ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2 zap-baseline.py -t http://localhost:8080 -c zap-rules.tsv; zap-api-scan.py -t openapi.yaml -f openapi -O http://localhost:8080 -c zap-rules.tsv (exit 2 / 2)",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0
+  ],
+  "config_ref": "security/zap-rules.tsv",
+  "rules_ref": "security/zap-rules.tsv",
+  "exclusions": [],
+  "thresholds": "security/zap-rules.tsv（IGNORE は理由・期限つき、FAIL は high 扱い）。critical/high の未解決は triage.mjs で失敗",
+  "coverage": {
+    "languages": [],
+    "paths": [],
+    "urls": [
+      "http://localhost:8080",
+      "openapi.yaml の全 operation（backend/openapi.yaml）"
+    ],
+    "images": []
+  },
+  "authenticated": false,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/zap",
+  "output_files": [
+    {
+      "path": "security-results/zap/compose.log",
+      "bytes": 134362,
+      "sha256": "e19720966ec79a06e622cf65661269178d261ee66b64a232b363086948618ac3"
+    },
+    {
+      "path": "security-results/zap/openapi.yaml",
+      "bytes": 7917,
+      "sha256": "97e4d99367af9b7d7ccdb08728602604fc824a751d3848ae47fa27ee7c374446"
+    },
+    {
+      "path": "security-results/zap/zap-api-ignored.json",
+      "bytes": 61,
+      "sha256": "bcfcc51bc0805d04f4957e85de3486a246c26f1976ce141800d11a0b772ee3e5"
+    },
+    {
+      "path": "security-results/zap/zap-api.html",
+      "bytes": 64026,
+      "sha256": "489004d315b9484b40a174c399ad65316c2b30e26dbb39936787a0b877cbaf4f"
+    },
+    {
+      "path": "security-results/zap/zap-api.json",
+      "bytes": 18705,
+      "sha256": "2d619f5c364c4a76ddd00e49ff730adf2348e1f299d99de576206a2f8c44359d"
+    },
+    {
+      "path": "security-results/zap/zap-api.md",
+      "bytes": 14121,
+      "sha256": "886a0a9d364ebd778ee8143662206df69fb97b8033799854a0a52ad2dfbcee05"
+    },
+    {
+      "path": "security-results/zap/zap-api.sarif",
+      "bytes": 6430,
+      "sha256": "bcb8204f190664be80b5950f86f1c8c9eb8ddb3c88395857cc04956b1ff4685d"
+    },
+    {
+      "path": "security-results/zap/zap-baseline-ignored.json",
+      "bytes": 61,
+      "sha256": "bcfcc51bc0805d04f4957e85de3486a246c26f1976ce141800d11a0b772ee3e5"
+    },
+    {
+      "path": "security-results/zap/zap-baseline.html",
+      "bytes": 34711,
+      "sha256": "796e82e0a7a0407a69b6dfe2fd203dd6805d615fb6bebaa4c1a7e24c228ee72a"
+    },
+    {
+      "path": "security-results/zap/zap-baseline.json",
+      "bytes": 8517,
+      "sha256": "47b498d5003e15a239fcf6a840f8e030aa4ba9b384fe9607408d12e1f9b39414"
+    },
+    {
+      "path": "security-results/zap/zap-baseline.md",
+      "bytes": 6526,
+      "sha256": "7bbf089fa591e149731c06697f3e02ece7429dfc4a1218a0f19f27f03245fc37"
+    },
+    {
+      "path": "security-results/zap/zap-baseline.sarif",
+      "bytes": 4860,
+      "sha256": "54406d2ac4821cf8e19aa6b08c65a1d38e61a0c7fbd1366adfeba8ef921f78e2"
+    },
+    {
+      "path": "security-results/zap/zap-rules.tsv",
+      "bytes": 762,
+      "sha256": "e5ac11ea4c650263f2d44ce9ec9d07f13d651d717d0f457bc47cdb2d7b4e0743"
+    },
+    {
+      "path": "security-results/zap/zap.yaml",
+      "bytes": 1037,
+      "sha256": "831056c36d57430591e804b365715cf50aaeb5a7e4488a6a4693e1cb933980a7"
+    }
+  ],
+  "finding_count_sarif": 7,
+  "informational": false,
+  "note": "本アプリは認証・認可を持たない（REQ-015）ため、認証なしの走査が全攻撃面。ZAP exit: baseline=2 api=2"
+}

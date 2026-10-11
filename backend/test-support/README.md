@@ -48,6 +48,16 @@ await sandbox.cleanup(); // chmod 0444 のままでも権限を戻して削除�
 `fixedClock(iso)`、`steppingClock(startIso, stepMs = 1000, callsPerStep = 1)`、`sequentialIdGenerator()`（UUID v4 形式の連番）、
 `sequentialRequestIds(prefix)`。`buildApp({ clock, idGenerator, ... })` に注入する（clock は ISO 8601 UTC 文字列を返す関数）。
 
+## 観察値の採取（`observe.js` / `observe-node-test.js` / `observe-frontend.js`）
+
+各テストが**実際に観察した値**（画面・API 呼び出し・計測値・入力 → 結果）を、終了時に `<workspace>/test-results/observations/<TC-ID>.json` へ書く。
+実施表（`docs/data/executions.csv`）の `actual_result` と証拠索引の材料になる（生成は `scripts/evidence/`。README はそちら）。
+
+- backend の api テスト: `test/helpers/harness.js` を import するだけで、全リクエストの method path → status と要求・応答の要約が残る。実測値は `observe("一覧 p95", "12.3ms")`。
+- unit テスト: `test/helpers/unit-observer.js`（backend）、`observe-frontend.js`（frontend。画面・状態の要約も）。検証関数は `observeValidation(input, result)` で入力 → 結果の表を残す。
+- e2e: `e2e/fixtures/observe.js` の auto fixture が一覧の行・入力欄・エラー文言・通信・ブラウザの版を自動で残す。計測値は fixture の `observe(label, value)`。
+- 上限（`LIMITS`）で小さく保つ。UUID は `{uuid}` に伏せる。アサーションの代わりにしない（観察は記録であって判定ではない）。
+
 ## 注意
 
 - 保存失敗（DS-008）の再現は `chmod(dbPath, 0o444)`。root は読取専用ビットを無視するので、root 以外で実行する。

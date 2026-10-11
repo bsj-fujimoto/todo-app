@@ -1,0 +1,597 @@
+{
+  "schema_version": 1,
+  "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+  "base": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+  "generated_at": "2026-10-11T09:29:53.332Z",
+  "changed_files": [
+    ".github/ISSUE_TEMPLATE/defect.md",
+    "backend/test-support/index.js",
+    "backend/test-support/observe-frontend.js",
+    "backend/test-support/observe-node-test.js",
+    "backend/test-support/observe.js",
+    "backend/test/api/concurrency.test.js",
+    "backend/test/api/performance.test.js",
+    "backend/test/api/persistence.test.js",
+    "backend/test/helpers/harness.js",
+    "backend/test/helpers/unit-observer.js",
+    "backend/test/unit/observe.test.js",
+    "backend/test/unit/validate-title.test.js",
+    "docs/evidence/README.md",
+    "docs/evidence/manual-plan.yaml",
+    "e2e/compose/stack.spec.js",
+    "e2e/fixtures/observe.js",
+    "e2e/fixtures/stack.js",
+    "e2e/tests/performance.spec.js",
+    "eslint.config.js",
+    "frontend/test/unit/app.test.js",
+    "frontend/test/unit/render-task.test.js",
+    "frontend/test/unit/state.test.js",
+    "frontend/test/unit/validate-title.test.js",
+    "package.json",
+    "quality/impact-map.yaml",
+    "scripts/evidence/README.md",
+    "scripts/evidence/build-artifacts.mjs",
+    "scripts/evidence/build-defects.mjs",
+    "scripts/evidence/build-evidence-index.mjs",
+    "scripts/evidence/build-executions.mjs",
+    "scripts/evidence/build-findings.mjs",
+    "scripts/evidence/build-manifest.mjs",
+    "scripts/evidence/build-traceability.mjs",
+    "scripts/evidence/check-evidence.mjs",
+    "scripts/evidence/check-parity.mjs",
+    "scripts/evidence/fetch-run.mjs",
+    "scripts/evidence/lib/actions.mjs",
+    "scripts/evidence/lib/artifacts.mjs",
+    "scripts/evidence/lib/check-all.mjs",
+    "scripts/evidence/lib/common.mjs",
+    "scripts/evidence/lib/data-io.mjs",
+    "scripts/evidence/lib/defect-evidence.mjs",
+    "scripts/evidence/lib/defects.mjs",
+    "scripts/evidence/lib/evidence-checks.mjs",
+    "scripts/evidence/lib/evidence-files.mjs",
+    "scripts/evidence/lib/evidence-registry.mjs",
+    "scripts/evidence/lib/execution-checks.mjs",
+    "scripts/evidence/lib/execution-merge.mjs",
+    "scripts/evidence/lib/execution-rows.mjs",
+    "scripts/evidence/lib/executions.mjs",
+    "scripts/evidence/lib/findings-table.mjs",
+    "scripts/evidence/lib/findings.mjs",
+    "scripts/evidence/lib/github-snapshot.mjs",
+    "scripts/evidence/lib/id-check.mjs",
+    "scripts/evidence/lib/issue-body.mjs",
+    "scripts/evidence/lib/junit-suites.mjs",
+    "scripts/evidence/lib/kinds.mjs",
+    "scripts/evidence/lib/manifest.mjs",
+    "scripts/evidence/lib/observations.mjs",
+    "scripts/evidence/lib/parity.mjs",
+    "scripts/evidence/lib/run-layout.mjs",
+    "scripts/evidence/lib/run-reader.mjs",
+    "scripts/evidence/lib/sensitive.mjs",
+    "scripts/evidence/lib/source-of-truth.mjs",
+    "scripts/evidence/lib/traceability.mjs",
+    "scripts/evidence/lib/yaml-out.mjs",
+    "scripts/evidence/test/defects.test.mjs",
+    "scripts/evidence/test/executions.test.mjs",
+    "scripts/evidence/test/junit-observations.test.mjs",
+    "scripts/evidence/test/ledgers.test.mjs",
+    "scripts/evidence/verify-manifest.mjs"
+  ],
+  "mapped": [
+    {
+      "file": ".github/ISSUE_TEMPLATE/defect.md",
+      "entries": [
+        "docs",
+        "repo-meta"
+      ]
+    },
+    {
+      "file": "backend/test-support/index.js",
+      "entries": [
+        "backend-test-infra"
+      ]
+    },
+    {
+      "file": "backend/test-support/observe-frontend.js",
+      "entries": [
+        "backend-test-infra"
+      ]
+    },
+    {
+      "file": "backend/test-support/observe-node-test.js",
+      "entries": [
+        "backend-test-infra"
+      ]
+    },
+    {
+      "file": "backend/test-support/observe.js",
+      "entries": [
+        "backend-test-infra"
+      ]
+    },
+    {
+      "file": "backend/test/api/concurrency.test.js",
+      "entries": [
+        "backend-storage",
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/api/performance.test.js",
+      "entries": [
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/api/persistence.test.js",
+      "entries": [
+        "backend-storage",
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/helpers/harness.js",
+      "entries": [
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/helpers/unit-observer.js",
+      "entries": [
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/unit/observe.test.js",
+      "entries": [
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "backend/test/unit/validate-title.test.js",
+      "entries": [
+        "backend-validation",
+        "backend-tests"
+      ]
+    },
+    {
+      "file": "docs/evidence/README.md",
+      "entries": [
+        "docs"
+      ]
+    },
+    {
+      "file": "docs/evidence/manual-plan.yaml",
+      "entries": [
+        "docs"
+      ]
+    },
+    {
+      "file": "e2e/compose/stack.spec.js",
+      "entries": [
+        "e2e-compose"
+      ]
+    },
+    {
+      "file": "e2e/fixtures/observe.js",
+      "entries": [
+        "e2e-shared"
+      ]
+    },
+    {
+      "file": "e2e/fixtures/stack.js",
+      "entries": [
+        "e2e-shared"
+      ]
+    },
+    {
+      "file": "e2e/tests/performance.spec.js",
+      "entries": [
+        "e2e-performance"
+      ]
+    },
+    {
+      "file": "eslint.config.js",
+      "entries": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "file": "frontend/test/unit/app.test.js",
+      "entries": [
+        "frontend-logic"
+      ]
+    },
+    {
+      "file": "frontend/test/unit/render-task.test.js",
+      "entries": [
+        "frontend-view"
+      ]
+    },
+    {
+      "file": "frontend/test/unit/state.test.js",
+      "entries": [
+        "frontend-logic"
+      ]
+    },
+    {
+      "file": "frontend/test/unit/validate-title.test.js",
+      "entries": [
+        "frontend-validation"
+      ]
+    },
+    {
+      "file": "package.json",
+      "entries": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "file": "quality/impact-map.yaml",
+      "entries": [
+        "ci-pipeline"
+      ]
+    },
+    {
+      "file": "scripts/evidence/README.md",
+      "entries": [
+        "evidence-tooling",
+        "docs"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-artifacts.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-defects.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-evidence-index.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-executions.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-findings.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-manifest.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/build-traceability.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/check-evidence.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/check-parity.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/fetch-run.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/actions.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/artifacts.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/check-all.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/common.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/data-io.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/defect-evidence.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/defects.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/evidence-checks.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/evidence-files.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/evidence-registry.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/execution-checks.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/execution-merge.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/execution-rows.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/executions.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/findings-table.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/findings.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/github-snapshot.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/id-check.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/issue-body.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/junit-suites.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/kinds.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/manifest.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/observations.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/parity.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/run-layout.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/run-reader.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/sensitive.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/source-of-truth.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/traceability.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/lib/yaml-out.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/test/defects.test.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/test/executions.test.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/test/junit-observations.test.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/test/ledgers.test.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    },
+    {
+      "file": "scripts/evidence/verify-manifest.mjs",
+      "entries": [
+        "evidence-tooling"
+      ]
+    }
+  ],
+  "unmapped_paths": [],
+  "mode": "full",
+  "selection_reason": [
+    "全件実行を要求するエントリに該当: backend-test-infra, e2e-shared, ci-pipeline"
+  ],
+  "selected_case_ids": [
+    "TC-001",
+    "TC-002",
+    "TC-003",
+    "TC-004",
+    "TC-005",
+    "TC-006",
+    "TC-007",
+    "TC-008",
+    "TC-009",
+    "TC-010",
+    "TC-011",
+    "TC-012",
+    "TC-013",
+    "TC-014",
+    "TC-015",
+    "TC-016",
+    "TC-017",
+    "TC-018",
+    "TC-019",
+    "TC-020",
+    "TC-021",
+    "TC-022",
+    "TC-023",
+    "TC-024",
+    "TC-025",
+    "TC-026",
+    "TC-027",
+    "TC-028",
+    "TC-029",
+    "TC-030",
+    "TC-031",
+    "TC-032",
+    "TC-033",
+    "TC-034",
+    "TC-035",
+    "TC-036",
+    "TC-037",
+    "TC-038",
+    "TC-039",
+    "TC-040",
+    "TC-041",
+    "TC-042",
+    "TC-043",
+    "TC-044",
+    "TC-045",
+    "TC-046",
+    "TC-047",
+    "TC-048",
+    "TC-049",
+    "TC-050",
+    "TC-051",
+    "TC-052",
+    "TC-053",
+    "TC-054",
+    "TC-055",
+    "TC-056",
+    "TC-057",
+    "TC-058",
+    "TC-059",
+    "TC-060",
+    "TC-061",
+    "TC-062",
+    "TC-063",
+    "TC-064",
+    "TC-065",
+    "TC-066",
+    "TC-067",
+    "TC-068",
+    "TC-069",
+    "TC-070",
+    "TC-073",
+    "TC-074",
+    "TC-075",
+    "TC-076",
+    "TC-077"
+  ],
+  "excluded_risks": [],
+  "grep_e2e": "",
+  "name_pattern_unit_api": ""
+}

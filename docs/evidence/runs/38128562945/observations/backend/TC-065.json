@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-065",
+  "entries": [
+    {
+      "title": "[TC-065] 同じ id への 10 件の同時削除は、204 がちょうど 1 件・404 が 9 件・500 なし",
+      "test_case_ids": [
+        "TC-065"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.815Z",
+      "finished_at": "2026-10-11T09:30:10.858Z",
+      "duration_ms": 43,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(194文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "同時削除の応答",
+          "value": "204 が 1 件、404 が 9 件、5xx が 0 件"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

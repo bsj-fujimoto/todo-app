@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-074",
+  "entries": [
+    {
+      "title": "[TC-074] 1,000 件でも表示は 2,000ms 以内、追加・完了・削除は 1,000ms 以内に反映される",
+      "test_case_ids": [
+        "TC-074"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:39.638Z",
+      "finished_at": "2026-10-11T09:30:41.078Z",
+      "duration_ms": 1412,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 1000,
+        "rows": [
+          {
+            "text": "性能確認",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "タスク-1000",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "タスク-0999",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "タスク-0998",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "タスク-0997",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "タスク-0996",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "タスク-0995",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "タスク-0994",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "タスク-0993",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "タスク-0992",
+            "checked": true,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 990,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "「タスク-0002」を完了にする"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:40.440Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":true,\"createdAt\":\"2026-10-11T09:30:40.440Z\"}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "表示完了(ms)",
+          "value": "265"
+        },
+        {
+          "label": "追加(ms)",
+          "value": "440"
+        },
+        {
+          "label": "完了切替(ms)",
+          "value": "118"
+        },
+        {
+          "label": "削除(ms)",
+          "value": "188"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "repository": "bsj-fujimoto/todo-app",
+  "query": "label:defect または label:flaky（state: all）",
+  "issues": [
+    {
+      "number": 5,
+      "title": "defect: 書込み不可で開いた SQLite 接続が、権限を戻しても書込み不可のまま（TC-050 手順 5）",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/5",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect"
+      ],
+      "createdAt": "2026-10-11T06:40:23Z",
+      "closedAt": "2026-10-11T06:43:47Z",
+      "body": "## 識別\n- 検出工程: api\n- 混入工程: design\n- 重大度: major\n- 機能: storage\n- 品質特性: reliability\n- 対象版: feat/backend 作業中の初版ストア（SQLite 接続を常駐させる実装。コミット前に検出し、同じ PR で修正）\n- 上流文書: docs/data/cases.csv#TC-050\n\n## 再現手順\n1. DS-002 を投入した DB を `chmod 0444` にして backend を起動する（DS-008）。\n2. `POST /api/v1/tasks` を送る → 503 STORAGE_FAILURE（ここまでは期待どおり）。\n3. `GET /api/v1/tasks` を呼ぶ（常駐接続を開き直す。ファイルはまだ 0444 なので読取専用の接続になる）。\n4. `chmod 0644` で書込み権限を戻し、同じ `POST` を再送する。\n\n## 期待結果\ndocs/data/cases.csv TC-050 手順 5「DB ファイルの書込み権限を戻し（chmod 0644）、同じ POST をもう一度送る」→ 201。backend は再起動しない（DS-008: 復旧確認は権限を戻すだけ）。\n\n## 実際の結果\n手順 4 が 503 STORAGE_FAILURE のまま。SQLite は接続を開いた時点で読取専用かどうかを決め、権限を戻しても同じ接続は読取専用のままのため、backend を再起動するまで復旧しない。\n\n## 影響\nボリュームの権限・マウントの一時的な不具合から復旧しても、backend の再起動まで保存できない状態が続く。同様に、DB ファイルの差し替え・復元も再起動が必要になる。\n\n## 関連ケース / 証拠\n- ケース: TC-050（手順 5）\n- 証拠: `backend/test/api/storage-failure.test.js`（[TC-050]・[補助] 権限を戻せば再起動なしで完了切替できる）\n\n## 原因分類（判明後に記入）\n- 根本原因: 接続を常駐させる設計。読取専用で開いた接続は権限を戻しても書込み可能にならない（SQLite の仕様）。\n- 検出可能だった工程: design（ストアの接続ライフサイクルの設計レビュー）。\n- 修正: 操作ごとに接続を開いて閉じる方式へ変更（`backend/src/store/sqlite-store.js`）。回帰テストは上記 2 件。\n- 原因分類: design\n- 修正 PR: #7\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T06:43:46Z",
+          "body": "修正は PR #7（feat(backend)）に含めてマージ済み（SQLite 接続を操作ごとに開閉する方式へ変更。回帰テストは TC-050 手順 5）。修正確認: backend api テスト TC-050 が pass。"
+        },
+        {
+          "createdAt": "2026-10-11T09:06:52Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: docs/data/cases.csv#TC-050」を追加（期待結果の根拠にした TC-050 手順 5）。\n- 原因分類に「原因分類: design」を追加（根本原因に「接続を常駐させる設計」と書かれているため。混入工程 design と一致）。\n- 原因分類に「修正 PR: #7」を追加（コメントの「修正は PR #7 に含めてマージ済み」。マージ commit は bfebaee）。\n"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "defect: 追加の送信中に打った次の入力が、先の追加の成功で消える（TC-061 の連続追加）",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/6",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect"
+      ],
+      "createdAt": "2026-10-11T06:42:19Z",
+      "closedAt": "2026-10-11T06:58:31Z",
+      "body": "## 識別\n- 検出工程: e2e\n- 混入工程: implementation\n- 重大度: major\n- 機能: add\n- 品質特性: functional\n- 対象版: feat/frontend 開発中（frontend の初版。main には未マージ）\n- 上流文書: spec/todo-phase1-spec.html#F-01\n\n## 再現手順\n1. 画面を開く（一覧が表示され、入力できる状態）。\n2. 入力欄に「A」を入力して「追加」を押す（POST /api/v1/tasks の応答が返る前）。\n3. 応答が返る前に、入力欄へ続けて「B」を入力する。\n4. 「A」の追加が成功する。\n\n（E2E では、`TC-061` の 4 件連続追加で再現した。`app.add(A)` の直後に `app.add(B)` を実行すると、B の `fill` が A の POST 応答前に走る。）\n\n## 期待結果\n- 仕様書 §03 F-01「成功後は入力欄を空にする」は、**送信した入力**に対するもの。送信中に利用者が打った次の入力（B）は消さない。\n- AC-01: 追加した 1 件だけが増える。B は入力欄に残り、利用者が改めて追加できる。\n\n## 実際の結果\n- A の成功時に入力欄を無条件で空にするため、送信中に打った B が失われる。\n- 続けて「追加」を押すと入力が空なので「タスク名を入力してください」が表示される（Playwright の `TC-061` が 4 件のうち 2 件だけ追加されて失敗した）。\n\n## 影響\n- 速く連続入力する利用者の入力が黙って消える（データ損失ではなく入力の損失）。回避策: 応答を待ってから次を入力する。\n\n## 関連ケース / 証拠\n- ケース: TC-061（検出）、TC-063（送信中の挙動。UNK-004）、TC-020\n- 証拠: Playwright の失敗ログ（4 件中 2 件が追加されず、入力エラー「タスク名を入力してください」が表示）\n\n## 原因分類（判明後に記入）\n- 根本原因: `frontend/src/app.js` の submit が、成功後に入力欄を無条件で `clearInput()` していた。送信した値と現在の値を比べていなかった。\n- 検出可能だった工程: unit（app と view を happy-dom で結合した単体テストで、応答保留中に入力を変えるケースがあれば検出できた）\n- 原因分類: implementation\n- 修正 PR: #9\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T06:58:30Z",
+          "body": "修正は PR #9（feat(frontend)）に含めてマージ済み（送信中の入力を保持）。回帰テストは frontend unit と e2e TC-061 連続追加。修正確認: 両テストが pass。"
+        },
+        {
+          "createdAt": "2026-10-11T09:06:53Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: spec/todo-phase1-spec.html#F-01」を追加（期待結果が仕様書 §03 F-01 を根拠にしているため）。\n- 原因分類に「原因分類: implementation」を追加（根本原因が frontend/src/app.js の submit の実装のため。混入工程 implementation と一致）。\n- 原因分類に「修正 PR: #9」を追加（コメントの「修正は PR #9 に含めてマージ済み」。マージ commit は 72243c4）。\n"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "title": "defect: 完了切替の通信中にチェックボックスが反転して見える（TC-008 / TC-046。成功を確認してから反映する仕様に反する）",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/11",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect"
+      ],
+      "createdAt": "2026-10-11T07:02:39Z",
+      "closedAt": "2026-10-11T07:08:09Z",
+      "body": "## 識別\n- 検出工程: e2e\n- 混入工程: implementation\n- 重大度: minor\n- 機能: toggle\n- 品質特性: functional\n- 対象版: main 72243c4（PR #9）\n- 上流文書: spec/todo-phase1-spec.html#04\n\n## 再現手順\n1. DS-002 の標準タスク 3 件がある画面を開く。\n2. PATCH /api/v1/tasks/{id} の応答を保留する（Playwright の page.route で応答を門で止める）。\n3. 「牛乳を買う」のチェックボックスをクリックする。応答は返さない。\n\n## 期待結果\n- 仕様書 v1.1 §04「追加・完了切替・削除のたびに API を呼び、成功を確認してから画面へ反映する」。通信中はチェックも取り消し線も元のまま。成功後にだけ切り替わり、失敗（503 など）のときは最初から変化しない。\n- TC-008・TC-046（docs/data/cases.csv）。\n\n## 実際の結果\n- ブラウザのチェックボックスが押した瞬間に反転し、通信中はチェックが入った表示のまま（取り消し線は付かない）。失敗時に元へ戻る。「成功を確認してから反映」に反し、チェックと取り消し線の表示が食い違う時間がある。PR #9 では「実装判断」として許容していた（PR 本文の改訂提案 3）。\n\n## 影響\n- 通信が遅い／失敗するとき、チェック済みに見えるのに保存されていない状態が見える（データ損失ではない。失敗時は元に戻り、エラーが出る）。\n\n## 関連ケース / 証拠\n- ケース: TC-008、TC-046\n- 証拠: PR #9 の改訂提案 3、修正 PR の e2e（応答保留中に未チェックであること）\n\n## 原因分類（判明後に記入）\n- 根本原因: `frontend/src/view.js` が、通信中の行ではチェックボックスの表示を状態へ戻さず、ブラウザの反転表示を残していた。\n- 検出可能だった工程: unit（通信中の行の表示を検査していれば検出できた。逆に「通信中は反転したまま」を正としたテストを書いていた）\n- 原因分類: implementation\n- 修正 PR: #12\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T09:06:54Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: spec/todo-phase1-spec.html#04」を追加（期待結果が仕様書 v1.1 §04 を根拠にしているため）。\n- 原因分類に「原因分類: implementation」を追加（根本原因が frontend/src/view.js の実装のため。混入工程 implementation と一致）。\n- 原因分類に「修正 PR: #12」を追加（PR #12 のタイトルが「（#11）」で、この Issue を閉じた修正。マージ commit は c3a6e84）。\n"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "title": "defect(flaky): 本文サイズ超過の応答が RST で失われ、bodyLimit のテストが不安定（ECONNRESET/EPIPE）",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/15",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect",
+        "flaky"
+      ],
+      "createdAt": "2026-10-11T07:25:02Z",
+      "closedAt": "2026-10-11T07:46:02Z",
+      "body": "## 識別\n- 検出工程: regression（`npm run test -w backend` の繰り返し実行）\n- 混入工程: implementation（backend の本文サイズ超過の扱い）。テスト側の問題ではない\n- 重大度: minor\n- 機能: api\n- 品質特性: reliability\n- 対象版: main c3a6e84（feat(backend) #7 で混入）\n- 上流文書: backend/openapi.yaml#/components/responses/InvalidRequest\n\n## 再現手順\n1. `npm run test -w backend` を繰り返す（main c3a6e84 で 6 回中 2 回失敗。調査時に `node --test test/api/robustness.test.js` を 12 回回すと 6 回失敗）。\n2. 失敗するテスト: `[補助] 数 MB の本文は bodyLimit で 400 INVALID_REQUEST になり、backend は落ちず DB も変わらない`（入力の堅牢性）。\n3. 再現を決定的にするには、本文サイズ超過（3 MiB）を `fetch` / `node:http`（Connection: close・chunked）で 20 回続けて送る（修正前のコードでは 3 種とも毎回失敗する）。\n\n## 期待結果\nbodyLimit（1 MiB）を超える本文は、`400 INVALID_REQUEST`（エラー封筒）を **確実に** クライアントへ返す（openapi.yaml の `InvalidRequest`）。\n\n## 実際の結果\nクライアントが応答を受け取れず `write ECONNRESET` / `EPIPE`（fetch は `TypeError: fetch failed`）になることがある。\n\n## 影響\nAPI の利用者（frontend・nginx 経由を含む）に、エラー契約（400 INVALID_REQUEST）が届かないことがある。異常な大きさの入力に限られ、backend は落ちず DB も変わらない。\n\n## 関連ケース / 証拠\n- ケース: TC-031（巨大入力）の周辺。ケース外の補助テスト `backend/test/api/robustness.test.js`\n- 証拠: 上記の再現（修正前: 12 回中 6 回失敗）\n\n## 原因分類（判明後に記入）\n- 根本原因: Fastify は本文サイズ超過を検出すると、`connection: close` を付けて **本文を読まずに** 400 を返す。未読の本文がソケットの受信バッファに残ったまま接続を閉じると、OS が TCP の RST を送り、クライアントはまだ読んでいない応答を捨ててしまう。クライアントが書込み中のとき（本文が大きいほど）に起きやすく、タイミング依存で不安定になる。報告された「既知の制約」と同根。初版のテストは「応答を受け取れた場合だけ検査し、書込み中のエラーは無視する」緩い作りで、競合を隠していた。\n- 検出可能だった工程: implementation / test（サイズ超過の本文を実クライアントで繰り返し送る検査）。\n- 修正: エラーハンドラで、サイズ超過なら **残りの本文を上限付き（64 MiB・10 秒）で読み捨ててから** 400 を返し、`connection: close` を外す。宣言された Content-Length が上限を超える場合だけ、読み捨てずに即応答して接続を閉じる。クライアントの種類（fetch・Connection: close・chunked）に依存せず、応答が確実に届く。\n- 安定性の実証結果: （修正 PR で追記）\n- 原因分類: implementation\n- 修正 PR: #21\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T07:45:14Z",
+          "body": "## 修正と安定性の実証（PR #21）\n\n- 頻度: 修正前は main c3a6e84 で 6 回中 2 回、`node --test test/api/robustness.test.js` の 12 回では 6 回失敗。\n- 修正: 本文サイズ超過では残りの本文を上限付き（64 MiB・10 秒）で読み捨ててから 400 を返し、connection: close を外す（宣言された Content-Length が 64 MiB 超なら即応答して閉じる）。\n- 修正後の `npm run test -w backend`（99 件）の繰り返し結果。失敗はすべて 0。\n\n| 条件 | 回数 | 失敗 | 所要時間 |\n|---|---|---|---|\n| 並列負荷なし | 100 | 0 | 329 秒 |\n| 並列負荷あり（CPU 使い切りプロセス 15 本） | 100 | 0 | 283 秒 |\n| 高負荷（同 45 本） | 40 | 0 | 200 秒 |\n| --test-concurrency=1 / 2 / 4 / 15 | 各 25 | 0 | 162 / 85 / 57 / 52 秒 |\n\n- 回帰テスト: fetch・Connection: close・chunked の 3 種で 3 MiB を 20 回ずつ送る。修正を外すと 3 種とも毎回失敗する。\n- 他のテストに同種の競合は見つからなかった。"
+        },
+        {
+          "createdAt": "2026-10-11T09:06:56Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: backend/openapi.yaml#/components/responses/InvalidRequest」を追加（期待結果が openapi.yaml の InvalidRequest のため）。\n- 原因分類に「原因分類: implementation」を追加（根本原因が backend の本文サイズ超過の扱い。混入工程 implementation と一致）。\n- 原因分類に「修正 PR: #21」を追加（コメントの「修正と安定性の実証（PR #21）」。マージ commit は 6fb219a）。\n"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "title": "[defect] docker-compose.yml の COMMIT_SHA 上書きで、焼き込み済みイメージの health が commit=unknown になる",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/16",
+      "state": "OPEN",
+      "stateReason": "",
+      "labels": [
+        "defect"
+      ],
+      "createdAt": "2026-10-11T07:26:21Z",
+      "closedAt": null,
+      "body": "## 識別\n- 検出工程: monitoring（runbook 訓練 / rollback ドリル）\n- 混入工程: design\n- 重大度: minor\n- 機能: infra\n- 品質特性: reliability（運用性。デプロイマーカーが効かない）\n- 対象版: 552a854（main）\n- 上流文書: backend/openapi.yaml#/components/schemas/Health\n\n## 再現手順\n1. `COMMIT_SHA=$(git rev-parse HEAD) docker compose up -d --build --wait` で起動し、`curl -s localhost:8080/api/v1/health` を見る → `commit` は SHA になる（正常）。\n2. ビルド済みのイメージ（`ARG COMMIT_SHA` を焼き込んである）を、環境変数 `COMMIT_SHA` を指定せずに `docker compose up -d --no-build`（例: リリースイメージを上書きファイルで指定、または rollback）で起動する。\n3. `curl -s localhost:8080/api/v1/health` → `\"commit\":\"unknown\"`。\n\n## 期待結果\n- `backend/openapi.yaml#/components/schemas/Health`: `commit` は「ビルド時の commit SHA」。イメージに焼き込んだ SHA が出る。\n\n## 実際の結果\n- `docker-compose.yml` の backend が `environment: COMMIT_SHA: ${COMMIT_SHA:-unknown}` を持つため、実行時の環境変数がイメージの ENV（焼き込んだ SHA）を上書きし、シェルに `COMMIT_SHA` が無いと `unknown` になる。\n- 確認: `docker run --rm --entrypoint printenv <image> COMMIT_SHA` は焼き込んだ SHA、`docker compose config` は `COMMIT_SHA: unknown`。\n\n## 影響\n- リリース済みイメージを compose で起動する外形監視（`synthetic.yml`）・rollback で、health の commit が期待と合わず、デプロイマーカー（MON-002 の commit 一致）が成立しない。\n- 回避策: 起動時に `COMMIT_SHA=<リリースの commit>` を指定する（`synthetic.yml` と RB-002 の rollback 手順に反映済み）。\n- 恒久策の案: `docker-compose.yml` の backend の `environment.COMMIT_SHA` を削除する（`build.args` で焼き込むため不要）。または `${COMMIT_SHA:-}` を空にして backend 側で「空なら ENV の値」を使う。\n\n## 関連ケース / 証拠\n- ケース: TC-075（health の commit）、TC-076\n- 証拠: monitoring/drills/（rollback ドリルの記録 `rollback-drill-*.json` の初回実行で commit が unknown になり、期待 commit との不一致を監視が検知した）\n\n## 原因分類（判明後に記入）\n- 根本原因: compose の environment がイメージの ENV を上書きする設計\n- 検出可能だった工程: e2e（TC-076 の compose 起動の試験）に「ビルド済みイメージを COMMIT_SHA 未指定で起動した場合の commit」の観点が無い\n- 原因分類: design\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T09:06:57Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: backend/openapi.yaml#/components/schemas/Health」を追加（期待結果が Health スキーマの commit の定義のため）。\n- 原因分類に「原因分類: design」を追加（根本原因が「compose の environment がイメージの ENV を上書きする設計」のため。混入工程 design と一致）。\n- 「検出可能だった工程」の先頭に語彙（e2e）を追加（元の文は TC-076 に観点が無いことを指していたので、その層 e2e を明示。元の文は残した）。\n- 未解決のため「修正 PR」は足していない。\n"
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "title": "[flaky] TC-073 一覧・追加の p95 が共有ランナーで暫定しきい値を超えることがある",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/25",
+      "state": "OPEN",
+      "stateReason": "",
+      "labels": [
+        "flaky"
+      ],
+      "createdAt": "2026-10-11T08:30:02Z",
+      "closedAt": null,
+      "body": "## 識別\n\n- 検出工程: api（api 層の TC-073 が、同一コードの別 run で pass と fail を混在させた。PR #8 の CI run 38123866985）\n- 混入工程: test（絶対時間のしきい値を、負荷の変わる共有ランナーで判定するテストの設計）\n- 重大度: minor\n- 機能: api\n- 品質特性: performance\n- 対象版: main（TC-073 を含む backend/test/api/performance.test.js。PR #8 の CI で検出）\n- 上流文書: docs/data/cases.csv#TC-073\n\n## 再現手順\n\n1. CI（ubuntu-24.04 の共有ランナー）で `backend/test/api/performance.test.js` の `[TC-073]` を実行する。DS-006（1,000 件）を投入し、一覧 20 回・追加 10 回の応答時間の p95 を測る。\n2. ランナーの負荷によって、同じコードで pass と fail が混在する（PR #8 の CI run 38123866985 で失敗、同じ変更を含む他の run は成功）。\n\n## 期待結果\n\nTC-073 の暫定しきい値（一覧 p95 500ms・追加 p95 300ms）を、同じコードで安定して満たす（docs/data/cases.csv の TC-073）。\n\n## 実際の結果\n\n追加 p95 が 452.0ms で暫定しきい値 300ms を超えて失敗した（同一コードの他の run は成功）。\n\n## 影響\n\nmain / PR の CI（unit-api）が、アプリの不具合ではなく計測の揺れで赤になりうる。retry では隠さず、quality/flaky-ledger.yaml に期限付き（2026-11-10）で隔離している。アプリの利用者への影響は確認されていない。\n\n## 関連ケース / 証拠\n\n- ケース: TC-073\n- 証拠: PR #8 の CI run 38123866985（失敗: 追加 p95=452.0ms）、quality/flaky-ledger.yaml の TC-073 エントリ\n\n## 原因分類（判明後に記入）\n\n- 根本原因: 絶対時間のしきい値（追加 p95 300ms）を、負荷の変わる共有ランナー（ubuntu-24.04）で判定している。しきい値は docs/07-performance.md の SLO 確定前の暫定値（推定。原因の確定は恒久対応で確認する）。\n- 原因分類: test\n- 検出可能だった工程: test（しきい値を決めるときに、共有ランナーで測った分布を確認していれば検出できた）\n- 修正: 未修正。恒久対応の案は、しきい値を CI では緩める / 性能は perf 層（k6）で判定して api 層から外す / 相対比較にする。\n\n## 経緯（起票時の本文）\n\n同一コードで pass と fail が混在した（PR #8 の CI run 38123866985 で失敗、同じ変更を含む他の run は成功）。\n\n- テスト: `[TC-073]` 一覧 20 回・追加 10 回の p95（`backend/test/api/performance.test.js`、層 api）\n- 失敗: 追加 p95=452.0ms（暫定しきい値 300ms）\n- 原因（推定）: 絶対時間のしきい値を、負荷の変わる共有ランナー（ubuntu-24.04）で判定している。docs/07-performance.md の SLO 確定前の暫定値\n- 対応: retry で隠さない。`quality/flaky-ledger.yaml` に期限付き（2026-11-10）で記録した。恒久対応の案: しきい値を CI では緩める／性能は perf 層（k6）で判定して api 層からは外す／相対比較にする\n- owner: バックエンド担当\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T09:06:59Z",
+          "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- テンプレート（識別 / 再現手順 / 期待結果 / 実際の結果 / 影響 / 関連ケース・証拠 / 原因分類）の見出しに沿って全体を補筆した。起票時の本文は「経緯（起票時の本文）」としてそのまま残した。\n- 補筆の根拠: 起票時の本文（run 38123866985・追加 p95=452.0ms・暫定しきい値 300ms）、quality/flaky-ledger.yaml の TC-073 エントリ（rate 0.1・期限 2026-11-10）、backend/test/api/performance.test.js のしきい値（一覧 500ms・追加 300ms）。\n- 根本原因は起票時の「原因（推定）」を引き継ぎ、推定であることを明記した。未修正のため「修正 PR」は無い。\n"
+        }
+      ]
+    }
+  ],
+  "fix_prs": {
+    "7": {
+      "merge_commit": "bfebaee7af3bbd0c53ca58b7abff02eef9620f32",
+      "merged_at": "2026-10-11T06:43:32Z"
+    },
+    "9": {
+      "merge_commit": "72243c4b5b88e108da340b1d1e5e31c7e3355a6f",
+      "merged_at": "2026-10-11T06:58:22Z"
+    },
+    "12": {
+      "merge_commit": "c3a6e84436ed1dac72545847daf30f4f3f55f197",
+      "merged_at": "2026-10-11T07:08:08Z"
+    },
+    "21": {
+      "merge_commit": "6fb219a6ca83725733d1d82719f8b3393a607c9f",
+      "merged_at": "2026-10-11T07:46:01Z"
+    }
+  },
+  "releases": []
+}

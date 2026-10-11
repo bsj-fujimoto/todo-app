@@ -3,9 +3,15 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { classifyFailure, controlsEnabled, initialState, reduce } from "../../src/state.js";
 import { task } from "./dom.js";
+import { observeState } from "../../../backend/test-support/observe-frontend.js";
 
-const run = (state, ...actions) => actions.reduce(reduce, state);
-const ready = (...tasks) => run(initialState(), { type: "load-succeeded", tasks });
+// 前提の準備（ready）は観察しない。テストが検証する遷移の結果（run）だけを、実際に得た状態として残す。
+const run = (state, ...actions) => {
+  const result = actions.reduce(reduce, state);
+  observeState(result);
+  return result;
+};
+const ready = (...tasks) => [{ type: "load-succeeded", tasks }].reduce(reduce, initialState());
 const fail = (code, status = 500) => ({ ok: false, status, code });
 
 describe("state", () => {

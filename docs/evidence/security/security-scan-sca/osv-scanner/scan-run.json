@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "scan": "osv-scanner",
+  "check_kind": "sca",
+  "tool": {
+    "name": "osv-scanner",
+    "version": "2.6.0",
+    "image": "ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa"
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:02:51Z",
+  "finished_at": "2026-10-11T09:03:05.665Z",
+  "command": "docker run ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa scan source -L package-lock.json --format sarif|json",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0,
+    1
+  ],
+  "config_ref": null,
+  "rules_ref": null,
+  "exclusions": [],
+  "thresholds": "high 以上は triage.mjs で失敗",
+  "coverage": {
+    "languages": [],
+    "paths": [
+      "package-lock.json（直接・推移依存。OSV / deps.dev）"
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/osv-scanner",
+  "output_files": [
+    {
+      "path": "security-results/osv-scanner/osv-scanner.json",
+      "bytes": 124,
+      "sha256": "54345d5194d238b6017d0f3181f392109ce35023cc6b4bdfa8c134943dcb578e"
+    },
+    {
+      "path": "security-results/osv-scanner/osv-scanner.sarif",
+      "bytes": 1845,
+      "sha256": "74e4e377cc4d19684027d93f13a91dcb47d3eccf8ff5e529d636b517605dbe95"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": null
+}

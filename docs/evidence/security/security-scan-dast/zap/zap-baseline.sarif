@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "OWASP ZAP",
+          "semanticVersion": "2.17.0",
+          "informationUri": "https://www.zaproxy.org/",
+          "rules": [
+            {
+              "id": "10109",
+              "name": "Modern Web Application",
+              "shortDescription": {
+                "text": "Modern Web Application"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/10109/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe--1"
+                ],
+                "security-severity": "0"
+              }
+            },
+            {
+              "id": "10049-3",
+              "name": "Storable and Cacheable Content",
+              "shortDescription": {
+                "text": "Storable and Cacheable Content"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/10049/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe-524"
+                ],
+                "security-severity": "0"
+              }
+            },
+            {
+              "id": "10049-2",
+              "name": "Storable but Non-Cacheable Content",
+              "shortDescription": {
+                "text": "Storable but Non-Cacheable Content"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/10049/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe-524"
+                ],
+                "security-severity": "0"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "10109",
+          "level": "none",
+          "message": {
+            "text": "Modern Web Application（Informational (Medium)）。影響する URL 1 件: GET http://localhost:8080/?title=ZAP"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 1,
+            "cweid": "-1",
+            "confidence": "2"
+          }
+        },
+        {
+          "ruleId": "10049-3",
+          "level": "none",
+          "message": {
+            "text": "Storable and Cacheable Content（Informational (Medium)）。影響する URL 2 件: GET http://localhost:8080/robots.txt, GET http://localhost:8080/sitemap.xml"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 2,
+            "cweid": "524",
+            "confidence": "2"
+          }
+        },
+        {
+          "ruleId": "10049-2",
+          "level": "none",
+          "message": {
+            "text": "Storable but Non-Cacheable Content（Informational (Medium)）。影響する URL 5 件: GET http://localhost:8080, GET http://localhost:8080/?title=ZAP, GET http://localhost:8080/favicon.svg, GET http://localhost:8080/src/main.js, GET http://localhost:8080/styles.css"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 5,
+            "cweid": "524",
+            "confidence": "2"
+          }
+        }
+      ],
+      "properties": {
+        "source": "security-results/zap/zap-baseline.json",
+        "rules_ref": "security/zap-rules.tsv",
+        "scan": "zap",
+        "image_digest": null,
+        "config_ref": "security/zap-rules.tsv"
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
+          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+          "branch": "main"
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "startTimeUtc": "2026-10-11T09:02:48Z",
+          "endTimeUtc": "2026-10-11T09:04:19.394Z",
+          "commandLine": "docker run ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2 zap-baseline.py -t http://localhost:8080 -c zap-rules.tsv; zap-api-scan.py -t openapi.yaml -f openapi -O http://localhost:8080 -c zap-rules.tsv (exit 2 / 2)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-001",
+  "entries": [
+    {
+      "title": "[TC-001] 追加・完了切替・削除・再読込が一連で動き、結果が保持される",
+      "test_case_ids": [
+        "TC-001"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "webkit",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:31:08.811Z",
+      "finished_at": "2026-10-11T09:31:12.208Z",
+      "duration_ms": 2795,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "webkit",
+        "browser": "webkit 27.2",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 3,
+        "rows": [
+          {
+            "text": "資料を印刷する",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:31:11.555Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":true,\"createdAt\":\"2026-10-11T09:31:11.555Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":false}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:31:11.555Z\"}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:31:11.555Z\"},{\"id\":\"{uuid}\",\"tit…(290文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

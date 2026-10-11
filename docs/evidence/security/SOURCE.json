@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "security",
+  "captured_at": "2026-10-11T09:09:44.784Z",
+  "source_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "head_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+  "version": "pre-1.0.0",
+  "run_id": "38126925868",
+  "workflow": "Security",
+  "event": "push",
+  "artifacts": [
+    "security-findings",
+    "security-scan-container-iac",
+    "security-scan-dast",
+    "security-scan-governance",
+    "security-scan-license",
+    "security-scan-sast",
+    "security-scan-sca",
+    "security-scan-secrets"
+  ],
+  "skipped_large_files": [],
+  "collected_by": "scripts/evidence/fetch-run.mjs"
+}

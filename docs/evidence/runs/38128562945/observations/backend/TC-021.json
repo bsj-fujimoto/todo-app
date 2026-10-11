@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-021",
+  "entries": [
+    {
+      "title": "[TC-021] 0 文字・空白のみは TITLE_REQUIRED（保存用の title は返らない）",
+      "test_case_ids": [
+        "TC-021"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:14.114Z",
+      "finished_at": "2026-10-11T09:30:14.116Z",
+      "duration_ms": 2,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"\"",
+          "result": "不合格 TITLE_REQUIRED"
+        },
+        {
+          "input": "\"   \"",
+          "result": "不合格 TITLE_REQUIRED"
+        },
+        {
+          "input": "\"\\t\"",
+          "result": "不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

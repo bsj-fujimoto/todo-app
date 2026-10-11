@@ -16,7 +16,7 @@ async function measure(action, condition) {
 test(
   "[TC-074] 1,000 件でも表示は 2,000ms 以内、追加・完了・削除は 1,000ms 以内に反映される",
   { tag: ["@perf", "@pending"] },
-  async ({ app, stack, page }) => {
+  async ({ app, stack, page, observe }) => {
     await stack.seed(ds006());
     const timings = {};
 
@@ -51,7 +51,7 @@ test(
     );
 
     for (const [name, ms] of Object.entries(timings)) {
-      test.info().annotations.push({ type: "実測(ms)", description: `${name}: ${ms}` });
+      observe(`${name}(ms)`, ms);
     }
     for (const name of ["追加", "完了切替", "削除"])
       expect(timings[name]).toBeLessThanOrEqual(OPERATION_THRESHOLD_MS);

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-023",
+  "entries": [
+    {
+      "title": "[TC-023] \"aaaaaaaaaaaa…(99cp)\"",
+      "test_case_ids": [
+        "TC-023"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.257Z",
+      "finished_at": "2026-10-11T09:30:15.257Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(99コードポイント)",
+          "result": "合格 title=\"aaaaaaaaaaaa\"…(99コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-023] \"aaaaaaaaaaaa…(100cp)\"",
+      "test_case_ids": [
+        "TC-023"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.257Z",
+      "finished_at": "2026-10-11T09:30:15.257Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(100コードポイント)",
+          "result": "合格 title=\"aaaaaaaaaaaa\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -5,7 +5,13 @@ import { buildApp } from "../../src/app.js";
 import { createStore } from "../../src/store/sqlite-store.js";
 import { createSandbox } from "../../test-support/sandbox.js";
 import { fixedClock, sequentialIdGenerator, sequentialRequestIds } from "../../test-support/clock.js";
+import { observeEachTest } from "../../test-support/observe-node-test.js";
 import { assertContract } from "./contract.js";
+
+/** このテストファイルの全テストが観察した値（API 呼び出し・note）。終了時に test-results/observations/ へ書かれる。 */
+export const observations = observeEachTest({ layer: "api", component: "backend" });
+/** テストが「実際に見た値」を残す（例: observe("p95", "追加 120ms")）。アサーションの代わりにはしない。 */
+export const observe = (label, value) => observations.note(label, value);
 
 export const DEFAULT_NOW = "2026-10-05T10:00:00.000Z";
 export const INFO = Object.freeze({ version: "1.0.0-test", commit: "unknown" });
@@ -42,6 +48,14 @@ function parseBody(text, contentType) {
   return JSON.parse(text);
 }
 
+function parseBodyOrNothing(text) {
+  try {
+    return text === "" ? undefined : JSON.parse(text);
+  } catch {
+    return `(JSON でない本文 ${text.length} 文字)`;
+  }
+}
+
 function buildRequest(method, options) {
   const headers = { ...options.headers };
   let body;
@@ -60,6 +74,13 @@ export function createClient(baseUrl, { contract = true } = {}) {
   async function request(method, path, options = {}) {
     const response = await fetch(`${baseUrl}${path}`, buildRequest(method, options));
     const text = await response.text();
+    observations.call({
+      method,
+      path,
+      status: response.status,
+      request: options.json ?? (options.raw === undefined ? undefined : `(本文 ${options.raw.length} 文字)`),
+      response: parseBodyOrNothing(text),
+    });
     const result = {
       status: response.status,
       headers: response.headers,

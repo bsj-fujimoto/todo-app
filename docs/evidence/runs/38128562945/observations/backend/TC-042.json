@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-042",
+  "entries": [
+    {
+      "title": "[TC-042] 追加・完了切替の結果が再起動の前後で完全に一致し、起動は 10 秒以内でエラーログなし",
+      "test_case_ids": [
+        "TC-042"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:12.512Z",
+      "finished_at": "2026-10-11T09:30:13.168Z",
+      "duration_ms": 656,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:12.795Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:12.795Z\"},{\"id\":\"{uuid}\",\"tit…(378文字)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:12.795Z\"},{\"id\":\"{uuid}\",\"tit…(378文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "再起動",
+          "value": "SIGTERM の終了コード 0、再起動から GET 200 まで 247ms、再起動前後の一覧 4 件で一致"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

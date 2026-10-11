@@ -4,3 +4,17 @@ export { MALICIOUS_TITLES, SAME_TIME_TASKS, STANDARD_TASKS, bulkTasks } from "./
 export { corruptDbFile, insertInvalidRow, listTables, readRows, seedTasks, sha256File } from "./db.js";
 export { spawnBackend } from "./process.js";
 export { createSandbox } from "./sandbox.js";
+export {
+  LIMITS,
+  buildEntry,
+  clip,
+  createObservations,
+  describeText,
+  describeValidation,
+  observationsDir,
+  runInfo,
+  summarizeCall,
+  tcIdsOf,
+  wallClock,
+  writeEntry,
+} from "./observe.js";

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scan": "codeql",
+  "check_kind": "sast",
+  "tool": {
+    "name": "CodeQL",
+    "version": "2.27.2",
+    "image": null
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:02:49Z",
+  "finished_at": "2026-10-11T09:03:34.688Z",
+  "command": "github/codeql-action/init + analyze（languages=javascript-typescript, build-mode=none, queries=security-extended）",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0
+  ],
+  "config_ref": "security/codeql-config.yml",
+  "rules_ref": null,
+  "exclusions": [
+    "security/codeql-config.yml の paths-ignore（node_modules・dist・coverage・test-results・playwright-report・security-results）"
+  ],
+  "thresholds": "high 以上の未解決は triage.mjs で失敗（Code Scanning のアラートも同じ SARIF）",
+  "coverage": {
+    "languages": [
+      "javascript-typescript"
+    ],
+    "paths": [
+      "リポジトリ全体（security/codeql-config.yml の paths-ignore を除く）"
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/codeql",
+  "output_files": [
+    {
+      "path": "security-results/codeql/javascript.sarif",
+      "bytes": 927439,
+      "sha256": "342fed08eb63e1581b320f3a22f27c97cc7b4b531cf9babda5b1eb2c1db2adef"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": null
+}

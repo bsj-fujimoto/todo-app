@@ -1,0 +1,63 @@
+# 正本の所在地（生成物。手で編集しない。所在は scripts/evidence/lib/source-of-truth.mjs、artifact_id は artifacts.yaml から）。
+version: 1
+generated_by: scripts/evidence/build-artifacts.mjs
+source_of_truth:
+  requirements:
+    path: docs/data/requirements.csv
+    artifact_id: ART-13
+    authoritative: true
+    status: present
+    note: "要求（REQ）。行の正本は CSV。docs/02 の表は CSV から機械生成した写し"
+  ui:
+    path: spec/todo-phase1-spec.html
+    artifact_id: ART-37
+    authoritative: true
+    status: present
+    note: "画面仕様・入力規則・エラー文言・受け入れ条件（v1.1）"
+  api_spec:
+    path: backend/openapi.yaml
+    artifact_id: ART-01
+    authoritative: true
+    status: present
+    note: "API 契約（契約先行。実装との差分は CI の contract で検出）"
+  architecture:
+    path: docs/adr
+    artifact_ids:
+      - ART-04
+    authoritative: true
+    status: present
+    note: "アーキテクチャ判断（ADR）。ディレクトリ配下の全 ADR が対象"
+  security_requirements:
+    path: security/README.md
+    artifact_id: ART-25
+    authoritative: true
+    status: present
+    note: "セキュリティ検査の方針・重大度と SLA・トリアージの規則"
+  slo:
+    path: perf/slo.yaml
+    artifact_id: null
+    authoritative: true
+    status: missing
+    note: "SLO（性能・可用性の目標）（未作成。作成されるまで所在だけを記す）"
+  test_perspectives:
+    path: docs/data/perspectives.csv
+    artifact_id: ART-12
+    authoritative: true
+    status: present
+    note: "テスト観点（VIEW）。行の正本は CSV"
+  test_cases:
+    path: docs/data/cases.csv
+    artifact_id: ART-06
+    authoritative: true
+    status: present
+    note: "テストケース（TC）。行の正本は CSV"
+  defects:
+    path: docs/data/defects.csv
+    artifact_id: ART-08
+    authoritative: true
+    status: present
+    note: "不具合の正本は GitHub Issues（label: defect / flaky）。defects.csv は build-defects.mjs が Issue 本文から生成した写しで、直接編集しない"
+    authoritative_source: "GitHub Issues（label: defect / flaky）"
+    relation: "Issues が正本。defects.csv は Issue のスナップショット（docs/evidence/github/defect-issues.json）から再生成できる派生物"
+    snapshot: docs/evidence/github/defect-issues.json
+    generated_by: scripts/evidence/build-defects.mjs

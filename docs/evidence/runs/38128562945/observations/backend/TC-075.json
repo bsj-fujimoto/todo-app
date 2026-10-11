@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-075",
+  "entries": [
+    {
+      "title": "[TC-075] 200 で {status, version, commit, db} の 4 キーだけ。version は package.json、commit は 40 桁 16 進か unknown",
+      "test_case_ids": [
+        "TC-075"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.829Z",
+      "finished_at": "2026-10-11T09:30:11.279Z",
+      "duration_ms": 450,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 200,
+          "response": "{\"status\":\"ok\",\"version\":\"1.0.0\",\"commit\":\"unknown\",\"db\":\"ok\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 200,
+          "response": "{\"status\":\"ok\",\"version\":\"1.0.0\",\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"db\":\"ok\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}
