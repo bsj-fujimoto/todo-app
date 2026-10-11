@@ -227,18 +227,31 @@ describe("app", () => {
     });
 
     it("[TC-008] 完了切替は成功後に取り消し線（done）と状態を反映し、並びは変わらない", async () => {
-      ui.toggle(2, true);
-      assert.equal(ui.row(2).classList.contains("done"), false, "成功前は反映しない");
+      const pending = deferred();
+      const slow = setup(three, {
+        updateTask: async (id, completed) => (await pending.promise, ok({ ...task(1), completed })),
+      });
+      await slow.app.start();
+      slow.toggle(2, true);
+      const box = () => slow.row(2).querySelector(".task-check");
+      assert.equal(box().checked, false, "通信中も表示は元のまま");
+      assert.equal(slow.row(2).classList.contains("done"), false, "成功前は反映しない");
+      assert.equal(slow.row(2).getAttribute("aria-busy"), "true");
+      pending.resolve();
       await flush();
-      assert.equal(ui.row(2).classList.contains("done"), true);
-      assert.deepEqual(ui.titles(), ["タスク3", "タスク2", "タスク1"]);
-      assert.deepEqual(ui.calls.at(-1), ["update", task(1).id, true]);
+      assert.equal(box().checked, true);
+      assert.equal(slow.row(2).classList.contains("done"), true);
+      assert.deepEqual(slow.titles(), ["タスク3", "タスク2", "タスク1"]);
+      assert.deepEqual(slow.calls.at(-1), ["update", task(1).id, true]);
     });
 
-    it("[TC-046] 完了切替の失敗は上部に文言を出し、チェックを元に戻す", async () => {
-      const failing = setup(three, { updateTask: async () => ng("STORAGE_FAILURE") });
+    it("[TC-046] 完了切替の失敗は上部に文言を出し、チェックは通信中も失敗後も変化しない", async () => {
+      const pending = deferred();
+      const failing = setup(three, { updateTask: async () => pending.promise });
       await failing.app.start();
       failing.toggle(2, true);
+      assert.equal(failing.row(2).querySelector(".task-check").checked, false, "通信中も最初から変化しない");
+      pending.resolve(ng("STORAGE_FAILURE"));
       await flush();
       assert.equal(failing.saveError.textContent, "保存できませんでした。もう一度お試しください");
       assert.equal(failing.row(2).querySelector(".task-check").checked, false);
@@ -287,6 +300,25 @@ describe("app", () => {
       button.click();
       await flush();
       assert.equal(single.document.activeElement, single.message);
+    });
+
+    it("[TC-008] 通信中の行の連打は 1 回だけ送り、別の行の操作は妨げない", async () => {
+      const pending = deferred();
+      const slow = setup(three, {
+        updateTask: async (id, completed) =>
+          id === task(1).id ? pending.promise : ok({ ...task(3), completed }),
+      });
+      await slow.app.start();
+      slow.toggle(2, true);
+      slow.toggle(2, true);
+      slow.toggle(0, true); // 別の行
+      await flush();
+      assert.equal(slow.calls.filter((c) => c[0] === "update" && c[1] === task(1).id).length, 1);
+      assert.equal(slow.row(0).classList.contains("done"), true);
+      assert.equal(slow.row(2).classList.contains("done"), false);
+      pending.resolve(ok({ ...task(1), completed: true }));
+      await flush();
+      assert.equal(slow.row(2).classList.contains("done"), true);
     });
 
     it("[TC-063] 通信中の行への重複操作は無視する", async () => {

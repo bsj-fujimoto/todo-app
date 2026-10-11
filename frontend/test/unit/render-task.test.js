@@ -54,15 +54,17 @@ describe("renderTask", () => {
     assert.equal(row.querySelector("input").checked, true);
   });
 
-  it("通信中の行はチェック表示を上書きせず、完了後に状態へ揃える", () => {
+  it("[TC-008] 通信中の行も、チェック・取り消し線は状態のまま（aria-busy だけが付く）", () => {
     const row = renderTask(document, TASK);
     const checkbox = row.querySelector("input");
-    checkbox.checked = true; // 利用者が押した直後
+    checkbox.checked = true; // ブラウザが押した瞬間に反転した表示
     updateTask(row, TASK, true);
-    assert.equal(checkbox.checked, true);
-    assert.equal(row.getAttribute("aria-busy"), "true");
-    updateTask(row, TASK, false); // 失敗して未完了のまま
     assert.equal(checkbox.checked, false);
+    assert.equal(row.classList.contains("done"), false);
+    assert.equal(row.getAttribute("aria-busy"), "true");
+    updateTask(row, { ...TASK, completed: true }, false); // 成功
+    assert.equal(checkbox.checked, true);
+    assert.ok(row.classList.contains("done"));
     assert.equal(row.getAttribute("aria-busy"), "false");
   });
 });

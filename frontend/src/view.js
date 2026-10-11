@@ -28,10 +28,10 @@ export function renderTask(doc, task) {
   return li;
 }
 
-/** 既存の行を状態に合わせる。通信中の行は、利用者が押した直後のチェック表示を成否が分かるまで保つ。 */
+/** 既存の行を状態に合わせる。通信中（busy）でもチェック・取り消し線は状態のまま（成功後にだけ切り替わる）。 */
 export function updateTask(li, task, busy) {
   const checkbox = li.querySelector(".task-check");
-  if (!busy) checkbox.checked = task.completed;
+  checkbox.checked = task.completed;
   li.classList.toggle("done", task.completed);
   li.classList.toggle("busy", busy);
   li.setAttribute("aria-busy", String(busy));
@@ -117,8 +117,13 @@ function bindEvents(el, handlers) {
   el.input.addEventListener("input", () => handlers.onInput());
   el.retry.addEventListener("click", () => handlers.onRetry());
   el.list.addEventListener("change", (event) => {
-    const row = event.target.closest("li.task");
-    if (row && event.target.matches(".task-check")) handlers.onToggle(row.dataset.id, event.target.checked);
+    const box = event.target;
+    const row = box.closest("li.task");
+    if (!row || !box.matches(".task-check")) return;
+    // 押した瞬間にブラウザが反転した表示を戻す。チェックは API の成功後にだけ切り替える（楽観更新しない）
+    const requested = box.checked;
+    box.checked = !requested;
+    handlers.onToggle(row.dataset.id, requested);
   });
   el.list.addEventListener("click", (event) => {
     const row = event.target.closest("li.task");
