@@ -25,11 +25,21 @@ function hashFiles(paths) {
   return Object.fromEntries(paths.map((p) => [p, sha256(p)]));
 }
 
-function k6Files() {
-  return readdirSync("perf/k6", { recursive: true })
+// 再現に効くスクリプト（k6 のシナリオ、画面計測、実行手順、判定規則）の sha256 を記録する
+function scriptFiles() {
+  const k6 = readdirSync("perf/k6", { recursive: true })
     .filter((f) => f.endsWith(".js"))
     .sort()
     .map((f) => join("perf/k6", f));
+  const others = [
+    "perf/screen/measure.mjs",
+    "perf/screen/Dockerfile",
+    "perf/screen/package-lock.json",
+    "scripts/perf/run.sh",
+    "scripts/perf/lib/rules.mjs",
+    "scripts/perf/lib/rules-scenarios.mjs",
+  ];
+  return [...k6, ...others].filter((p) => existsSync(p));
 }
 
 function configFiles() {
@@ -127,7 +137,7 @@ async function collect(args) {
     docker: await dockerInfo(),
     k6: await k6Info(),
     containers: await imagesOf(project, ["backend", "frontend"]),
-    script_sha256: hashFiles(k6Files()),
+    script_sha256: hashFiles(scriptFiles()),
     config_sha256: hashFiles(configFiles()),
     runner: runnerInfo(),
   };

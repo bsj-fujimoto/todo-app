@@ -11,6 +11,7 @@ import {
   violationsOf,
 } from "./rules.mjs";
 import { round } from "./stats.mjs";
+import { timeToRecover } from "./timeline.mjs";
 
 const result = (scenario, reasons, warnings, extra) => ({
   scenario,
@@ -63,33 +64,71 @@ export function verdictStress(slo, iterations, stages, stageSec) {
   );
 }
 
-// ---- spike: 回復期の p95 とエラー率
+// ---- spike: 跳ね上がり後に、RECOVERY_BUDGET_SEC 秒以内に list p95 が SLO 内・エラー < 1% に戻り、末尾 30 秒でも保たれること
+export const RECOVERY_BUDGET_SEC = 30;
 const phaseOf = (it, name) => (it.segments.main.groups.phase || {})[name];
+const timelineOf = (it) => it.segments.main.phase_timeline || null;
+const tailOf = (it) => {
+  const t = timelineOf(it);
+  return t && t.tail ? t.tail : null;
+};
 
-export function verdictSpike(slo, iterations) {
-  const rec = iterations.map((it) => phaseOf(it, "recovery"));
-  const list = judgeMetric(slo.api_list_p95_ms, rec.map(listP95));
-  const err = judgeMetric(
-    slo.error_rate,
-    rec.map((p) => (p ? errorRateOf(p) : null)),
-  );
+function spikeReasons(ttr, list, err) {
   const reasons = [list, err]
     .filter((j) => j.pass !== true)
-    .map((j) => `回復期 ${j.metric}: 平均 ${j.mean} が目標 ${j.operator} ${j.target} を満たさない`);
+    .map(
+      (j) => `回復期の末尾 30 秒 ${j.metric}: 平均 ${j.mean} が目標 ${j.operator} ${j.target} を満たさない`,
+    );
+  if (ttr.some((v) => v === null))
+    reasons.push("跳ね上がりの後、回復期の終わりまでに SLO 内へ戻らなかった反復がある");
+  const mean = meanOf(ttr);
+  if (mean !== null && mean > RECOVERY_BUDGET_SEC) {
+    reasons.push(`回復に平均 ${round(mean, 1)} 秒（> ${RECOVERY_BUDGET_SEC} 秒）`);
+  }
+  return reasons;
+}
+
+function spikeSeries(iterations, ttr, tails) {
   const during = iterations.map((it) => phaseOf(it, "spike"));
-  const series = {
-    "recovery.list_p95_ms": rec.map(listP95),
+  return {
+    time_to_recover_sec: ttr,
+    "recovery_tail.list_p95_ms": tails.map((t) => (t ? t.list_p95 : null)),
+    "recovery_phase.list_p95_ms": iterations.map((it) => listP95(phaseOf(it, "recovery"))),
     "spike.list_p95_ms": during.map(listP95),
     "base.list_p95_ms": iterations.map((it) => listP95(phaseOf(it, "base"))),
     "spike.error_rate": during.map((p) => (p ? errorRateOf(p) : null)),
   };
-  return result("spike", reasons, [...list.warnings, ...err.warnings], {
-    recovery: { list_p95_ms: list, error_rate: err },
+}
+
+export function verdictSpike(slo, iterations) {
+  const target = slo.api_list_p95_ms.target;
+  const ttr = iterations.map((it) => {
+    const t = timelineOf(it);
+    return t ? timeToRecover(t.buckets, target, slo.error_rate.target) : null;
+  });
+  const tails = iterations.map(tailOf);
+  const list = judgeMetric(
+    slo.api_list_p95_ms,
+    tails.map((t) => (t ? t.list_p95 : null)),
+  );
+  const err = judgeMetric(
+    slo.error_rate,
+    tails.map((t) => (t ? t.error_rate : null)),
+  );
+  const series = spikeSeries(iterations, ttr, tails);
+  const stats = (it) => it.segments.main;
+  return result("spike", spikeReasons(ttr, list, err), [...list.warnings, ...err.warnings], {
+    recovery: {
+      list_p95_ms: list,
+      error_rate: err,
+      time_to_recover_sec: meanOf(ttr),
+      budget_sec: RECOVERY_BUDGET_SEC,
+    },
     during_spike: {
       list_p95_ms_mean: round(meanOf(series["spike.list_p95_ms"])),
       error_rate_mean: round(meanOf(series["spike.error_rate"]), 6),
-      achieved_rps_mean: round(meanOf(iterations.map((it) => it.segments.main.achieved_rps)), 2),
-      dropped_iterations_mean: meanOf(iterations.map((it) => it.segments.main.dropped_iterations)),
+      achieved_rps_mean: round(meanOf(iterations.map((it) => stats(it).achieved_rps)), 2),
+      dropped_iterations_mean: meanOf(iterations.map((it) => stats(it).dropped_iterations)),
     },
     before_spike_list_p95_ms_mean: round(meanOf(series["base.list_p95_ms"])),
     series,

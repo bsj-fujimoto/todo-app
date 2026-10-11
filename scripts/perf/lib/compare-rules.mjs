@@ -6,6 +6,7 @@ import { round } from "./stats.mjs";
 
 export function floorFor(key, floors) {
   if (/_ms($|_)/.test(key)) return floors.ms ?? 0;
+  if (/_sec($|_)/.test(key)) return floors.sec ?? 0;
   if (/(error_rate)/.test(key)) return floors.ratio ?? 0;
   return floors.other ?? 0;
 }
