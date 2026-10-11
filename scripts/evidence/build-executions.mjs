@@ -20,6 +20,7 @@ import {
   openDefectsByCase,
   saveEvidenceRows,
   saveExecutions,
+  verifiedDefectsByCase,
 } from "./lib/data-io.mjs";
 import { createRegistry } from "./lib/evidence-registry.mjs";
 import { buildRunRows } from "./lib/execution-rows.mjs";
@@ -72,6 +73,10 @@ function runContext(run, runDir) {
   };
 }
 
+// 修正 commit が対象版に含まれるか（git の祖先か）。確かめられないとき（履歴が無い環境）は含まれないものとして、修正確認の接続をしない
+const includedIn = (sha) => (fix) =>
+  spawnSync("git", ["merge-base", "--is-ancestor", fix, sha], { cwd: root }).status === 0;
+
 const registry = createRegistry(loadEvidenceRows(root));
 const runDir = ensureRunDir();
 const run = readRun(runDir);
@@ -86,6 +91,7 @@ const ctx = {
   manual: loadManualPlan(root),
   gaps: loadKnownGaps(root, nowIso.slice(0, 10)).gaps,
   defectsByTc: openDefectsByCase(root),
+  verifiedByTc: verifiedDefectsByCase(root, includedIn(base.sha)),
   report,
 };
 

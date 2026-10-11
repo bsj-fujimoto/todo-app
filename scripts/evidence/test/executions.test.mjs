@@ -112,6 +112,7 @@ function context(over = {}) {
       ]),
       gaps: new Map(),
       defectsByTc: new Map([["TC-002", ["DEF-002"]]]),
+      verifiedByTc: new Map([["TC-003", ["DEF-003"]]]),
       retestDue: "2026-10-20",
       report,
       ...over,
@@ -144,6 +145,9 @@ describe("実施行の組み立て", () => {
     assert.equal(failed.status, "fail");
     assert.equal(failed.defect_ids, "DEF-002");
     assert.match(failed.actual_result, /観察値なし.*失敗の内容: boom/);
+    // pass の行は、この版に修正が入った不具合の修正確認として接続する（関連ケースを修正版で再実施して pass）
+    assert.equal(rows.find((r) => r.test_case_id === "TC-003").defect_ids, "DEF-003");
+    assert.equal(e2e.defect_ids, "");
   });
 
   it("全ケースが少なくとも 1 行: 手動は not_run（理由・owner・予定日つき）、結果の無い自動化ケースも not_run", () => {
@@ -316,7 +320,7 @@ describe("実施表の検査", () => {
     const ctx = {
       caseIds: new Set(testCases.map((c) => c.test_case_id)),
       evidenceIds: new Set(rows.flatMap((r) => r.evidence_ids.split(";")).filter(Boolean)),
-      defectIds: new Set(["DEF-002"]),
+      defectIds: new Set(["DEF-002", "DEF-003"]),
     };
     const ok = createReport();
     checkRows(rows, ctx, ok);

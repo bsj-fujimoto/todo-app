@@ -40,6 +40,12 @@ function evidenceEntries(group, entries, ctx) {
   return list;
 }
 
+/** fail は未解決の不具合に、pass は「この版に修正が入った不具合の修正確認」として接続する。 */
+function defectLinks(status, tc, ctx) {
+  const map = status === "fail" ? ctx.defectsByTc : status === "pass" ? ctx.verifiedByTc : null;
+  return (map?.get(tc) ?? []).join(";");
+}
+
 function resultRow(group, ctx) {
   const entries = matchEntries(group, ctx.observations);
   const status = combineStatus(group.cases);
@@ -53,7 +59,7 @@ function resultRow(group, ctx) {
     actual_result: actualResultFor(group, entries, status),
     evidence_ids: "",
     _evidence: evidenceEntries(group, entries, ctx),
-    defect_ids: status === "fail" ? (ctx.defectsByTc.get(group.tc) ?? []).join(";") : "",
+    defect_ids: defectLinks(status, group.tc, ctx),
     executed_at: executedAtOf(group, entries, ctx.startedAt),
     executor: ctx.executor,
     reason: "",
