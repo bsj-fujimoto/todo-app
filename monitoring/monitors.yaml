@@ -333,8 +333,23 @@ monitors:
         }
       - {
           kind: latency,
-          value: "画面表示完了 2,000ms 以内（perf/slo.yaml screen_ready_ms の運用側の確認）",
-          check: { playwright: "e2e/synthetic/journey.spec.js [MON-007]" },
+          value: "画面表示完了 2,000ms 以内（開く → 入力欄が使える＝一覧の取得完了まで。perf/slo.yaml screen_ready_ms の運用側の確認。journey.spec.js が performance.now() で測る）",
+          check:
+            {
+              playwright: "e2e/synthetic/journey.spec.js [MON-007]",
+              limit_key: screen_ready_ms,
+              latency_ms_max: 2000,
+            },
+        }
+      - {
+          kind: latency,
+          value: "追加・再読込を含むジャーニー全体 10,000ms 以内",
+          check:
+            {
+              playwright: "e2e/synthetic/journey.spec.js [MON-007]",
+              limit_key: journey_ms,
+              latency_ms_max: 10000,
+            },
         }
     data_cleanup: "ジャーニーが作ったタスクは UI の削除ボタンで消し、afterEach で API からも DELETE（失敗時の取りこぼし防止）"
 
@@ -410,12 +425,15 @@ monitors:
     journey_id: null
     sli: "証明書の残り有効日数"
     slo_ref: availability_synthetic_ratio
-    user_impact: 証明書が失効するとブラウザが警告を出し、利用者は画面に到達できない（sev1 相当）。
+    user_impact: 証明書が失効するとブラウザが警告を出し、利用者は画面に到達できない。この監視は予兆の警告で、残り 14 日未満は sev3、7 日未満は sev2（alert-routes.yaml の threshold_escalation）。失効後は MON-001 が sev1 で検知する。
     timeout_sec: 10
     retries: 2
     interval_sec: 86400
     assertions:
-      - { kind: tls_expiry, value: "残り 14 日以上" }
+      - {
+          kind: tls_expiry,
+          value: "残り 14 日以上（14 日未満で sev3、7 日未満で sev2。alert-routes.yaml の threshold_escalation）",
+        }
     data_cleanup: "作成するデータなし"
 
   - monitor_id: MON-012
@@ -429,7 +447,7 @@ monitors:
     journey_id: null
     sli: "名前解決の成功と解決先の一致"
     slo_ref: availability_synthetic_ratio
-    user_impact: 名前が引けないと、アプリが動いていても利用者は到達できない（sev1 相当）。
+    user_impact: 名前が引けないと、アプリが動いていても利用者は到達できない（sev1。alert-routes.yaml の RT-SEV1）。
     timeout_sec: 10
     retries: 2
     interval_sec: 3600

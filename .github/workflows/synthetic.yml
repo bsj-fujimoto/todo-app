@@ -21,6 +21,10 @@ on:
         description: "リリースイメージを使わず main の HEAD をビルドして監視する"
         type: boolean
         default: false
+      meta_drill:
+        description: "実行基盤の失敗の通知試験: synthetic ジョブを監視の結果が出る前に意図的に失敗させ、meta-alert（[sev3][MON-META]、drill ラベル）が起票・close することを確かめる"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ concurrency:
 env:
   OUT: monitoring/out
   DRILL: ${{ inputs.drill && 'true' || 'false' }}
+  META_DRILL: ${{ inputs.meta_drill && 'true' || 'false' }}
 
 jobs:
   synthetic:
@@ -40,10 +45,18 @@ jobs:
     permissions:
       contents: read
       packages: read # GHCR のリリースイメージを pull する
+    outputs:
+      # 監視の結果（results.json）が出たか。出ていれば「監視の失敗」（alert ジョブ）、出ていなければ「監視の実行基盤の失敗」（meta-alert ジョブ）
+      results_present: ${{ steps.present.outputs.value }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: "（通知試験）実行基盤の失敗を注入する"
+        if: env.META_DRILL == 'true'
+        run: |
+          echo "::error::meta_drill: 監視の結果が出る前に意図的に失敗させる（meta-alert の通知試験）"
+          exit 1
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           install_args: node
@@ -103,6 +116,15 @@ jobs:
       - name: "通知試験（3/3）復旧を監視で確認する"
         if: env.DRILL == 'true'
         run: mise x -- node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out "$OUT/drill-recover" --phase drill-recover --only MON-002,MON-003 --target "$OUT/target.json"
+      - name: "監視の結果が出たかを記録する（監視の失敗と、実行基盤の失敗を区別する）"
+        id: present
+        if: always()
+        run: |
+          if [ -f "$OUT/results.json" ] || [ -f "$OUT/drill-fail/results.json" ]; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: "失敗時に compose のログを残す"
         if: failure()
         run: |
@@ -120,7 +142,8 @@ jobs:
 
   alert:
     needs: synthetic
-    if: always() && needs.synthetic.result != 'skipped'
+    # 監視の結果が出たときだけ（監視の失敗は Issue に、成功は回復として close）。実行基盤が失敗して結果が無いときは meta-alert
+    if: always() && needs.synthetic.outputs.results_present == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -143,11 +166,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ ! -f "$OUT/results.json" ]; then
-            echo "::warning::results.json が無い（監視の実行自体が失敗した。RB-005 を参照）"
-            exit 0
-          fi
-          mise x -- node scripts/monitoring/alert.mjs --results "$OUT/results.json" --out "$OUT" --escalate --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          mise x -- node scripts/monitoring/alert.mjs --results "$OUT/results.json" --out "$OUT" --escalate --run-url "$url"
+          # 監視が最後まで動いた（結果が出た）ので、実行基盤の失敗・停止の incident（MON-META）が open なら回復として close する
+          mise x -- node scripts/monitoring/alert.mjs --meta ok --out "$OUT" --run-url "$url"
       - name: "通知試験のアラート（失敗フェーズ → 回復フェーズ。Issue は drill ラベル付き）"
         if: env.DRILL == 'true'
         env:
@@ -170,3 +192,36 @@ jobs:
             monitoring/out/drill-state.json
           retention-days: 90
           if-no-files-found: warn
+
+  # 監視の実行基盤そのものが失敗した（compose の起動・依存の導入・Playwright の導入などで結果が出なかった）ときの incident。
+  # 監視の失敗（アプリの障害）とは区別し、sev3 の MON-META として起票する（RB-005）。結果が出ない = 見逃しの恐れ。
+  meta-alert:
+    needs: synthetic
+    if: always() && needs.synthetic.result == 'failure' && needs.synthetic.outputs.results_present != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write # MON-META の incident Issue の作成・コメント。このジョブだけ
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: node
+      - run: mise x -- npm ci
+      - name: "実行基盤の失敗を incident にする（[sev3][MON-META]）。meta_drill のときは drill ラベルで起票し、すぐ close する"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          drill=""
+          if [ "$META_DRILL" = "true" ]; then drill="--drill"; fi
+          mise x -- node scripts/monitoring/alert.mjs --meta fail $drill --out monitoring/out \
+            --detail "synthetic ジョブが監視の結果を出す前に失敗した（実行基盤の失敗。失敗したステップは run を参照: $url）" \
+            --run-url "$url"
+          if [ "$META_DRILL" = "true" ]; then
+            sleep 20 # 作成直後の Issue が一覧に載るのを待つ
+            mise x -- node scripts/monitoring/alert.mjs --meta ok --drill --out monitoring/out --run-url "$url"
+          fi

@@ -18,13 +18,13 @@ severities:
     ack_target_hours: 24
     reminder_after_hours: 24
   sev3:
-    meaning: 性能劣化（応答時間のしきい値超過のみ）、証明書・DNS の期限警告（将来、本番を持つとき）。機能は動く。
+    meaning: 性能劣化（応答時間のしきい値超過のみ）、証明書の期限の予兆の警告（将来、本番を持つとき。14 日未満）、監視の実行基盤の失敗・停止（MON-META）。機能は動く。
     ack_target_hours: 72
     reminder_after_hours: 72
 routes:
   - route_id: RT-SEV1
     severity: sev1
-    monitor_ids: [MON-001, MON-002, MON-013]
+    monitor_ids: [MON-001, MON-002, MON-013, MON-012] # MON-012（DNS）は無効。名前が引けない = 利用者が到達できない（sev1）
     channel: "github-issue:incident"
     oncall_ref: "role:maintainer"
     ack_policy: >-
@@ -44,13 +44,25 @@ routes:
     escalation: *escalation
   - route_id: RT-SEV3
     severity: sev3
-    monitor_ids: [MON-011, MON-012] # 無効（enabled: false）。本番を持ったときに使う経路
+    # MON-011（TLS 証明書の期限。無効: enabled: false。本番を持ったときに使う）は予兆の警告なので sev3 から始め、残りが減ると下の
+    # threshold_escalation で sev2 に上げる。MON-META は監視の実行基盤の失敗・停止（RB-005）。
     channel: "github-issue:incident"
     oncall_ref: "role:maintainer"
+    monitor_ids: [MON-011, MON-META]
     ack_policy: 同上。目標は検知から 72 時間以内。
     escalation:
       - after_hours: 72
         action: "Issue にリマインドのコメントを追記し、ラベル escalated を付ける"
+# しきい値で重大度が変わる監視（有効化前の基準。MON-011 は無効）。monitors.yaml・README の記述と一致させる。
+threshold_escalation:
+  MON-011: # TLS 証明書の残り日数
+    - { remaining_days_lt: 14, severity: sev3, note: 予兆の警告 }
+    - { remaining_days_lt: 7, severity: sev2, note: 更新が遅れている。期限切れまでに対応する }
+    - {
+        expired_or_unreachable: true,
+        severity: sev1,
+        note: 失効するとブラウザが警告し利用者は到達できない。MON-001（http）が sev1 で検知する,
+      }
 notification:
   type: github-issue
   repository: bsj-fujimoto/todo-app

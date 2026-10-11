@@ -1,0 +1,45 @@
+{
+  "test_id": "drill-38154528493",
+  "detected_at": "2026-10-11T16:14:10.170Z",
+  "issues": [
+    {
+      "monitor_id": "MON-002",
+      "issue": {
+        "number": 44,
+        "url": "https://github.com/bsj-fujimoto/todo-app/issues/44"
+      },
+      "notified_at": "2026-10-11T16:14:41Z",
+      "assignee_expected": "bsj-fujimoto",
+      "assignee_verified": true,
+      "labels_ok": true,
+      "ack_method": "assignee-verified（assignee 設定の確認。人が通知を受け取ったかは観測できない）",
+      "ack_at": "2026-10-11T16:14:45.386Z",
+      "ack_seconds": 4
+    },
+    {
+      "monitor_id": "MON-003",
+      "issue": {
+        "number": 45,
+        "url": "https://github.com/bsj-fujimoto/todo-app/issues/45"
+      },
+      "notified_at": "2026-10-11T16:14:43Z",
+      "assignee_expected": "bsj-fujimoto",
+      "assignee_verified": true,
+      "labels_ok": true,
+      "ack_method": "assignee-verified（assignee 設定の確認。人が通知を受け取ったかは観測できない）",
+      "ack_at": "2026-10-11T16:14:45.664Z",
+      "ack_seconds": 3
+    }
+  ],
+  "run": {
+    "run_id": "38154528493",
+    "phase": "drill-fail",
+    "started_at": "2026-10-11T16:14:10.087Z",
+    "region": "github-hosted-runner",
+    "retry_delay_sec": 2,
+    "version": null,
+    "mode": "release",
+    "expected_version": "1.0.0",
+    "expected_commit": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+  }
+}

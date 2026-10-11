@@ -21,12 +21,14 @@ export function routeFor(routes, monitorId) {
 
 export function issueTitle(result, drill) {
   const prefix = drill ? "[drill]" : "";
+  // 監視の実行基盤そのものの失敗（MON-META）は、タイトルを指定できる（「外形監視の実行に失敗」）
+  if (result.title) return `${prefix}[${result.severity}][${result.monitor_id}] ${result.title}`;
   return `${prefix}[${result.severity}][${result.monitor_id}] ${result.name} が失敗`;
 }
 
 // タイトルから監視 ID と drill かどうかを読む
 export function parseTitle(title) {
-  const m = /\[(MON-\d+)\]/.exec(title);
+  const m = /\[(MON-(?:\d+|META))\]/.exec(title);
   return { monitorId: m ? m[1] : null, drill: title.startsWith("[drill]") };
 }
 
@@ -144,4 +146,27 @@ export function dueEscalations(route, issue, nowMs, botLogins) {
       hours >= e.after_hours &&
       !labels.includes(e.after_hours >= route.ack_target_hours ? "ack-overdue" : "escalated"),
   );
+}
+
+// 監視の実行基盤の失敗・停止（MON-META）を、監視の結果と同じ形（processResults が扱える形）にする。
+// monitor は無く、監視そのものが見えていない状態を表す。重大度は sev3（実行基盤の失敗は直ちに利用者影響ではないが、見逃しの恐れ）。
+export const META_ID = "MON-META";
+
+export function metaResult({ ok, detail, title, atIso }) {
+  return {
+    monitor_id: META_ID,
+    name: "外形監視の実行",
+    title,
+    type: "infra",
+    severity: "sev3",
+    journey_id: null,
+    user_impact:
+      "監視が動いていない間は、障害を検知できない（見逃しの恐れ）。アプリの障害ではなく、監視の実行基盤の失敗・停止。",
+    result: ok ? "ok" : "fail",
+    failure_detail: ok ? null : detail,
+    at: atIso,
+    attempts: 1,
+    version: null,
+    alert_suppressed: false,
+  };
 }

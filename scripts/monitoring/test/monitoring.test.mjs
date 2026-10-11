@@ -4,13 +4,18 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { parse } from "yaml";
 import {
+  META_ID,
   decideActions,
   defaultOwner,
   indexOpenIssues,
   isAcked,
   issueTitle,
+  metaResult,
   parseTitle,
 } from "../lib/alert-core.mjs";
+import { processResults } from "../lib/alert-run.mjs";
+import { limitsOf } from "../lib/exec-browser.mjs";
+import { staleness } from "../lib/watchdog.mjs";
 import { evaluateAll } from "../lib/checks.mjs";
 import { checkConfig } from "../lib/config-check.mjs";
 import { runApiAttempt, runHttpAttempt } from "../lib/exec-http.mjs";
@@ -392,5 +397,143 @@ describe("通知試験の記録", () => {
     });
     assert.equal(r.result, "fail");
     assert.equal(r.checks.issue_closed, false);
+  });
+});
+
+describe("MON-007 の応答時間（定義どおり測れる）", () => {
+  it("assertions の limit_key / latency_ms_max が journey.spec.js へ渡す上限になる", () => {
+    assert.deepEqual(limitsOf(find("MON-007")), { screen_ready_ms: 2000, journey_ms: 10000 });
+  });
+
+  it("check-config: 定義の limit_key が実装に無い・既定値が違うと検出する", () => {
+    const base = () => ({
+      monitorsDoc: parse(readFileSync("monitoring/monitors.yaml", "utf8")),
+      routes: parse(readFileSync("monitoring/alert-routes.yaml", "utf8")),
+      runbooksDoc: parse(readFileSync("monitoring/runbooks/index.yaml", "utf8")),
+      slo: parse(readFileSync("perf/slo.yaml", "utf8")),
+      journeys: ["J-01", "J-02", "J-03", "J-04", "J-05"],
+    });
+    const real = readFileSync("e2e/synthetic/journey.spec.js", "utf8");
+    const read = (p) => (p === "e2e/synthetic/journey.spec.js" ? real : readFileSync(p, "utf8"));
+    assert.deepEqual(checkConfig({ ...base(), read }), []);
+    const noKey = (p) =>
+      p === "e2e/synthetic/journey.spec.js"
+        ? real.replaceAll("LIMITS.screen_ready_ms", "X")
+        : readFileSync(p, "utf8");
+    assert.match(
+      checkConfig({ ...base(), read: noKey }).join("\n"),
+      /screen_ready_ms が journey.spec.js で検査されていない/,
+    );
+    const wrongDefault = (p) =>
+      p === "e2e/synthetic/journey.spec.js"
+        ? real.replace("screen_ready_ms: 2000", "screen_ready_ms: 5000")
+        : readFileSync(p, "utf8");
+    assert.match(checkConfig({ ...base(), read: wrongDefault }).join("\n"), /既定値が定義の 2000 と違う/);
+  });
+});
+
+describe("監視基盤自身の沈黙（MON-META と死活監視）", () => {
+  it("MON-META の失敗は sev3 で、タイトルを指定でき、監視 ID として読める", () => {
+    const r = metaResult({
+      ok: false,
+      detail: "d",
+      title: "外形監視の実行に失敗",
+      atIso: "2026-10-12T00:00:00Z",
+    });
+    assert.equal(r.monitor_id, META_ID);
+    assert.equal(r.severity, "sev3");
+    assert.equal(issueTitle(r, false), "[sev3][MON-META] 外形監視の実行に失敗");
+    assert.equal(parseTitle(issueTitle(r, false)).monitorId, "MON-META");
+  });
+
+  it("失敗は作成（open があれば追記）、回復（ok）は open な Issue を close する", () => {
+    const open = indexOpenIssues(
+      [
+        {
+          number: 9,
+          title: "[sev3][MON-META] 外形監視の実行に失敗",
+          labels: [],
+          comments: [],
+          createdAt: "2026-10-12T00:00:00Z",
+        },
+      ],
+      false,
+    );
+    const fail = metaResult({ ok: false, detail: "d", title: "t", atIso: "x" });
+    const ok = metaResult({ ok: true, atIso: "x" });
+    assert.deepEqual(
+      decideActions([fail], new Map()).map((a) => a.kind),
+      ["create"],
+    );
+    assert.deepEqual(
+      decideActions([fail], open).map((a) => a.kind),
+      ["comment"],
+    );
+    assert.deepEqual(
+      decideActions([ok], open).map((a) => a.kind),
+      ["recover"],
+    );
+    assert.deepEqual(decideActions([ok], new Map()), []);
+  });
+
+  it("alert-routes: MON-META と MON-012 に経路があり、重大度は sev3 / sev1", () => {
+    const routes = parse(readFileSync("monitoring/alert-routes.yaml", "utf8"));
+    const sev = (id) => routes.routes.find((r) => r.monitor_ids.includes(id)).severity;
+    assert.equal(sev("MON-META"), "sev3");
+    assert.equal(sev("MON-012"), "sev1");
+    assert.equal(sev("MON-011"), "sev3");
+  });
+
+  it("staleness: 最終実行がしきい値より古ければ stale", () => {
+    const now = Date.parse("2026-10-12T12:00:00Z");
+    assert.equal(
+      staleness({ lastCreatedAt: "2026-10-12T11:30:00Z", nowMs: now, thresholdHours: 3 }).stale,
+      false,
+    );
+    assert.equal(
+      staleness({ lastCreatedAt: "2026-10-12T08:00:00Z", nowMs: now, thresholdHours: 3 }).stale,
+      true,
+    );
+    assert.equal(staleness({ lastCreatedAt: null, nowMs: now, thresholdHours: 3 }).stale, true);
+  });
+});
+
+describe("通知試験の回復（一覧の索引が遅れても回復できる）", () => {
+  it("作った直後の Issue が一覧に載らなくても、既知の Issue（drill-state）を close する", async () => {
+    const calls = [];
+    const gh = {
+      listOpenIncidents: async () => [], // 検索の索引の遅れ: まだ載らない
+      comment: async (n) => calls.push(["comment", n]),
+      close: async (n) => calls.push(["close", n]),
+    };
+    const knownOpen = [
+      {
+        number: 45,
+        title: "[drill][sev?][MON-003] (drill-state.json)",
+        createdAt: "2026-10-12T00:00:00Z",
+        labels: [],
+        comments: [],
+      },
+    ];
+    const ctx = {
+      gh,
+      drill: true,
+      knownOpen,
+      run: { run_id: "r" },
+      nowMs: () => 0,
+      routes: {},
+      runbooks: { runbooks: [] },
+    };
+    const events = await processResults(ctx, [
+      { monitor_id: "MON-003", result: "ok", at: "2026-10-12T00:00:05Z", version: "v" },
+    ]);
+    assert.deepEqual(
+      events.map((e) => e.kind),
+      ["recovered"],
+    );
+    assert.deepEqual(calls, [
+      ["comment", 45],
+      ["close", 45],
+    ]);
   });
 });

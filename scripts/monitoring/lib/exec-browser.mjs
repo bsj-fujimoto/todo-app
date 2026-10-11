@@ -41,12 +41,23 @@ export function playwrightArgs(monitor) {
   ];
 }
 
+// 応答時間の上限（assertions の check.limit_key / latency_ms_max）を journey.spec.js に渡す（定義が正本）
+export function limitsOf(monitor) {
+  const limits = {};
+  for (const a of monitor.assertions || []) {
+    const c = a.check;
+    if (c && c.limit_key && c.latency_ms_max !== undefined) limits[c.limit_key] = c.latency_ms_max;
+  }
+  return limits;
+}
+
 export async function runBrowserAttempt(monitor, deps, ctx) {
   const t0 = deps.now();
   const env = {
     BASE_URL: ctx.baseUrl,
     SYNTHETIC_RUN_ID: ctx.vars.run_id,
     SYNTHETIC_OUT: ctx.playwrightOut,
+    SYNTHETIC_LIMITS: JSON.stringify(limitsOf(monitor)),
     SYNTHETIC_MONITOR_ID: monitor.monitor_id,
   };
   const out = await deps.spawnFn("npx", playwrightArgs(monitor), {

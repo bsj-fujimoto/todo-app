@@ -6,11 +6,11 @@
 // 使い方: node scripts/monitoring/alert.mjs --results monitoring/out/results.json --out monitoring/out [--repo owner/name] [--run-url URL]
 //         [--drill --drill-phase fail|recover] [--escalate] [--dry-run]
 // 権限: issues: write が必要（ワークフローではこのジョブだけに付ける）。他のジョブは contents: read。
-import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { parseArgs, requireArg } from "../lib/cli.mjs";
-import { defaultOwner } from "./lib/alert-core.mjs";
+import { defaultOwner, metaResult } from "./lib/alert-core.mjs";
 import { escalate, processResults, verifyDrillIssue } from "./lib/alert-run.mjs";
 import { buildDrillRecord, renderDrillMarkdown } from "./lib/drill-record.mjs";
 import { makeGh } from "./gh-client.mjs";
@@ -59,6 +59,20 @@ function recordEvents(out, events, drill) {
   }
 }
 
+// 失敗フェーズで作った drill の Issue（drill-state.json）。回復フェーズで一覧の索引の遅れに左右されないように使う
+function knownDrillIssues(out) {
+  const path = join(out, "drill-state.json");
+  if (!existsSync(path)) return [];
+  const state = JSON.parse(readFileSync(path, "utf8"));
+  return state.issues.map((i) => ({
+    number: i.issue.number,
+    title: `[drill][sev?][${i.monitor_id}] (drill-state.json)`,
+    createdAt: i.notified_at,
+    labels: [{ name: "incident" }, { name: "drill" }],
+    comments: [],
+  }));
+}
+
 async function drillFail(ctx, events, results, out) {
   const created = events.filter((e) => e.kind === "created");
   const checks = [];
@@ -97,13 +111,36 @@ async function drillRecover(ctx, events, results, out) {
   if (record.result !== "pass") process.exitCode = 1;
 }
 
+// 監視の実行基盤の失敗・停止（MON-META）。--meta fail（Issue を作る / 追記）・--meta ok（open な Issue に回復を書いて close）
+async function metaMain(args, ctx, out) {
+  const ok = args.meta === "ok";
+  mkdirSync(out, { recursive: true });
+  const result = metaResult({
+    ok,
+    detail: args.detail || "synthetic.yml の実行基盤が失敗した（監視の結果が出ていない）",
+    title: args.title || "外形監視の実行に失敗",
+    atIso: new Date().toISOString(),
+  });
+  ctx.run = {
+    run_id: process.env.GITHUB_RUN_ID || "local",
+    mode: "n/a",
+    region: process.env.GITHUB_ACTIONS ? "github-hosted-runner" : "local-docker",
+    run_url: args["run-url"] || null,
+    version: null,
+  };
+  await ctx.gh.ensureLabels();
+  recordEvents(out, await processResults(ctx, [result]), ctx.drill);
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const out = args.out || "monitoring/out";
   const ctx = buildCtx(args, out);
+  if (args.meta) return metaMain(args, ctx, out);
   const results = JSON.parse(readFileSync(requireArg(args, "results"), "utf8"));
   ctx.run = { ...results.run, run_url: args["run-url"] || null };
   await ctx.gh.ensureLabels();
+  if (args["drill-phase"] === "recover") ctx.knownOpen = knownDrillIssues(out);
   const events = await processResults(ctx, results.results);
   if (args.escalate) events.push(...(await escalate(ctx)));
   recordEvents(out, events, ctx.drill);
