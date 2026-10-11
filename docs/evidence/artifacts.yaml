@@ -509,14 +509,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:a99369d"
+    version: "git:5d62c4b"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:20:13+09:00"
+    updated_at: "2026-10-12T01:20:47+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T01:20:47+09:00"
+        by: maintainer
+        change: "docs: README の記述がメンションの検査に当たらないよう言い換える"
+        commit: "5d62c4b"
       - at: "2026-10-12T01:20:13+09:00"
         by: maintainer
         change: "feat(evidence): 取り込み時に人の氏名・メール・アカウント名・秘密情報らしい値を墨消しし、検査の許可リストの例外を無くす"
@@ -529,7 +533,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "69734a1a011fd76514abc02354ae3ecc7c5640b13bd3428a74bf0b81cf92f86d"
+    source_sha256: "202cd5f4131c84644735ee7125632160ed09c2a3725e33d716f924a262d400ca"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
