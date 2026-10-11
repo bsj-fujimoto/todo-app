@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { asList, parseArgs } from "../ci/lib/args.mjs";
 import { annotateFiles, outputFiles, sarifInfo } from "./lib/scan-run.mjs";
 
-const args = parseArgs(process.argv.slice(2), { flags: ["skipped"] });
+const args = parseArgs(process.argv.slice(2), { flags: ["skipped", "informational"] });
 const env = process.env;
 const git = (...a) => {
   try {
@@ -89,6 +89,7 @@ const record = {
   output_location: args["out-dir"],
   output_files: files,
   finding_count_sarif: results,
+  informational: Boolean(args.informational),
   note: args.note ?? null,
 };
 writeFileSync(join(args["out-dir"], "scan-run.json"), `${JSON.stringify(record, null, 2)}\n`);

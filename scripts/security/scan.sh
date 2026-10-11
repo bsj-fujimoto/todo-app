@@ -14,6 +14,7 @@
 #   license                           ライセンス方針の評価（違反があれば非 0）
 #   zap                               OWASP ZAP baseline + API 走査（compose を起動して実行）
 #   actionlint                        ワークフローの静的検査（違反があれば非 0）
+#   workflows                         ワークフロー統制 W1〜W10 と方針ファイルの検査（違反があれば非 0）
 # 環境変数: SECURITY_RESULTS（既定 security-results）、TRIVY_CACHE_DIR（既定 .cache/trivy）、
 #           ZAP_TARGET（既定 http://localhost:8080）、ZAP_NETWORK（既定 host。Docker Desktop の macOS では bridge + host.docker.internal を使う）
 # 検出があっても検査自体は成功（exit 0）。ゲートは scripts/security/triage.mjs が担う。ツールが動かなかったときだけ失敗する。
@@ -169,6 +170,18 @@ scan_actionlint() {
   return "$code"
 }
 
+# ワークフロー統制（W1〜W10）と、方針ファイル（zap-rules・triage・accepted-risks・license-policy・dependency-selection）の期限・形式。
+scan_workflows() {
+  local out="$OUT_BASE/workflow-governance" started code1 code2
+  mkdir -p "$out"; started="$(now)"
+  node scripts/security/check-workflows.mjs --out "$out/workflow-check-report.json"; code1=$?
+  node scripts/security/check-policy.mjs | tee "$out/policy-check.txt"; code2=${PIPESTATUS[0]}
+  record workflow-governance config check-workflows 1.0.0 "" "" "$((code1 > code2 ? code1 : code2))" 0,1 "$started" \
+    "node scripts/security/check-workflows.mjs; node scripts/security/check-policy.mjs" --rules security/workflow-policy.yaml \
+    --coverage-path ".github/workflows/*.yml, .github/actions/*/action.yml, security/*（方針ファイル）" --note "逸脱があれば失敗（ゲートとは別に、このジョブ自体が落ちる）"
+  [ "$code1" -eq 0 ] && [ "$code2" -eq 0 ]
+}
+
 # ZAP: 公式イメージで baseline（受動）と API 走査（openapi.yaml）を実行する。認証の無いアプリなので認証なしの走査（authenticated=false）。
 scan_zap() {
   local out="$OUT_BASE/zap" started code=0 target="${ZAP_TARGET:-http://localhost:8080}" net="${ZAP_NETWORK:-host}"
@@ -211,5 +224,6 @@ case "$cmd" in
   license) scan_license ;;
   zap) scan_zap ;;
   actionlint) scan_actionlint ;;
+  workflows) scan_workflows ;;
   *) sed -n '2,22p' "${BASH_SOURCE[0]}"; exit 2 ;;
 esac

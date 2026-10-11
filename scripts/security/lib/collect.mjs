@@ -30,7 +30,7 @@ export function collectScans(root) {
     const dir = dirname(p);
     const files = walk(dir).filter((f) => f !== p);
     const meta = { scan: run.scan, check_kind: run.check_kind, tool: run.tool?.name };
-    return { run, findings: run.status === "ok" ? findingsOf(dir, files, meta) : [] };
+    return { run, findings: run.status === "ok" && !run.informational ? findingsOf(dir, files, meta) : [] };
   });
 }
 

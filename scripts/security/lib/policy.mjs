@@ -24,6 +24,35 @@ function licenseProblems(root, today) {
   return [...empty, ...(p.exceptions ?? []).map((e) => exceptionProblem(e, today)).filter(Boolean)];
 }
 
+const listOf = (text, key) =>
+  (new RegExp(`${key}:\\s*(.+)`).exec(text)?.[1] ?? "")
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+// Dependency review のライセンス設定（security.yml）は、ライセンス方針の写し。ずれると PR の差分検査と全体検査で判定が食い違う。
+function mirrorProblems(root) {
+  const wf = ".github/workflows/security.yml";
+  if (!isFile(root, wf) || !isFile(root, "security/license-policy.yaml")) return [];
+  const text = readText(root, wf);
+  const policy = parseYaml(readText(root, "security/license-policy.yaml")) ?? {};
+  const out = [];
+  if (!sameSet(listOf(text, "allow-licenses"), policy.allow ?? [])) {
+    out.push("security.yml の allow-licenses が license-policy.yaml の allow と一致しない");
+  }
+  const exc = (policy.exceptions ?? []).map(
+    (e) =>
+      `pkg:npm/${String(e.package)
+        .replace(/@[^@/]+$/, "")
+        .replace(/^@/, "%40")}`,
+  );
+  if (!sameSet(listOf(text, "allow-dependencies-licenses"), exc)) {
+    out.push("security.yml の allow-dependencies-licenses が license-policy.yaml の exceptions と一致しない");
+  }
+  return out;
+}
+
 function selectionProblems(root, today) {
   const path = "security/dependency-selection.yaml";
   if (!isFile(root, path)) return [`${path} が無い`];
@@ -55,6 +84,7 @@ export function checkPolicy(root, today) {
     ...validateTriage(loadEntries(root, "security/triage.yaml")),
     ...validateAccepted(loadEntries(root, "security/accepted-risks.yaml"), today),
     ...licenseProblems(root, today),
+    ...mirrorProblems(root),
     ...selectionProblems(root, today),
   ];
 }

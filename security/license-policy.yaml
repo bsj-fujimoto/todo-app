@@ -43,3 +43,9 @@ exceptions:
   - package: spdx-ranges@2.1.1
     reason: SPDX のライセンス範囲データ（MIT AND CC-BY-3.0）。上と同じ経路の開発依存で、実行時依存・配布物には含まれない。
     expires_at: 2027-04-11
+  - package: "@axe-core/playwright@4.13.0"
+    reason: アクセシビリティ検査（TC-067〜069）に使う E2E の開発依存（MPL-2.0。ファイル単位のコピーレフトで、未改変のまま npm から使い、改変・再頒布はしない）。実行時依存・配布物（イメージ）には含まれない。
+    expires_at: 2027-04-11
+  - package: axe-core@4.13.0
+    reason: 上の @axe-core/playwright が使う検査エンジン（MPL-2.0）。同じ理由で、開発依存として未改変のまま使い、配布物には含まれない。
+    expires_at: 2027-04-11
