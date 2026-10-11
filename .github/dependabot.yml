@@ -1,0 +1,82 @@
+# 依存の更新（Dependabot version updates）。脆弱性のある依存の更新（security updates）は repo-settings.json で別に有効にする。
+# 対象: npm（ルートの workspaces と backend / frontend / e2e）・GitHub Actions（SHA 固定のまま追従）・Docker（ベースイメージ）・docker compose。
+# 週次（月曜 03:00 JST）、グループ化、reviewers / assignees / labels あり。更新の PR も CI（ci-result・security-result）を通す。
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directories:
+      - "/"
+      - "/backend"
+      - "/frontend"
+      - "/e2e"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3 # 公開直後の版（取り下げ・乗っ取りの確率が高い）をすぐ取り込まない
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    reviewers: [bsj-fujimoto]
+    assignees: [bsj-fujimoto]
+    labels: [dependencies, npm]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
+      - "/.github/actions/setup-node-npm"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    groups:
+      github-actions:
+        patterns: ["*"]
+    reviewers: [bsj-fujimoto]
+    assignees: [bsj-fujimoto]
+    labels: [dependencies, github-actions]
+    commit-message:
+      prefix: "chore(ci)"
+
+  - package-ecosystem: docker
+    directories:
+      - "/backend"
+      - "/frontend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    groups:
+      docker-base-images:
+        patterns: ["*"]
+    reviewers: [bsj-fujimoto]
+    assignees: [bsj-fujimoto]
+    labels: [dependencies, docker]
+    commit-message:
+      prefix: "chore(docker)"
+
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    reviewers: [bsj-fujimoto]
+    assignees: [bsj-fujimoto]
+    labels: [dependencies, docker]
+    commit-message:
+      prefix: "chore(docker)"
