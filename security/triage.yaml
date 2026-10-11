@@ -21,4 +21,65 @@
 #     decided_at: 2026-10-11
 # 現時点で人の判断が必要な検出は、実行結果（security-findings の findings.json）を見て追記する。
 version: 1
-entries: []
+entries:
+  - match:
+      tool: owasp-zap
+      rule_id: "10049-*"
+    status: tp
+    reason: API の応答（/api/v1/tasks・/api/v1/health）に Cache-Control が無く、共有キャッシュ・ブラウザに保存されうる。タスク一覧は更新が即時に見えるべきデータで、古い一覧が出ると誤表示になる。重大度は info（機密データは含まない）。
+    reachability: 到達可能（認証の無い公開 API。誰でも GET できる）
+    exposure: frontend の公開ポート（8080）経由。社外公開の想定は無い（ローカル・社内の検証用）
+    asset_impact: 低（タスクの一覧は個人用で機密ではない。影響は古いデータの表示）
+    compensating_controls: 静的ファイルは expires -1 で毎回再検証させている。API の応答はブラウザの既定ではヒューリスティックキャッシュに入りにくい
+    recommendation: backend の応答に Cache-Control no-store を付ける（backend/src/http か app.js の onSend フック）。OpenAPI の契約には影響しない（ヘッダの追加のみ）
+    alternative: frontend の nginx で /api/ の location に proxy_hide_header と add_header を足す（ただし location で add_header を書くとセキュリティヘッダの継承が切れるので、全ヘッダを書き直す必要がある）
+    owner: バックエンド担当
+    due: 2026-12-31
+    reverify_condition: backend に Cache-Control を付けたあと security.yml の ZAP 走査で 10049 が消えること
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "100000"
+    status: na
+    reason: ZAP の探索リクエスト（存在しない URL・不正な入力・誤ったメソッド）に対し、サーバーが仕様どおり 4xx で拒否したことの記録（info）。異常ではなく、期待する防御の挙動。
+    reachability: 該当しない（脆弱性ではない）
+    exposure: 該当しない
+    asset_impact: なし
+    compensating_controls: 入力検証（TC-010〜012・TC-030〜036）と 404 の応答（TC-011）がテストで固定されている
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "100001"
+    status: na
+    reason: 存在しないパス（ZAP の SSRF 探索の /computeMetadata/ や /latest/ など）に対し、/api 以外は nginx の既定の HTML 404 を返すため「予期しない Content-Type」と判定された（low）。/api 以外は静的ファイルの配信だけで、攻撃面にならない。
+    reachability: 該当しない（404 の本文は固定の HTML で、入力を反映しない）
+    exposure: frontend の公開ポート（8080）
+    asset_impact: なし
+    compensating_controls: nginx は server_tokens off。404 は入力を反映しない。API のエラーは JSON（openapi.yaml の Error スキーマ）
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "10109"
+    status: na
+    reason: ZAP が画面を「モダンな Web アプリ」と判定しただけの情報（info）。脆弱性ではなく、AJAX スパイダーを使う目安の通知。
+    reachability: 該当しない
+    exposure: 該当しない
+    asset_impact: なし
+    compensating_controls: 該当しない
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: compose-check
+      rule_id: COMPOSE-006
+    status: na
+    reason: docker-compose.yml の frontend は 8080 を全インターフェースで公開する。これはローカル・社内の検証用の構成で、利用者が自分の端末で http://localhost:8080 を開くための意図した公開。外部公開の本番環境は無い（SECURITY.md）。公開先を絞りたい場合は FRONTEND_PORT の代わりに 127.0.0.1:8080:8080 とする。
+    reachability: 到達可能（意図したもの）
+    exposure: 検証用の端末・社内ネットワーク
+    asset_impact: 低（個人用の ToDo。認証・機密データなし）
+    compensating_controls: 非 root・cap_drop ALL・セキュリティヘッダ・入力検証。backend のポートはホストへ公開しない
+    reverify_condition: 本番環境に出すとき（その時点で、公開範囲・認証・TLS を設計する）
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11

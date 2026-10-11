@@ -1,25 +1,25 @@
 // 検査 1 回分の記録（scan-run.json）を組み立て、SARIF に「対象・版・実行日時・コマンド」を書き込む。
 // 目的: SARIF 単体を後から読んでも、どのリポジトリのどの commit を、いつ、どのコマンドで検査したかが分かる。
 import { createHash } from "node:crypto";
-import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 export const sha256 = (buf) => createHash("sha256").update(buf).digest("hex");
 
+const walk = (d) =>
+  readdirSync(d, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)],
+  );
+
+// ファイルは 1 回読んで、サイズとハッシュを同じ内容から出す（stat → read の競合を作らない）。
 export function outputFiles(dir) {
-  const walk = (d) =>
-    readdirSync(d).flatMap((n) => {
-      const p = join(d, n);
-      return statSync(p).isDirectory() ? walk(p) : [p];
-    });
   return walk(dir)
     .filter((p) => !p.endsWith("scan-run.json"))
     .sort()
-    .map((p) => ({
-      path: relative(process.cwd(), p),
-      bytes: statSync(p).size,
-      sha256: sha256(readFileSync(p)),
-    }));
+    .map((p) => {
+      const buf = readFileSync(p);
+      return { path: relative(process.cwd(), p), bytes: buf.length, sha256: sha256(buf) };
+    });
 }
 
 const isSarif = (doc) => doc && Array.isArray(doc.runs) && typeof doc.version === "string";

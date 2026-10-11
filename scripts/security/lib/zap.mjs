@@ -36,6 +36,8 @@ export function validateRules(rules, today) {
   return problems;
 }
 
+// ZAP は同じプラグインでも、指摘の種類ごとに alertRef（10049-3 など）を振る。検出を区別できるよう alertRef を ID にする。
+const refOf = (alert) => String(alert.alertRef ?? alert.pluginid);
 const riskOf = (alert) => Number(alert.riskcode ?? 0);
 const effectiveScore = (alert, action) =>
   action === "FAIL" ? Math.max(SCORE[riskOf(alert)], 7.5) : SCORE[riskOf(alert)];
@@ -45,7 +47,7 @@ function toResult(site, alert, rules) {
   const uris = (alert.instances ?? []).map((i) => `${i.method ?? "GET"} ${i.uri}`);
   const level = action === "FAIL" ? "error" : LEVEL[riskOf(alert)];
   return {
-    ruleId: String(alert.pluginid),
+    ruleId: refOf(alert),
     level,
     message: {
       text: `${alert.name ?? alert.alert}（${alert.riskdesc}）。影響する URL ${uris.length} 件: ${uris.slice(0, 5).join(", ")}`,
@@ -61,7 +63,7 @@ function toResult(site, alert, rules) {
 }
 
 const ruleOf = (alert) => ({
-  id: String(alert.pluginid),
+  id: refOf(alert),
   name: alert.name ?? alert.alert,
   shortDescription: { text: alert.name ?? alert.alert },
   helpUri: `https://www.zaproxy.org/docs/alerts/${alert.pluginid}/`,
@@ -82,7 +84,7 @@ export function zapToSarif(report, rules, extra = {}) {
             name: "OWASP ZAP",
             semanticVersion: report["@version"] ?? null,
             informationUri: "https://www.zaproxy.org/",
-            rules: [...new Map(kept.map(({ a }) => [a.pluginid, ruleOf(a)])).values()],
+            rules: [...new Map(kept.map(({ a }) => [refOf(a), ruleOf(a)])).values()],
           },
         },
         results: kept.map(({ site, a }) => toResult(site, a, rules)),

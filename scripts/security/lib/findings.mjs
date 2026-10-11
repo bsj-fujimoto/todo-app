@@ -77,13 +77,26 @@ function locationOf(result) {
   return line ? `${uri}:${line}` : uri;
 }
 
-const componentOf = (result, rule) =>
+// trivy の SARIF は部品・版を message の行（"Package: x" / "Installed Version: 1.0" / "Fixed Version: 1.1"）にだけ書く。
+const field = (message, name) => new RegExp(`^${name}:\\s*(.+)$`, "m").exec(message)?.[1]?.trim() ?? null;
+
+const componentOf = (result, rule, message) =>
   first(
     at(result, "properties.pkgName"),
     at(result, "properties.package"),
     at(result, "properties.component"),
     at(rule, "properties.pkgName"),
+    field(message, "Package"),
   );
+
+// CodeQL のルールは driver ではなく拡張（query pack）の rules にある。
+const rulesOf = (run) => [
+  ...(at(run, "tool.driver.rules") ?? []),
+  ...(at(run, "tool.extensions") ?? []).flatMap((x) => x.rules ?? []),
+];
+
+// イメージの SARIF は場所が一時ファイル（.tar）になるので、検査したイメージ名にそろえる。
+const placeOf = (location, image) => (image && /\.tar(:\d+)?$/.test(location) ? image : location);
 
 const titleOf = (rule, result, id) =>
   first(at(rule, "shortDescription.text"), at(rule, "name"), at(result, "message.text")?.slice(0, 100), id);
@@ -91,11 +104,11 @@ const titleOf = (rule, result, id) =>
 function sarifFinding(run, result, scanMeta) {
   const tool = slug(first(at(run, "tool.driver.name"), scanMeta.tool, "unknown"));
   const rule_id = first(result.ruleId, at(result, "rule.id"), "unknown");
-  const rule = (at(run, "tool.driver.rules") ?? []).find((r) => r.id === rule_id);
+  const rule = rulesOf(run).find((r) => r.id === rule_id);
   const title = titleOf(rule, result, rule_id);
   const message = first(at(result, "message.text"), "");
-  const location = locationOf(result);
-  const component = componentOf(result, rule);
+  const location = placeOf(locationOf(result), scanMeta.image);
+  const component = componentOf(result, rule, message);
   return {
     fingerprint: fingerprint({ tool, rule_id, location, component }),
     tool,
@@ -107,9 +120,11 @@ function sarifFinding(run, result, scanMeta) {
     location,
     component,
     message: message.slice(0, 500),
-    advisories: advisoryIds(rule_id, title, message, first(at(rule, "helpUri"), "")),
+    // 別名は ID と参照 URL からだけ拾う（本文に書かれた「関連する別の CVE」を同一視して、別の脆弱性を dup にしない）
+    advisories: advisoryIds(rule_id, first(at(rule, "helpUri"), "")),
     help_uri: first(at(rule, "helpUri")),
-    fixed_version: first(at(result, "properties.fixedVersion")),
+    fixed_version: first(at(result, "properties.fixedVersion"), field(message, "Fixed Version")),
+    installed_version: first(field(message, "Installed Version")),
   };
 }
 
@@ -127,7 +142,7 @@ const npmFix = (vuln) =>
   typeof vuln.fixAvailable === "object" ? (vuln.fixAvailable?.version ?? null) : null;
 
 function npmFinding(name, vuln, via, scanMeta) {
-  const ids = advisoryIds(first(via.url, ""), first(via.title, ""));
+  const ids = advisoryIds(first(via.url, ""));
   const rule_id = first(ids[0], `npm-advisory-${via.source}`);
   const location = "package-lock.json";
   return {

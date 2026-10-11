@@ -82,8 +82,19 @@ function acceptedStatus(f, acc, today) {
   };
 }
 
+/** 同じ指紋の検出（例: ZAP の baseline と API 走査が同じアラートを出す）は 1 件にまとめ、出どころを also_in に残す。 */
+export function mergeSameFingerprint(findings) {
+  const byFp = new Map();
+  for (const f of findings) {
+    const kept = byFp.get(f.fingerprint);
+    if (kept) kept.also_in = [...(kept.also_in ?? []), f.source_file];
+    else byFp.set(f.fingerprint, { ...f });
+  }
+  return [...byFp.values()];
+}
+
 export function applyLedgers(findings, ledgers) {
-  return dedupe(findings).map((f) => {
+  return dedupe(mergeSameFingerprint(findings)).map((f) => {
     const { status, context, ...extra } = statusFor(f, ledgers);
     return { ...f, status, ...context, ...extra };
   });

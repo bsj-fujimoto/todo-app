@@ -12,14 +12,15 @@ function walk(dir) {
 
 const isNpmAudit = (path) => /npm-audit.*\.json$/.test(basename(path));
 
+const fromFile = (p, meta) => {
+  if (p.endsWith(".sarif")) return findingsFromSarif(readJson(p), meta);
+  return isNpmAudit(p) ? findingsFromNpmAudit(readJson(p), meta) : [];
+};
+
 function findingsOf(dir, files, meta) {
-  return files
-    .flatMap((p) => {
-      if (p.endsWith(".sarif")) return findingsFromSarif(readJson(p), meta);
-      if (isNpmAudit(p)) return findingsFromNpmAudit(readJson(p), meta);
-      return [];
-    })
-    .map((f) => ({ ...f, scan_dir: dir }));
+  return files.flatMap((p) =>
+    fromFile(p, meta).map((f) => ({ ...f, scan_dir: dir, source_file: basename(p) })),
+  );
 }
 
 /** root 以下の scan-run.json を全部読み、検査ごとに { run, findings } を返す。 */
@@ -29,7 +30,12 @@ export function collectScans(root) {
     const run = JSON.parse(readFileSync(p, "utf8"));
     const dir = dirname(p);
     const files = walk(dir).filter((f) => f !== p);
-    const meta = { scan: run.scan, check_kind: run.check_kind, tool: run.tool?.name };
+    const meta = {
+      scan: run.scan,
+      check_kind: run.check_kind,
+      tool: run.tool?.name,
+      image: run.coverage?.images?.[0] ?? null,
+    };
     return { run, findings: run.status === "ok" && !run.informational ? findingsOf(dir, files, meta) : [] };
   });
 }
