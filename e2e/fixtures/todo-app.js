@@ -1,4 +1,5 @@
 // 画面の操作・取得のヘルパー（ラベル・ロール・アクセシブルネームで要素を引く）。
+/* global document, window -- page.evaluate() のコールバックはブラウザ内で実行される */
 import { expect } from "@playwright/test";
 
 export const MESSAGE = {

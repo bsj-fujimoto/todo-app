@@ -25,6 +25,7 @@ async function createCompose() {
     });
     return stdout;
   };
+  const docker = async (...args) => (await exec("docker", args, { cwd: ROOT, env })).stdout;
   const get = async (pathname, headers = {}) => {
     try {
       return await fetch(`${url}${pathname}`, { headers });
@@ -37,6 +38,7 @@ async function createCompose() {
     port,
     url,
     run,
+    docker,
     get,
     up: () => run("up", "-d", "--build", "--wait", "--wait-timeout", "180"),
     down: (...flags) => run("down", ...flags, "--remove-orphans"),
@@ -46,7 +48,8 @@ async function createCompose() {
       for (;;) {
         const response = await get("/api/v1/health");
         if (response?.status === 200) return Math.round(performance.now() - start);
-        if (performance.now() - start > timeoutMs) throw new Error(`health が ${timeoutMs}ms 以内に 200 にならない`);
+        if (performance.now() - start > timeoutMs)
+          throw new Error(`health が ${timeoutMs}ms 以内に 200 にならない`);
         await sleep(500);
       }
     },
@@ -81,130 +84,152 @@ const test = base.extend({
 });
 
 test.describe("docker compose（本物の nginx・コンテナ・ボリューム）", () => {
-  test("[TC-076] docker compose up --build で起動し、frontend 経由で画面と API が動く", { tag: ["@compose", "@smoke"] }, async ({ compose, app, page, request }) => {
-    const consoleErrors = [];
-    page.on("console", (message) => message.type() === "error" && consoleErrors.push(message.text()));
-    page.on("pageerror", (error) => consoleErrors.push(String(error)));
+  test(
+    "[TC-076] docker compose up --build で起動し、frontend 経由で画面と API が動く",
+    { tag: ["@compose", "@smoke"] },
+    async ({ compose, app, page, request }) => {
+      const consoleErrors = [];
+      page.on("console", (message) => message.type() === "error" && consoleErrors.push(message.text()));
+      page.on("pageerror", (error) => consoleErrors.push(String(error)));
 
-    await compose.up();
+      await compose.up();
 
-    // 2 サービスが running。backend のポートはホストへ公開されない
-    const services = await compose.services();
-    expect(services.map((s) => [s.Service, s.State]).sort()).toEqual([
-      ["backend", "running"],
-      ["frontend", "running"],
-    ]);
-    const backend = services.find((s) => s.Service === "backend");
-    expect((backend.Publishers ?? []).filter((p) => p.PublishedPort > 0)).toEqual([]);
+      // 2 サービスが running。backend のポートはホストへ公開されない
+      const services = await compose.services();
+      expect(services.map((s) => [s.Service, s.State]).sort()).toEqual([
+        ["backend", "running"],
+        ["frontend", "running"],
+      ]);
+      const backend = services.find((s) => s.Service === "backend");
+      expect((backend.Publishers ?? []).filter((p) => p.PublishedPort > 0)).toEqual([]);
 
-    // frontend オリジン経由の health（nginx の /api 中継が backend へ届く）
-    const health = await request.get(`${compose.url}/api/v1/health`);
-    expect(health.status()).toBe(200);
-    expect(await health.json()).toMatchObject({ status: "ok", db: "ok" });
+      // frontend オリジン経由の health（nginx の /api 中継が backend へ届く）
+      const health = await request.get(`${compose.url}/api/v1/health`);
+      expect(health.status()).toBe(200);
+      expect(await health.json()).toMatchObject({ status: "ok", db: "ok" });
 
-    // 画面: 空状態 → 追加 → 一覧。コンソールエラー（CORS を含む）なし
-    await app.open();
-    await expect(app.heading).toBeVisible();
-    await expect(app.emptyMessage).toBeVisible();
-    await app.add("買い物");
-    await app.expectTitles(["買い物"]);
-    await app.expectNoErrors();
-    expect(consoleErrors).toEqual([]);
+      // 画面: 空状態 → 追加 → 一覧。コンソールエラー（CORS を含む）なし
+      await app.open();
+      await expect(app.heading).toBeVisible();
+      await expect(app.emptyMessage).toBeVisible();
+      await app.add("買い物");
+      await app.expectTitles(["買い物"]);
+      await app.expectNoErrors();
+      expect(consoleErrors).toEqual([]);
 
-    // ボリュームと保存データ
-    const volumes = await compose.run("volume", "ls", "--format", "{{.Name}}");
-    expect(volumes.split("\n")).toContain(`${PROJECT}_todo-data`);
-    expect((await compose.tasks()).body.tasks.map((t) => t.title)).toEqual(["買い物"]);
+      // ボリュームと保存データ
+      const volumes = await compose.docker("volume", "ls", "--format", "{{.Name}}");
+      expect(volumes.split("\n")).toContain(`${PROJECT}_todo-data`);
+      expect((await compose.tasks()).body.tasks.map((t) => t.title)).toEqual(["買い物"]);
 
-    // 本物の nginx の挙動: セキュリティヘッダ・gzip・/healthz・非 root
-    const page1 = await request.get(`${compose.url}/`);
-    expect(page1.headers()).toMatchObject({
-      "content-security-policy": "default-src 'self'",
-      "x-content-type-options": "nosniff",
-      "referrer-policy": "no-referrer",
-      "x-frame-options": "DENY",
-    });
-    const css = await request.get(`${compose.url}/styles.css`, { headers: { "accept-encoding": "gzip" } });
-    expect(css.headers()["content-encoding"]).toBe("gzip");
-    expect((await request.get(`${compose.url}/healthz`)).status()).toBe(200);
-    expect((await compose.run("exec", "-T", "frontend", "id", "-u")).trim()).not.toBe("0");
-    const apiHeaders = (await request.get(`${compose.url}/api/v1/tasks`)).headers();
-    expect(apiHeaders["x-content-type-options"]).toBe("nosniff"); // /api 応答にもセキュリティヘッダが付く
-  });
+      // 本物の nginx の挙動: セキュリティヘッダ・gzip・/healthz・非 root
+      const page1 = await request.get(`${compose.url}/`);
+      expect(page1.headers()).toMatchObject({
+        "content-security-policy": "default-src 'self'",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+      });
+      const css = await request.get(`${compose.url}/styles.css`, { headers: { "accept-encoding": "gzip" } });
+      expect(css.headers()["content-encoding"]).toBe("gzip");
+      expect((await request.get(`${compose.url}/healthz`)).status()).toBe(200);
+      expect((await compose.run("exec", "-T", "frontend", "id", "-u")).trim()).not.toBe("0");
+      const apiHeaders = (await request.get(`${compose.url}/api/v1/tasks`)).headers();
+      expect(apiHeaders["x-content-type-options"]).toBe("nosniff"); // /api 応答にもセキュリティヘッダが付く
+    },
+  );
 
-  test("[TC-043] backend の再起動・スタック全体の再起動の後も、タスクが保持される", { tag: ["@compose", "@resilience"] }, async ({ compose, app, page }) => {
-    await compose.up();
-    await app.open();
-    await app.add("買い物");
-    await app.add("資料を印刷する");
-    await app.expectTitles(["資料を印刷する", "買い物"]);
-    await app.checkbox("資料を印刷する").click();
-    await expect(app.checkbox("資料を印刷する")).toBeChecked();
-    const before = (await compose.tasks()).body.tasks;
-    expect(before).toHaveLength(2);
+  test(
+    "[TC-043] backend の再起動・スタック全体の再起動の後も、タスクが保持される",
+    { tag: ["@compose", "@resilience"] },
+    async ({ compose, app, page }) => {
+      await compose.up();
+      await app.open();
+      await app.add("買い物");
+      await app.add("資料を印刷する");
+      await app.expectTitles(["資料を印刷する", "買い物"]);
+      await app.checkbox("資料を印刷する").click();
+      await expect(app.checkbox("資料を印刷する")).toBeChecked();
+      const before = (await compose.tasks()).body.tasks;
+      expect(before).toHaveLength(2);
 
-    // backend だけ再起動
-    await compose.run("restart", "backend");
-    const restartMs = await compose.waitHealthy(60_000);
-    test.info().annotations.push({ type: "実測(ms)", description: `backend 再起動後の health 200 まで: ${restartMs}` });
-    await page.reload();
-    await app.expectTitles(["資料を印刷する", "買い物"]);
-    await app.expectStrikethrough("資料を印刷する", true);
-    await app.expectNoErrors();
-    expect((await compose.tasks()).body.tasks).toEqual(before);
+      // backend だけ再起動
+      await compose.run("restart", "backend");
+      const restartMs = await compose.waitHealthy(60_000);
+      test.info().annotations.push({
+        type: "実測(ms)",
+        description: `backend 再起動後の health 200 まで: ${restartMs}`,
+      });
+      await page.reload();
+      await app.expectTitles(["資料を印刷する", "買い物"]);
+      await app.expectStrikethrough("資料を印刷する", true);
+      await app.expectNoErrors();
+      expect((await compose.tasks()).body.tasks).toEqual(before);
 
-    // スタック全体を停止 → 開始
-    await compose.run("stop");
-    await compose.run("start");
-    await compose.waitHealthy(120_000);
-    await page.reload();
-    await app.expectTitles(["資料を印刷する", "買い物"]);
-    await expect(app.checkbox("資料を印刷する")).toBeChecked();
-    await app.expectNoErrors();
-    expect((await compose.tasks()).body.tasks).toEqual(before);
-  });
+      // スタック全体を停止 → 開始
+      await compose.run("stop");
+      await compose.run("start");
+      await compose.waitHealthy(120_000);
+      await page.reload();
+      await app.expectTitles(["資料を印刷する", "買い物"]);
+      await expect(app.checkbox("資料を印刷する")).toBeChecked();
+      await app.expectNoErrors();
+      expect((await compose.tasks()).body.tasks).toEqual(before);
+    },
+  );
 
-  test("[TC-044] down ではボリュームが残りタスクが保持され、down -v で失われる", { tag: ["@compose", "@resilience"] }, async ({ compose, app }) => {
-    await compose.up();
-    await app.open();
-    await app.add("買い物");
-    await app.expectTitles(["買い物"]);
+  test(
+    "[TC-044] down ではボリュームが残りタスクが保持され、down -v で失われる",
+    { tag: ["@compose", "@resilience"] },
+    async ({ compose, app }) => {
+      await compose.up();
+      await app.open();
+      await app.add("買い物");
+      await app.expectTitles(["買い物"]);
 
-    // down（ボリュームは残す）→ up
-    await compose.down();
-    await compose.up();
-    await app.open();
-    await app.expectTitles(["買い物"]);
-    await app.expectNoErrors();
+      // down（ボリュームは残す）→ up
+      await compose.down();
+      await compose.up();
+      await app.open();
+      await app.expectTitles(["買い物"]);
+      await app.expectNoErrors();
 
-    // down -v（ボリュームも削除）→ up: 新しいボリュームで 0 件
-    await compose.down("-v");
-    await compose.up();
-    await app.open();
-    await expect(app.emptyMessage).toBeVisible();
-    await app.expectNoErrors();
-    const { status, body } = await compose.tasks();
-    expect([status, body]).toEqual([200, { tasks: [] }]);
-    expect((await compose.get("/api/v1/health")).status).toBe(200);
-  });
+      // down -v（ボリュームも削除）→ up: 新しいボリュームで 0 件
+      await compose.down("-v");
+      await compose.up();
+      await app.open();
+      await expect(app.emptyMessage).toBeVisible();
+      await app.expectNoErrors();
+      const { status, body } = await compose.tasks();
+      expect([status, body]).toEqual([200, { tasks: [] }]);
+      expect((await compose.get("/api/v1/health")).status).toBe(200);
+    },
+  );
 
-  test("[TC-077] backend を止めると外形監視（health）が 502/504 で検知でき、画面は保存失敗を示し、起動後 30 秒以内に回復する", { tag: ["@compose", "@resilience"] }, async ({ compose, app }) => {
-    await compose.up();
-    expect((await compose.get("/api/v1/health")).status).toBe(200);
-    await app.open();
+  test(
+    "[TC-077] backend を止めると外形監視（health）が 502/504 で検知でき、画面は保存失敗を示し、起動後 30 秒以内に回復する",
+    { tag: ["@compose", "@resilience"] },
+    async ({ compose, app }) => {
+      await compose.up();
+      expect((await compose.get("/api/v1/health")).status).toBe(200);
+      await app.open();
 
-    await compose.run("stop", "backend");
-    const stopped = await compose.get("/api/v1/health");
-    expect([502, 504]).toContain(stopped.status);
+      await compose.run("stop", "backend");
+      const stopped = await compose.get("/api/v1/health");
+      expect([502, 504]).toContain(stopped.status);
 
-    await app.add("買い物");
-    await expect(app.saveError).toHaveText("保存できませんでした。もう一度お試しください");
-    await expect(app.rows).toHaveCount(0);
-    await expect(app.input).toHaveValue("買い物");
+      await app.add("買い物");
+      await expect(app.saveError).toHaveText("保存できませんでした。もう一度お試しください");
+      await expect(app.rows).toHaveCount(0);
+      await expect(app.input).toHaveValue("買い物");
 
-    await compose.run("start", "backend");
-    const recoveredMs = await compose.waitHealthy(30_000);
-    test.info().annotations.push({ type: "実測(ms)", description: `start backend から health 200 まで: ${recoveredMs}` });
-    expect((await compose.tasks()).body.tasks).toEqual([]);
-  });
+      await compose.run("start", "backend");
+      const recoveredMs = await compose.waitHealthy(30_000);
+      test.info().annotations.push({
+        type: "実測(ms)",
+        description: `start backend から health 200 まで: ${recoveredMs}`,
+      });
+      expect((await compose.tasks()).body.tasks).toEqual([]);
+    },
+  );
 });

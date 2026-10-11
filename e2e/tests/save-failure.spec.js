@@ -33,7 +33,7 @@ test.describe("画面から見た保存失敗（503 STORAGE_FAILURE を注入）
       await expect(app.inputError).toHaveText("");
       await expect(app.addButton).toBeEnabled();
       expect(hits).toHaveLength(1);
-      expect((await stack.tasks()).body.tasks).toHaveLength(3);
+      expect(await stack.db()).toEqual(DS002); // backend には未到達。保存データは変わらない
     },
   );
 
@@ -52,7 +52,7 @@ test.describe("画面から見た保存失敗（503 STORAGE_FAILURE を注入）
       await app.expectStrikethrough("牛乳を買う", false);
       await app.expectTitles(DS002_TITLES);
       expect(hits).toHaveLength(1);
-      expect((await stack.tasks()).body.tasks.map((t) => t.completed)).toEqual([true, false, false]);
+      expect(await stack.db()).toEqual(DS002);
     },
   );
 
@@ -70,7 +70,7 @@ test.describe("画面から見た保存失敗（503 STORAGE_FAILURE を注入）
       await app.expectTitles(DS002_TITLES);
       await expect(app.checkbox("打ち合わせの準備をする")).toBeChecked();
       expect(hits).toHaveLength(1);
-      expect((await stack.tasks()).body.tasks).toHaveLength(3);
+      expect(await stack.db()).toEqual(DS002);
     },
   );
 });
@@ -92,7 +92,7 @@ test(
     await expect(app.input).toHaveValue("資料を印刷する");
     await app.expectTitles(DS002_TITLES);
     expect(stack.calls("POST")).toHaveLength(0); // backend は POST を受信しない
-    expect((await stack.tasks()).body.tasks).toHaveLength(3);
+    expect(await stack.db()).toEqual(DS002);
 
     await context.setOffline(false);
     await app.addButton.click();
@@ -101,7 +101,8 @@ test(
     await app.expectTitles(["資料を印刷する", ...DS002_TITLES]);
     await expect(app.input).toHaveValue("");
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
-    expect((await stack.tasks()).body.tasks.filter((t) => t.title === "資料を印刷する")).toHaveLength(1);
+    expect((await stack.db()).filter((t) => t.title === "資料を印刷する")).toHaveLength(1);
+    expect(await stack.db()).toHaveLength(4);
   },
 );
 
@@ -133,7 +134,8 @@ test(
 
     await app.page.reload();
     await app.expectTitles(["資料を印刷する", ...DS002_TITLES]);
-    const { body } = await stack.tasks();
-    expect(body.tasks.map((t) => t.title)).toEqual(["資料を印刷する", ...DS002_TITLES]);
+    const rows = await stack.db();
+    expect(rows.slice(0, 3)).toEqual(DS002); // 既存 3 件は変化しない
+    expect(rows.map((t) => t.title)).toEqual([...DS002.map((t) => t.title), "資料を印刷する"]); // 重複しない
   },
 );

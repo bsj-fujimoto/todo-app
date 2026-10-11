@@ -1,4 +1,5 @@
 // タスク追加: ペアワイズ（TC-002〜TC-007。docs/03-test-spec.md §8.1 の表の行をパラメータ化）と入力エラー（TC-016〜TC-020）。
+/* global document -- page.evaluate() のコールバックはブラウザ内で実行される */
 import { test, expect } from "../fixtures/stack.js";
 import { DS002, DS002_TITLES, ISO_UTC, UUID_V4 } from "../fixtures/data.js";
 
@@ -67,9 +68,9 @@ for (const { row, tc, via, raw, expected, width, existing } of PAIRWISE) {
     expect(posts[0].responseBody.id).toMatch(UUID_V4);
     expect(posts[0].responseBody.createdAt).toMatch(ISO_UTC);
 
-    const { body } = await stack.tasks();
-    expect(body.tasks).toHaveLength(existing + 1);
-    expect(body.tasks[0]).toMatchObject({ title: expected, completed: false });
+    const rows = await stack.db();
+    expect(rows).toHaveLength(existing + 1);
+    expect(rows.at(-1)).toMatchObject({ title: expected, completed: false });
   });
 }
 
@@ -98,7 +99,7 @@ test(
 
     // 画面は検証して POST を送らない（送られた場合は 422 であること）
     expect(stack.calls("POST").filter((c) => c.status !== 422)).toEqual([]);
-    expect((await stack.tasks()).body.tasks).toEqual([]);
+    expect(await stack.db()).toEqual([]);
   },
 );
 
@@ -111,7 +112,7 @@ test("[TC-017] 101 文字は長さのエラーを出し、追加しない", { ta
   await expect(app.inputError).toHaveText("タスク名は100文字以内で入力してください");
   await app.expectTitles(DS002_TITLES);
   expect(stack.calls("POST").filter((c) => c.status !== 422)).toEqual([]);
-  expect((await stack.tasks()).body.tasks).toHaveLength(3);
+  expect(await stack.db()).toEqual(DS002); // 追加前と同一（行数・title・completed）
 });
 
 test("[TC-018] 100 文字ちょうどは追加できる", { tag: ["@boundary"] }, async ({ app, stack }) => {
@@ -126,7 +127,8 @@ test("[TC-018] 100 文字ちょうどは追加できる", { tag: ["@boundary"] }
   const posts = stack.calls("POST");
   expect(posts.map((c) => c.status)).toEqual([201]);
   expect([...posts[0].responseBody.title]).toHaveLength(100);
-  expect((await stack.tasks()).body.tasks).toHaveLength(4);
+  expect(await stack.db()).toHaveLength(4);
+  expect([...(await stack.db()).at(-1).title]).toHaveLength(100);
 });
 
 test("[TC-019] エラー表示のあとに有効な入力で追加すると、エラーが消える", async ({ app, stack }) => {
@@ -140,9 +142,7 @@ test("[TC-019] エラー表示のあとに有効な入力で追加すると、�
   await expect(app.inputError).toHaveText("");
   await expect(app.input).toHaveValue("");
   expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
-  expect((await stack.tasks()).body.tasks.map((t) => [t.title, t.completed])).toEqual([
-    ["牛乳を買う", false],
-  ]);
+  expect((await stack.db()).map((t) => [t.title, t.completed])).toEqual([["牛乳を買う", false]]);
 });
 
 test("[TC-020] 同じタイトルを 2 回追加すると別 ID の 2 件になる", async ({ app, stack }) => {
@@ -163,4 +163,7 @@ test("[TC-020] 同じタイトルを 2 回追加すると別 ID の 2 件にな�
   expect(body.tasks).toHaveLength(2);
   expect(new Set(body.tasks.map((t) => t.id)).size).toBe(2);
   expect(body.tasks.map((t) => t.title)).toEqual(["会議", "会議"]);
+  const rows = await stack.db();
+  expect(new Set(rows.map((t) => t.id)).size).toBe(2);
+  expect(rows.map((t) => t.title)).toEqual(["会議", "会議"]);
 });

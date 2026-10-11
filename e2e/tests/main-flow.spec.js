@@ -50,11 +50,10 @@ test(
     expect(stack.calls("GET").map((c) => c.status)).toEqual([200, 200]);
 
     // DB（保存データ）
-    const { body } = await stack.tasks();
-    expect(body.tasks.map((t) => [t.title, t.completed])).toEqual([
-      ["資料を印刷する", false],
-      ["打ち合わせの準備をする", true],
+    expect((await stack.db()).map((t) => [t.title, t.completed])).toEqual([
       ["仕様書をレビューする", false],
+      ["打ち合わせの準備をする", true],
+      ["資料を印刷する", false],
     ]);
   },
 );
@@ -86,8 +85,7 @@ test(
     await app.expectNoErrors();
 
     expect(stack.calls("GET").map((c) => c.status)).toEqual([200, 200, 200, 200]);
-    const { body } = await stack.tasks();
-    expect(body.tasks.map((t) => [t.title, t.completed])).toEqual([["資料を印刷する", true]]);
+    expect((await stack.db()).map((t) => [t.title, t.completed])).toEqual([["資料を印刷する", true]]);
   },
 );
 
@@ -115,6 +113,6 @@ test(
     expect(summary(stack.calls("POST"))).toEqual(["POST 201"]);
     expect(summary(stack.calls("PATCH"))).toEqual(["PATCH 200"]);
     expect(summary(stack.calls("DELETE"))).toEqual(["DELETE 204"]);
-    expect((await stack.tasks()).body.tasks).toEqual([]);
+    expect(await stack.db()).toEqual([]);
   },
 );

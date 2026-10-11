@@ -14,4 +14,5 @@ test("[TC-040] 同時刻のタスクは保存順の新しいものが先に並�
   const { status, body } = await stack.tasks();
   expect(status).toBe(200);
   expect(body.tasks.map((t) => t.title)).toEqual(["同時刻-C", "同時刻-B", "同時刻-A"]);
+  expect((await stack.db()).map((t) => t.title)).toEqual(["同時刻-A", "同時刻-B", "同時刻-C"]); // 保存順
 });

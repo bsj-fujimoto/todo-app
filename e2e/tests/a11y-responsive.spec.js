@@ -1,4 +1,5 @@
 // モバイル幅・キーボード操作・アクセシビリティ: TC-067（360px・タッチ。project chromium-mobile-360）、TC-068（キーボードのみ）、TC-069（ラベルと axe-core）。
+/* global document, getComputedStyle -- page.evaluate() のコールバックはブラウザ内で実行される */
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "../fixtures/stack.js";
 import { DS002, DS002_TITLES } from "../fixtures/data.js";
@@ -37,10 +38,10 @@ test(
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
     expect(stack.calls("PATCH").map((c) => c.status)).toEqual([200]);
     expect(stack.calls("DELETE").map((c) => c.status)).toEqual([204]);
-    expect((await stack.tasks()).body.tasks.map((t) => [t.title, t.completed])).toEqual([
-      [long, true],
-      ["打ち合わせの準備をする", true],
+    expect((await stack.db()).map((t) => [t.title, t.completed])).toEqual([
       ["仕様書をレビューする", false],
+      ["打ち合わせの準備をする", true],
+      [long, true],
     ]);
   },
 );
@@ -100,7 +101,7 @@ test(
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
     expect(stack.calls("PATCH").map((c) => c.status)).toEqual([200]);
     expect(stack.calls("DELETE").map((c) => c.status)).toEqual([204]);
-    expect((await stack.tasks()).body.tasks.map((t) => t.title)).toEqual(DS002_TITLES);
+    expect(await stack.db()).toEqual(DS002); // 資料を印刷する は削除済み
   },
 );
 

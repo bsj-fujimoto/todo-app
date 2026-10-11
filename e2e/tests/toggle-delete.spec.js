@@ -11,20 +11,23 @@ test(
     await stack.seed(DS002);
     await app.open();
     await app.expectTitles(DS002_TITLES);
-    const before = (await stack.tasks()).body.tasks;
+    const before = await stack.db();
 
     await app.checkbox("仕様書をレビューする").click();
     await expect(app.checkbox("仕様書をレビューする")).toBeChecked();
     await app.expectStrikethrough("仕様書をレビューする", true);
     await app.expectTitles(DS002_TITLES);
-    const afterOn = (await stack.tasks()).body.tasks;
-    expect(afterOn.map((t) => t.completed)).toEqual([true, true, false]);
+    const afterOn = await stack.db();
+    // 対象の completed だけが 0 → 1。title・createdAt・他の行は変わらない
+    expect(afterOn).toEqual(
+      before.map((t) => (t.title === "仕様書をレビューする" ? { ...t, completed: true } : t)),
+    );
 
     await app.checkbox("仕様書をレビューする").click();
     await expect(app.checkbox("仕様書をレビューする")).not.toBeChecked();
     await app.expectStrikethrough("仕様書をレビューする", false);
     await app.expectTitles(DS002_TITLES);
-    const afterOff = (await stack.tasks()).body.tasks;
+    const afterOff = await stack.db();
 
     // API: PATCH {completed:true} → 200、{completed:false} → 200
     expect(stack.calls("PATCH").map((c) => [c.status, c.requestBody])).toEqual([
@@ -61,10 +64,7 @@ test(
     await expect(page.getByRole("button", { name: /取り消し|元に戻す|Undo/ })).toHaveCount(0);
 
     expect(stack.calls("DELETE").map((c) => c.status)).toEqual([204]);
-    expect((await stack.tasks()).body.tasks.map((t) => t.title)).toEqual([
-      "打ち合わせの準備をする",
-      "牛乳を買う",
-    ]);
+    expect(await stack.db()).toEqual([DS002[0], DS002[2]]); // 残る 2 行は変化しない
   },
 );
 
@@ -90,6 +90,6 @@ test(
     expect(stack.calls("DELETE").map((c) => c.status)).toEqual([204, 204, 204]);
     const last = stack.calls("GET").at(-1);
     expect([last.status, last.responseBody]).toEqual([200, { tasks: [] }]);
-    expect((await stack.tasks()).body.tasks).toEqual([]);
+    expect(await stack.db()).toEqual([]);
   },
 );

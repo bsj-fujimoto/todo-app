@@ -97,7 +97,7 @@ test(
     await app.expectTitles(DS002_TITLES);
     await expect(app.emptyMessage).toHaveCount(0);
     expect(stack.calls("GET").map((c) => c.status)).toEqual([200]);
-    expect((await stack.tasks()).body.tasks).toHaveLength(3);
+    expect(await stack.db()).toEqual(DS002);
   },
 );
 
@@ -119,7 +119,7 @@ test(
 
     await app.expectTitles(DS002_TITLES);
     await expect(app.saveError).toHaveText("");
-    expect((await stack.tasks()).body.tasks).toHaveLength(3);
+    expect(await stack.db()).toEqual(DS002);
   },
 );
 

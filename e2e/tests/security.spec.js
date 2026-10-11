@@ -28,6 +28,6 @@ test(
     expect(dialogs).toEqual([]);
 
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201, 201, 201, 201]);
-    expect((await stack.tasks()).body.tasks.map((t) => t.title)).toEqual(reversed);
+    expect((await stack.db()).map((t) => t.title)).toEqual(DS005_XSS);
   },
 );

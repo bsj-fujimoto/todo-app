@@ -33,7 +33,7 @@ test(
     await app.expectTitles(["連打確認"]);
 
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
-    expect((await stack.tasks()).body.tasks.map((t) => t.title)).toEqual(["連打確認"]);
+    expect((await stack.db()).map((t) => t.title)).toEqual(["連打確認"]);
   },
 );
 
@@ -65,9 +65,6 @@ test(
 
     await tabB.reload();
     await expect(tabB.locator("li.task .task-title")).toHaveText(["打ち合わせの準備をする", "牛乳を買う"]);
-    expect((await stack.tasks()).body.tasks.map((t) => t.title)).toEqual([
-      "打ち合わせの準備をする",
-      "牛乳を買う",
-    ]);
+    expect(await stack.db()).toEqual([DS002[0], DS002[2]]); // 仕様書をレビューする だけが消え、復活しない
   },
 );

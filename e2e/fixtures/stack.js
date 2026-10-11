@@ -1,20 +1,16 @@
 // 各テストが専用のスタック（backend プロセス + frontend 配信サーバー + 一時 DB + 空きポート）を持つ fixture。
 // テスト間で状態・ポート・ファイルを共有しないので、並列実行しても汚染しない（docs/03-test-spec.md §12）。
 import { test as base, expect } from "@playwright/test";
-import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
+import { corruptDbFile, readRows, seedTasks, sha256File } from "../../backend/test-support/index.js";
 import { createLogBuffer, startBackendProcess, stopChild } from "./backend-process.js";
 import { startFrontendServer } from "./frontend-server.js";
 import { TodoApp } from "./todo-app.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-
-async function loadTestSupport() {
-  return import(pathToFileURL(path.join(ROOT, "backend/test-support/index.js")).href);
-}
 
 /** backend は未起動の状態で始め、start() で起動する。 */
 async function createStack() {
@@ -48,24 +44,23 @@ async function createStack() {
       backend = null;
       await stopChild(running?.child);
     },
-    /** DS-002 などを DB へ直接投入する（backend を止めて投入し、同じ DB で再起動する） */
-    async seed(rows) {
-      const wasRunning = backend !== null;
-      await stack.stopBackend();
-      (await loadTestSupport()).seedTasks(dbPath, rows);
-      if (wasRunning) await stack.startBackend();
-    },
-    /** DS-007: DB の先頭 100 バイトを 0x00 で上書きしてから backend を再起動する */
+    /** DS-002 などを DB へ直接投入する（backend は操作ごとに DB を開き直すので、起動中でも次の操作から見える） */
+    seed: async (rows) => seedTasks(dbPath, rows),
+    /** DS-007: backend を止め、DB の先頭 100 バイトを 0x00 で上書きしてから再起動する */
     async corruptDb() {
       await stack.stopBackend();
-      (await loadTestSupport()).corruptDbFile(dbPath);
+      corruptDbFile(dbPath);
       await stack.startBackend();
     },
-    async dbSha256() {
-      return createHash("sha256")
-        .update(await readFile(dbPath))
-        .digest("hex");
-    },
+    dbSha256: async () => sha256File(dbPath),
+    /** 保存データ（tasks テーブル）を保存順に返す。seed の行と同じ形（{ id, title, completed, createdAt }）。 */
+    db: async () =>
+      readRows(dbPath).map((row) => ({
+        id: row.id,
+        title: row.title,
+        completed: row.completed === 1,
+        createdAt: row.created_at,
+      })),
     /** backend を直接呼んで保存済みのタスクを得る（画面を経由しない確認用） */
     async tasks() {
       const response = await fetch(`http://127.0.0.1:${backend.port}/api/v1/tasks`);

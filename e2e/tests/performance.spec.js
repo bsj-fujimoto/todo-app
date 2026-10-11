@@ -61,6 +61,6 @@ test(
     expect(stack.calls("POST").map((c) => c.status)).toEqual([201]);
     expect(stack.calls("PATCH").map((c) => c.status)).toEqual([200]);
     expect(stack.calls("DELETE").map((c) => c.status)).toEqual([204]);
-    expect((await stack.tasks()).body.tasks).toHaveLength(1000);
+    expect(await stack.db()).toHaveLength(1000);
   },
 );
