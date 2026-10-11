@@ -28,6 +28,9 @@ NODE=(mise x -- node)
 COMPOSE_BASE="${COMPOSE_BASE:-docker-compose.yml}"
 export K6_IMAGE
 export COMPOSE_BASE
+# health の commit に出る（compose のビルド引数）。run_id・記録と同じ commit にそろえる
+COMMIT_SHA="${COMMIT_SHA:-$(git rev-parse HEAD)}"
+export COMMIT_SHA
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -165,7 +168,7 @@ run_screen() {
     local out="$dir/tmp-$tasks"
     mkdir -p "$out"
     docker run --rm --network "$NETWORK" -v "$out:/out" -e "BASE_URL=http://frontend:8080" \
-      -e "EXPECTED_ROWS=$tasks" -e "ROW_SELECTOR=${ROW_SELECTOR:-li}" -e "OUT_DIR=/out" "$SCREEN_IMAGE"
+      -e "EXPECTED_ROWS=$tasks" -e "ROW_SELECTOR=${ROW_SELECTOR:-li.task}" -e "OUT_DIR=/out" "$SCREEN_IMAGE"
     if [ "$tasks" = "$NORMAL_TASKS" ]; then
       mv "$out/screen.json" "$dir/screen.json"
       mv "$out/lighthouse-report-1.json" "$dir/lighthouse-report-1.json"
