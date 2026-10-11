@@ -1,0 +1,372 @@
+# 変更影響マップ: 変更ファイル（パスの glob）→ 影響する機能 → 実行する TC-ID。
+# 使われ方:
+#   - scripts/regression/select.mjs が PR の変更ファイルから実行するケースを選ぶ（PR 層）。
+#   - どのエントリにも当たらないパスが 1 つでもあれば、選択せず全件実行にフォールバックする。
+#   - scripts/regression/impact-check.mjs が「追跡ファイルのすべてがどれかに当たる」「全自動ケースがどれかから選ばれる」
+#     ことを CI で検査する（マップの陳腐化を防ぐ）。
+# 保守ルール: ファイルを足す・機能を足す PR で、この表も更新する。迷ったら広く書く（選びすぎは安全、外しすぎは漏れ）。
+#   excluded_risk には「このエントリだけで選んだときに検証されなくなるもの」を書く（選択実行の限界を明示する）。
+version: 1
+smoke_case_ids: [TC-001, TC-030, TC-056, TC-075, TC-076] # 主要フロー・入力検証・初期画面・ヘルス・compose 起動。変更内容に関わらず毎回実行する。
+entries:
+  - id: api-contract
+    feature: API 契約（OpenAPI）
+    paths:
+      - "backend/openapi.yaml"
+    case_ids:
+      [
+        TC-009,
+        TC-010,
+        TC-011,
+        TC-012,
+        TC-015,
+        TC-030,
+        TC-031,
+        TC-032,
+        TC-033,
+        TC-034,
+        TC-035,
+        TC-036,
+        TC-037,
+        TC-050,
+        TC-051,
+        TC-052,
+        TC-053,
+        TC-059,
+        TC-060,
+        TC-065,
+        TC-075,
+        TC-076,
+      ]
+    excluded_risk: "契約外の画面表示・永続化の中身（契約チェック以外の面）"
+  - id: backend-validation
+    feature: タイトル検証（backend）
+    paths:
+      - "backend/src/**/valid*"
+      - "backend/src/**/valid*/**"
+      - "backend/test/**/validate*"
+    case_ids:
+      [
+        TC-002,
+        TC-003,
+        TC-004,
+        TC-005,
+        TC-006,
+        TC-007,
+        TC-016,
+        TC-017,
+        TC-018,
+        TC-019,
+        TC-020,
+        TC-021,
+        TC-022,
+        TC-023,
+        TC-024,
+        TC-025,
+        TC-026,
+        TC-027,
+        TC-028,
+        TC-029,
+        TC-030,
+        TC-031,
+        TC-032,
+        TC-033,
+        TC-034,
+        TC-035,
+        TC-036,
+        TC-059,
+        TC-060,
+        TC-062,
+      ]
+    excluded_risk: "保存層・画面表示の変更は別エントリで選ぶ"
+  - id: backend-storage
+    feature: 保存層（SQLite・永続化・破損・書込み失敗）
+    paths:
+      - "backend/src/**/db*"
+      - "backend/src/**/db*/**"
+      - "backend/src/**/storage*"
+      - "backend/src/**/storage*/**"
+      - "backend/src/**/repo*"
+      - "backend/src/**/repo*/**"
+    case_ids:
+      [
+        TC-001,
+        TC-015,
+        TC-038,
+        TC-039,
+        TC-040,
+        TC-041,
+        TC-042,
+        TC-043,
+        TC-044,
+        TC-045,
+        TC-046,
+        TC-047,
+        TC-048,
+        TC-049,
+        TC-050,
+        TC-051,
+        TC-052,
+        TC-053,
+        TC-054,
+        TC-055,
+        TC-056,
+        TC-057,
+        TC-058,
+        TC-063,
+        TC-064,
+        TC-065,
+        TC-066,
+      ]
+    excluded_risk: "入力検証・画面の見た目"
+  - id: backend-api
+    feature: backend の API・起動（ルーティング・エラー応答・ヘルス）
+    paths:
+      - "backend/src/**"
+      - "backend/test/**"
+      - "backend/package.json"
+      - "backend/*.json"
+      - "backend/*.js"
+    case_ids:
+      [
+        TC-001,
+        TC-009,
+        TC-010,
+        TC-011,
+        TC-012,
+        TC-015,
+        TC-021,
+        TC-022,
+        TC-023,
+        TC-024,
+        TC-025,
+        TC-026,
+        TC-027,
+        TC-028,
+        TC-029,
+        TC-030,
+        TC-031,
+        TC-032,
+        TC-033,
+        TC-034,
+        TC-035,
+        TC-036,
+        TC-037,
+        TC-038,
+        TC-039,
+        TC-041,
+        TC-042,
+        TC-043,
+        TC-044,
+        TC-045,
+        TC-046,
+        TC-047,
+        TC-048,
+        TC-049,
+        TC-050,
+        TC-051,
+        TC-052,
+        TC-053,
+        TC-054,
+        TC-055,
+        TC-058,
+        TC-059,
+        TC-060,
+        TC-062,
+        TC-064,
+        TC-065,
+        TC-073,
+        TC-075,
+        TC-076,
+        TC-077,
+      ]
+    excluded_risk: "画面（frontend）固有の表示・a11y・ブラウザ差"
+  - id: frontend-source
+    feature: frontend の画面・API クライアント
+    paths:
+      - "frontend/src/**"
+      - "frontend/test/**"
+      - "frontend/*.html"
+      - "frontend/*.css"
+      - "frontend/*.json"
+      - "frontend/*.js"
+    case_ids:
+      [
+        TC-001,
+        TC-002,
+        TC-003,
+        TC-004,
+        TC-005,
+        TC-006,
+        TC-007,
+        TC-008,
+        TC-013,
+        TC-014,
+        TC-016,
+        TC-017,
+        TC-018,
+        TC-019,
+        TC-020,
+        TC-021,
+        TC-022,
+        TC-023,
+        TC-024,
+        TC-025,
+        TC-026,
+        TC-027,
+        TC-028,
+        TC-029,
+        TC-040,
+        TC-041,
+        TC-043,
+        TC-044,
+        TC-045,
+        TC-046,
+        TC-047,
+        TC-048,
+        TC-049,
+        TC-055,
+        TC-056,
+        TC-057,
+        TC-058,
+        TC-061,
+        TC-062,
+        TC-063,
+        TC-066,
+        TC-067,
+        TC-068,
+        TC-069,
+        TC-070,
+        TC-074,
+        TC-076,
+        TC-077,
+      ]
+    excluded_risk: "API 単体の入力検証・保存層の障害（backend 側）"
+  - id: frontend-serving
+    feature: frontend の配信・API 中継（nginx / Dockerfile / compose）
+    paths:
+      - "frontend/nginx*"
+      - "frontend/Dockerfile"
+      - "frontend/.dockerignore"
+      - "backend/Dockerfile"
+      - "backend/.dockerignore"
+      - "docker-compose*.yml"
+      - ".dockerignore"
+    case_ids:
+      [TC-001, TC-041, TC-043, TC-044, TC-045, TC-049, TC-055, TC-056, TC-058, TC-070, TC-075, TC-076, TC-077]
+    excluded_risk: "ドメインロジックの境界値（unit / api 層）"
+  - id: e2e-tests
+    feature: E2E テストコード・設定
+    paths:
+      - "e2e/**"
+    case_ids:
+      [
+        TC-001,
+        TC-002,
+        TC-003,
+        TC-004,
+        TC-005,
+        TC-006,
+        TC-007,
+        TC-008,
+        TC-013,
+        TC-014,
+        TC-016,
+        TC-017,
+        TC-018,
+        TC-019,
+        TC-020,
+        TC-040,
+        TC-041,
+        TC-043,
+        TC-044,
+        TC-045,
+        TC-046,
+        TC-047,
+        TC-048,
+        TC-049,
+        TC-055,
+        TC-056,
+        TC-057,
+        TC-058,
+        TC-061,
+        TC-063,
+        TC-066,
+        TC-067,
+        TC-068,
+        TC-069,
+        TC-070,
+        TC-074,
+        TC-076,
+        TC-077,
+      ]
+    excluded_risk: "unit / api 層（E2E の変更では動かない）"
+  - id: perf-tooling
+    feature: 性能試験の道具（k6 / 性能ワークフロー）
+    paths:
+      - "perf/**"
+      - "scripts/perf/**"
+      - ".github/workflows/perf.yml"
+    case_ids: [TC-073, TC-074]
+    excluded_risk: "機能ケース（性能試験の変更では機能を触らない）"
+  - id: monitoring-tooling
+    feature: 外形監視・運用の道具
+    paths:
+      - "monitoring/**"
+      - "scripts/monitoring/**"
+      - ".github/workflows/synthetic.yml"
+    case_ids: [TC-075, TC-077]
+    excluded_risk: "機能ケース（監視設定の変更では機能を触らない）"
+  - id: ci-pipeline
+    feature: CI・回帰運用の道具（ワークフロー / ルート設定 / 依存ファイル / 選択ロジック）
+    paths:
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/nightly.yml"
+      - ".github/workflows/release.yml"
+      - "scripts/ci/**"
+      - "scripts/regression/**"
+      - "scripts/test/**"
+      - ".github/actions/**"
+      - "quality/**"
+      - "package.json"
+      - "package-lock.json"
+      - "eslint.config.js"
+      - ".prettierrc.json"
+      - ".prettierignore"
+      - "mise.toml"
+    full: true
+    case_ids: []
+    excluded_risk: "なし（CI・選択ロジックの変更は全件実行にフォールバックする）"
+  - id: security-governance
+    feature: セキュリティ検査・依存更新・リポジトリ統制の設定
+    paths:
+      - ".github/workflows/security.yml"
+      - "security/**"
+      - "scripts/security/**"
+      - ".github/dependabot.yml"
+      - ".github/settings/**"
+      - ".gitleaks*"
+    case_ids: []
+    excluded_risk: "アプリの振る舞い（設定変更ではアプリは変わらない。smoke のみ実行）"
+
+# テストの結果に影響しない変更（ドキュメント・仕様書・テンプレート）。選択実行では smoke だけを動かし、docs-check で整合を検査する。
+# docs/data/cases.csv が変わったときは build-suite の --check（回帰スイート台帳の再生成漏れ）が検出する。
+no_test_impact:
+  - id: docs
+    reason: ドキュメント（docs-check で ID 参照・リンク・manifest を検査する）
+    paths:
+      - "docs/**"
+      - "**/*.md"
+  - id: spec
+    reason: 仕様書（実装の変更は別 PR で行い、そちらで影響を選ぶ）
+    paths:
+      - "spec/**"
+  - id: repo-meta
+    reason: リポジトリのメタ情報（所有者・テンプレート・エディタ設定・ライセンス）
+    paths:
+      - ".github/CODEOWNERS"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+      - ".editorconfig"
+      - ".gitignore"
+      - "LICENSE"
