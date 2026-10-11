@@ -70,7 +70,7 @@ function overview(result, run, marker) {
     `- 監視: ${result.monitor_id} ${result.name}（${result.type}、ジャーニー ${result.journey_id || "なし"}）`,
     `- 失敗の詳細: ${result.failure_detail}`,
     `- 試行回数: ${result.attempts}（定義の retry どおり）`,
-    `- 対象: ${run.mode}、版 ${result.version || run.version || "不明"}、環境 ${run.region}`,
+    `- 対象: ${run.mode}、版 ${result.version || run.version || (marker ? marker.version : null) || "不明"}、環境 ${run.region}`,
     `- 直前のデプロイ（deployment_ref）: ${deploymentRef(marker)}`,
     `- 実行: ${run.run_url || run.run_id}`,
   ];
@@ -98,7 +98,7 @@ const PREVENTION = [
 
 export function issueBody({ result, run, route, owner, marker, drill }) {
   const head = drill
-    ? ["> **通知試験（drill）**: 意図的な障害注入による通知経路の確認。自動で close します。"]
+    ? ["> **通知試験（drill）**: 意図的な障害注入による通知経路の確認。自動で close します。", ""]
     : [];
   const lines = [
     ...head,
@@ -116,8 +116,13 @@ export function ongoingComment(result, run) {
   return `継続して失敗しています（${result.at} UTC、試行 ${result.attempts} 回）。\n- 失敗の詳細: ${result.failure_detail}\n- 版: ${result.version || "不明"}\n- 実行: ${where}\n`;
 }
 
+// 90 秒未満は秒、それ以上は分で表す
+function formatMinutes(min) {
+  return min < 1.5 ? `${Math.max(0, Math.round(min * 60))} 秒` : `${Math.round(min)} 分`;
+}
+
 export function recoveryComment(result, run, downMinutes) {
-  const d = downMinutes === null ? "" : `（Issue 作成から約 ${Math.round(downMinutes)} 分）`;
+  const d = downMinutes === null ? "" : `（Issue 作成から約 ${formatMinutes(downMinutes)}）`;
   const where = run.run_url || run.run_id;
   return `回復しました${d}。${result.at} UTC の実行で ${result.monitor_id} が成功（版 ${result.version || "不明"}、実行 ${where}）。\n回復を確認したため自動で close します。再発防止の還流（defect・テスト・監視・runbook）はこの Issue のチェックリストで追跡し、必要なら close 後も追記してください。\n`;
 }

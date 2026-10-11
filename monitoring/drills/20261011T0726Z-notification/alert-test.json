@@ -1,0 +1,40 @@
+{
+  "test_id": "drill-20261011T072645",
+  "kind": "drill",
+  "injected_fault": "backend コンテナの停止（docker compose stop backend）。復旧は start backend",
+  "repo": "bsj-fujimoto/todo-app",
+  "detected_at": "2026-10-11T07:26:45.535Z",
+  "notified_at": "2026-10-11T07:27:03Z",
+  "notify_latency_sec": 17,
+  "ack_method": "assignee-verified（assignee 設定の確認。人が通知を受け取ったかは観測できない）",
+  "ack_at": "2026-10-11T07:27:13.253Z",
+  "ack_seconds": 10,
+  "recovered_at": "2026-10-11T07:27:16.900Z",
+  "time_to_recover_sec": 31,
+  "monitors": [
+    "MON-002",
+    "MON-003"
+  ],
+  "issues": [
+    {
+      "monitor_id": "MON-002",
+      "number": 17,
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/17",
+      "state": "CLOSED"
+    },
+    {
+      "monitor_id": "MON-003",
+      "number": 18,
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/18",
+      "state": "CLOSED"
+    }
+  ],
+  "checks": {
+    "issue_created": true,
+    "labels_ok": true,
+    "assignee_verified": true,
+    "recovery_detected": true,
+    "issue_closed": true
+  },
+  "result": "pass"
+}

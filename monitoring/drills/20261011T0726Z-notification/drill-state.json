@@ -1,0 +1,45 @@
+{
+  "test_id": "drill-20261011T072645",
+  "detected_at": "2026-10-11T07:26:45.535Z",
+  "issues": [
+    {
+      "monitor_id": "MON-002",
+      "issue": {
+        "number": 17,
+        "url": "https://github.com/bsj-fujimoto/todo-app/issues/17"
+      },
+      "notified_at": "2026-10-11T07:27:03Z",
+      "assignee_expected": "bsj-fujimoto",
+      "assignee_verified": true,
+      "labels_ok": true,
+      "ack_method": "assignee-verified（assignee 設定の確認。人が通知を受け取ったかは観測できない）",
+      "ack_at": "2026-10-11T07:27:13.253Z",
+      "ack_seconds": 10
+    },
+    {
+      "monitor_id": "MON-003",
+      "issue": {
+        "number": 18,
+        "url": "https://github.com/bsj-fujimoto/todo-app/issues/18"
+      },
+      "notified_at": "2026-10-11T07:27:09Z",
+      "assignee_expected": "bsj-fujimoto",
+      "assignee_verified": true,
+      "labels_ok": true,
+      "ack_method": "assignee-verified（assignee 設定の確認。人が通知を受け取ったかは観測できない）",
+      "ack_at": "2026-10-11T07:27:14.439Z",
+      "ack_seconds": 5
+    }
+  ],
+  "run": {
+    "run_id": "20261011T072645",
+    "phase": "drill-fail",
+    "started_at": "2026-10-11T07:26:45.287Z",
+    "region": "local-docker",
+    "retry_delay_sec": 2,
+    "version": null,
+    "mode": "fallback",
+    "expected_version": "",
+    "expected_commit": "552a854c1be89363354fd7bf6c56311cf5774c16"
+  }
+}

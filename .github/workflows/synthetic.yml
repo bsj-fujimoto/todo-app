@@ -80,6 +80,9 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: "起動する（リリースイメージ。ビルドしない）"
         if: steps.target.outputs.mode == 'release'
+        env:
+          # docker-compose.yml は environment で COMMIT_SHA を渡す（未指定なら unknown）。リリースの commit を渡さないと health の commit が unknown になる
+          COMMIT_SHA: ${{ steps.target.outputs.expected_commit }}
         run: docker compose -f docker-compose.yml -f "$OUT/compose.release.yml" up -d --no-build --pull always --wait
       - name: "起動する（フォールバック: main の HEAD をビルド）"
         if: steps.target.outputs.mode != 'release'
