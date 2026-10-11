@@ -55,11 +55,34 @@ function loadBundle() {
   return { tables, docs, textFiles };
 }
 
+/** git が管理するファイルの一覧（追跡中 + 未追跡で除外されていないもの）。git が使えなければ null。 */
+function gitManaged() {
+  const run = spawnSync(
+    "git",
+    ["ls-files", "--cached", "--others", "--exclude-standard", "--", EVIDENCE_DIR],
+    {
+      cwd: root,
+      encoding: "utf8",
+    },
+  );
+  return run.status === 0 ? new Set(run.stdout.split("\n").filter(Boolean)) : null;
+}
+
+/** manifest に載せたファイルが .gitignore で除外されていないか（除外されるとコミットされず、clone した先で欠落になる）。 */
+function untrackedEntries(manifest) {
+  const tracked = gitManaged();
+  if (!tracked || !manifest) return [];
+  return manifest.files
+    .filter((e) => !tracked.has(`${EVIDENCE_DIR}/${e.path}`))
+    .map((e) => `git が管理しない（.gitignore で除外？）: ${e.path}`);
+}
+
 function manifestCheck() {
   const report = createReport();
   const manifest = readManifest(join(root, EVIDENCE_DIR));
   if (!manifest) report.error("docs/evidence/manifest.json が無い");
   else for (const p of verifyManifest(join(root, EVIDENCE_DIR), manifest)) report.error(p);
+  for (const p of untrackedEntries(manifest)) report.error(p);
   return {
     id: "manifest",
     title: "manifest.json の sha256・size が一致し、欠落・未登録ファイルが無い（改変検知）",
