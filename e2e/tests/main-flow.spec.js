@@ -49,6 +49,16 @@ test(
     expect(summary(stack.calls("DELETE"))).toEqual(["DELETE 204"]);
     expect(stack.calls("GET").map((c) => c.status)).toEqual([200, 200]);
 
+    // ログ: backend のリクエストログ（POST 201 が 1 行、PATCH 200 が 2 行、DELETE 204 が 1 行）。ログは非同期に届くので条件待ちする
+    await expect
+      .poll(() =>
+        stack
+          .requestLog()
+          .filter((r) => r.method !== "GET")
+          .map((r) => `${r.method} ${r.status}`),
+      )
+      .toEqual(["POST 201", "PATCH 200", "PATCH 200", "DELETE 204"]);
+
     // DB（保存データ）
     expect((await stack.db()).map((t) => [t.title, t.completed])).toEqual([
       ["仕様書をレビューする", false],

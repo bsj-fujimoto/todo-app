@@ -12,6 +12,25 @@ import { TodoApp } from "./todo-app.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
+function completedRequests(text) {
+  const started = new Map();
+  const completed = [];
+  for (const line of text.split("\n")) {
+    let entry;
+    try {
+      entry = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (entry.msg === "incoming request") started.set(entry.reqId, entry.req);
+    if (entry.msg === "request completed" && started.has(entry.reqId)) {
+      const { method, url } = started.get(entry.reqId);
+      if (!url.startsWith("/api/v1/health")) completed.push({ method, url, status: entry.res.statusCode });
+    }
+  }
+  return completed;
+}
+
 /** backend は未起動の状態で始め、start() で起動する。 */
 async function createStack() {
   const tmp = await mkdtemp(path.join(tmpdir(), "todo-e2e-"));
@@ -34,6 +53,8 @@ async function createStack() {
     calls: (method) => requests.filter((r) => !method || r.method === method),
     clearRequests: () => requests.splice(0),
     logs: () => logs.toString(),
+    /** backend の標準出力（pino の JSON 行）から、完了したリクエストの { method, url, status } を出現順に返す（health を除く）。 */
+    requestLog: () => completedRequests(logs.toString()),
 
     async startBackend() {
       if (backend) return;

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { countCodePoints, validateTitle } from "../../src/validation.js";
 import { MESSAGES } from "../../src/messages.js";
+import { validateTitle as validateTitleOnBackend } from "../../../backend/src/domain/title.js";
 
 const a = (n) => "a".repeat(n);
 const accepted = (input, title) => ({ input, expected: { ok: true, title } });
@@ -93,4 +94,44 @@ describe("messages", () => {
     assert.equal(MESSAGES.STORAGE_FAILURE, "保存できませんでした。もう一度お試しください");
     assert.equal(MESSAGES.DATA_CORRUPT, "保存データを読み込めませんでした");
   });
+});
+
+// 「backend と同一規則」の担保: 同じ入力を両方の検証関数へ流し、合否・コード・保存用の title が一致することを確かめる。
+describe("frontend と backend の検証関数が一致する", () => {
+  const inputs = [
+    "",
+    " ",
+    "   ",
+    "\t",
+    "\u3000",
+    "\u00a0a\u00a0",
+    "\na\n",
+    "   \n  ",
+    "a\nb",
+    "a\r\nb",
+    "a",
+    "あ",
+    "  買い物  ",
+    "a".repeat(99),
+    "a".repeat(100),
+    "a".repeat(101),
+    ` ${"a".repeat(100)} `,
+    `  ${"a".repeat(101)}  `,
+    `${"a".repeat(50)}\n${"a".repeat(60)}`,
+    "😀".repeat(100),
+    "😀".repeat(101),
+    "e\u0301".repeat(50),
+    "e\u0301".repeat(51),
+    "<img src=x onerror=alert(1)>",
+    "a".repeat(100_000),
+  ];
+  for (const input of inputs) {
+    it(`[TC-029] ${JSON.stringify(input.length > 24 ? `${input.slice(0, 12)}…(${[...input].length}cp)` : input)}`, () => {
+      const front = validateTitle(input);
+      const back = validateTitleOnBackend(input);
+      assert.equal(front.ok, back.ok);
+      if (front.ok) assert.equal(front.title, back.title);
+      else assert.equal(front.code, back.code);
+    });
+  }
 });
