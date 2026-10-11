@@ -176,7 +176,7 @@ dependencies:
     alternatives:
       - license-checker-rseidelsohn（保守されているフォークだが、推移依存の spdx-satisfies・nan・normalize-package-data が方針違反）
       - trivy の license スキャナ（コンテナ・ファイル向け。許可リスト方針・期限付き例外・SPDX 式の評価は自前になる）
-    maintenance: このリポジトリで保守する（単体テストあり: scripts/test/security-lib.test.mjs）。
+    maintenance: このリポジトリで保守する（単体テストは scripts/test/security-lib.test.mjs と license-inventory.test.mjs）。
     handling: 継続。再検討の条件は、評価の抜け（SPDX 式の新しい書き方）が見つかったとき。
     last_checked: 2026-10-11
   - name: node:24-alpine（Docker ベースイメージ。backend）
