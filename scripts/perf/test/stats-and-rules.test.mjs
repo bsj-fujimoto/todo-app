@@ -130,3 +130,22 @@ describe("docker stats の解析", () => {
     assert.equal(r.pids, 11);
   });
 });
+
+describe("timeline（spike の回復）", () => {
+  it("timeToRecover は、以降ずっと SLO 内に戻る最初の区間を返す。戻らなければ null", async () => {
+    const { timeToRecover } = await import("../lib/timeline.mjs");
+    const b = (t, p95, err = 0) => ({ t_sec: t, requests: 50, list_p95: p95, error_rate: err });
+    assert.equal(timeToRecover([b(0, 3000), b(5, 900), b(10, 20), b(15, 18)], 500, 0.01), 10);
+    assert.equal(
+      timeToRecover([b(0, 20), b(5, 3000), b(10, 20)], 500, 0.01),
+      10,
+      "途中で悪化したら、その後の戻りから数える",
+    );
+    assert.equal(timeToRecover([b(0, 20), b(5, 30), b(10, 4000)], 500, 0.01), null);
+    assert.equal(
+      timeToRecover([b(0, 20), b(5, 30, 0.2)], 500, 0.01),
+      null,
+      "エラー率が高い区間も戻っていない",
+    );
+  });
+});

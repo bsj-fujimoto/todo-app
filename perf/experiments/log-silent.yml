@@ -1,0 +1,5 @@
+# 実験: backend のリクエストログを止める（LOG_LEVEL=silent）。ログ出力が飽和にどれだけ効くかの検証用。通常の試験では使わない。
+services:
+  backend:
+    environment:
+      LOG_LEVEL: silent
