@@ -1,0 +1,160 @@
+{
+ "scenario": "stress",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "max_sustained_rps": 100,
+ "first_violation_rps": 200,
+ "first_violation_per_iteration": [
+  {
+   "iteration": 1,
+   "rps": 200,
+   "reasons": [
+    "list p95 7434.614ms > 500ms",
+    "create p95 7690.345ms > 300ms",
+    "toggle p95 7683.707ms > 300ms",
+    "delete p95 7319.538ms > 300ms",
+    "エラー率 0.4261 ≥ 0.01",
+    "達成 179.2 req/s < 目標 200 req/s の 95%"
+   ]
+  },
+  {
+   "iteration": 2,
+   "rps": 200,
+   "reasons": [
+    "list p95 8748.707ms > 500ms",
+    "create p95 8682.516ms > 300ms",
+    "toggle p95 8843.643ms > 300ms",
+    "delete p95 8077.804ms > 300ms",
+    "エラー率 0.4753 ≥ 0.01",
+    "達成 170.9 req/s < 目標 200 req/s の 95%"
+   ]
+  },
+  {
+   "iteration": 3,
+   "rps": 200,
+   "reasons": [
+    "list p95 7192.571ms > 500ms",
+    "create p95 7038.639ms > 300ms",
+    "toggle p95 7026.301ms > 300ms",
+    "delete p95 6783.329ms > 300ms",
+    "エラー率 0.4053 ≥ 0.01",
+    "達成 180.3 req/s < 目標 200 req/s の 95%"
+   ]
+  }
+ ],
+ "stages_rps": [
+  20,
+  50,
+  100,
+  200,
+  400,
+  800
+ ],
+ "series": {
+  "first_violation_rps": [
+   200,
+   200,
+   200
+  ],
+  "list_p95_ms@20rps": [
+   8.382,
+   8.108,
+   9.658
+  ],
+  "list_p95_ms@50rps": [
+   6.26,
+   6.31,
+   6.159
+  ],
+  "list_p95_ms@100rps": [
+   34.785,
+   50.474,
+   8.059
+  ],
+  "list_p95_ms@200rps": [
+   7434.614,
+   8748.707,
+   7192.571
+  ],
+  "list_p95_ms@400rps": [
+   9337.482,
+   9203.039,
+   8596.218
+  ],
+  "list_p95_ms@800rps": [
+   13827.5,
+   10006.319,
+   11283.499
+  ]
+ },
+ "note": "stress は SLO の合否を判定しない。限界点（SLO・エラー・取りこぼしのいずれかを最初に割る到着率）を求める。",
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "first_violation_rps": {
+   "n": 3,
+   "mean": 200,
+   "sd": 0,
+   "ci95": [
+    200,
+    200
+   ]
+  },
+  "list_p95_ms@20rps": {
+   "n": 3,
+   "mean": 8.716,
+   "sd": 0.8272,
+   "ci95": [
+    6.6609,
+    10.7711
+   ]
+  },
+  "list_p95_ms@50rps": {
+   "n": 3,
+   "mean": 6.243,
+   "sd": 0.0769,
+   "ci95": [
+    6.0519,
+    6.4341
+   ]
+  },
+  "list_p95_ms@100rps": {
+   "n": 3,
+   "mean": 31.106,
+   "sd": 21.4455,
+   "ci95": [
+    -22.1719,
+    84.3839
+   ]
+  },
+  "list_p95_ms@200rps": {
+   "n": 3,
+   "mean": 7791.964,
+   "sd": 837.3554,
+   "ci95": [
+    5711.69,
+    9872.238
+   ]
+  },
+  "list_p95_ms@400rps": {
+   "n": 3,
+   "mean": 9045.5797,
+   "sd": 394.9217,
+   "ci95": [
+    8064.4606,
+    10026.6988
+   ]
+  },
+  "list_p95_ms@800rps": {
+   "n": 3,
+   "mean": 11705.7727,
+   "sd": 1945.2744,
+   "ci95": [
+    6873.0532,
+    16538.4921
+   ]
+  }
+ },
+ "variance_stats_text": "first_violation_rps: n=3 mean=200 sd=0 ci95=[200, 200]; list_p95_ms@20rps: n=3 mean=8.716 sd=0.8272 ci95=[6.6609, 10.7711]; list_p95_ms@50rps: n=3 mean=6.243 sd=0.0769 ci95=[6.0519, 6.4341]; list_p95_ms@100rps: n=3 mean=31.106 sd=21.4455 ci95=[-22.1719, 84.3839]; list_p95_ms@200rps: n=3 mean=7791.964 sd=837.3554 ci95=[5711.69, 9872.238]; list_p95_ms@400rps: n=3 mean=9045.5797 sd=394.9217 ci95=[8064.4606, 10026.6988]; list_p95_ms@800rps: n=3 mean=11705.7727 sd=1945.2744 ci95=[6873.0532, 16538.4921]"
+}

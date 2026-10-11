@@ -1,0 +1,299 @@
+{
+ "scenario": "stress",
+ "window": {
+  "start_ms": 1791709452360,
+  "end_ms": 1791709854430,
+  "duration_ms": 402070
+ },
+ "options": {},
+ "env": {
+   "BASE_URL": "http://frontend:8080",
+   "MIX": "balanced",
+   "STAGES": "20,50,100,200,400,800",
+   "STAGE_SEC": 60
+  },
+ "metrics": {
+   "data_received": {
+    "type": "counter",
+    "contains": "data",
+    "values": {
+     "count": 7030484261,
+     "rate": 17485726.656627238
+    }
+   },
+   "vus": {
+    "values": {
+     "value": 5,
+     "min": 0,
+     "max": 1000
+    },
+    "type": "gauge",
+    "contains": "default"
+   },
+   "http_reqs": {
+    "type": "counter",
+    "contains": "default",
+    "values": {
+     "rate": 112.82864171650475,
+     "count": 45365
+    }
+   },
+   "http_req_waiting": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "count": 45365,
+     "avg": 4024.486121728525,
+     "med": 3000.716294,
+     "p(95)": 8226.186528799999,
+     "p(99)": 31038.00601912,
+     "min": 2.549792,
+     "max": 32088.86496,
+     "p(90)": 7535.6988286000005,
+     "p(99.9)": 32078.311396924
+    }
+   },
+   "http_req_blocked": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "p(99.9)": 0.28296400000002625,
+     "avg": 0.005479271288438197,
+     "max": 8.025167,
+     "p(99)": 0.11134811999999998,
+     "count": 45365,
+     "min": 0.0005,
+     "med": 0.001791,
+     "p(90)": 0.003583,
+     "p(95)": 0.005334
+    }
+   },
+   "dropped_iterations": {
+    "contains": "default",
+    "values": {
+     "count": 54734,
+     "rate": 136.1305604697712
+    },
+    "type": "counter"
+   },
+   "checks": {
+    "type": "rate",
+    "contains": "default",
+    "values": {
+     "rate": 0.6136622659540579,
+     "passes": 86689,
+     "fails": 54576
+    }
+   },
+   "http_req_tls_handshaking": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "med": 0,
+     "p(90)": 0,
+     "p(95)": 0,
+     "count": 45365,
+     "avg": 0,
+     "min": 0,
+     "max": 0,
+     "p(99)": 0,
+     "p(99.9)": 0
+    }
+   },
+   "http_req_receiving": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "min": 0.005291,
+     "med": 0.036167,
+     "max": 74.408458,
+     "p(99)": 31.411689999999997,
+     "p(99.9)": 44.05879107600069,
+     "count": 45365,
+     "avg": 2.364891343921529,
+     "p(90)": 10.7450004,
+     "p(95)": 12.5526336
+    }
+   },
+   "http_req_failed": {
+    "type": "rate",
+    "contains": "default",
+    "values": {
+     "fails": 27843,
+     "rate": 0.38624490245784193,
+     "passes": 17522
+    }
+   },
+   "vus_max": {
+    "contains": "default",
+    "values": {
+     "value": 1000,
+     "min": 50,
+     "max": 1000
+    },
+    "type": "gauge"
+   },
+   "http_req_sending": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "med": 0.01,
+     "max": 3.0935,
+     "p(90)": 0.017875,
+     "p(99)": 0.043,
+     "p(99.9)": 0.10006000000000376,
+     "avg": 0.011787472699217663,
+     "min": 0.001791,
+     "p(95)": 0.022375,
+     "count": 45365
+    }
+   },
+   "iteration_duration": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "min": 3.580708,
+     "med": 3000.863877,
+     "p(90)": 7545.6883542,
+     "p(99)": 31037.99232812,
+     "avg": 4027.928559516813,
+     "max": 32088.889515,
+     "p(95)": 8234.789803999996,
+     "p(99.9)": 32078.311467288,
+     "count": 45365
+    }
+   },
+   "data_sent": {
+    "type": "counter",
+    "contains": "data",
+    "values": {
+     "count": 5134306,
+     "rate": 12769.685266987779
+    }
+   },
+   "http_req_duration{expected_response:true}": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "med": 4933.569003,
+     "max": 31691.052792,
+     "p(90)": 7593.4541622,
+     "p(95)": 7877.183180799992,
+     "p(99)": 11621.468565639998,
+     "avg": 3775.368436447472,
+     "min": 2.700417,
+     "p(99.9)": 23066.845565000604,
+     "count": 27843
+    }
+   },
+   "http_req_connecting": {
+    "values": {
+     "avg": 0.002647559351923284,
+     "min": 0,
+     "med": 0,
+     "max": 8.000125,
+     "p(90)": 0,
+     "p(95)": 0,
+     "p(99)": 0.08309811999999998,
+     "p(99.9)": 0.21200713600000562,
+     "count": 45365
+    },
+    "type": "trend",
+    "contains": "time"
+   },
+   "iterations": {
+    "type": "counter",
+    "contains": "default",
+    "values": {
+     "rate": 112.82864171650475,
+     "count": 45365
+    }
+   },
+   "http_req_duration": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+     "med": 3000.75496,
+     "p(95)": 8231.6241098,
+     "p(99)": 31038.036039000002,
+     "p(99.9)": 32078.341525712,
+     "avg": 4026.8628005451683,
+     "min": 2.700417,
+     "max": 32088.962793,
+     "p(90)": 7544.3035538,
+     "count": 45365
+    }
+   }
+  },
+ "root_group": {
+   "name": "",
+   "path": "",
+   "id": "d41d8cd98f00b204e9800998ecf8427e",
+   "groups": [],
+   "checks": [
+     {
+      "fails": 10519,
+      "name": "list: status 200",
+      "path": "::list: status 200",
+      "id": "ae210d7a519f353e769d3b3d185c78c3",
+      "passes": 16701
+     },
+     {
+      "name": "list: tasks は配列で件数が想定以上",
+      "path": "::list: tasks は配列で件数が想定以上",
+      "id": "035f9c412a52f8fc344dc147d29c322b",
+      "passes": 16701,
+      "fails": 10519
+     },
+     {
+      "fails": 10519,
+      "name": "list: 先頭の Task が契約どおり",
+      "path": "::list: 先頭の Task が契約どおり",
+      "id": "7980aea0f4f3d0c29ed5be8b4dc0b81c",
+      "passes": 16701
+     },
+     {
+      "passes": 16701,
+      "fails": 10519,
+      "name": "list: createdAt の降順",
+      "path": "::list: createdAt の降順",
+      "id": "634b8b9bf87fed64c9c00725293e7048"
+     },
+     {
+      "name": "create: status 201",
+      "path": "::create: status 201",
+      "id": "a89150a4bbf4c31199c49c56656a8d4c",
+      "passes": 6616,
+      "fails": 4457
+     },
+     {
+      "path": "::create: Task が契約どおりで completed=false",
+      "id": "e8c0ba7621896ed3e1b2f41d37e9d508",
+      "passes": 6616,
+      "fails": 4457,
+      "name": "create: Task が契約どおりで completed=false"
+     },
+     {
+      "path": "::toggle: status 200",
+      "id": "9ed97190dd5045fe872d43c9d21137c2",
+      "passes": 2127,
+      "fails": 1040,
+      "name": "toggle: status 200"
+     },
+     {
+      "name": "toggle: completed が反映され id が一致",
+      "path": "::toggle: completed が反映され id が一致",
+      "id": "b54694dccbbcad7690d337b724387a9c",
+      "passes": 2127,
+      "fails": 1040
+     },
+     {
+      "name": "delete: status 204",
+      "path": "::delete: status 204",
+      "id": "3e360781f544f9c717af089bb4588fbe",
+      "passes": 2399,
+      "fails": 1506
+     }
+    ]
+  }
+}

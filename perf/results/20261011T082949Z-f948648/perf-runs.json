@@ -1,0 +1,368 @@
+[
+  {
+    "run_id": "20261011T082949Z-f948648/load",
+    "type": "load",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/load.js",
+    "script_sha": "4f19a6a5a4bd82b1cb7f57b839b06d85c083359a015a0febc67c928ec4bcab05",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "api_list_p95_ms: n=3 mean=10.647333 sd=0.231535 ci95=[10.072123, 11.222544]; api_list_p99_ms: n=3 mean=11.709667 sd=0.169827 ci95=[11.287758, 12.131575]; api_create_p95_ms: n=3 mean=11.812667 sd=0.148759 ci95=[11.443098, 12.182235]; api_update_p95_ms: n=3 mean=12.075667 sd=0.250221 ci95=[11.454034, 12.697299]; api_delete_p95_ms: n=3 mean=10.885667 sd=0.240986 ci95=[10.286976, 11.484358]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; throughput_rps: n=3 mean=1.000133 sd=0.000115 ci95=[0.999846, 1.00042]; health_p95_ms: n=3 mean=14.063333 sd=0.36347 ci95=[13.160351, 14.966315]",
+    "metrics": {
+      "load.api_list_p95_ms": 10.647333,
+      "load.api_list_p99_ms": 11.709667,
+      "load.api_create_p95_ms": 11.812667,
+      "load.api_update_p95_ms": 12.075667,
+      "load.api_delete_p95_ms": 10.885667,
+      "load.error_rate": 0,
+      "load.throughput_rps": 1.000133,
+      "load.health_p95_ms": 14.063333
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "load/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "load/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "load/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "load/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "pass",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  },
+  {
+    "run_id": "20261011T082949Z-f948648/stress",
+    "type": "stress",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/stress.js",
+    "script_sha": "9812ee5690570ceb4206d8921fb275ec9e282cb0fa58fd1e9d6e71da9fcca668",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "first_violation_rps: n=3 mean=200 sd=0 ci95=[200, 200]; list_p95_ms@20rps: n=3 mean=8.716 sd=0.8272 ci95=[6.6609, 10.7711]; list_p95_ms@50rps: n=3 mean=6.243 sd=0.0769 ci95=[6.0519, 6.4341]; list_p95_ms@100rps: n=3 mean=31.106 sd=21.4455 ci95=[-22.1719, 84.3839]; list_p95_ms@200rps: n=3 mean=7791.964 sd=837.3554 ci95=[5711.69, 9872.238]; list_p95_ms@400rps: n=3 mean=9045.5797 sd=394.9217 ci95=[8064.4606, 10026.6988]; list_p95_ms@800rps: n=3 mean=11705.7727 sd=1945.2744 ci95=[6873.0532, 16538.4921]",
+    "metrics": {
+      "stress.max_sustained_rps": 100
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "stress/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "stress/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "stress/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "stress/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "pass",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  },
+  {
+    "run_id": "20261011T082949Z-f948648/spike",
+    "type": "spike",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/spike.js",
+    "script_sha": "8a0a165e32bb8b2b57eebe2c916b2fb29a963f9056f36adf7956b7cd6962f43c",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "time_to_recover_sec: n=3 mean=5 sd=0 ci95=[5, 5]; recovery_tail.list_p95_ms: n=3 mean=12.768 sd=0.5388 ci95=[11.4295, 14.1065]; recovery_phase.list_p95_ms: n=3 mean=1929.346 sd=588.6899 ci95=[466.8412, 3391.8508]; spike.list_p95_ms: n=3 mean=5131.942 sd=325.1996 ci95=[4324.0363, 5939.8477]; base.list_p95_ms: n=3 mean=8.3527 sd=0.2734 ci95=[7.6736, 9.0318]; spike.error_rate: n=3 mean=0.376 sd=0.0065 ci95=[0.3599, 0.3921]",
+    "metrics": {
+      "spike.recovery_tail_list_p95_ms": 12.768,
+      "spike.recovery_tail_error_rate": 0,
+      "spike.time_to_recover_sec": 5,
+      "spike.during_list_p95_ms": 5131.942
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "spike/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "spike/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "spike/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "spike/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "pass",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  },
+  {
+    "run_id": "20261011T082949Z-f948648/soak",
+    "type": "soak",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/soak.js",
+    "script_sha": "c6f464c28595896582e8df66e565cadeffd31f78f7c7a358a1d381ac97189e9c",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "list_p95_ms: n=3 mean=11.139 sd=0.2901 ci95=[10.4182, 11.8598]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; list_p95_drift_pct: n=3 mean=25.8033 sd=3.2169 ci95=[17.8114, 33.7953]; backend_memory_growth_ratio: n=3 mean=1.0359 sd=0.03 ci95=[0.9613, 1.1105]",
+    "metrics": {
+      "soak.api_list_p95_ms": 11.139,
+      "soak.error_rate": 0
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "fail",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  },
+  {
+    "run_id": "20261011T082949Z-f948648/capacity",
+    "type": "capacity",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/capacity-step.js",
+    "script_sha": "41c7b59e585d151af59ab6f624702f86d9eb08a24b0c6c9cda052d756016d8e0",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "list_p95_ms@1000tasks: n=3 mean=9.3637 sd=0.1812 ci95=[8.9135, 9.8138]; list_p95_ms@2500tasks: n=3 mean=11.3137 sd=0.2152 ci95=[10.7791, 11.8482]; list_p95_ms@5000tasks: n=3 mean=17.8693 sd=0.2835 ci95=[17.1651, 18.5735]; list_p95_ms@7500tasks: n=3 mean=23.526 sd=0.1908 ci95=[23.0519, 24.0001]; list_p95_ms@10000tasks: n=3 mean=29.669 sd=1.277 ci95=[26.4966, 32.8414]",
+    "metrics": {
+      "capacity.max_tasks_within_slo": 10000,
+      "capacity.list_p95_ms_at_1000": 9.364,
+      "capacity.create_p95_ms_at_1000": 11.811,
+      "capacity.list_p95_ms_at_2500": 11.314,
+      "capacity.create_p95_ms_at_2500": 11.469,
+      "capacity.list_p95_ms_at_5000": 17.869,
+      "capacity.create_p95_ms_at_5000": 15.884,
+      "capacity.list_p95_ms_at_7500": 23.526,
+      "capacity.create_p95_ms_at_7500": 20.415,
+      "capacity.list_p95_ms_at_10000": 29.669,
+      "capacity.create_p95_ms_at_10000": 24.019
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "capacity/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "capacity/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "capacity/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "capacity/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "pass",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  },
+  {
+    "run_id": "20261011T082949Z-f948648/screen",
+    "type": "screen",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "playwright + lighthouse",
+    "tool_version": "playwright-core 1.64.0 + lighthouse 13.5.0 (perf/screen/Dockerfile)",
+    "script_path": "perf/screen/measure.mjs",
+    "script_sha": "25d1c064b2265a9cdbd48494ea44c6b49a19c1afab51eea21b2459e56956245e",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+    "warmup_sec": 1,
+    "iterations": 10,
+    "variance_stats": "screen_ready_ms: n=10 mean=51.15 sd=5.0704 ci95=[47.5231, 54.7769]",
+    "metrics": {
+      "screen.screen_ready_ms": 54.6
+    },
+    "server_metrics": [],
+    "verdict": "pass",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T08:30:06.457Z"
+  }
+]

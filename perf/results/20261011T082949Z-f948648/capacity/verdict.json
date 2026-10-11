@@ -1,0 +1,161 @@
+{
+ "scenario": "capacity",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "steps": [
+  {
+   "tasks": 1000,
+   "iterations": 3,
+   "list_p95_ms": 9.364,
+   "create_p95_ms": 11.811,
+   "toggle_p95_ms": 9.761,
+   "delete_p95_ms": 9.554,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    9.507,
+    9.424,
+    9.16
+   ]
+  },
+  {
+   "tasks": 2500,
+   "iterations": 3,
+   "list_p95_ms": 11.314,
+   "create_p95_ms": 11.469,
+   "toggle_p95_ms": 11.479,
+   "delete_p95_ms": 10.569,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    11.549,
+    11.127,
+    11.265
+   ]
+  },
+  {
+   "tasks": 5000,
+   "iterations": 3,
+   "list_p95_ms": 17.869,
+   "create_p95_ms": 15.884,
+   "toggle_p95_ms": 15.596,
+   "delete_p95_ms": 14.489,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    18.143,
+    17.888,
+    17.577
+   ]
+  },
+  {
+   "tasks": 7500,
+   "iterations": 3,
+   "list_p95_ms": 23.526,
+   "create_p95_ms": 20.415,
+   "toggle_p95_ms": 19.921,
+   "delete_p95_ms": 19.059,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    23.723,
+    23.513,
+    23.342
+   ]
+  },
+  {
+   "tasks": 10000,
+   "iterations": 3,
+   "list_p95_ms": 29.669,
+   "create_p95_ms": 24.019,
+   "toggle_p95_ms": 24.444,
+   "delete_p95_ms": 24.798,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    29.546,
+    28.458,
+    31.003
+   ]
+  }
+ ],
+ "max_tasks_within_slo": 10000,
+ "series": {
+  "list_p95_ms@1000tasks": [
+   9.507,
+   9.424,
+   9.16
+  ],
+  "list_p95_ms@2500tasks": [
+   11.549,
+   11.127,
+   11.265
+  ],
+  "list_p95_ms@5000tasks": [
+   18.143,
+   17.888,
+   17.577
+  ],
+  "list_p95_ms@7500tasks": [
+   23.723,
+   23.513,
+   23.342
+  ],
+  "list_p95_ms@10000tasks": [
+   29.546,
+   28.458,
+   31.003
+  ]
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "list_p95_ms@1000tasks": {
+   "n": 3,
+   "mean": 9.3637,
+   "sd": 0.1812,
+   "ci95": [
+    8.9135,
+    9.8138
+   ]
+  },
+  "list_p95_ms@2500tasks": {
+   "n": 3,
+   "mean": 11.3137,
+   "sd": 0.2152,
+   "ci95": [
+    10.7791,
+    11.8482
+   ]
+  },
+  "list_p95_ms@5000tasks": {
+   "n": 3,
+   "mean": 17.8693,
+   "sd": 0.2835,
+   "ci95": [
+    17.1651,
+    18.5735
+   ]
+  },
+  "list_p95_ms@7500tasks": {
+   "n": 3,
+   "mean": 23.526,
+   "sd": 0.1908,
+   "ci95": [
+    23.0519,
+    24.0001
+   ]
+  },
+  "list_p95_ms@10000tasks": {
+   "n": 3,
+   "mean": 29.669,
+   "sd": 1.277,
+   "ci95": [
+    26.4966,
+    32.8414
+   ]
+  }
+ },
+ "variance_stats_text": "list_p95_ms@1000tasks: n=3 mean=9.3637 sd=0.1812 ci95=[8.9135, 9.8138]; list_p95_ms@2500tasks: n=3 mean=11.3137 sd=0.2152 ci95=[10.7791, 11.8482]; list_p95_ms@5000tasks: n=3 mean=17.8693 sd=0.2835 ci95=[17.1651, 18.5735]; list_p95_ms@7500tasks: n=3 mean=23.526 sd=0.1908 ci95=[23.0519, 24.0001]; list_p95_ms@10000tasks: n=3 mean=29.669 sd=1.277 ci95=[26.4966, 32.8414]"
+}
