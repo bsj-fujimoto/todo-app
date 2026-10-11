@@ -41,5 +41,9 @@
 
 ## 訓練記録
 
-未訓練。理由: Actions 上の障害（イメージ取得失敗・Playwright の導入失敗・cron の欠落）は手元では再現できない。`resolve-target` のフォールバックは手元で動作を確認した（リリースが無いため mode=fallback、`monitoring/drills/*/target.json`）。
-`synthetic.yml` が main に入った後に、`force_fallback` と `drill` の手動実行で訓練し、ここに追記する。
+| 日時（UTC）      | 訓練                                                                                                                                                                                                                                                                            | 結果 | 記録                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------- |
+| 2026-10-11 16:2x | 実行基盤の失敗の通知試験（`synthetic.yml` の `meta_drill=true`）: synthetic ジョブを監視の結果が出る前に意図的に失敗させ、`meta-alert` が `[drill][sev3][MON-META] 外形監視の実行に失敗` を起票して close することを確認（`alert` ジョブは skipped = 監視の失敗とは区別される） | pass | run 38155036726、Issue #50                                                                               |
+| 2026-10-11       | `resolve-target` の動作（リリース v1.0.0 があるときは digest 固定のイメージ、無いときはフォールバック）。Actions 上の drill の `target.json` で release モードを確認                                                                                                            | pass | `monitoring/drills/20261011T1621Z-gha-drill-pass/target.json`、手元の `drills/*/target.json`（fallback） |
+
+- 未訓練: 死活監視（`monitoring-watchdog.yml`）の起票（main にマージされるまで `workflow_dispatch` できない。ロジックは単体テスト、`watchdog.mjs` は手元で実行して確認）、イメージ取得失敗・Playwright の導入失敗・cron の欠落（手元・Actions では意図的に再現していない）。マージ後に `monitoring-watchdog.yml` を手動実行して確認し、ここに追記する。
