@@ -201,19 +201,23 @@ artifacts:
     path: docs/data/executions.csv
     type: "table:executions"
     title: docs/data/executions.csv
-    version: "git:7de6fe3"
+    version: "git:296e86c"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-11T18:35:14+09:00"
+    updated_at: "2026-10-11T18:36:48+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-11T18:36:48+09:00"
+        by: maintainer
+        change: "feat(evidence): 修正確認 — この版に修正が入った不具合の関連ケースが pass した行へ defect_ids を接続する"
+        commit: "296e86c"
       - at: "2026-10-11T18:35:14+09:00"
         by: maintainer
         change: "data(evidence): 実施表・不具合表・検出表・アクション表・証拠索引・追跡表と、取り込んだ証跡（初回版。CI run 38128562945）"
         commit: "7de6fe3"
-    source_sha256: f33a8b1f87f01dd47be33de0c63da2db47b42facd1eb082f232beb7dcc6f07e5
+    source_sha256: c98a416798e43137ef6bd07a5e4a2df7b64feb8a569ffff2942cacfa617e493d
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-11
