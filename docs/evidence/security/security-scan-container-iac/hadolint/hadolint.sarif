@@ -18,16 +18,16 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:03:06Z",
-          "endTimeUtc": "2026-10-11T09:03:07.937Z",
-          "commandLine": "docker run hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d hadolint --config security/hadolint.yaml --format sarif backend/Dockerfile frontend/Dockerfile "
+          "startTimeUtc": "2026-10-11T15:43:58Z",
+          "endTimeUtc": "2026-10-11T15:44:00.870Z",
+          "commandLine": "docker run hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d hadolint --config security/hadolint.yaml --format sarif backend/Dockerfile frontend/Dockerfile perf/screen/Dockerfile "
         }
       ],
       "properties": {

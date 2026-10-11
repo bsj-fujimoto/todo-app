@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-11T15:43:34.045Z",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "checks": [
+    {
+      "id": "id-references",
+      "title": "docs/data の ID 参照が解決する（REQ/RISK/VIEW/TC/UNK/DS/EXEC/DEF/ACT/FND/EV）",
+      "status": "pass",
+      "messages": [],
+      "stats": {
+        "files": 12,
+        "defined": 619,
+        "references": 3197,
+        "unresolved": 0
+      }
+    },
+    {
+      "id": "evidence-manifest",
+      "title": "docs/evidence/manifest.json の sha256 が一致する（改変検知）",
+      "status": "pass",
+      "messages": [],
+      "stats": {
+        "entries": 156
+      }
+    },
+    {
+      "id": "tc-coverage",
+      "title": "テストの [TC-xxx] が cases.csv に実在し、自動化ケースが 1 つ以上のテストに対応する",
+      "status": "pass",
+      "messages": [],
+      "warnings": [],
+      "stats": {
+        "cases": 77,
+        "automated": 75,
+        "covered": 75,
+        "known_gaps": 0,
+        "test_ids": 75
+      }
+    },
+    {
+      "id": "markdown-links",
+      "title": "Markdown の相対パスリンクが切れていない",
+      "status": "pass",
+      "messages": [],
+      "stats": {
+        "files": 39,
+        "broken": 0
+      }
+    }
+  ],
+  "result": "pass"
+}

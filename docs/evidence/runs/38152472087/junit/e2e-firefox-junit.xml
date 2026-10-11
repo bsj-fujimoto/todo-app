@@ -1,0 +1,24 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="5.917908">
+<testsuite name="main-flow.spec.js" timestamp="2026-10-11T15:44:05.724Z" hostname="firefox" tests="2" failures="0" skipped="0" time="6.038" errors="0">
+<testcase name="[TC-001] 追加・完了切替・削除・再読込が一連で動き、結果が保持される" classname="main-flow.spec.js" time="2.935">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 6 件">
+</property>
+</properties>
+</testcase>
+<testcase name="[TC-070] 3 ブラウザで同じ結果になる（追加→完了→再読込→削除）" classname="main-flow.spec.js" time="3.103">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 5 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+<testsuite name="screen-states.spec.js" timestamp="2026-10-11T15:44:05.724Z" hostname="firefox" tests="1" failures="0" skipped="0" time="0.969" errors="0">
+<testcase name="[TC-056] 初回起動（空の DB）は見出し・入力欄・追加ボタンと「タスクはありません」を表示する" classname="screen-states.spec.js" time="0.969">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 1 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+</testsuites>

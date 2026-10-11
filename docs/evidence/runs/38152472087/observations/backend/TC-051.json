@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-051",
+  "entries": [
+    {
+      "title": "[TC-051] 完了切替・削除も 503 STORAGE_FAILURE で、行は部分的にも変わらず、それぞれ error ログが出る",
+      "test_case_ids": [
+        "TC-051"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.713Z",
+      "finished_at": "2026-10-11T15:43:53.760Z",
+      "duration_ms": 47,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 503,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"STORAGE_FAILURE\",\"message\":\"保存できませんでした。もう一度お試しください\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 503,
+          "response": "{\"error\":{\"code\":\"STORAGE_FAILURE\",\"message\":\"保存できませんでした。もう一度お試しください\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

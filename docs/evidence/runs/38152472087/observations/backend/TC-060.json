@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-060",
+  "entries": [
+    {
+      "title": "[TC-060] HTML・SQL の断片を含むタイトルは、そのまま（変換・除去・実行なしで）保存され、そのまま返る",
+      "test_case_ids": [
+        "TC-060"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:52.916Z",
+      "finished_at": "2026-10-11T15:43:52.999Z",
+      "duration_ms": 83,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"<img src=x onerror=alert(1)>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"<img src=x onerror=alert(1)>\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"<script>alert(1)</script>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"<script>alert(1)</script>\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"&lt;b&gt;\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"&lt;b&gt;\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"\\\"><svg onload=alert(1)>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"\\\"><svg onload=alert(1)>\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"'); DROP TABLE tasks;--\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"'); DROP TABLE tasks;--\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"' OR '1'='1\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"' OR '1'='1\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"' OR '1'='1\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"},{\"id\":\"{uuid}\",…(635文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

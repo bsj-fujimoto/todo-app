@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-029",
+  "entries": [
+    {
+      "title": "[TC-029] 検証順は 必須 → 長さ → 改行で、返るエラーは 1 つだけ",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.536Z",
+      "finished_at": "2026-10-11T15:43:53.537Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"   \\n  \"",
+          "result": "不合格 TITLE_REQUIRED"
+        },
+        {
+          "input": "\"aaaaaaaaaaaa\"…(111コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        },
+        {
+          "input": "\"a\\nb\"",
+          "result": "不合格 TITLE_MULTILINE"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

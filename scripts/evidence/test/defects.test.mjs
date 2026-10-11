@@ -142,6 +142,25 @@ describe("不具合表の行", () => {
     assert.match(text, /#6: closed だが修正 PR の記録が無い/);
   });
 
+  it("「ケース: 該当なし。…」と事実を書いた不具合は、case_ids が空でもよい（書かなければ指摘し、最終検査で警告）", () => {
+    const none = BODY.replace(
+      "- ケース: TC-061（検出）、TC-063（UNK-004）",
+      "- ケース: 該当なし。検出したのは CodeQL で、対応するケースが無い。新規ケース案: 出力の検査",
+    );
+    const { row, problems } = buildDefect(issue({ body: none }), ctx());
+    assert.deepEqual(problems, []);
+    assert.equal(row.case_ids, "");
+    const report = createReport();
+    checkDefectRows([row], report);
+    assert.deepEqual(report.errors, []);
+    assert.match(report.warnings.join("\n"), /DEF-006: 関連ケースが無い（検出した手段: e2e/);
+    const silent = BODY.replace("- ケース: TC-061（検出）、TC-063（UNK-004）", "- ケース:");
+    assert.match(
+      buildDefect(issue({ body: silent }), ctx()).problems.join("\n"),
+      /関連ケース（TC-xxx）が Issue 本文に無い/,
+    );
+  });
+
   it("状態: open / fixed / closed / wontfix。未マージの修正 PR は指摘する", () => {
     assert.equal(statusOf(issue({ state: "OPEN" }), null), "open");
     assert.equal(statusOf(issue(), "9"), "fixed");

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite name="契約（openapi.yaml）と応答の一致" time="0.257712" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T15:43:44.671Z" hostname="runnervmmprz5">
+		<testcase name="[TC-037] 一覧・追加の応答が契約の TaskList / Task に合い、余分なキーがなく、id は UUID v4・createdAt は UTC" time="0.173135" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] ルート一覧（実装が登録したもの）が openapi の paths と一致する" time="0.013217" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] リクエスト本文: 契約のスキーマに合う本文は 400 にならず、合わない本文は 400 になる" time="0.068485" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] エラーコードの列挙と文言が実装（ERROR_DEFS）と一致する" time="0.001084" classname="契約（openapi.yaml）と応答の一致" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<testsuite name="契約検証ヘルパの自己検査（ずれたら落ちること）" time="0.005450" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T15:43:44.926Z" hostname="runnervmmprz5">
+		<testcase name="[契約] 契約どおりの応答は通る" time="0.000832" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] 余分なキー・型違い・UUID/日時の形式違い・必須の欠落を検出する" time="0.002586" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+		<testcase name="[契約] 宣言のない status・content-type の違い・本文なしのはずの本文を検出する" time="0.001568" classname="契約検証ヘルパの自己検査（ずれたら落ちること）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<testsuite name="GET /api/v1/health（実プロセス）" time="0.511551" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T15:43:44.924Z" hostname="runnervmmprz5">
+		<testcase name="[TC-075] 200 で {status, version, commit, db} の 4 キーだけ。version は package.json、commit は 40 桁 16 進か unknown" time="0.511222" classname="GET /api/v1/health（実プロセス）" file="/home/runner/work/todo-app/todo-app/backend/test/api/contract.test.js"/>
+	</testsuite>
+	<!-- tests 8 -->
+	<!-- suites 3 -->
+	<!-- pass 8 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 1059.148113 -->
+</testsuites>

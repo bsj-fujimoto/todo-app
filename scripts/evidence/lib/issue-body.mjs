@@ -6,7 +6,7 @@ export function parseSections(body) {
   const sections = new Map();
   let current = null;
   for (const line of String(body ?? "").split(/\r?\n/)) {
-    const m = /^##\s+(.+?)\s*$/.exec(line);
+    const m = /^#{2,3}\s+(.+?)\s*$/.exec(line); // 「## 識別」。incident の本文に追記した欠陥の記録は「### 識別」
     if (m) {
       current = m[1].replace(/（.*$/, "").trim();
       sections.set(current, []);

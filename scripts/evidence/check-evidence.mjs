@@ -3,7 +3,8 @@
 //   ① manifest の改変検知 ② ID 参照の解決（EV 含む） ③ 抽出パリティ ④ 実施表 ⑤ 不具合表 ⑥ 証拠索引の参照・sha256
 //   ⑦ アクション表 ⑧ 追跡表が生成結果と一致 ⑨ 成果物台帳・正本の所在地が最新 ⑩ 秘密情報・個人情報らしい値の簡易検査
 //   node scripts/evidence/check-evidence.mjs [--out report.json] [--release <40桁の SHA>] [--allow-mixed-versions] [--strict]
-// --strict: 成果物台帳（artifacts.yaml）が古いことも失敗にする（既定は警告。台帳は文書を更新するたびに再生成する）。
+// 成果物台帳（artifacts.yaml・source-of-truth.yaml）が古いことは、既定では警告（--strict でも警告）。失敗にするのは --strict-artifacts だけ
+// （release.yml・最終整合の手元実行用。文書 PR のたびに台帳が古くなり、並列の PR が再生成で衝突するのを避けるため）。
 // docs/evidence/release.json（リリースの記録。人が取り込み時に書く）があれば、その commit_sha を --release に、--strict で検査する
 // （実施表の全行がテストした製品 commit X のもので、版の混在が無いこと）。無ければスキップと明示し、非 strict。
 // --structure-only: release.json を見ない構造検査だけ（ID 解決・manifest・パリティ・秘密混入など）。タグの commit X で実行する release.yml が使う。
@@ -16,6 +17,7 @@ import { parseCsvObjects } from "../ci/lib/csv.mjs";
 import { DATA_DIR, EVIDENCE_DIR, createReport, toPosix } from "./lib/common.mjs";
 import {
   actions,
+  artifactsResult,
   defects,
   executions,
   idReferences,
@@ -29,7 +31,7 @@ import { readManifest, verifyManifest } from "./lib/manifest.mjs";
 import { readReleaseRecord, releasePlan, releaseRecordCheck } from "./lib/release-record.mjs";
 
 const args = parseArgs(process.argv.slice(2), {
-  flags: ["allow-mixed-versions", "strict", "structure-only"],
+  flags: ["allow-mixed-versions", "strict", "strict-artifacts", "structure-only"],
 });
 const root = resolve(args.root ?? ".");
 const TEXT_EXT = /\.(csv|json|jsonl|xml|md|ya?ml|sarif|txt|html|log|tsv)$/;
@@ -40,6 +42,15 @@ function walk(dir, prefix = "") {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory() ? walk(join(dir, e.name), `${prefix}${e.name}/`) : [`${prefix}${e.name}`],
   );
+}
+
+/** リポジトリのオーナー名（不具合のスナップショットの repository。無ければ GITHUB_REPOSITORY）。人名・アカウント名として書かれたものの検査に使う。 */
+function ownersOfRepository() {
+  const file = join(root, EVIDENCE_DIR, "github/defect-issues.json");
+  const repo = existsSync(file)
+    ? JSON.parse(readFileSync(file, "utf8")).repository
+    : process.env.GITHUB_REPOSITORY;
+  return [String(repo ?? "").split("/")[0]].filter(Boolean);
 }
 
 function loadBundle() {
@@ -58,7 +69,7 @@ function loadBundle() {
     ...walk(join(root, EVIDENCE_DIR)).map((f) => `${EVIDENCE_DIR}/${f}`),
   ].filter((p) => TEXT_EXT.test(p) && statSync(join(root, p)).size <= MAX_SCAN_BYTES);
   const textFiles = scanned.map((p) => ({ path: toPosix(p), text: readFileSync(join(root, p), "utf8") }));
-  return { tables, docs, textFiles };
+  return { tables, docs, textFiles, owners: ownersOfRepository() };
 }
 
 /** git が管理するファイルの一覧（追跡中 + 未追跡で除外されていないもの）。git が使えなければ null。 */
@@ -135,15 +146,7 @@ function artifactsCheck() {
   const stale = run.status !== 0;
   const message =
     "成果物台帳（artifacts.yaml・source-of-truth.yaml）が最新でない（build-artifacts.mjs で再生成する）";
-  const failed = stale && plan.strict;
-  return {
-    id: "artifacts",
-    title: "成果物台帳・正本の所在地が文書の現状と一致する",
-    status: failed ? "fail" : "pass",
-    messages: failed ? [message] : [],
-    warnings: stale && !failed ? [message] : [],
-    stats: {},
-  };
+  return artifactsResult({ stale, strictArtifacts: Boolean(args["strict-artifacts"]), message });
 }
 
 const bundle = loadBundle();

@@ -40,6 +40,7 @@ function actionLinks(actions, defects) {
       ...mentions(a.what, "DEF").flatMap((d) => caseIdsOf.get(d) ?? []),
     ]),
     findings: idsIn(a.finding_ids),
+    defects: mentions(a.what, "DEF"),
   }));
 }
 
@@ -64,15 +65,13 @@ function chainRow(c, ctx) {
   };
 }
 
-/** ケースに結び付かないものの行（欠落）。 */
-function orphanRows(ctx) {
+/** ケース・検出・アクションが結び付かない欠落の行。 */
+function gapRows(ctx) {
   const used = (col) => new Set(ctx.cases.flatMap((c) => idsIn(c[col])));
-  const reqs = used("requirement_ids");
-  const risks = used("risk_ids");
-  const views = used("perspective_ids");
+  const [reqs, risks, views] = ["requirement_ids", "risk_ids", "perspective_ids"].map(used);
   const linkedFindings = new Set(ctx.links.flatMap((l) => l.findings));
   const linkedActions = new Set(
-    ctx.links.filter((l) => l.cases.length > 0 || l.findings.length > 0).map((l) => l.id),
+    ctx.links.filter((l) => l.cases.length + l.findings.length + l.defects.length > 0).map((l) => l.id),
   );
   return [
     ...ctx.requirements
@@ -84,6 +83,13 @@ function orphanRows(ctx) {
     ...ctx.perspectives
       .filter((p) => p.applicability === "applicable" && !views.has(p.perspective_id))
       .map((p) => ({ perspective_ids: p.perspective_id, gaps: "適用の観点にケースがない" })),
+    ...ctx.defects
+      .filter((d) => idsIn(d.case_ids).length === 0)
+      .map((d) => ({
+        defect_ids: d.defect_id,
+        action_ids: join(ctx.links.filter((l) => l.defects.includes(d.defect_id)).map((l) => l.id)),
+        gaps: `関連ケースがない（検出した手段: ${d.detected_phase}）`,
+      })),
     ...ctx.findings
       .filter((f) => ["tp", "accepted", "untriaged"].includes(f.status) && !linkedFindings.has(f.finding_id))
       .map((f) => ({
@@ -92,15 +98,22 @@ function orphanRows(ctx) {
       })),
     ...ctx.actions
       .filter((a) => !linkedActions.has(a.action_id))
-      .map((a) => ({ action_ids: a.action_id, gaps: "ケース・検出に結び付かないアクション" })),
-    ...ctx.findings
-      .filter((f) => linkedFindings.has(f.finding_id))
-      .map((f) => ({
-        finding_ids: f.finding_id,
-        action_ids: join(ctx.links.filter((l) => l.findings.includes(f.finding_id)).map((l) => l.id)),
-      })),
+      .map((a) => ({ action_ids: a.action_id, gaps: "ケース・検出・不具合に結び付かないアクション" })),
   ];
 }
+
+/** 検出 → アクションの接続の行。 */
+function findingRows(ctx) {
+  const linked = new Set(ctx.links.flatMap((l) => l.findings));
+  return ctx.findings
+    .filter((f) => linked.has(f.finding_id))
+    .map((f) => ({
+      finding_ids: f.finding_id,
+      action_ids: join(ctx.links.filter((l) => l.findings.includes(f.finding_id)).map((l) => l.id)),
+    }));
+}
+
+const orphanRows = (ctx) => [...gapRows(ctx), ...findingRows(ctx)];
 
 /** ctx: 各表の行 { cases, requirements, risks, perspectives, executions, defects, actions, findings }。 */
 export function buildTraceability(tables) {

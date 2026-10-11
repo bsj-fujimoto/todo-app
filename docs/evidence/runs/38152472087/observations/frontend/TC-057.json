@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-057",
+  "entries": [
+    {
+      "title": "[TC-057] 取得前は「読み込み中…」を出し、「タスクはありません」を出さない。操作は無効",
+      "test_case_ids": [
+        "TC-057"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:54.929Z",
+      "finished_at": "2026-10-11T15:43:54.995Z",
+      "duration_ms": 66,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 3 行 [タスク3(未), タスク2(済), タスク1(未)]、入力欄=なし、入力エラー=なし、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list()"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -11,16 +11,16 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:50Z",
-  "finished_at": "2026-10-11T09:02:55.266Z",
+  "started_at": "2026-10-11T15:43:35Z",
+  "finished_at": "2026-10-11T15:43:41.606Z",
   "command": "docker run ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f gitleaks git --config security/gitleaks.toml --report-format sarif --report-path security-results/gitleaks/gitleaks.sarif --redact --exit-code 2 --no-banner --no-color /repo",
-  "exit_code": 0,
+  "exit_code": 2,
   "accepted_exit_codes": [
     0,
     2
@@ -40,22 +40,22 @@
     "images": []
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/gitleaks",
   "output_files": [
     {
       "path": "security-results/gitleaks/gitleaks.log",
       "bytes": 1108,
-      "sha256": "8adf2f80e3ee2f6d61b3002a7455f5cc9aa094c6b80e99ed5b5b4c8e4356c2a5"
+      "sha256": "8e6fee0ef1eb6402b81fc2da4e629318e017908b79118dbf0c4910428dbcf0eb"
     },
     {
       "path": "security-results/gitleaks/gitleaks.sarif",
-      "bytes": 59013,
-      "sha256": "38c308b6aa341c7bcaf7b5d3ee1c22675d8941dc6f0da1f975f3d5c198294190"
+      "bytes": 71861,
+      "sha256": "2d5198ba318ce0f5f3109b594e6ad63539a66f825b2a7e234ca4703d8324e302"
     }
   ],
-  "finding_count_sarif": 0,
+  "finding_count_sarif": 1,
   "informational": false,
   "note": null
 }

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-061",
+  "entries": [
+    {
+      "title": "[TC-061] 送信中に打った次の入力は、先の追加の成功で消さない（Issue #6 の回帰）",
+      "test_case_ids": [
+        "TC-061"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.118Z",
+      "finished_at": "2026-10-11T15:43:55.132Z",
+      "duration_ms": 14,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 1 行 [A(未)]、入力欄=\"B\"、入力エラー=なし、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → create(\"A\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

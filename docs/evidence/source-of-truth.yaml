@@ -24,6 +24,11 @@ source_of_truth:
     path: docs/adr
     artifact_ids:
       - ART-04
+      - ART-56
+      - ART-57
+      - ART-58
+      - ART-59
+      - ART-60
     authoritative: true
     status: present
     note: "アーキテクチャ判断（ADR）。ディレクトリ配下の全 ADR が対象"
@@ -35,10 +40,10 @@ source_of_truth:
     note: "セキュリティ検査の方針・重大度と SLA・トリアージの規則"
   slo:
     path: perf/slo.yaml
-    artifact_id: null
+    artifact_id: ART-52
     authoritative: true
-    status: missing
-    note: "SLO（性能・可用性の目標）（未作成。作成されるまで所在だけを記す）"
+    status: present
+    note: "SLO（性能・可用性の目標）"
   test_perspectives:
     path: docs/data/perspectives.csv
     artifact_id: ART-12

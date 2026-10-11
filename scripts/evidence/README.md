@@ -63,10 +63,11 @@ npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不
 
 **タグは必ず「テストした製品 commit X」に打つ。** 実施表・証跡は X の run から作り、あとで commit Y として main に入れる。したがって X の時点の `release.yml` は、X の実施表をまだ持てない。検査はこの前提で分けてある。
 
-| いつ・どこで                                                         | 何を検査するか                                                                                                                                                                                                                 |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| タグ X の `release.yml`（`evidence-check` ジョブ。`publish` の条件） | **構造だけ**（`check-evidence.mjs --structure-only`: ID 解決・manifest の sha256・パリティ・不具合表・証拠索引・秘密混入など）。版は固定しない                                                                                 |
-| Y 以降の `ci.yml`（docs-check の `check-evidence.mjs`）              | `docs/evidence/release.json` があれば、その `commit_sha`（= X）を `--release` に **`--strict`** で検査（実施表の全行の `commit_sha` が X で、版の混在が無い。成果物台帳が古いことも失敗）。無ければスキップと明示し、非 strict |
+| いつ・どこで                                                                      | 何を検査するか                                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| タグ X の `release.yml`（`evidence-check` ジョブ。`publish` の条件）              | **構造だけ**（`check-evidence.mjs --structure-only`: ID 解決・manifest の sha256・パリティ・不具合表・証拠索引・秘密混入など）。版は固定しない                                                                                                                        |
+| Y 以降の `ci.yml`（docs-check の `check-evidence.mjs`）                           | `docs/evidence/release.json` があれば、その `commit_sha`（= X）を `--release` に **`--strict`** で検査（実施表の全行の `commit_sha` が X で、版の混在が無い。ID 解決・manifest・パリティも失敗）。**成果物台帳が古いことは警告**。無ければスキップと明示し、非 strict |
+| 最終整合（管理者が手元で 1 回。`release.yml` の `evidence-check` にも付ける想定） | 上に加えて **`--strict-artifacts`**: 成果物台帳（`artifacts.yaml`・`source-of-truth.yaml`）が古いことも失敗にする（`build-artifacts.mjs` の再生成漏れ）。`git log` を読むので `fetch-depth: 0` が要る                                                                 |
 
 `docs/evidence/release.json`（取り込み時に管理者が書く。ワークフローは書かない）:
 
@@ -95,6 +96,7 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 
 - 新しい検出（`FND-NEW-xxxxxx`）が出たら、`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で `security/finding-ids.yaml` に番号を振って commit する。
 - CI の docs-check は、PR のたびに `check-evidence.mjs` と `npm run evidence:test` を回す。
+- **成果物台帳の古さは、通常の CI では警告**。文書 PR を並列で出すと、`docs/*.md` を足すたびに台帳（`artifacts.yaml`）・manifest・追跡表などの生成物が古くなり、全 PR が再生成で衝突するため。台帳は最後に 1 回 `npm run evidence:build` で再生成し、`--strict-artifacts` で確かめる。まだ台帳に無い文書（main に入ったばかりの `docs/README.md` など）は警告になる（それで正しい）。
 
 ### 再生成の冪等性
 
@@ -117,7 +119,7 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 | `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                       |
 | `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                   |
 | `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                       |
-| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                             |
+| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--strict-artifacts`（台帳の古さも失敗）・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`   |
 
 ## 4. 設計判断と制約
 
@@ -127,8 +129,10 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 - `finding_id` は security の triage が、fingerprint から決まる**安定 ID**（`FND-nnn`。台帳 `security/finding-ids.yaml`）で振る。検出が増減しても同じ検出は同じ番号を保つ。
   台帳に無い新しい検出は仮 ID（`FND-NEW-xxxxxx`）で出て、`build-findings.mjs` が失敗する。`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で番号を振って commit してから取り込み直す
   （旧形式の `F-001` の findings.json も `FND-001` に写せる）。
-- `artifacts.yaml` の履歴・更新日時は**コミット済み**の内容から作る。文書を更新したら、コミット後に `build-artifacts.mjs` を再実行する（古ければ `check-evidence.mjs` が警告、`--strict` で失敗）。
+- `artifacts.yaml` の履歴・更新日時は**コミット済み**の内容から作る。文書を更新したら、コミット後に `build-artifacts.mjs` を再実行する（古ければ `check-evidence.mjs` が警告、`--strict-artifacts` で失敗）。
+- 検出したのがテストケースでない不具合（CodeQL・外形監視など）は、Issue の「関連ケース」に「ケース: 該当なし。…」と、検出した手段・ケースが無い事実・新規ケースの案を書く。`case_ids` は空になり、`check-evidence` は警告、追跡表には「関連ケースがない」の行（gaps）で残る。ケースがあるのに書かない場合は指摘して失敗する。
 - `build-defects.mjs` の `release` は、起票日以前で最新の `v*` タグ（無ければ `pre-1.0.0`）。`source` は検出工程が production なら production、それ以外は test。
+- **墨消し**: `fetch-run.mjs`（と、Issue のスナップショットを作る `build-defects.mjs`）は、取り込んだテキスト（JSON・SARIF・jsonl・md・xml…）から、人の氏名・メール・アカウント名・秘密情報らしい値を決定的に `[REDACTED:…]` へ置き換える（`lib/redact.mjs`）。記録は `SOURCE.json` の `redactions`（理由・規則ごとの件数・元ファイルと墨消し後の sha256）。manifest の項目には `original_sha256`・`redacted: true`。`check-evidence` の簡易検査は**許可リストの例外なし**で、墨消し漏れ（メール・メンション・オーナー名・墨消し済みでない author / email キー）を失敗にする。取り込み済みの証跡を墨消しし直すときは、同じ `fetch-run.mjs --run <id>` を再実行する。
 - 正規表現による秘密情報・個人情報の検査は**不在を証明しない**（`docs/evidence/README.md`）。
 - 取り込むのは小さな実行成果物だけ。失敗時の trace・video・HTML レポートは持ち込まない。
 

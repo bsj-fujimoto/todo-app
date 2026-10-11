@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-024",
+  "entries": [
+    {
+      "title": "[TC-024] 上限の 1 つ先（101・102 文字）は TITLE_TOO_LONG",
+      "test_case_ids": [
+        "TC-024"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.532Z",
+      "finished_at": "2026-10-11T15:43:53.533Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(101コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        },
+        {
+          "input": "\"aaaaaaaaaaaa\"…(102コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1344,19 +1344,54 @@
           ]
         }
       },
-      "results": [],
+      "results": [
+        {
+          "message": {
+            "text": "sourcegraph-access-token has detected secret for file docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif at commit b8000978e1f0657894a4fda1090d62461fa09a0f."
+          },
+          "ruleId": "sourcegraph-access-token",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif"
+                },
+                "region": {
+                  "startLine": 1351,
+                  "startColumn": 27,
+                  "endLine": 1351,
+                  "endColumn": 67,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "b8000978e1f0657894a4fda1090d62461fa09a0f",
+            "email": "[REDACTED:email]",
+            "author": "[REDACTED:author]",
+            "date": "2026-10-11T09:46:39Z",
+            "commitMessage": "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)\n\n## 概要\n\nテストの**実施結果・不具合・証拠台帳を、CI\nの実行結果から機械的に生成**し、改変を検知できるようにする（`scripts/evidence/`、`docs/evidence/`、`docs/data/`\nの生成表）。\n偽装・水増しをしない（実際に動いたテストの結果から作る。観察できなかったことは「できなかった」と書く）。作り方は\n`scripts/evidence/README.md`、置き場と形式は `docs/evidence/README.md`。\n\n1. **観察値の採取**: 各テストが実際に観察した値を終了時に自動で書く（e2e:\n一覧の行・チェック状態・エラー文言・入力欄・フォーカスと、通信の method path → status、ブラウザ名と版・OS・Node\n版。api: 全リクエストの要約と実測値。unit: 入力 → 結果の表・画面と状態の要約）。アサーションは弱めていない。\n2. **実施表**:\n`build-executions.mjs`（JUnit・観察値・ci-summary・regression-selection →\n`executions.csv`）\n3. **不具合表**: `build-defects.mjs`（Issue `defect`・`flaky` →\n`defects.csv`。Issue 本文は事実に基づいて補筆し、履歴をコメントに残した）\n4. **証跡台帳**:\n`fetch-run.mjs`・`build-manifest.mjs`・`verify-manifest.mjs`・`build-evidence-index.mjs`・`build-traceability.mjs`・`build-findings.mjs`・`build-artifacts.mjs`（`artifacts.yaml`・`source-of-truth.yaml`）・`check-parity.mjs`・`check-evidence.mjs`\n\n## 設計判断\n\n- **観察値と JUnit が正本**。`actual_result`\nは観察値だけから組む（期待結果は読まない）。観察値が無い行は「観察値なし」と書き、JUnit\nが記録した事実だけを添える。期待結果と同一なら失敗、全文を含む・短すぎるものは警告。\n- **run 単位で取り込み・置換**（冪等）。`docs/evidence/runs/<run-id>/`\nに小さな成果物だけ（trace・video・HTML は持ち込まない）。`SOURCE.json` に取得時刻・取得元 run の URL・対象\nSHA・版。EXEC・EV の ID は、同じ行・同じ主張なら再生成しても変わらない。\n- **版の混在は失敗**。実施表の `commit_sha` は 1 種類。観察値・ci-summary・SOURCE の SHA と run\nid、JUnit の層ごとの件数と ci-summary の件数も突き合わせる。別の版の行が残っていれば\n`--prune-other-versions` を付けない限り失敗。\n- **全ケースが 1 行以上**。手動ケース（TC-071・TC-072）は実施していないので\n`not_run`（理由・owner・実施予定日は `docs/evidence/manual-plan.yaml`）。結果の無い自動化ケースも\n`not_run` + 理由。\n- **承認を捏造しない**。`approved_by` は「承認済み」と文書に書かれたものだけ（ADR-0001 の決定者 1\n件）。draft は null。\n- **Issue は正本、defects.csv は派生物**。Issue\nのスナップショット（`docs/evidence/github/defect-issues.json`）を証拠にして、`--offline`\nで同じ表を再生成できる。修正済みの不具合は、修正 PR のマージ commit（`fix_commit`）と、修正確認（その commit\nを含む版で関連ケースが pass した JUnit）を証拠にする。実施表の pass 行にも修正確認として `defect_ids`\nを付ける（`git merge-base --is-ancestor` で確かめられた場合だけ）。\n- `FND-nnn` は security.yml の triage の `F-nnn`\nを写した（`docs/data/findings.csv` で定義するので、docs-check の ID 解決が通る）。\n- 依存ゼロ（`scripts/ci/lib` の CSV・JUnit・YAML を再利用）。eslint の規約（複雑度 8・関数 40\n行・引数 4・ネスト 3・時刻の注入）を守る。\n\n## 生成物の件数（初回版。実 run から生成）\n\n元の run: CI run 38128562945（PR #26 の head 52da4aa）。セキュリティの証跡: main の\nsecurity run 38126925868（55bfe12）。**最終はリリースタグの run で再生成する**（下記）。\n\n| 表・台帳 | 件数 |\n| ------------------------ |\n-----------------------------------------------------------------------------------------------------------------\n|\n| `executions.csv` | 111 行（pass 109 / not_run 2。e2e chromium 33・firefox\n3・webkit 3・mobile 1、compose 4、api 27、unit 36、contract 2） |\n| `defects.csv` | 6 件（DEF-005・006・011・015・016・025。fixed 4 / open 2、major\n2 / minor 4） |\n| `evidence-index.csv` | 272 件（実施 226 / セキュリティ 41 / 品質 2 / 回帰 1 / 証跡 2）\n|\n| `traceability.csv` | 82 行（ケース 77 行 + 欠落・接続の行 5 行）。要求 34/34、リスク 14/16\nがケースに結び付く |\n| `actions.csv` | 5 件（ACT-001 zlib 受容、ACT-002 TC-073 flaky、ACT-003\ncompose の COMMIT_SHA、ACT-004 手動ケースの実施、ACT-005 Cache-Control） |\n| `findings.csv` | 9 件（triage の出力: na 6 / accepted 2 / tp 1） |\n| `artifacts.yaml` | 38 件（承認済み 1 件、正本 8 件）。`manifest.json` は 156 ファイル |\n\n観察値の採取: **pass の 109 行すべて（TC 75 / 77）に観察値が付いた**。付いていない 2 TC\nは手動ケース（TC-071・TC-072）で、実施していない。\n\n## 検出した欠落・不整合\n\n- **手動ケース 2 件は未実施**（実機が無い）。実施表は `not_run`、追跡表は「pass の実施行なし」。\n- **リスク 2 件にケースが無い**:\nRISK-009（依存・コンテナの脆弱性。セキュリティ検査で見ているがケースが無い）、RISK-012（将来のスキーマ移行失敗。`migrations.test.js`\nはあるが TC-ID が付いていない）。追跡表に gaps 付きの行で残した。\n- **`FND-001` と triage の `F-001`**: security.yml の finding_id は `F-001`\n形式で、検出の**並び順**で振られる（検出が増減すると番号が変わる）。安定した識別は fingerprint。→ D1 に依頼（下記）。\n- **UUID の 0 の並びが qc-analyzer\nの電話番号の正規表現に当たる**（`00000000-0000-4000-8000-000000000000`）。`docs/data/cases.csv`\nに 8 行、`datasets.csv` に 1 行（文書担当の領域）。evidence-09（個人情報らしい値）・execution-12\nが減点される可能性がある。`…-a000-…` にすれば当たらない。観察値側は UUID を `{uuid}` に伏せて当たらないようにした。\n- node:test の JUnit は引用符を二重に実体参照化する（`&amp;quot;`）。観察値のタイトルとの突き合わせで吸収した。\n- `.gitignore` の\n`ci-summary*.json`・`regression-selection.json`・`security-findings/`\nが、取り込んだ証跡の 5 ファイルを除外していた（manifest に載るのに clone 先で欠落）。`!docs/evidence/**`\nを足し、check-evidence も「manifest のファイルが git の管理外」を検出するようにした。\n- CodeQL・gitleaks が自分のコードに出した 2 件（HTML\nコメント除去の正規表現、テスト内の秘密情報らしい文字列）を直した（3db3e63）。\n- 自動化ケース 4 件（TC-043・044・076・077）は `automation_layer` が e2e で、結果は compose\nプロジェクト（e2e の一部）。層の不一致ではないと扱った。\n\n## 動作確認\n\n- 実 run（main の 38125456616 と、この PR の 38126691020・38128562945）の artifact\nを `fetch-run.mjs` で取り込み、`build-executions.mjs` を通した。再実行しても差分なし（冪等）。\n- ローカルで `npm run test`（backend 103・frontend\n117）・e2e（chromium・webkit・mobile。firefox はこの開発機で起動できないので CI）を確認。CI\nは全ジョブ緑（CI・Security とも）。\n- `npm run lint` / `format:check` / `test:scripts`（62）/\n`evidence:test`（47）緑。`scripts/ci/docs-check.mjs`・`impact-check.mjs`・`build-suite.mjs\n--check` 緑。\n- `check-evidence.mjs` は、`git archive HEAD` の展開先（clone\n相当）でも緑。改変（ci-summary.json を書き換え）を `verify-manifest.mjs` が検出することを確認。\n- `qc profile-csv` で `executions` `defects` `actions`\nの列が正規フィールド名に対応することを確認（列の未対応なし）。\n\n## D1 領域への変更依頼（workflow は編集していない）\n\n1. **`ci.yml` の `docs-check` ジョブ**に、証跡の検査を足す（依存ゼロ・`npm ci` 不要）:\n   ```yaml\n   - name: 証跡一式の検査（manifest の改変検知・ID 参照・パリティ・実施表・不具合表・証拠索引・追跡表・秘密情報）\nrun: node scripts/evidence/check-evidence.mjs --out\nreports/evidence-check-report.json\n   ```\n`release.yml` では `--release \"$TARGET_SHA\" --strict` を付ける（`--strict`\nは成果物台帳の古さも失敗にする。`git log` を読むので `fetch-depth: 0` が要る）。\n2. **lint ジョブ**に `npm run evidence:test`（`test:scripts` に足してもよい。47 件、1\n秒未満）。\n3. **ci-summary / observations の artifact**: 追加の変更は不要。観察値は\n`e2e/test-results`・`backend/test-results`・`frontend/test-results`\nの下にあり、既存の artifact（`e2e-evidence-*`・`junit-coverage-unit-api`）に入っている。\n4. **security.yml の triage**: `finding_id` を `FND-001`\n形式にする、または台帳側の写し（`findings.csv`）を前提にしてよいか決める。番号が検出の並び順で変わる問題（fingerprint\nから安定した ID を振る、または前回の番号を引き継ぐ）。\n5. **docs-check の `ID_PREFIXES`** に `EV`（証拠 ID）を足す（`evidence-index.csv`\nが定義する）。\n6. この PR で触った D1 領域（レビューを依頼）:\n`quality/impact-map.yaml`（`scripts/evidence/**` を `evidence-tooling`\nとして登録。無いと impact-check が落ちる）、`quality/regression-suite.csv`（defects.csv\nの関連ケースで `build-suite.mjs` が再生成）、`eslint.config.js`（テストの関数長の緩和に\n`scripts/*/test/**/*.mjs`\nを追加）、`.gitignore`（`!docs/evidence/**`）、`.github/ISSUE_TEMPLATE/defect.md`（原因分類・上流文書・修正\nPR の行を追加。`build-defects.mjs` が読む）。\n7. リリースの run（`v*.*.*`）の後、`fetch-run.mjs --run <id>` で取り込む手順を release\nの運用に入れる（実施表の最終生成）。\n\n## 親への確認事項\n\n- 手動ケースの `retest_due`（2026-10-31）は暫定。リリース判定の日程が決まったら\n`docs/evidence/manual-plan.yaml` を更新。\n- ACT-003（compose の COMMIT_SHA）の owner は「バックエンド担当」、due は「未定」（Issue #16 に\nowner・期限の記載が無いため）。決めてほしい。\n- 最終の実施表は `v1.0.0` のタグ run で `node scripts/evidence/build-executions.mjs\n--run <id> --prune-other-versions --release <SHA>` を実行（`kind` は\nregression になる）。その前に `fetch-run.mjs --kind security --run <security\nrun>` で同じ SHA のセキュリティ証跡を取り込み、`npm run evidence:build`・`npm run\nevidence:check` を通す。\n- cases.csv / datasets.csv の UUID リテラル（上記）の扱い。\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n---------\n\nCo-authored-by: [REDACTED:author] <[REDACTED:email]>"
+          },
+          "properties": {
+            "tags": []
+          }
+        }
+      ],
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:02:50Z",
-          "endTimeUtc": "2026-10-11T09:02:55.266Z",
+          "startTimeUtc": "2026-10-11T15:43:35Z",
+          "endTimeUtc": "2026-10-11T15:43:41.606Z",
           "commandLine": "docker run ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f gitleaks git --config security/gitleaks.toml --report-format sarif --report-path security-results/gitleaks/gitleaks.sarif --redact --exit-code 2 --no-banner --no-color /repo"
         }
       ],

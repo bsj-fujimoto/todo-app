@@ -6,7 +6,7 @@
 // （事実に基づいて Issue 本文を補筆してから再実行する）。取得した内容が変わらなければスナップショットは書き換えない。
 // composition root: 時刻・gh・git・ファイル入出力をここで束ねる。
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { createReport, readJson, sha256, writeJson } from "./lib/common.mjs";
@@ -15,6 +15,8 @@ import { DEFECT_COLUMNS, buildDefect, checkDefectRows, selectIssues } from "./li
 import { createRegistry } from "./lib/evidence-registry.mjs";
 import { SNAPSHOT_FILE, buildSnapshot, fixPrNumbers, sameContent } from "./lib/github-snapshot.mjs";
 import { issueEvidence } from "./lib/defect-evidence.mjs";
+import { REDACTION_REASON, redactText } from "./lib/redact.mjs";
+import { redactionSection } from "./lib/redact-files.mjs";
 
 const args = parseArgs(process.argv.slice(2), { flags: ["offline"] });
 const root = resolve(args.root ?? ".");
@@ -60,21 +62,50 @@ function fetchReleases() {
     .map((l) => ({ tag: l.split(" ")[0], date: new Date(l.split(" ")[1]).toISOString() }));
 }
 
+/** 墨消しした記録（変更が無ければ空）。 */
+function redactionRecords(rawText, red) {
+  if (!red.changed) return [];
+  return [
+    {
+      path: "defect-issues.json",
+      reason: REDACTION_REASON,
+      rules: red.counts,
+      count: red.counts.reduce((n, c) => n + c.count, 0),
+      original_sha256: sha256(Buffer.from(rawText, "utf8")),
+      redacted_sha256: sha256(Buffer.from(red.text, "utf8")),
+    },
+  ];
+}
+
+/** コミット済みのスナップショット（無ければ null）。存在確認と読み込みの間に競合が起きないよう、読んで ENOENT なら null にする。 */
+function readCommitted() {
+  try {
+    return readJson(snapshotPath);
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+
 function loadSnapshot() {
-  const committed = existsSync(snapshotPath) ? readJson(snapshotPath) : null;
+  const committed = readCommitted();
   if (args.offline) {
     if (!committed) throw new Error(`${SNAPSHOT_FILE} が無い（--offline では先に gh で取得しておく）`);
     return committed;
   }
   const issues = fetchIssues();
-  const fresh = buildSnapshot({
+  const raw = buildSnapshot({
     repository: repository(),
     issues,
     fixPrs: fetchFixPrs(issues),
     releases: fetchReleases(),
   });
+  // Issue の本文・コメントに、人の氏名・メール・アカウント名・秘密情報らしい値があれば、取り込み時に墨消しする（redact.mjs）
+  const rawText = `${JSON.stringify(raw, null, 2)}\n`;
+  const red = redactText(rawText, SNAPSHOT_FILE, [raw.repository.split("/")[0]]);
+  const fresh = JSON.parse(red.text);
   if (sameContent(committed, fresh)) return committed;
-  writeJson(snapshotPath, fresh);
+  writeFileSync(snapshotPath, red.text);
   writeJson(sourcePath, {
     schema_version: 1,
     kind: "github",
@@ -83,6 +114,7 @@ function loadSnapshot() {
     head_sha: args["head-sha"] ?? run("git", ["rev-parse", "HEAD"]).trim(),
     version: "pre-1.0.0",
     collected_by: "scripts/evidence/build-defects.mjs",
+    ...redactionSection(redactionRecords(rawText, red)),
   });
   return fresh;
 }

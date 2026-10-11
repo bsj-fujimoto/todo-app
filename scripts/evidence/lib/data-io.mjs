@@ -54,6 +54,12 @@ export const openDefectsByCase = (root) => defectsByCase(root, (d) => d.status =
 export const verifiedDefectsByCase = (root, isIncluded) =>
   defectsByCase(root, (d) => d.status === "fixed" && d.fix_commit && isIncluded(d.fix_commit));
 
+/** 検出の安定 ID の台帳（security/finding-ids.yaml）。fingerprint → FND-nnn。無ければ空。 */
+export function loadFindingLedger(root) {
+  const doc = readYaml(root, "security/finding-ids.yaml");
+  return new Map((doc?.ids ?? []).map((e) => [String(e.fingerprint), e.id]));
+}
+
 export const loadDefectIds = (root) => new Set(readTable(root, "defects").rows.map((d) => d.defect_id));
 
 export const loadSourceMeta = (runDir) => readJson(join(runDir, "SOURCE.json"));

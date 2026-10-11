@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-028",
+  "entries": [
+    {
+      "title": "[TC-028] 前後の空白の範囲は暫定で String.prototype.trim() と同じ（未決 UNK-006）",
+      "test_case_ids": [
+        "TC-028"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.536Z",
+      "finished_at": "2026-10-11T15:43:53.536Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"　\"",
+          "result": "不合格 TITLE_REQUIRED"
+        },
+        {
+          "input": "\" a \"",
+          "result": "合格 title=\"a\""
+        },
+        {
+          "input": "\"\\na\\n\"",
+          "result": "合格 title=\"a\""
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { afterEach, describe, it } from "node:test";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
 import { checkActions } from "../lib/actions.mjs";
+import { artifactsResult } from "../lib/check-all.mjs";
 import {
   artifactEntry,
   describeContent,
@@ -229,7 +230,10 @@ describe("追跡表・アクション表・検出表", () => {
       },
     ],
     executions: [{ execution_id: "EXEC-0001", test_case_id: "TC-001", status: "pass" }],
-    defects: [{ defect_id: "DEF-001", case_ids: "TC-001" }],
+    defects: [
+      { defect_id: "DEF-001", case_ids: "TC-001", detected_phase: "e2e" },
+      { defect_id: "DEF-002", case_ids: "", detected_phase: "review" },
+    ],
     findings: [
       { finding_id: "FND-001", status: "tp" },
       { finding_id: "FND-002", status: "na" },
@@ -237,6 +241,7 @@ describe("追跡表・アクション表・検出表", () => {
     actions: [
       { action_id: "ACT-001", what: "DEF-001 の修正", finding_ids: "FND-001" },
       { action_id: "ACT-002", what: "どこにも結び付かない", finding_ids: "" },
+      { action_id: "ACT-003", what: "DEF-002 の対応", finding_ids: "" },
     ],
   };
 
@@ -258,12 +263,15 @@ describe("追跡表・アクション表・検出表", () => {
     assert.deepEqual(
       gaps.sort(),
       [
-        "ケース・検出に結び付かないアクション",
+        "ケース・検出・不具合に結び付かないアクション",
         "対応するケースがない",
         "対応するケースがない",
         "適用の観点にケースがない",
+        "関連ケースがない（検出した手段: review）",
       ].sort(),
     );
+    // ケースの無い不具合の行は、その不具合に触れるアクションとつなぐ
+    assert.equal(rows.find((r) => r.defect_ids === "DEF-002" && !r.test_case_id).action_ids, "ACT-003");
     assert.equal(buildTraceability(tables).length, rows.length); // 冪等
   });
 
@@ -347,6 +355,36 @@ describe("追跡表・アクション表・検出表", () => {
   });
 });
 
+describe("検出の仮 ID の解決", () => {
+  const doc = {
+    findings: [
+      { finding_id: "FND-001", fingerprint: "aaa", severity: "low", status: "na", tool: "t" },
+      {
+        finding_id: "FND-NEW-bbbbbb",
+        fingerprint: "bbb",
+        severity: "medium",
+        status: "accepted",
+        tool: "codeql",
+      },
+    ],
+  };
+
+  it("triage が仮 ID（FND-NEW-xxxxxx）を付けた検出は、台帳の fingerprint から FND-nnn に引く（取り込んだ findings.json は書き換えない）", () => {
+    const rows = findingRows(doc, new Map([["bbb", "FND-010"]]));
+    assert.deepEqual(
+      rows.map((r) => [r.finding_id, r.source_finding_id]),
+      [
+        ["FND-001", "FND-001"],
+        ["FND-010", "FND-NEW-bbbbbb"],
+      ],
+    );
+  });
+
+  it("台帳に無い仮 ID は、採番の手順つきで失敗する", () => {
+    assert.throws(() => findingRows(doc, new Map()), /assign-finding-ids/);
+  });
+});
+
 describe("抽出パリティ・秘密情報の検査", () => {
   const t = (n, header = ["a"]) => ({
     header,
@@ -397,7 +435,11 @@ describe("抽出パリティ・秘密情報の検査", () => {
     ]);
     assert.deepEqual(none, []);
     assert.equal(qcCompat.get("docs/data/x.csv"), 1);
-    assert.deepEqual(scanFiles([{ path: "a/sbom.cdx.json", text: "maintainer@alpinelinux.org" }]).hits, []);
+    // 許可リストの例外は無い。SBOM のメンテナのメールも、墨消ししない限り検出する
+    assert.deepEqual(
+      scanFiles([{ path: "a/sbom.cdx.json", text: "maintainer@alpinelinux.org" }]).hits.map((h) => h.rule),
+      ["email"],
+    );
   });
 });
 
@@ -571,5 +613,23 @@ describe("取り込み規則", () => {
     assert.equal(skipped[0].path, "security-scan-sca/sbom/sbom.cdx.json");
     assert.throws(() => planKindFiles("nope", []), /未知の種類/);
     assert.deepEqual(Object.keys(KINDS), ["security", "perf", "monitoring", "github"]);
+  });
+});
+
+describe("成果物台帳が古いことの扱い", () => {
+  const message = "成果物台帳が最新でない";
+
+  it("既定（strict でも）は警告。失敗にするのは --strict-artifacts のときだけ", () => {
+    const warn = artifactsResult({ stale: true, strictArtifacts: false, message });
+    assert.deepEqual([warn.status, warn.messages, warn.warnings], ["pass", [], [message]]);
+    const fail = artifactsResult({ stale: true, strictArtifacts: true, message });
+    assert.deepEqual([fail.status, fail.messages, fail.warnings], ["fail", [message], []]);
+  });
+
+  it("最新なら、どちらでも pass で警告なし", () => {
+    for (const strictArtifacts of [false, true]) {
+      const r = artifactsResult({ stale: false, strictArtifacts, message });
+      assert.deepEqual([r.status, r.messages, r.warnings], ["pass", [], []]);
+    }
   });
 });

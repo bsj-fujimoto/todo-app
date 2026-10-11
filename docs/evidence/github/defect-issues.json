@@ -96,18 +96,30 @@
       "number": 16,
       "title": "[defect] docker-compose.yml の COMMIT_SHA 上書きで、焼き込み済みイメージの health が commit=unknown になる",
       "url": "https://github.com/bsj-fujimoto/todo-app/issues/16",
-      "state": "OPEN",
-      "stateReason": "",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
       "labels": [
         "defect"
       ],
       "createdAt": "2026-10-11T07:26:21Z",
-      "closedAt": null,
-      "body": "## 識別\n- 検出工程: monitoring（runbook 訓練 / rollback ドリル）\n- 混入工程: design\n- 重大度: minor\n- 機能: infra\n- 品質特性: reliability（運用性。デプロイマーカーが効かない）\n- 対象版: 552a854（main）\n- 上流文書: backend/openapi.yaml#/components/schemas/Health\n\n## 再現手順\n1. `COMMIT_SHA=$(git rev-parse HEAD) docker compose up -d --build --wait` で起動し、`curl -s localhost:8080/api/v1/health` を見る → `commit` は SHA になる（正常）。\n2. ビルド済みのイメージ（`ARG COMMIT_SHA` を焼き込んである）を、環境変数 `COMMIT_SHA` を指定せずに `docker compose up -d --no-build`（例: リリースイメージを上書きファイルで指定、または rollback）で起動する。\n3. `curl -s localhost:8080/api/v1/health` → `\"commit\":\"unknown\"`。\n\n## 期待結果\n- `backend/openapi.yaml#/components/schemas/Health`: `commit` は「ビルド時の commit SHA」。イメージに焼き込んだ SHA が出る。\n\n## 実際の結果\n- `docker-compose.yml` の backend が `environment: COMMIT_SHA: ${COMMIT_SHA:-unknown}` を持つため、実行時の環境変数がイメージの ENV（焼き込んだ SHA）を上書きし、シェルに `COMMIT_SHA` が無いと `unknown` になる。\n- 確認: `docker run --rm --entrypoint printenv <image> COMMIT_SHA` は焼き込んだ SHA、`docker compose config` は `COMMIT_SHA: unknown`。\n\n## 影響\n- リリース済みイメージを compose で起動する外形監視（`synthetic.yml`）・rollback で、health の commit が期待と合わず、デプロイマーカー（MON-002 の commit 一致）が成立しない。\n- 回避策: 起動時に `COMMIT_SHA=<リリースの commit>` を指定する（`synthetic.yml` と RB-002 の rollback 手順に反映済み）。\n- 恒久策の案: `docker-compose.yml` の backend の `environment.COMMIT_SHA` を削除する（`build.args` で焼き込むため不要）。または `${COMMIT_SHA:-}` を空にして backend 側で「空なら ENV の値」を使う。\n\n## 関連ケース / 証拠\n- ケース: TC-075（health の commit）、TC-076\n- 証拠: monitoring/drills/（rollback ドリルの記録 `rollback-drill-*.json` の初回実行で commit が unknown になり、期待 commit との不一致を監視が検知した）\n\n## 原因分類（判明後に記入）\n- 根本原因: compose の environment がイメージの ENV を上書きする設計\n- 検出可能だった工程: e2e（TC-076 の compose 起動の試験）に「ビルド済みイメージを COMMIT_SHA 未指定で起動した場合の commit」の観点が無い\n- 原因分類: design\n",
+      "closedAt": "2026-10-11T12:37:01Z",
+      "body": "## 識別\n- 検出工程: monitoring（runbook 訓練 / rollback ドリル）\n- 混入工程: design\n- 重大度: minor\n- 機能: infra\n- 品質特性: reliability（運用性。デプロイマーカーが効かない）\n- 対象版: 552a854（main）\n- 上流文書: backend/openapi.yaml#/components/schemas/Health\n\n## 再現手順\n1. `COMMIT_SHA=$(git rev-parse HEAD) docker compose up -d --build --wait` で起動し、`curl -s localhost:8080/api/v1/health` を見る → `commit` は SHA になる（正常）。\n2. ビルド済みのイメージ（`ARG COMMIT_SHA` を焼き込んである）を、環境変数 `COMMIT_SHA` を指定せずに `docker compose up -d --no-build`（例: リリースイメージを上書きファイルで指定、または rollback）で起動する。\n3. `curl -s localhost:8080/api/v1/health` → `\"commit\":\"unknown\"`。\n\n## 期待結果\n- `backend/openapi.yaml#/components/schemas/Health`: `commit` は「ビルド時の commit SHA」。イメージに焼き込んだ SHA が出る。\n\n## 実際の結果\n- `docker-compose.yml` の backend が `environment: COMMIT_SHA: ${COMMIT_SHA:-unknown}` を持つため、実行時の環境変数がイメージの ENV（焼き込んだ SHA）を上書きし、シェルに `COMMIT_SHA` が無いと `unknown` になる。\n- 確認: `docker run --rm --entrypoint printenv <image> COMMIT_SHA` は焼き込んだ SHA、`docker compose config` は `COMMIT_SHA: unknown`。\n\n## 影響\n- リリース済みイメージを compose で起動する外形監視（`synthetic.yml`）・rollback で、health の commit が期待と合わず、デプロイマーカー（MON-002 の commit 一致）が成立しない。\n- 回避策: 起動時に `COMMIT_SHA=<リリースの commit>` を指定する（`synthetic.yml` と RB-002 の rollback 手順に反映済み）。\n- 恒久策の案: `docker-compose.yml` の backend の `environment.COMMIT_SHA` を削除する（`build.args` で焼き込むため不要）。または `${COMMIT_SHA:-}` を空にして backend 側で「空なら ENV の値」を使う。\n\n## 関連ケース / 証拠\n- ケース: TC-075（health の commit）、TC-076\n- 証拠: monitoring/drills/（rollback ドリルの記録 `rollback-drill-*.json` の初回実行で commit が unknown になり、期待 commit との不一致を監視が検知した）\n\n## 原因分類（判明後に記入）\n- 根本原因: compose の environment がイメージの ENV を上書きする設計\n- 検出可能だった工程: e2e（TC-076 の compose 起動の試験）に「ビルド済みイメージを COMMIT_SHA 未指定で起動した場合の commit」の観点が無い\n- 原因分類: design\n- 修正 PR: #19\n",
       "comments": [
         {
           "createdAt": "2026-10-11T09:06:57Z",
           "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: backend/openapi.yaml#/components/schemas/Health」を追加（期待結果が Health スキーマの commit の定義のため）。\n- 原因分類に「原因分類: design」を追加（根本原因が「compose の environment がイメージの ENV を上書きする設計」のため。混入工程 design と一致）。\n- 「検出可能だった工程」の先頭に語彙（e2e）を追加（元の文は TC-076 に観点が無いことを指していたので、その層 e2e を明示。元の文は残した）。\n- 未解決のため「修正 PR」は足していない。\n"
+        },
+        {
+          "createdAt": "2026-10-11T09:46:51Z",
+          "body": "修正は PR #19 に含めてマージ済み（compose から COMMIT_SHA の実行時上書きを除去。ビルド引数で焼き込んだ SHA を health が返す）。修正確認は release の dry-run と e2e:compose で行い、リリース run（v1.0.0）で最終確認する。"
+        },
+        {
+          "createdAt": "2026-10-11T12:37:00Z",
+          "body": "修正確認: 恒久修正（PR #19: compose が実行時の COMMIT_SHA で上書きしない）の後、rollback 訓練を再実施して health の commit が良い版に戻ることを確認（monitoring/drills/20261011T1220Z-rollback-after-16fix/）。リリース run（v1.0.0）で焼き込み SHA の一致を最終確認する。"
+        },
+        {
+          "createdAt": "2026-10-11T15:57:09Z",
+          "body": "本文を補筆した（2026-10-12、v1.0.0 のリリース証跡 docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足す・語彙に合わせて書き換えた。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 原因分類に「修正 PR: #19」を追加（2026-10-11 のコメント「修正は PR #19 に含めてマージ済み」。#19 はマージ commit fd2b322 で、docker-compose.yml の COMMIT_SHA の上書きを除去している）。\n"
         }
       ]
     },
@@ -127,6 +139,106 @@
         {
           "createdAt": "2026-10-11T09:06:59Z",
           "body": "本文を補筆した（2026-10-11、docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足した。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- テンプレート（識別 / 再現手順 / 期待結果 / 実際の結果 / 影響 / 関連ケース・証拠 / 原因分類）の見出しに沿って全体を補筆した。起票時の本文は「経緯（起票時の本文）」としてそのまま残した。\n- 補筆の根拠: 起票時の本文（run 38123866985・追加 p95=452.0ms・暫定しきい値 300ms）、quality/flaky-ledger.yaml の TC-073 エントリ（rate 0.1・期限 2026-11-10）、backend/test/api/performance.test.js のしきい値（一覧 500ms・追加 300ms）。\n- 根本原因は起票時の「原因（推定）」を引き継ぎ、推定であることを明記した。未修正のため「修正 PR」は無い。\n"
+        },
+        {
+          "createdAt": "2026-10-11T12:56:48Z",
+          "body": "PR #38 で、TC-073/074 の方針（機能層は性能の番兵、SLO の本判定は perf 層の perf/slo.yaml。CI はしきい値 3 倍、ローカルは従来値）を cases.csv・docs・quality/flaky-ledger.yaml に揃えた。TC-073 の係数 3 倍は main に入済みなので、コードと方針は揃い解消できると判断する。ただし CI での混在が出ていないことの確認（週次の --repeat-each=3）が済むまでは台帳のエントリ（期限 2026-11-10）と本 Issue を残し、確認後に台帳から外して閉じる。"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "title": "[defect][perf] backend の 1 要求のコストが件数に比例し、約 100〜150 req/s（10,000 件では約 30 req/s）で CPU 飽和する",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/31",
+      "state": "OPEN",
+      "stateReason": "",
+      "labels": [
+        "defect",
+        "perf"
+      ],
+      "createdAt": "2026-10-11T12:17:27Z",
+      "closedAt": null,
+      "body": "## 識別\n- 検出工程: test（負荷試験。perf 層: perf.yml の k6）\n- 混入工程: design\n- 重大度: minor\n- 機能: storage\n- 品質特性: performance\n- 対象版: 6e5d2db 時点の main（run `20261011T082949Z-f948648`）\n- 上流文書: perf/slo.yaml\n\n## 再現手順\n1. `mise x -- npm ci`、`scripts/perf/run.sh --profile full --scenarios stress`（1,000 件。結果は `perf/results/<run_id>/stress/`）。10,000 件は `NORMAL_TASKS=10000 STRESS_STAGES=20,50,100,150 STRESS_STAGE_SEC=45 scripts/perf/run.sh --scenarios stress --iterations 1 --no-compare`。\n2. 段ごとの backend CPU・health 応答を見る: `mise x -- node scripts/perf/stage-report.mjs --run-dir perf/results/<run_id> --scenario stress`。\n\n## 期待結果\n- `perf/slo.yaml`（想定負荷 20 req/s で list p95 ≤ 500 ms など）を満たし、件数が増えても（成長予測 10,000 件）劣化が緩やかであること。\n\n## 実際の結果\n- **想定負荷では SLO を達成**（list p95 10.6 ms）。ただし 1 要求のコストが件数 N に比例し、Node の単一スレッドで直列に処理されるため、限界が低い。\n  - 1,000 件: 限界点 約 100〜150 req/s。150〜200 req/s で p95 4〜8 秒、エラー 5〜15%（nginx の 504）。health も 2〜4.7 秒に遅れる。backend CPU 98〜102%、frontend 5% 以下、k6 35% 以下。\n  - 10,000 件: 20 req/s で CPU 71%（1 要求 約 31 ms）、50 req/s で飽和。限界点 約 30 req/s。list p95 は約 +2.3 ms / 1,000 件。\n- 仮説の検証: ログ停止（`LOG_LEVEL=silent`）は効かない（棄却）。CPU 2 vCPU は +50% 止まり（単一スレッド）。\n- 原因: `backend/src/store/sqlite-store.js` が毎要求で接続を開き、**書込み（追加・更新・削除）でも全行を読んで検証**（`readAll`）してから 1 行を操作する。同期 API（`DatabaseSync`）でイベントループを占有する。\n\n## 影響\n- 想定利用（0.5 req/s）では利用者への影響は無い（想定ピークの 40 倍まで余裕）。将来の件数増加（約 500 日後に 10,000 件）、複数クライアント・自動化・ブラウザの再試行が重なると、遅延と 504 が出る。回避策: 件数を増やさない運用、CPU 上限の引き上げ（効果は +50% 止まり）。\n\n## 関連ケース / 証拠\n- ケース: TC-073、TC-074（RISK-010 件数増加時の性能劣化）。件数上限は UNK-002。\n- 証拠: `perf/analysis.md`（§2 ボトルネック分析、§3 容量）、`perf/results/20261011T082949Z-f948648/`、実験 `perf/results/exp-e0〜e3-*`、PR #32。\n\n## 原因分類（判明後に記入）\n- 根本原因: 書込みでも全行を読んで検証する設計（整合性の検証を毎要求で全件に行う）と、接続を操作ごとに開く設計。\n- 原因分類: design\n- 検出可能だった工程: design（件数に比例するコストを性能の設計観点で見る）。TC-073 は 1,000 件・低負荷のみで、件数 × 到着率の限界は負荷試験（perf）で初めて測れた。\n\n## 改善案（`perf/analysis.md` §2）\nA. 書込みを `WHERE id = ?` の 1 行操作にする（契約変更なし。書込み 40% の比率で CPU 1,000 件 約 3 割減・10,000 件 約 6 割減と推定）／ B. 接続の常駐・prepared statement／ C. 一覧のページング（契約変更あり。UNK-002 と合わせる）／ D. nginx で過負荷時に速く失敗させる。\n\n## 受け入れ条件（案）\n- 1,000 件で限界点（SLO 違反が最初に出る到着率）が現状（約 100〜150 req/s）より上がる。10,000 件の 20 req/s で CPU が 71% より下がる。\n- `perf.yml` の `compare.mjs` が退行を検出しない（baseline `perf/baseline.json`）。\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T15:57:11Z",
+          "body": "本文を補筆した（2026-10-12、v1.0.0 のリリース証跡 docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足す・語彙に合わせて書き換えた。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 検出工程の語彙を perf から test（負荷試験。perf 層）に書き換えた（検出工程の語彙に perf が無いため。検出手段は perf.yml の k6 による負荷試験）。\n- 識別に「上流文書: perf/slo.yaml」を追加（期待結果が perf/slo.yaml の SLO を根拠にしているため）。\n- 「検出可能だった工程」の先頭を「設計」から語彙 design に書き換えた（本文の意味は変えていない）。\n- 原因分類に「原因分類: design」を追加（根本原因が「書込みでも全行を読んで検証する設計」で、混入工程 design と一致）。\n"
+        },
+        {
+          "createdAt": "2026-10-11T15:59:29Z",
+          "body": "期限と担当を決定（plan-12 の minor の基準: Issue・回避策・期限つき）。担当: バックエンド担当。期限: 2026-12-31。回避策: 想定件数（個人用・1,000 件以内）では SLO を満たす（perf/analysis.md: 1,000 件で list p95 10.6ms、10,000 件でも SLO 内。限界は件数が増えたときの同時要求数）。受容の根拠: 通常利用では影響が無い（影響: 低）。見直し条件: 件数上限の決定（UNK-002）か 10,000 件超の利用が現実になったとき。"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "title": "[defect] 監視・画面計測の結果ファイルに外部応答由来の値を書く（CodeQL js/http-to-file-access、受容の追跡）",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/33",
+      "state": "OPEN",
+      "stateReason": "",
+      "labels": [
+        "defect"
+      ],
+      "createdAt": "2026-10-11T12:29:40Z",
+      "closedAt": null,
+      "body": "## 識別\n- 検出工程: review（CodeQL。PR #32 の security.yml）\n- 混入工程: implementation\n- 重大度: minor\n- 機能: infra\n- 品質特性: security\n- 対象版: PR #32（ops/perf-monitoring-r3）\n- 上流文書: security/README.md（重大度 medium は修正するか、期限付きで受容する）\n\n## 再現手順\n1. PR #32 の `security.yml`（CodeQL）の結果。ルール `js/http-to-file-access`（Network data written to file、medium）が 2 件。\n   - `scripts/monitoring/run-monitors.mjs`（results.json に、監視の失敗詳細として外部応答由来の文字列を書く）\n   - `perf/screen/measure.mjs`（screen.json に、計測値（ブラウザ・HTTP 由来）を書く）\n\n## 期待結果\n- 外部のデータをそのままファイルへ書かない、または書いてよい理由が記録されている。\n\n## 実際の結果\n- どちらも「計測・監視の結果ファイルに、測定対象の応答に由来する値を書く」ことが目的で、除去すると証跡にならない。書込み先は固定のパス（`--out` / `OUT_DIR`、CI ではリポジトリ内の作業ディレクトリ）で、書いた内容を実行・解釈する経路は無い（JSON として保存するだけで、読むときは JSON.parse のみ）。\n\n## 影響\n- 測定対象（自分たちの backend）が返す文字列が結果ファイルに入る。実行されないので悪用経路は無い。Markdown の要約（`summary.md`）に出す文字列は、`|` と `\\` をエスケープして表を壊さないようにしてある。\n\n## 関連ケース / 証拠\n- ケース: 該当なし。この指摘を検出したのは CodeQL（security.yml）で、対象の監視・計測スクリプト（`scripts/monitoring/`・`perf/screen/`）の出力の扱いを確かめるテストケースが cases.csv に無い。新規ケース案: 結果ファイルへ書く文字列の長さ上限・制御文字の除去を、入力に長い文字列・制御文字を与えて確かめる unit ケース（対応方針の共通化と一緒に追加する）\n- 証拠: CodeQL の結果（PR #32 の security.yml）。`security/accepted-risks.yaml` に期限付きの受容（AR-002 / AR-003）を書いた。\n\n## 原因分類（判明後に記入）\n- 根本原因: 測定対象の応答を証跡として保存する設計そのもの（フローは意図どおり）。\n- 原因分類: design\n- 検出可能だった工程: review（実装レビュー: CodeQL の指摘は妥当。受容の理由を記録する）。\n\n## 対応方針\n- 期限（90 日）までに、結果ファイルへ書く文字列の長さ上限・制御文字の除去を共通化するか、受容を更新する。\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T12:31:32Z",
+          "body": "Bonjour — en relisant `bsj-fujimoto/todo-app`, un motif à vérifier : `backend/src/store/migrations.js:49` (évaluation dynamique (eval/exec)). Analyse statique, code non exécuté — motif, pas faille confirmée. Utile ? je détaille ; sinon j'ignore, sans relance."
+        },
+        {
+          "createdAt": "2026-10-11T15:57:13Z",
+          "body": "本文を補筆した（2026-10-12、v1.0.0 のリリース証跡 docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足す・語彙に合わせて書き換えた。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 識別に「上流文書: security/README.md」を追加（期待結果の根拠は、medium を修正するか期限付きで受容する方針）。\n- 「検出可能だった工程」の先頭を語彙 review（実装レビュー）に書き換えた。\n- 原因分類に「原因分類: design」を追加（根本原因が「測定対象の応答を証跡として保存する設計そのもの」のため）。\n- 関連ケースに「該当なし」とその事実を書いた。この指摘は CodeQL が検出し、対象のスクリプトの出力の扱いを確かめるテストケースが cases.csv に無い。新規ケースの案を同じ行に書いた（ケース ID は文書担当が採番する）。\n"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "title": "[sev2][MON-008] ブラウザジャーニー J-02 完了切替（チェック → 再読込で保持） が失敗",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/36",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect",
+        "incident"
+      ],
+      "createdAt": "2026-10-11T12:44:12Z",
+      "closedAt": "2026-10-11T12:56:26Z",
+      "body": "## 概要（自動起票時の本文を復元）\n<!-- #36 を欠陥票の書式に書き換えた際に消えた、自動起票時の本文。編集履歴（起票時の版）から事実どおり復元した。以後、incident を defect として扱うときは追記する（monitoring/README.md）。「切り分け」「ロールバック有無」「再発防止」の記入内容は、起票時は空欄・未チェックで、調査・対応の後に書いた。 -->\n- 開始時刻（UTC）: 2026-10-11T12:43:35.425Z\n- 検知方法: monitoring（外形監視）\n- 重大度: sev2\n- 影響: チェックしても状態が保持されない（sev2）。\n- 監視: MON-008 ブラウザジャーニー J-02 完了切替（チェック → 再読込で保持）（browser、ジャーニー J-02）\n- 失敗の詳細: 試行 1: [MON-008] J-02 チェックすると完了になり、再読込しても保持される: Error: locator.check: Clicking the checkbox did not change its state | 試行 2: [MON-008] J-02 チェックすると完了になり、再読込しても保持される: Error: locator.check: Clicking the checkbox did not change its state\n- 試行回数: 2（定義の retry どおり）\n- 対象: fallback、版 1.0.0@2c357a6、環境 github-hosted-runner\n- 直前のデプロイ（deployment_ref）: version 1.0.0、commit 2c357a6df29924294c6df29829a2aa697572a6e2（観測 2026-10-11T12:43:32.490Z）\n- 実行: https://github.com/bsj-fujimoto/todo-app/actions/runs/38140285304\n\n## 対応\n- 担当（on-call ロール role:maintainer）: [REDACTED:account]\n- ack 目標: 検知から 24 時間以内（Issue へのコメント、または assignee の確認）\n- 一次対応: runbook monitoring/runbooks/RB-004-browser-journeys.md の「一次対応」\n- 切り分け: 製品の挙動（PR #12 のチェックの反転タイミング）は設計どおりで、監視の操作（Playwright の `check()`）が古いと判明（上の「不具合としての記録」）\n- ロールバック有無: なし（製品は正しい。監視の定義を直した）\n\n## 再発防止（還流先）\n- [x] defect 起票 — 記録: この Issue（#36）に defect の項目を追記した\n- [x] テスト追加（TC-xxx）— 記録: 監視の操作を `click()` ＋自動待機に変更（e2e/synthetic/journey.spec.js）。TC は不要（E2E は #12 で追随済み）\n- [x] 監視の追加・調整（monitoring/monitors.yaml）— 記録: PR #39（journey.spec.js の修正、`monitoring/fp-fn-log.md` に誤検知として記録）\n- [x] runbook 更新 — 記録: RB-004 の切り分け表に追記（PR #39）。PR テンプレートに「外形監視の期待が変わらないか」を追加\n\n---\n\n## 不具合としての記録（defect。起票後に追記）\n\n### 識別\n- 検出工程: monitoring\n- 混入工程: test\n- 重大度: minor\n- 機能: infra（外形監視。MON-008）\n- 品質特性: reliability（運用性。監視の誤検知）\n- 対象版: 2c357a6（main。run 38140285304）\n- 上流文書: spec/todo-phase1-spec.html#04\n\n### 再現手順\n1. PR #12 を含む main をビルドして起動する。\n2. 旧版の `e2e/synthetic/journey.spec.js`（MON-008）を実行する: `mise x -- node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --only MON-008`。\n3. `locator.check: Clicking the checkbox did not change its state` で失敗する（手元でも再現を確認した）。\n\n### 期待結果\n- 製品が仕様どおりなら監視は成功する。仕様（PR #12）: チェックは API 成功後にだけ反転する（通信中は反転させない）。\n\n### 実際の結果\n- 製品は**設計どおり**。監視の Playwright `check()` が「クリック直後に状態が変わること」を検証するため、通信中は反転しない現在の挙動と合わず失敗した（誤検知 = false positive）。GitHub Actions の初回実行（synthetic.yml）で incident として自動起票された（#36 はその Issue）。\n\n### 影響\n- 実害は無い（製品は正しい）。誤検知の incident Issue が 1 件立ち、ack・調査の手間が出た。放置すると監視への信頼が下がる。\n\n### 関連ケース / 証拠\n- ケース: TC-008（完了切替。この監視が模倣するジャーニー J-02 で、製品の期待を定めるケース）。この不具合を検出したのはケースではなく外形監視 MON-008 の初回実行で、「製品の振る舞いを変えたとき監視の期待が追随しているか」を確かめるケースは無い（新規ケース案: 製品の振る舞いの変更を含む PR で、監視ジャーニーを実行して成功すること）\n- 監視: MON-008（J-02）。run: https://github.com/bsj-fujimoto/todo-app/actions/runs/38140285304\n- 回復の確認: ブランチ ops/fix-first-runs の synthetic.yml（force_fallback）が成功し、この Issue に回復コメントが付いて自動で close された（run 38141090678）。\n- 記録: `monitoring/fp-fn-log.md` に誤検知として 1 件。\n\n### 原因分類（判明後に記入）\n- 根本原因: 製品の振る舞いの変更（PR #12）に、外形監視のジャーニー（操作の取り方）の見直しが同じ PR で行われなかった。\n- 原因分類: process\n- 修正 PR: #39\n- 検出可能だった工程: review（PR レビュー: 監視の期待が変わらないかの確認項目が無かった）。\n\n### 是正と再発防止（還流）\n- 是正: `click()` ＋ `expect(...).toBeChecked()`（自動待機。行の `aria-busy` の解除も待つ）に変更（ops/fix-first-runs）。\n- 再発防止: PR テンプレートに「外形監視の期待が変わらないか」の確認項目、`monitoring/README.md` の運用規則・RB-004 に追記。操作の取り方（ロール・アクセシブルネーム）は E2E の `e2e/fixtures/todo-app.js` と揃えた。\n\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T12:56:26Z",
+          "body": "回復しました（Issue 作成から約 12 分）。2026-10-11T12:55:57.788Z UTC の実行で MON-008 が成功（版 1.0.0@6572173、実行 https://github.com/bsj-fujimoto/todo-app/actions/runs/38141090678）。\n回復を確認したため自動で close します。再発防止の還流（defect・テスト・監視・runbook）はこの Issue のチェックリストで追跡し、必要なら close 後も追記してください。\n"
+        },
+        {
+          "createdAt": "2026-10-11T15:57:15Z",
+          "body": "本文を補筆した（2026-10-12、v1.0.0 のリリース証跡 docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足す・語彙に合わせて書き換えた。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 機能を語彙に合わせ「infra（外形監視。MON-008）」に書き換えた（機能の語彙に monitoring が無いため）。\n- 識別に「上流文書: spec/todo-phase1-spec.html#04」を追加（期待結果が仕様書 v1.1 §04 の「成功を確認してから反映」を根拠にしているため）。\n- 「検出可能だった工程」の先頭を語彙 review（PR レビュー）に書き換えた。\n- 原因分類に「原因分類: process」を追加（根本原因が、製品の変更と監視ジャーニーの見直しが同じ PR で行われなかった手順の問題のため）と、「修正 PR: #39」を追加（#39 は MON-008 の誤検知の修正で、マージ commit は 5fcf40a。PR 本文に「MON-008 の誤検知」とある）。\n- 関連ケースに TC-008 を追加（監視が模倣するジャーニー J-02 の完了切替で、製品の期待を定めるケース。検出したのはケースでなく外形監視 MON-008 で、監視の期待が追随しているかを確かめるケースは無い事実と、新規ケースの案を同じ行に書いた）。\n"
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "title": "[flaky] TC-074 1,000 件の表示・各操作の反映時間が共有ランナーでしきい値を超えることがある",
+      "url": "https://github.com/bsj-fujimoto/todo-app/issues/37",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "labels": [
+        "defect",
+        "flaky",
+        "perf"
+      ],
+      "createdAt": "2026-10-11T12:51:19Z",
+      "closedAt": "2026-10-11T12:59:54Z",
+      "body": "## 識別\n\n- 検出工程: regression（main への push の CI。run 38140205187、e2e chromium）\n- 混入工程: test（絶対時間のしきい値を、負荷の変わる共有ランナーの機能テスト層で判定するテストの設計。TC-073 の #25 と同種）\n- 重大度: minor\n- 機能: ui（性能）\n- 品質特性: performance\n- 対象版: main（e2e/tests/performance.spec.js。run 38140205187 の head）\n- 上流文書: docs/data/cases.csv#TC-074、perf/slo.yaml（screen_ready_ms・api_*_p95_ms）\n\n## 再現手順\n\n1. CI（ubuntu-24.04 の共有ランナー）で `e2e/tests/performance.spec.js` の `[TC-074]` を chromium で実行する。DS-006（1,000 件）を投入し、表示完了・追加・完了切替・削除の反映時間を測る。\n2. ランナーの負荷によって、同じコードで pass と fail が混在する（run 38140205187 で失敗。直近の他の run は成功）。\n\n## 期待結果\n\n各操作の反映が 1,000ms 以内、表示完了が 2,000ms 以内（docs/data/cases.csv の TC-074）。\n\n## 実際の結果\n\n追加の反映が **1054ms**（しきい値 1000ms）で `expect(received).toBeLessThanOrEqual(expected)` が失敗した。同じ実行の他の値は 表示完了 364ms・完了切替 127ms・削除 205ms（JUnit の observed）。\n\n## 頻度\n\n- main / PR の CI で TC-074 が走った 10 回のうち 1 回（0.1）。ほかの 9 回の追加は 287〜411ms で通っている。\n- 通常値（main の CI 9 回の chromium）: 表示完了 384〜481ms、追加 287〜411ms、完了切替 150〜228ms、削除 215〜292ms。ローカル（macOS）は 61〜113ms。失敗値 1054ms は CI 通常値の最大の約 2.6 倍。\n\n## 根本原因の分析\n\n- 分類: 環境差（共有ランナーの負荷）＋計測の粒度（タイミング依存）。アプリの退行ではない（同じ run の他の操作、他ブラウザ・他の run は正常。本物の不具合の兆候はない）。\n- 機能テスト層の計測は「クリック → Playwright の expect が反映を観測するまで」で、expect の再試行間隔（100 → 250 → 500 → 1000ms）の粒度を含む。負荷の高いランナーで 1 回見逃すだけで数百 ms 増える。これを絶対値 1,000ms で判定していた。\n- 絶対値の SLO の本判定は perf 層（perf.yml の k6 と screen 計測。perf/slo.yaml）が行う。機能テスト層の TC-073/074 は「桁が違う劣化を見つける番兵」であるべきで、しきい値を同じ値で判定していたのが設計の不備。\n\n## 影響\n\nmain の CI が不定期に赤くなる（偽陽性）。リリース判断の信頼性を下げる。利用者への影響はない。\n\n## 関連ケース / 証拠\n\n- ケース: TC-074（同種: TC-073 / #25）\n- 証拠: https://github.com/bsj-fujimoto/todo-app/actions/runs/38140205187 （e2e-evidence-chromium の junit.xml の observed: 表示完了 364 / 追加 1054 / 完了切替 127 / 削除 205）\n\n## 対応\n\n- TC-073 と同じ方式: CI（環境変数 `CI` あり）では係数 3 倍、ローカルは従来の厳しい値。実測値は常に観察値に残す。方針（機能層は番兵、本判定は perf 層）を cases.csv・docs/02・docs/03 に反映する。\n- `quality/flaky-ledger.yaml` に期限付きで記録する。\n\n## 原因分類（判明後に記入）\n\n- 根本原因: 共有ランナーの負荷変動に対し、機能テスト層で SLO と同じ絶対値のしきい値を使っていた。\n- 原因分類: test\n- 修正 PR: #38\n- 検出可能だった工程: review（TC-073 の #25 と同種。性能しきい値の層の役割分担を決めていれば防げた）\n",
+      "comments": [
+        {
+          "createdAt": "2026-10-11T12:56:50Z",
+          "body": "修正 PR: #38。ローカルでの安定性実証（macOS・15 コア）: chromium+webkit+mobile を --repeat-each=10 --workers=8 で、CPU 負荷なし／あり（busy ループ 15 本）／あり+CI=1 のいずれも 400 件 pass。TC-074 単体の 10 回: 負荷なし 追加 146〜178ms、負荷あり 136〜215ms（CI の 1054ms は手元では再現せず、CI 固有の負荷）。CI での確認は PR #38 の run で行う。"
+        },
+        {
+          "createdAt": "2026-10-11T15:57:17Z",
+          "body": "本文を補筆した（2026-10-12、v1.0.0 のリリース証跡 docs/data/defects.csv を生成するため。scripts/evidence/build-defects.mjs が本文の見出しと箇条書きを読む）。起票時の内容は変えず、下記の行だけを足す・語彙に合わせて書き換えた。根拠は各 Issue のコメント・修正 PR・コミット。\n\n- 原因分類に「原因分類: test」を追加（根本原因が、機能テスト層で SLO と同じ絶対値のしきい値を使っていたテストの設計のため。混入工程 test と一致）。\n- 原因分類に「修正 PR: #38」を追加（2026-10-11 のコメント「修正 PR: #38」。#38 のマージ commit は 1abf247）。\n"
         }
       ]
     }
@@ -144,10 +256,27 @@
       "merge_commit": "c3a6e84436ed1dac72545847daf30f4f3f55f197",
       "merged_at": "2026-10-11T07:08:08Z"
     },
+    "19": {
+      "merge_commit": "fd2b3226fcbbc14983eb6068e18f88060978490b",
+      "merged_at": "2026-10-11T08:58:00Z"
+    },
     "21": {
       "merge_commit": "6fb219a6ca83725733d1d82719f8b3393a607c9f",
       "merged_at": "2026-10-11T07:46:01Z"
+    },
+    "38": {
+      "merge_commit": "1abf247b8cd5ab03b2a9c235d6fdb43b7593a1e2",
+      "merged_at": "2026-10-11T12:59:53Z"
+    },
+    "39": {
+      "merge_commit": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "merged_at": "2026-10-11T15:39:03Z"
     }
   },
-  "releases": []
+  "releases": [
+    {
+      "tag": "v1.0.0",
+      "date": "2026-10-11T15:43:21.000Z"
+    }
+  ]
 }

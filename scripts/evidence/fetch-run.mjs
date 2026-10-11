@@ -12,6 +12,7 @@ import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { EVIDENCE_DIR, readJson, toPosix, writeJson } from "./lib/common.mjs";
 import { KINDS, planKindFiles } from "./lib/kinds.mjs";
+import { redactFiles, redactionSection } from "./lib/redact-files.mjs";
 import { artifactNames, buildRunSource, planRunFiles, versionOf } from "./lib/run-layout.mjs";
 
 const args = parseArgs(process.argv.slice(2));
@@ -55,6 +56,10 @@ function download() {
   return dir;
 }
 
+/** リポジトリのオーナー名（owner/name または https://github.com/owner/…）。人名・アカウント名として書かれたものを墨消しするのに使う。 */
+const ownersOf = (text) =>
+  [/(?:github\.com\/)?([\w-]+)\/[\w.-]+/.exec(String(text ?? ""))?.[1]].filter(Boolean);
+
 function copyPlan(rawDir, plan, destDir) {
   for (const { from, to } of plan) {
     const target = join(destDir, to);
@@ -71,11 +76,16 @@ function fetchCi(rawDir, files) {
   const dest = join(root, EVIDENCE_DIR, "runs", String(summary.run_id));
   rmSync(dest, { recursive: true, force: true });
   copyPlan(rawDir, plan, dest);
-  const version = args.version ?? versionOf(summary.ref);
-  writeJson(
-    join(dest, "SOURCE.json"),
-    buildRunSource({ summary, nowIso, names: artifactNames(files), version, repository: args.repo }),
+  const records = redactFiles(
+    dest,
+    plan.map((p) => p.to),
+    ownersOf(summary.repository ?? args.repo),
   );
+  const version = args.version ?? versionOf(summary.ref);
+  writeJson(join(dest, "SOURCE.json"), {
+    ...buildRunSource({ summary, nowIso, names: artifactNames(files), version, repository: args.repo }),
+    ...redactionSection(records),
+  });
   return { dest, count: plan.length, sha: summary.commit_sha };
 }
 
@@ -103,6 +113,11 @@ function fetchKind(rawDir, files) {
   rmSync(dest, { recursive: true, force: true });
   copyPlan(rawDir, plan, dest);
   const view = runView();
+  const records = redactFiles(
+    dest,
+    plan.map((p) => p.to),
+    ownersOf(view.url),
+  );
   writeJson(join(dest, "SOURCE.json"), {
     schema_version: 1,
     kind,
@@ -115,6 +130,7 @@ function fetchKind(rawDir, files) {
     event: view.event ?? null,
     artifacts: artifactNames(files),
     skipped_large_files: skipped,
+    ...redactionSection(records),
     collected_by: "scripts/evidence/fetch-run.mjs",
   });
   return { dest, count: plan.length, sha: view.headSha };

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-010",
+  "entries": [
+    {
+      "title": "[TC-010] 完了切替以外の変更・空本文・型違いは 400 INVALID_REQUEST で、何も変わらない",
+      "test_case_ids": [
+        "TC-010"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.747Z",
+      "finished_at": "2026-10-11T15:43:53.803Z",
+      "duration_ms": 56,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 400,
+          "request": "{\"completed\":true,\"title\":\"x\"}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 400,
+          "request": "{\"createdAt\":\"2020-01-01T00:00:00.000Z\"}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 400,
+          "request": "{\"id\":\"{uuid}\"}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 400,
+          "request": "{}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 400,
+          "request": "{\"completed\":\"yes\"}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

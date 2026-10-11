@@ -13,6 +13,14 @@ export const toFndId = (id) => {
   return n ? `FND-${n}` : null;
 };
 
+/**
+ * 検出の台帳の ID（FND-nnn）。findings.json の finding_id が FND-nnn / F-nnn ならそれを写し、
+ * triage が仮 ID（FND-NEW-xxxxxx）を付けた検出は、台帳 security/finding-ids.yaml の fingerprint から引く（取り込んだ findings.json は書き換えない）。
+ * ledger: Map(fingerprint → FND-nnn)。引けなければ null。
+ */
+export const resolveFndId = (finding, ledger = new Map()) =>
+  toFndId(finding.finding_id) ?? ledger.get(finding.fingerprint) ?? null;
+
 /** findings.json（triage の出力）→ FND ID の集合と、FND ID → 検出の対応。 */
 export function indexFindings(doc) {
   const byId = new Map();

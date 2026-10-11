@@ -22,15 +22,15 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:02:57Z",
-          "endTimeUtc": "2026-10-11T09:03:06.107Z",
+          "startTimeUtc": "2026-10-11T15:43:43Z",
+          "endTimeUtc": "2026-10-11T15:43:58.890Z",
           "commandLine": "docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy fs --scanners vuln,misconfig,secret --include-dev-deps --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --skip-dirs node_modules,.cache,security-results,.git --exit-code 0 --no-progress --format json --output security-results/trivy-fs/trivy-fs.json ."
         }
       ],

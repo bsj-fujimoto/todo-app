@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source": "frontend/test-results/test-output-all.txt",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "generated_at": "2026-10-11T15:43:55.757Z",
+  "total": {
+    "lines": 100,
+    "branches": 98.18,
+    "functions": 100
+  },
+  "files": [
+    {
+      "path": "src/api-client.js",
+      "lines": 100,
+      "branches": 96.15,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/app.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/messages.js",
+      "lines": 100,
+      "branches": 80,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/state.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/validation.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/view.js",
+      "lines": 100,
+      "branches": 98.15,
+      "functions": 100,
+      "uncovered": ""
+    }
+  ]
+}

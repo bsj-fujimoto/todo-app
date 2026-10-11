@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-022",
+  "entries": [
+    {
+      "title": "[TC-022] 下限の 1 文字と 2 文字は合格し、入力と同一の title を返す",
+      "test_case_ids": [
+        "TC-022"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.528Z",
+      "finished_at": "2026-10-11T15:43:53.529Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"a\"",
+          "result": "合格 title=\"a\""
+        },
+        {
+          "input": "\"あ\"",
+          "result": "合格 title=\"あ\""
+        },
+        {
+          "input": "\"ab\"",
+          "result": "合格 title=\"ab\""
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

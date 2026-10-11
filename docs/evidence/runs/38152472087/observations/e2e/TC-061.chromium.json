@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-061",
+  "entries": [
+    {
+      "title": "[TC-061] 悪意ある文字列はテキストのまま表示され、要素にも dialog にもならない",
+      "test_case_ids": [
+        "TC-061"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:22.222Z",
+      "finished_at": "2026-10-11T15:44:23.305Z",
+      "duration_ms": 1075,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 4,
+        "rows": [
+          {
+            "text": "\"><svg onload=alert(1)>",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "&lt;b&gt;",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "<script>alert(1)</script>",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "<img src=x onerror=alert(1)>",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"<img src=x onerror=alert(1)>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"<img src=x onerror=alert(1)>\",\"completed\":false,\"createdAt\":\"2026-10-11T15:44:22.732Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"<script>alert(1)</script>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"<script>alert(1)</script>\",\"completed\":false,\"createdAt\":\"2026-10-11T15:44:22.793Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"&lt;b&gt;\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"&lt;b&gt;\",\"completed\":false,\"createdAt\":\"2026-10-11T15:44:22.842Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"\\\"><svg onload=alert(1)>\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"\\\"><svg onload=alert(1)>\",\"completed\":false,\"createdAt\":\"2026-10-11T15:44:22.894Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"\\\"><svg onload=alert(1)>\",\"completed\":false,\"createdAt\":\"2026-10-11T15:44:22.894Z\"},{\"…(433文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

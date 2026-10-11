@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-025",
+  "entries": [
+    {
+      "title": "[TC-025] 文字数は UTF-16 の長さでも書記素でもなくコードポイントで数える",
+      "test_case_ids": [
+        "TC-025"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.533Z",
+      "finished_at": "2026-10-11T15:43:53.534Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(100コードポイント)",
+          "result": "合格 title=\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(100コードポイント)"
+        },
+        {
+          "input": "\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(101コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        },
+        {
+          "input": "\"éééééé\"…(100コードポイント)",
+          "result": "合格 title=\"éééééé\"…(100コードポイント)"
+        },
+        {
+          "input": "\"éééééé\"…(102コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

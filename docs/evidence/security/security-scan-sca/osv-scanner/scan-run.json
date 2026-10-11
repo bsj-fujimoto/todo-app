@@ -11,14 +11,14 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:51Z",
-  "finished_at": "2026-10-11T09:03:05.665Z",
+  "started_at": "2026-10-11T15:43:38Z",
+  "finished_at": "2026-10-11T15:43:49.457Z",
   "command": "docker run ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa scan source -L package-lock.json --format sarif|json",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -38,8 +38,8 @@
     "images": []
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/osv-scanner",
   "output_files": [
     {
@@ -49,8 +49,8 @@
     },
     {
       "path": "security-results/osv-scanner/osv-scanner.sarif",
-      "bytes": 1845,
-      "sha256": "74e4e377cc4d19684027d93f13a91dcb47d3eccf8ff5e529d636b517605dbe95"
+      "bytes": 1847,
+      "sha256": "0fb4a09f8d21578e223231eb857ceedebe5e63b538e948848676292db97b5349"
     }
   ],
   "finding_count_sarif": 0,

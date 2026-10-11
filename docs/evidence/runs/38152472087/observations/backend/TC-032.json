@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-032",
+  "entries": [
+    {
+      "title": "[TC-032] 空・空白のみ・タブ・改行だけは 422 TITLE_REQUIRED で、何も保存されない",
+      "test_case_ids": [
+        "TC-032"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:47.601Z",
+      "finished_at": "2026-10-11T15:43:47.670Z",
+      "duration_ms": 69,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_REQUIRED\",\"message\":\"タスク名を入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"   \"}",
+          "response": "{\"error\":{\"code\":\"TITLE_REQUIRED\",\"message\":\"タスク名を入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"\\t\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_REQUIRED\",\"message\":\"タスク名を入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"\\n\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_REQUIRED\",\"message\":\"タスク名を入力してください\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

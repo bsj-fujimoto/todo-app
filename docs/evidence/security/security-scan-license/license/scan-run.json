@@ -11,14 +11,14 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:50Z",
-  "finished_at": "2026-10-11T09:02:50.253Z",
+  "started_at": "2026-10-11T15:43:38Z",
+  "finished_at": "2026-10-11T15:43:38.718Z",
   "command": "node scripts/security/license-check.mjs（package-lock.json と node_modules/*/package.json の license を、自前の SPDX 式評価で方針と突き合わせる）",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -38,8 +38,8 @@
     "images": []
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/license",
   "output_files": [
     {
@@ -50,7 +50,7 @@
     {
       "path": "security-results/license/license-report.json",
       "bytes": 1625,
-      "sha256": "86e76dd2c004816b43d3656b4ea181b08fcef79c1323830d615f4ba8d3e4ec9c"
+      "sha256": "228fd501dbfca362228a389b6259331423ce8f65dca3e2749d7b780f56ef8ab2"
     }
   ],
   "finding_count_sarif": 0,

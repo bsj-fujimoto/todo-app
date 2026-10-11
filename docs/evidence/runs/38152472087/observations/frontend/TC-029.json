@@ -1,0 +1,881 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-029",
+  "entries": [
+    {
+      "title": "[TC-029] \"\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.256Z",
+      "finished_at": "2026-10-11T15:43:55.257Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"\"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \" \"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.257Z",
+      "finished_at": "2026-10-11T15:43:55.257Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\" \"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"   \"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.258Z",
+      "finished_at": "2026-10-11T15:43:55.258Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"   \"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"\\t\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.259Z",
+      "finished_at": "2026-10-11T15:43:55.259Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"\\t\"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"　\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.261Z",
+      "finished_at": "2026-10-11T15:43:55.262Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"　\"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \" a \"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.262Z",
+      "finished_at": "2026-10-11T15:43:55.263Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\" a \"",
+          "result": "frontend: 合格 title=\"a\" / backend: 合格 title=\"a\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"\\na\\n\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.263Z",
+      "finished_at": "2026-10-11T15:43:55.264Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"\\na\\n\"",
+          "result": "frontend: 合格 title=\"a\" / backend: 合格 title=\"a\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"   \\n  \"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.265Z",
+      "finished_at": "2026-10-11T15:43:55.265Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"   \\n  \"",
+          "result": "frontend: 不合格 TITLE_REQUIRED / backend: 不合格 TITLE_REQUIRED"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"a\\nb\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.266Z",
+      "finished_at": "2026-10-11T15:43:55.266Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"a\\nb\"",
+          "result": "frontend: 不合格 TITLE_MULTILINE / backend: 不合格 TITLE_MULTILINE"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"a\\r\\nb\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.267Z",
+      "finished_at": "2026-10-11T15:43:55.267Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"a\\r\\nb\"",
+          "result": "frontend: 不合格 TITLE_MULTILINE / backend: 不合格 TITLE_MULTILINE"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"a\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.268Z",
+      "finished_at": "2026-10-11T15:43:55.268Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"a\"",
+          "result": "frontend: 合格 title=\"a\" / backend: 合格 title=\"a\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"あ\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.269Z",
+      "finished_at": "2026-10-11T15:43:55.269Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"あ\"",
+          "result": "frontend: 合格 title=\"あ\" / backend: 合格 title=\"あ\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"  買い物  \"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.270Z",
+      "finished_at": "2026-10-11T15:43:55.271Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"  買い物  \"",
+          "result": "frontend: 合格 title=\"買い物\" / backend: 合格 title=\"買い物\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"aaaaaaaaaaaa…(99cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.271Z",
+      "finished_at": "2026-10-11T15:43:55.272Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(99コードポイント)",
+          "result": "frontend: 合格 title=\"aaaaaaaaaaaa\"…(99コードポイント) / backend: 合格 title=\"aaaaaaaaaaaa\"…(99コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"aaaaaaaaaaaa…(100cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.272Z",
+      "finished_at": "2026-10-11T15:43:55.273Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(100コードポイント)",
+          "result": "frontend: 合格 title=\"aaaaaaaaaaaa\"…(100コードポイント) / backend: 合格 title=\"aaaaaaaaaaaa\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"aaaaaaaaaaaa…(101cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.274Z",
+      "finished_at": "2026-10-11T15:43:55.274Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(101コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \" aaaaaaaaaaa…(102cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.275Z",
+      "finished_at": "2026-10-11T15:43:55.275Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\" aaaaaaaaaaa\"…(102コードポイント)",
+          "result": "frontend: 合格 title=\"aaaaaaaaaaaa\"…(100コードポイント) / backend: 合格 title=\"aaaaaaaaaaaa\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"  aaaaaaaaaa…(105cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.277Z",
+      "finished_at": "2026-10-11T15:43:55.277Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"  aaaaaaaaaa\"…(105コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"aaaaaaaaaaaa…(111cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.278Z",
+      "finished_at": "2026-10-11T15:43:55.278Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(111コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"😀😀😀😀😀😀…(100cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.279Z",
+      "finished_at": "2026-10-11T15:43:55.279Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(100コードポイント)",
+          "result": "frontend: 合格 title=\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(100コードポイント) / backend: 合格 title=\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"😀😀😀😀😀😀…(101cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.280Z",
+      "finished_at": "2026-10-11T15:43:55.280Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"😀😀😀😀😀😀😀😀😀😀😀😀\"…(101コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"éééééé…(100cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.281Z",
+      "finished_at": "2026-10-11T15:43:55.281Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"éééééé\"…(100コードポイント)",
+          "result": "frontend: 合格 title=\"éééééé\"…(100コードポイント) / backend: 合格 title=\"éééééé\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"éééééé…(102cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.282Z",
+      "finished_at": "2026-10-11T15:43:55.282Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"éééééé\"…(102コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"<img src=x o…(28cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.283Z",
+      "finished_at": "2026-10-11T15:43:55.283Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"<img src=x o\"…(28コードポイント)",
+          "result": "frontend: 合格 title=\"<img src=x o\"…(28コードポイント) / backend: 合格 title=\"<img src=x o\"…(28コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-029] \"aaaaaaaaaaaa…(100000cp)\"",
+      "test_case_ids": [
+        "TC-029"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.284Z",
+      "finished_at": "2026-10-11T15:43:55.287Z",
+      "duration_ms": 3,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(100000コードポイント)",
+          "result": "frontend: 不合格 TITLE_TOO_LONG / backend: 不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -11,14 +11,14 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:48Z",
-  "finished_at": "2026-10-11T09:04:19.394Z",
+  "started_at": "2026-10-11T15:43:34Z",
+  "finished_at": "2026-10-11T15:45:13.267Z",
   "command": "docker run ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2 zap-baseline.py -t http://localhost:8080 -c zap-rules.tsv; zap-api-scan.py -t openapi.yaml -f openapi -O http://localhost:8080 -c zap-rules.tsv (exit 2 / 2)",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -38,14 +38,14 @@
     "images": []
   },
   "authenticated": false,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/zap",
   "output_files": [
     {
       "path": "security-results/zap/compose.log",
-      "bytes": 134362,
-      "sha256": "e19720966ec79a06e622cf65661269178d261ee66b64a232b363086948618ac3"
+      "bytes": 134819,
+      "sha256": "098370dd5de340af77957d898f15edb3d2eb310cf18459d85172946fb36ac940"
     },
     {
       "path": "security-results/zap/openapi.yaml",
@@ -60,22 +60,22 @@
     {
       "path": "security-results/zap/zap-api.html",
       "bytes": 64026,
-      "sha256": "489004d315b9484b40a174c399ad65316c2b30e26dbb39936787a0b877cbaf4f"
+      "sha256": "a0f33db728fdd94d1a870dc2b7f85eaa059cf702e01563a025db97966621233c"
     },
     {
       "path": "security-results/zap/zap-api.json",
-      "bytes": 18705,
-      "sha256": "2d619f5c364c4a76ddd00e49ff730adf2348e1f299d99de576206a2f8c44359d"
+      "bytes": 18701,
+      "sha256": "262afe5f6ceb0ffe1c36234899eef5abb22af9c62de4c4712d6af25b3c8b60a5"
     },
     {
       "path": "security-results/zap/zap-api.md",
       "bytes": 14121,
-      "sha256": "886a0a9d364ebd778ee8143662206df69fb97b8033799854a0a52ad2dfbcee05"
+      "sha256": "4b6d60b15817640ba7cd2a9f15eb0284e19878473615d2823c3044064bf48920"
     },
     {
       "path": "security-results/zap/zap-api.sarif",
-      "bytes": 6430,
-      "sha256": "bcb8204f190664be80b5950f86f1c8c9eb8ddb3c88395857cc04956b1ff4685d"
+      "bytes": 6432,
+      "sha256": "a38693a4030b8da82aeafe71805036faaa1434cd17934017075d44304faa24f8"
     },
     {
       "path": "security-results/zap/zap-baseline-ignored.json",
@@ -84,23 +84,23 @@
     },
     {
       "path": "security-results/zap/zap-baseline.html",
-      "bytes": 34711,
-      "sha256": "796e82e0a7a0407a69b6dfe2fd203dd6805d615fb6bebaa4c1a7e24c228ee72a"
+      "bytes": 35775,
+      "sha256": "d067d5375d6dc0b97626104af5e049fe4736c88283d78df7056c26e30eb15fc9"
     },
     {
       "path": "security-results/zap/zap-baseline.json",
-      "bytes": 8517,
-      "sha256": "47b498d5003e15a239fcf6a840f8e030aa4ba9b384fe9607408d12e1f9b39414"
+      "bytes": 8912,
+      "sha256": "46d438882ad2e530589f106716654b1b5e723be44e96dbf291229b2be29c1905"
     },
     {
       "path": "security-results/zap/zap-baseline.md",
-      "bytes": 6526,
-      "sha256": "7bbf089fa591e149731c06697f3e02ece7429dfc4a1218a0f19f27f03245fc37"
+      "bytes": 6842,
+      "sha256": "fa4ada631443eaf19ee7102ffa620728a21811fa7098843e0ff6433a1ddaa630"
     },
     {
       "path": "security-results/zap/zap-baseline.sarif",
-      "bytes": 4860,
-      "sha256": "54406d2ac4821cf8e19aa6b08c65a1d38e61a0c7fbd1366adfeba8ef921f78e2"
+      "bytes": 4889,
+      "sha256": "d675edf896d1a0f96d15b5bb6bcfb1283d15bb578384114245db9bfbfd6ec3f7"
     },
     {
       "path": "security-results/zap/zap-rules.tsv",

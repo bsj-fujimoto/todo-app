@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-077",
+  "entries": [
+    {
+      "title": "[TC-077] backend を止めると外形監視（health）が 502/504 で検知でき、画面は保存失敗を示し、起動後 30 秒以内に回復する",
+      "test_case_ids": [
+        "TC-077"
+      ],
+      "layer": "compose",
+      "component": "e2e",
+      "project": "compose",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:45:21.167Z",
+      "finished_at": "2026-10-11T15:45:40.224Z",
+      "duration_ms": 19130,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "compose",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "買い物",
+        "input_disabled": false,
+        "save_error": "保存できませんでした。もう一度お試しください",
+        "input_error": "",
+        "list_message": "タスクはありません",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 504
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "backend 停止中の health",
+          "value": "504"
+        },
+        {
+          "label": "start backend から health 200 まで(ms)",
+          "value": "514"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

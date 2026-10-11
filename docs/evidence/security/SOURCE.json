@@ -1,14 +1,34 @@
 {
   "schema_version": 1,
   "kind": "security",
-  "captured_at": "2026-10-11T09:09:44.784Z",
-  "source_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
-  "head_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+  "captured_at": "2026-10-11T16:15:54.625Z",
+  "source_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
+  "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
   "version": "pre-1.0.0",
-  "run_id": "38126925868",
-  "workflow": "Security",
+  "run_id": "38152472087",
+  "workflow": "Release",
   "event": "push",
   "artifacts": [
+    "ci-summary",
+    "ci-summary-compose",
+    "ci-summary-contract",
+    "ci-summary-e2e-chromium",
+    "ci-summary-e2e-chromium-mobile-360",
+    "ci-summary-e2e-firefox",
+    "ci-summary-e2e-webkit",
+    "ci-summary-unit-api",
+    "contract-report",
+    "docs-check-reports",
+    "e2e-evidence-chromium",
+    "e2e-evidence-chromium-mobile-360",
+    "e2e-evidence-compose",
+    "e2e-evidence-firefox",
+    "e2e-evidence-webkit",
+    "evidence-check-report",
+    "images-build",
+    "junit-coverage-unit-api",
+    "regression-selection",
+    "release-evidence",
     "security-findings",
     "security-scan-container-iac",
     "security-scan-dast",
@@ -19,5 +39,84 @@
     "security-scan-secrets"
   ],
   "skipped_large_files": [],
+  "redactions": [
+    {
+      "path": "security-scan-container-iac/trivy-image-backend/sbom-image-backend.cdx.json",
+      "reason": "人の氏名・メールアドレス・アカウント名・秘密情報らしい値を証跡に残さない方針（docs/evidence/README.md）",
+      "rules": [
+        {
+          "rule": "email",
+          "count": 18
+        },
+        {
+          "rule": "name-email",
+          "count": 18
+        }
+      ],
+      "count": 36,
+      "original_sha256": "69575f7e5fa025780b714cf9df89e866ad616b8fb3fa00fbc3bd6484099edb41",
+      "redacted_sha256": "17daf1c085a920b528adebf5ee0943b90946923a7d174fbaab0871edd7b4b4ae"
+    },
+    {
+      "path": "security-scan-container-iac/trivy-image-frontend/sbom-image-frontend.cdx.json",
+      "reason": "人の氏名・メールアドレス・アカウント名・秘密情報らしい値を証跡に残さない方針（docs/evidence/README.md）",
+      "rules": [
+        {
+          "rule": "email",
+          "count": 22
+        },
+        {
+          "rule": "name-email",
+          "count": 22
+        }
+      ],
+      "count": 44,
+      "original_sha256": "ecbbd563188f82abd57df6e5630cebba57982be91917db680ed34f5e18f30951",
+      "redacted_sha256": "4604a0713d23b37d66234b9f73e27fe7ae08d404475b8e8d307f30fc82061085"
+    },
+    {
+      "path": "security-scan-sast/codeql/javascript.sarif",
+      "reason": "人の氏名・メールアドレス・アカウント名・秘密情報らしい値を証跡に残さない方針（docs/evidence/README.md）",
+      "rules": [
+        {
+          "rule": "assignment",
+          "count": 14
+        },
+        {
+          "rule": "email",
+          "count": 4
+        }
+      ],
+      "count": 18,
+      "original_sha256": "8b0deb3157158532cc2fa6ed521465d61f2b43ecb8ddcce5d241882f9ff445ce",
+      "redacted_sha256": "0dcfc35655d753722ae75b9662f28c840b1cdd85f1027589bd12e4742fc18f82"
+    },
+    {
+      "path": "security-scan-secrets/gitleaks/gitleaks.sarif",
+      "reason": "人の氏名・メールアドレス・アカウント名・秘密情報らしい値を証跡に残さない方針（docs/evidence/README.md）",
+      "rules": [
+        {
+          "rule": "email",
+          "count": 1
+        },
+        {
+          "rule": "key:author",
+          "count": 1
+        },
+        {
+          "rule": "key:email",
+          "count": 1
+        },
+        {
+          "rule": "trailer-name",
+          "count": 1
+        }
+      ],
+      "count": 4,
+      "original_sha256": "2d5198ba318ce0f5f3109b594e6ad63539a66f825b2a7e234ca4703d8324e302",
+      "redacted_sha256": "48334e737eaa0a81479eee7073926dc98fcb842d98c20ebb0d50c0ba7669bec3"
+    }
+  ],
+  "redaction_note": "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル。元の取得物は GitHub Actions の artifact（90 日）にだけある（original_sha256 で対応が追える）",
   "collected_by": "scripts/evidence/fetch-run.mjs"
 }

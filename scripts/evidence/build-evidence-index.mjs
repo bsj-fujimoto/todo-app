@@ -9,7 +9,7 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { toCsv } from "../ci/lib/csv.mjs";
 import { EVIDENCE_DIR, createReport, idsIn } from "./lib/common.mjs";
-import { csvPath, loadEvidenceRows, readTable, saveEvidenceRows } from "./lib/data-io.mjs";
+import { csvPath, loadEvidenceRows, loadFindingLedger, readTable, saveEvidenceRows } from "./lib/data-io.mjs";
 import { checkEvidenceIndex } from "./lib/evidence-checks.mjs";
 import { collectEvidenceEntries } from "./lib/evidence-files.mjs";
 import { EVIDENCE_COLUMNS, createRegistry } from "./lib/evidence-registry.mjs";
@@ -19,7 +19,9 @@ const root = resolve(args.root ?? ".");
 const report = createReport();
 
 const registry = createRegistry(loadEvidenceRows(root));
-const fresh = new Set(collectEvidenceEntries(join(root, EVIDENCE_DIR)).map((e) => registry.allocate(e)));
+const fresh = new Set(
+  collectEvidenceEntries(join(root, EVIDENCE_DIR), loadFindingLedger(root)).map((e) => registry.allocate(e)),
+);
 const referenced = new Set(
   ["executions", "defects"].flatMap((t) => readTable(root, t).rows.flatMap((r) => idsIn(r.evidence_ids))),
 );
