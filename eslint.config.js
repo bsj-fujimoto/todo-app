@@ -52,8 +52,30 @@ export default [
     rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
   },
   {
+    // 性能・監視の CLI エントリ（composition root）: 時刻・プロセス起動・標準出力を直接扱う。
+    // 判定などの純粋なロジックは scripts/*/lib/ に置き、lib/ はこの例外の対象外（規約どおり）。
+    files: ["scripts/perf/*.mjs", "scripts/monitoring/*.mjs", "perf/screen/measure.mjs"],
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
+  },
+  {
+    // 外形監視の Playwright ジャーニー: 合成データの識別子に時刻を使う
+    files: ["e2e/synthetic/**/*.js"],
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off" },
+  },
+  {
+    // k6 スクリプトは Go 製ランタイム上で動き、DI できない。k6 のグローバルを許可し、時刻の直接参照を許す（乱数は使わない）
+    files: ["perf/k6/**/*.js"],
+    languageOptions: { globals: { __ENV: "readonly", __VU: "readonly", __ITER: "readonly" } },
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off" },
+  },
+  {
+    // 画面計測は page.evaluate の中でブラウザのグローバルを使う
+    files: ["perf/screen/measure.mjs"],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）
-    files: ["**/test/**/*.js", "e2e/**/*.js"],
+    files: ["**/test/**/*.js", "scripts/**/test/**/*.mjs", "e2e/**/*.js"],
     rules: { "max-lines-per-function": "off", "max-lines": "off" },
   },
 ];
