@@ -3,7 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { MANAGED_DIRS, readJson, sha256, shortSha, toPosix } from "./common.mjs";
-import { findingNumber } from "./findings.mjs";
+import { resolveFndId } from "./findings.mjs";
 
 const SECURITY_RULES = [
   [
@@ -135,12 +135,12 @@ function claimFor(rel, what, source) {
 }
 
 /** 検出ごとの証拠（FND-nnn → findings.json の finding_id）。findings.json があれば、検出 1 件を 1 項目にする。 */
-function findingEntries(evidenceDir, rel, source) {
+function findingEntries(evidenceDir, rel, source, ledger) {
   const file = join(evidenceDir, rel);
   const doc = readJson(file);
   const sha = sha256(readFileSync(file));
   return (doc.findings ?? []).map((f) => ({
-    claim: `FND-${findingNumber(f.finding_id)}: ${f.severity} ${f.tool} ${f.rule_id}${f.component ? ` ${f.component}` : ""}（status ${f.status}）`,
+    claim: `${resolveFndId(f, ledger)}: ${f.severity} ${f.tool} ${f.rule_id}${f.component ? ` ${f.component}` : ""}（status ${f.status}）`,
     ref: refFor(rel, f.finding_id),
     domain: "inspection",
     criterion_id: "inspection-16",
@@ -152,7 +152,7 @@ function findingEntries(evidenceDir, rel, source) {
 }
 
 /** docs/evidence の全ファイル → 証拠索引の項目（実施表の行ごとの証拠を除く）。 */
-export function collectEvidenceEntries(evidenceDir) {
+export function collectEvidenceEntries(evidenceDir, ledger) {
   const entries = [];
   for (const rel of listManagedFiles(evidenceDir)) {
     const info = describeFile(rel);
@@ -168,7 +168,8 @@ export function collectEvidenceEntries(evidenceDir) {
       captured_at: source?.captured_at ?? null,
       head_sha: source?.head_sha ?? null,
     });
-    if (/security\/.*findings\.json$/.test(rel)) entries.push(...findingEntries(evidenceDir, rel, source));
+    if (/security\/.*findings\.json$/.test(rel))
+      entries.push(...findingEntries(evidenceDir, rel, source, ledger));
   }
   return entries;
 }

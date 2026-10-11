@@ -1,7 +1,7 @@
 // セキュリティ検出（triage の findings.json）→ docs/data/findings.csv。FND-nnn の ID を docs/data の中で定義する
 // （実施表・不具合表・アクション表・追跡表が FND を参照しても、docs-check の ID 解決が通るように）。純粋関数。
 import { clipText } from "./observations.mjs";
-import { toFndId } from "./findings.mjs";
+import { resolveFndId } from "./findings.mjs";
 
 export const FINDING_COLUMNS = [
   "finding_id",
@@ -28,8 +28,8 @@ export const FINDING_COLUMNS = [
 const text = (value) => (value === null || value === undefined ? "" : String(value));
 
 /** findings.json（triage の出力）→ 表の行。finding_id は triage が fingerprint から決めた安定 ID（FND-nnn。台帳 security/finding-ids.yaml）。旧形式 F-001 は FND-001 に写す。 */
-export function findingRows(doc) {
-  const unregistered = (doc?.findings ?? []).filter((f) => !toFndId(f.finding_id));
+export function findingRows(doc, ledger = new Map()) {
+  const unregistered = (doc?.findings ?? []).filter((f) => !resolveFndId(f, ledger));
   if (unregistered.length) {
     throw new Error(
       `安定 ID（FND-nnn）が未登録の検出が ${unregistered.length} 件ある（${unregistered.map((f) => f.finding_id).join(", ")}）。` +
@@ -37,7 +37,7 @@ export function findingRows(doc) {
     );
   }
   return (doc?.findings ?? []).map((f) => ({
-    finding_id: toFndId(f.finding_id),
+    finding_id: resolveFndId(f, ledger),
     source_finding_id: f.finding_id,
     severity: f.severity,
     status: f.status,

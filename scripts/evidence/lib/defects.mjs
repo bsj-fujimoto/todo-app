@@ -104,6 +104,8 @@ export function extractFields(issue) {
     release_hint: (id.get("リリース") ?? "").trim(),
     fix_pr: fixPrOf(cause.get("修正 PR") ?? cause.get("修正PR")),
     case_ids: caseIdsOf(related.get("ケース")),
+    // 「ケース: 該当なし。…」と事実（検出した手段・ケースが無いこと）を書いた不具合は、case_ids が空でもよい（追跡表に欠落として残る）
+    no_case: /^該当なし/.test(related.get("ケース") ?? ""),
     repro: clipText(oneLine(sections.get("再現手順")), MAX.text),
     expected: clipText(oneLine(sections.get("期待結果")), MAX.short),
     actual: clipText(oneLine(sections.get("実際の結果")), MAX.short),
@@ -137,7 +139,9 @@ const REQUIRED = [
 function problemsOf(f, fixCommit, ctx) {
   return [
     ...REQUIRED.filter((k) => !f[k]).map((k) => `${k} が Issue 本文に無い（または語彙外）`),
-    ...(f.case_ids.length === 0 ? ["関連ケース（TC-xxx）が Issue 本文に無い"] : []),
+    ...(f.case_ids.length === 0 && !f.no_case
+      ? ["関連ケース（TC-xxx）が Issue 本文に無い（ケースが無いなら「ケース: 該当なし。…」と事実を書く）"]
+      : []),
     ...f.case_ids.filter((c) => !ctx.caseIds.has(c)).map((c) => `関連ケース ${c} が cases.csv に無い`),
     ...(f.fix_pr && !fixCommit ? [`修正 PR #${f.fix_pr} のマージ commit を取得できない（未マージ）`] : []),
   ];
@@ -208,11 +212,15 @@ const rowProblems = (r) => [
     ([col]) => `${col} が語彙外（${r[col]}）`,
   ),
   ...(r.status === "fixed" && !/^[0-9a-f]{40}$/.test(r.fix_commit) ? ["fixed なのに fix_commit が無い"] : []),
-  ...(r.case_ids ? [] : ["case_ids が空"]),
 ];
 
 export function checkDefectRows(rows, report) {
   const ids = rows.map((r) => r.defect_id);
   for (const id of ids.filter((x, i) => ids.indexOf(x) !== i)) report.error(`${id} が重複`);
   for (const r of rows) for (const p of rowProblems(r)) report.error(`${r.defect_id}: ${p}`);
+  for (const r of rows.filter((x) => !x.case_ids)) {
+    report.warn(
+      `${r.defect_id}: 関連ケースが無い（検出した手段: ${r.detected_phase}。新規ケースの提案は Issue に書く）`,
+    );
+  }
 }

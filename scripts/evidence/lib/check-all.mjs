@@ -133,6 +133,19 @@ export function traceability(bundle, currentCsv) {
   });
 }
 
+/** 成果物台帳が古いとき: 既定は警告。失敗にするのは strictArtifacts（--strict-artifacts）のときだけ。 */
+export function artifactsResult({ stale, strictArtifacts, message }) {
+  const failed = stale && strictArtifacts;
+  return {
+    id: "artifacts",
+    title: "成果物台帳・正本の所在地が文書の現状と一致する",
+    status: failed ? "fail" : "pass",
+    messages: failed ? [message] : [],
+    warnings: stale && !failed ? [message] : [],
+    stats: { strict_artifacts: strictArtifacts },
+  };
+}
+
 export function sensitive(bundle) {
   const report = createReport();
   const { hits, qcCompat } = scanFiles(bundle.textFiles);
