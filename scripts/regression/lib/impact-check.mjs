@@ -1,6 +1,6 @@
 // 影響マップの陳腐化検査: 追跡ファイルが当たらない / 選ばれないケースがある / どのファイルにも当たらない glob。
 import { globToRegExp } from "../../ci/lib/repo-fs.mjs";
-import { entriesFor } from "./impact.mjs";
+import { CHANGE_KINDS, entriesFor } from "./impact.mjs";
 
 export function unmappedFiles(map, files) {
   return files.filter((f) => entriesFor(map, f).length === 0);
@@ -26,12 +26,21 @@ export function staleGlobs(map, files) {
   );
 }
 
+/** すべてのエントリに、決められた語彙の change_kind があること。 */
+export function missingChangeKinds(map) {
+  return [...map.entries, ...(map.no_test_impact ?? [])]
+    .filter((e) => !CHANGE_KINDS.includes(e.change_kind))
+    .map((e) => `${e.id}: change_kind が無い／不正（${e.change_kind ?? "未設定"}）`);
+}
+
 export function checkImpactMap({ map, files, cases }) {
   const unmapped = unmappedFiles(map, files);
   const never = neverSelectedCases(map, cases);
   const unknown = unknownCaseIds(map, cases);
   const stale = staleGlobs(map, files);
+  const kinds = missingChangeKinds(map);
   const errors = [
+    ...kinds,
     ...unmapped.map((f) => `影響マップに当たらない追跡ファイル: ${f}`),
     ...never.map((id) => `どのエントリからも選ばれない自動化ケース: ${id}`),
     ...unknown.map((id) => `cases.csv に無い TC-ID を参照: ${id}`),
@@ -44,6 +53,7 @@ export function checkImpactMap({ map, files, cases }) {
       unmapped: unmapped.length,
       never_selected: never.length,
       stale_globs: stale.length,
+      bad_change_kind: kinds.length,
     },
   };
 }

@@ -1,4 +1,5 @@
 // 回帰スイート台帳（quality/regression-suite.csv）を docs/data/cases.csv などから生成する。
+import { createHash } from "node:crypto";
 import { parseCsvObjects, toCsv } from "../../ci/lib/csv.mjs";
 import { isFile, readText } from "../../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
@@ -13,6 +14,11 @@ export const HEADER = [
   "automated",
   "manual_reason",
   "status",
+  "last_run_at",
+  "last_run_ids",
+  "environment",
+  "steps_hash",
+  "last_result",
 ];
 const TC = /TC-\d{3}/g;
 const optionalYaml = (root, rel) => (isFile(root, rel) ? parseYaml(readText(root, rel)) : null);
@@ -32,6 +38,47 @@ export function loadDefectLinks(root) {
   return links;
 }
 
+/** docs/data/executions.csv があれば、ケースごとの実施履歴を読む（無ければ空）。 */
+export function loadExecutions(root) {
+  const byCase = new Map();
+  if (!isFile(root, "docs/data/executions.csv")) return byCase;
+  for (const r of parseCsvObjects(readText(root, "docs/data/executions.csv")).rows) {
+    byCase.set(r.test_case_id, [...(byCase.get(r.test_case_id) ?? []), r]);
+  }
+  return byCase;
+}
+
+/** 手順（cases.csv の action）の短いハッシュ。手順が変わったのに実施結果が古いままのケースを見つける目印。 */
+export const stepsHash = (action) =>
+  createHash("sha256")
+    .update(String(action ?? "").trim())
+    .digest("hex")
+    .slice(0, 12);
+
+const shortEnv = (env) => String(env).split(" / ")[0];
+const RESULT_ORDER = ["fail", "blocked", "skipped", "pass"];
+
+function aggregate(statuses) {
+  return RESULT_ORDER.find((s) => statuses.includes(s)) ?? statuses[0] ?? "not_run";
+}
+
+/** そのケースの最新の実施（run_ref 単位）の要約。実施が無い（not_run のみ）なら空欄と not_run。 */
+export function lastRunOf(executions) {
+  const done = (executions ?? []).filter((e) => e.status !== "not_run" && e.executed_at);
+  if (done.length === 0)
+    return { last_run_at: "", last_run_ids: "", environment: "", last_result: "not_run" };
+  const newest = [...done].sort((a, b) => b.executed_at.localeCompare(a.executed_at));
+  const latestRef = newest[0].run_ref;
+  const latest = done.filter((e) => e.run_ref === latestRef);
+  const refs = [...new Set(newest.map((e) => e.run_ref))].slice(0, 3);
+  return {
+    last_run_at: newest[0].executed_at,
+    last_run_ids: refs.join(";"),
+    environment: [...new Set(latest.map((e) => shortEnv(e.environment)))].sort().join(";"),
+    last_result: aggregate(latest.map((e) => e.status)),
+  };
+}
+
 export function tierOf(c, smoke) {
   if (c.automation_layer === "manual") return "manual";
   if (smoke.has(c.test_case_id)) return "smoke";
@@ -49,7 +96,7 @@ function statusOf(c, quarantined) {
   return quarantined.has(c.test_case_id) ? "quarantined" : "active";
 }
 
-export function buildRows({ cases, journeys, smokeIds, quarantinedIds, defects }) {
+export function buildRows({ cases, journeys, smokeIds, quarantinedIds, defects, executions = new Map() }) {
   const smoke = new Set(smokeIds);
   const byCase = journeyIndex(journeys);
   return cases.map((c) => ({
@@ -62,6 +109,8 @@ export function buildRows({ cases, journeys, smokeIds, quarantinedIds, defects }
     automated: c.automation_layer === "manual" ? "no" : "yes",
     manual_reason: c.manual_reason,
     status: statusOf(c, quarantinedIds),
+    ...lastRunOf(executions.get(c.test_case_id)),
+    steps_hash: stepsHash(c.action),
   }));
 }
 
@@ -88,7 +137,14 @@ export function loadInputs(root) {
   const smokeIds = optionalYaml(root, "quality/impact-map.yaml")?.smoke_case_ids ?? [];
   const ledger = optionalYaml(root, "quality/flaky-ledger.yaml")?.entries ?? [];
   const quarantinedIds = new Set(ledger.flatMap((e) => String(e.test_id).match(TC) ?? []));
-  return { cases, journeys, smokeIds, quarantinedIds, defects: loadDefectLinks(root) };
+  return {
+    cases,
+    journeys,
+    smokeIds,
+    quarantinedIds,
+    defects: loadDefectLinks(root),
+    executions: loadExecutions(root),
+  };
 }
 
 export function renderSuite(inputs) {

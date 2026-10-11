@@ -4,6 +4,8 @@
 #   - どのエントリにも当たらないパスが 1 つでもあれば、選択せず全件実行にフォールバックする。`full: true` のエントリに当たっても全件。
 #   - scripts/regression/impact-check.mjs が「追跡ファイルのすべてがどれかに当たる」「全自動ケースがどれかから選ばれる」
 #     ことを CI で検査する（マップの陳腐化を防ぐ）。
+# change_kind: 変更の種類（code / config / db / api / infra / docs）。backend の store・migration は db、backend/openapi.yaml は api、
+#   compose・Dockerfile・CI・監視・性能の道具は infra。全エントリに必須（impact-check が語彙を検査）。選択結果（select.mjs の出力）に change_kinds として載る。
 # 保守ルール: ファイル・機能を足す PR で、この表も更新する。迷ったら広く書く（選びすぎは安全、外しすぎは漏れ）。
 #   excluded_risk には「このエントリだけで選んだときに検証されなくなるもの」を書く（選択実行の限界を明示する）。
 #   ケースの対応は docs/03-test-spec.md §13.3（テストコードの置き場所）と §14.3（変更時の影響ケースの特定）に従う。
@@ -12,6 +14,7 @@ smoke_case_ids: [TC-001, TC-030, TC-056, TC-075, TC-076] # 主要フロー・入
 entries:
   - id: api-contract
     feature: API 契約（OpenAPI）
+    change_kind: api
     paths:
       - "backend/openapi.yaml"
     case_ids:
@@ -42,6 +45,7 @@ entries:
     excluded_risk: "契約外の画面表示・永続化の中身（契約チェック以外の面）"
   - id: backend-validation
     feature: タイトル検証（backend）
+    change_kind: code
     paths:
       - "backend/src/domain/title.js"
       - "backend/test/unit/validate-title.test.js"
@@ -82,6 +86,7 @@ entries:
     excluded_risk: "保存層・画面表示・保存失敗の扱い"
   - id: backend-domain
     feature: タスクのドメイン（採番・既定値・状態）
+    change_kind: code
     paths:
       - "backend/src/domain/task.js"
       - "backend/test/unit/domain-and-config.test.js"
@@ -116,6 +121,7 @@ entries:
     excluded_risk: "入力検証の境界値・保存層の障害"
   - id: backend-storage
     feature: 保存層（SQLite・永続化・マイグレーション・破損・書込み失敗）
+    change_kind: db
     paths:
       - "backend/src/store/**"
       - "backend/test/api/persistence.test.js"
@@ -153,6 +159,7 @@ entries:
     excluded_risk: "入力検証・画面の見た目・ブラウザ差"
   - id: backend-routes
     feature: API ルーティング・エラー応答（tasks・HTTP・共通エラー・アプリ組み立て）
+    change_kind: code
     paths:
       - "backend/src/routes/tasks.js"
       - "backend/src/http/**"
@@ -210,6 +217,7 @@ entries:
     excluded_risk: "画面固有の表示・a11y・ブラウザ差"
   - id: backend-health
     feature: ヘルスチェック・観測性
+    change_kind: code
     paths:
       - "backend/src/routes/health.js"
       - "backend/test/api/observability.test.js"
@@ -217,6 +225,7 @@ entries:
     excluded_risk: "タスク操作の API 挙動"
   - id: backend-startup
     feature: 起動・設定（環境変数・ポート・DB パス）
+    change_kind: code
     paths:
       - "backend/src/main.js"
       - "backend/src/config.js"
@@ -225,6 +234,7 @@ entries:
     excluded_risk: "入力検証・画面の表示"
   - id: backend-tests
     feature: backend のテスト（上のエントリに含まれないもの）
+    change_kind: code
     paths:
       - "backend/test/**"
     case_ids:
@@ -270,6 +280,7 @@ entries:
     excluded_risk: "画面（E2E）の振る舞い"
   - id: backend-test-infra
     feature: backend のテスト基盤・依存・テストランナー（E2E も test-support を使う）
+    change_kind: config
     paths:
       - "backend/test-support/**"
       - "backend/scripts/**"
@@ -279,6 +290,7 @@ entries:
     excluded_risk: "なし（共有基盤の変更は全件実行にフォールバックする）"
   - id: frontend-validation
     feature: タイトル検証（frontend）
+    change_kind: code
     paths:
       - "frontend/src/validation.js"
       - "frontend/test/unit/validate-title.test.js"
@@ -305,6 +317,7 @@ entries:
     excluded_risk: "保存層・API の検証（backend 側）"
   - id: frontend-view
     feature: 画面の描画・文言・スタイル
+    change_kind: code
     paths:
       - "frontend/src/view.js"
       - "frontend/src/messages.js"
@@ -356,6 +369,7 @@ entries:
     excluded_risk: "API 単体の入力検証・保存層の障害（backend 側）"
   - id: frontend-logic
     feature: 画面の状態管理・API クライアント
+    change_kind: code
     paths:
       - "frontend/src/state.js"
       - "frontend/src/app.js"
@@ -419,12 +433,14 @@ entries:
     excluded_risk: "API 単体の入力検証・保存層の障害（backend 側）"
   - id: frontend-assets
     feature: 画面の静的資産（アイコン）
+    change_kind: code
     paths:
       - "frontend/favicon.svg"
     case_ids: [TC-056]
     excluded_risk: "機能（アイコンは機能に影響しない。初期画面だけ確認する）"
   - id: frontend-package
     feature: frontend の依存
+    change_kind: config
     paths:
       - "frontend/package.json"
     full: true
@@ -432,6 +448,7 @@ entries:
     excluded_risk: "なし（依存の変更は全件実行にフォールバックする）"
   - id: serving-compose
     feature: 配信・API 中継・コンテナ構成（nginx / Dockerfile / compose）
+    change_kind: infra
     paths:
       - "frontend/nginx.conf"
       - "frontend/Dockerfile"
@@ -443,72 +460,84 @@ entries:
     excluded_risk: "ドメインロジックの境界値（unit / api 層）"
   - id: e2e-main-flow
     feature: E2E テスト e2e/tests/main-flow.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/main-flow.spec.js"
     case_ids: [TC-001, TC-041, TC-070]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-add-task
     feature: E2E テスト e2e/tests/add-task.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/add-task.spec.js"
     case_ids: [TC-002, TC-003, TC-004, TC-005, TC-006, TC-007, TC-016, TC-017, TC-018, TC-019, TC-020]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-toggle-delete
     feature: E2E テスト e2e/tests/toggle-delete.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/toggle-delete.spec.js"
     case_ids: [TC-008, TC-013, TC-014]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-order
     feature: E2E テスト e2e/tests/order.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/order.spec.js"
     case_ids: [TC-040]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-save-failure
     feature: E2E テスト e2e/tests/save-failure.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/save-failure.spec.js"
     case_ids: [TC-045, TC-046, TC-047, TC-048, TC-049]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-screen-states
     feature: E2E テスト e2e/tests/screen-states.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/screen-states.spec.js"
     case_ids: [TC-055, TC-056, TC-057, TC-058]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-security
     feature: E2E テスト e2e/tests/security.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/security.spec.js"
     case_ids: [TC-061]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-concurrency
     feature: E2E テスト e2e/tests/concurrency.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/concurrency.spec.js"
     case_ids: [TC-063, TC-066]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-a11y-responsive
     feature: E2E テスト e2e/tests/a11y-responsive.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/a11y-responsive.spec.js"
     case_ids: [TC-067, TC-068, TC-069]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-performance
     feature: E2E テスト e2e/tests/performance.spec.js
+    change_kind: code
     paths:
       - "e2e/tests/performance.spec.js"
     case_ids: [TC-074]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-compose
     feature: E2E テスト e2e/compose/**
+    change_kind: infra
     paths:
       - "e2e/compose/**"
     case_ids: [TC-043, TC-044, TC-076, TC-077]
     excluded_risk: "他のテストファイルのケース"
   - id: e2e-shared
     feature: E2E の共有（fixtures・Playwright 設定・依存）
+    change_kind: config
     paths:
       - "e2e/fixtures/**"
       - "e2e/playwright.config.js"
@@ -518,6 +547,7 @@ entries:
     excluded_risk: "なし（共有部分の変更は全件実行にフォールバックする）"
   - id: perf-tooling
     feature: 性能試験の道具（k6 / 性能ワークフロー）
+    change_kind: infra
     paths:
       - "perf/**"
       - "scripts/perf/**"
@@ -527,6 +557,7 @@ entries:
     excluded_risk: "機能ケース（性能試験の変更では機能を触らない）"
   - id: monitoring-tooling
     feature: 外形監視・運用の道具
+    change_kind: infra
     paths:
       - "monitoring/**"
       - "scripts/monitoring/**"
@@ -538,6 +569,7 @@ entries:
     excluded_risk: "機能ケース（監視設定の変更では機能を触らない）"
   - id: ci-pipeline
     feature: CI・回帰運用の道具（ワークフロー / ルート設定 / 依存ファイル / 選択ロジック）
+    change_kind: infra
     paths:
       - ".github/workflows/ci.yml"
       - ".github/workflows/nightly.yml"
@@ -558,12 +590,14 @@ entries:
     excluded_risk: "なし（CI・選択ロジックの変更は全件実行にフォールバックする）"
   - id: evidence-tooling
     feature: 証跡・実施表・台帳の生成と検査の道具（scripts/evidence）
+    change_kind: code
     paths:
       - "scripts/evidence/**"
     case_ids: []
     excluded_risk: "アプリの振る舞い（証跡の生成・検査の道具でアプリは変わらない。smoke のみ実行）"
   - id: security-governance
     feature: セキュリティ検査・依存更新・リポジトリ統制の設定
+    change_kind: config
     paths:
       - ".github/workflows/security.yml"
       - "security/**"
@@ -579,15 +613,18 @@ entries:
 no_test_impact:
   - id: docs
     reason: ドキュメント（docs-check で ID 参照・リンク・manifest を検査する）
+    change_kind: docs
     paths:
       - "docs/**"
       - "**/*.md"
   - id: spec
     reason: 仕様書（実装の変更は別 PR で行い、そちらで影響を選ぶ）
+    change_kind: docs
     paths:
       - "spec/**"
   - id: repo-meta
     reason: リポジトリのメタ情報（所有者・テンプレート・エディタ設定・ライセンス）
+    change_kind: config
     paths:
       - ".github/CODEOWNERS"
       - ".github/ISSUE_TEMPLATE/**"

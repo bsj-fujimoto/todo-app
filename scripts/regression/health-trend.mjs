@@ -10,7 +10,14 @@ import { evaluateHealth, summarizeRuns } from "./lib/health.mjs";
 
 const args = parseArgs(process.argv.slice(2), { flags: ["strict"] });
 const limit = Number(args.limit ?? 30);
-const limits = { min_success_rate: 0.9, max_consecutive_failures: 2, max_p95_sec: 1800 };
+// 所要時間の p95 の上限: PR のフィードバック時間の宣言値（10 分 = 600 秒）を ci.yml に適用する。実測は 2.4〜4.4 分（成功した run）で、十分に余裕がある。
+// nightly.yml は全件・全ブラウザ（週次は ×3）を回す層なので、フィードバックではなく完走の上限として 30 分にする。
+const limits = {
+  min_success_rate: 0.9,
+  max_consecutive_failures: 2,
+  max_p95_sec: 600,
+  per_workflow_p95_sec: { "nightly.yml": 1800 },
+};
 
 function fetchRuns(workflow) {
   const path = `repos/${args.repo}/actions/workflows/${workflow}/runs?per_page=${limit}&status=completed`;
