@@ -93,3 +93,23 @@ node scripts/security/triage.mjs --results security-results --out security-findi
 
 `tools.env` の IMAGE と VERSION を、`docker buildx imagetools inspect <image>:<tag>` で確認した digest ごと書き換える（レビュー対象）。
 GitHub Actions の action は Dependabot（github-actions）が SHA 固定のまま更新を提案する。
+
+## 初回の検査で出た検出と処理（2026-10-11、PR #19 の run）
+
+初回の security.yml は **46 件**（重複排除後。critical 0 / high 10 / medium 17 / low 12 / info 7）を検出した。握りつぶさず、次のとおり処理した（処理後の run は 9 件: medium 2〔受容〕/ low 2 / info 5、ゲート pass）。
+
+| 検出                                                                                              | 件数                       | 処理                                                                                                                           |
+| ------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| backend イメージに同梱された npm の依存（brace-expansion・undici・tar・ip-address など）の勧告    | high 9 / medium 12 / low 1 | **修正**: 実行イメージから npm・corepack・yarn を取り除いた（`backend/Dockerfile`）。fixed                                     |
+| frontend イメージの libtiff（CVE-2026-4775）                                                      | high 1                     | **修正**: nginx-unprivileged の slim 版に変更（libgd・libtiff を含まない）。fixed                                              |
+| frontend/Dockerfile に USER が無い（trivy DS-0002）                                               | high 1                     | **修正**: `USER 101` を明示。fixed                                                                                             |
+| CodeQL js/file-system-race（`scripts/ci/lib/artifacts.mjs`・`scripts/security/lib/scan-run.mjs`） | high 2                     | **修正**: stat → read をやめ、1 回の操作で判定する。fixed                                                                      |
+| ZAP 10055 CSP のディレクティブ不足                                                                | medium 1                   | **修正**: `base-uri` `form-action` `frame-ancestors` を追加（`frontend/nginx.conf`）。fixed                                    |
+| ZAP 10063・90004（Permissions-Policy・COOP・CORP・COEP が無い）                                   | low 5                      | **修正**: ヘッダを追加。fixed                                                                                                  |
+| compose-check COMPOSE-007（cap_drop・no-new-privileges が無い）                                   | low 2                      | **修正**: 両サービスに `cap_drop: [ALL]` と `no-new-privileges` を追加。fixed                                                  |
+| hadolint DL3025・DL3066                                                                           | low 2 / info 1             | **修正**: HEALTHCHECK を exec 形式、USER を数値に。fixed                                                                       |
+| zlib CVE-2026-85091（base イメージ。gz* API の溢れで、nginx も Node も使わない）                  | medium 2                   | **期限付き受容**（AR-001、2027-01-09、Issue #22）。到達不能。base の更新で消える                                               |
+| ZAP 10049（API 応答がキャッシュ可能）                                                             | info 1 + na 2              | `tp`: backend が `Cache-Control: no-store` を付ける（owner: バックエンド担当、期限 2026-12-31）。残りの 10049-1・10049-2 は na |
+| ZAP 100000・100001・10109、compose-check COMPOSE-006                                              | info / low 4               | `na`（理由は `triage.yaml`）                                                                                                   |
+
+SCA（npm audit・osv-scanner）、Secret（gitleaks）、License は検出 0 件（License は MPL-2.0 と CC-BY-3.0 を期限付き例外として記録。`license-policy.yaml`）。
