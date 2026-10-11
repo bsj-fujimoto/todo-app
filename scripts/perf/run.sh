@@ -10,6 +10,13 @@
 # 終了コード: 0 = 全 pass かつ退行なし、1 = fail または退行、2 = 実行の失敗（環境・スクリプトの不具合）
 set -euo pipefail
 
+# 実行中にこのファイルが書き換わると bash が壊れた行を読むため、一時コピーから実行し直す（長時間の試験を守る）
+if [ -z "${PERF_RUN_SELF_COPY:-}" ]; then
+  self_copy="$(mktemp "${TMPDIR:-/tmp}/perf-run.XXXXXX")"
+  cp "$0" "$self_copy"
+  PERF_RUN_SELF_COPY=1 exec bash "$self_copy" "$@"
+fi
+
 cd "$(git rev-parse --show-toplevel)"
 
 PROFILE=full
