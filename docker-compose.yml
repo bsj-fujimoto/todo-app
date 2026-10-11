@@ -1,6 +1,7 @@
 # docker compose up --build で http://localhost:8080 が動く。
 # backend のポートはホストへ公開しない（frontend の nginx が /api を中継する）。
-# 公開ポートを変えるときは FRONTEND_PORT、ビルドの commit SHA は COMMIT_SHA（/api/v1/health の commit に出る）。
+# 公開ポートを変えるときは FRONTEND_PORT。ビルドの commit SHA は COMMIT_SHA（ビルド引数としてイメージに焼き込み、/api/v1/health の commit に出る）。
+# 実行時の環境変数 COMMIT_SHA では上書きしない（焼き込み済みのイメージを --no-build で起動しても、焼き込んだ SHA を保つ。#16）。
 name: todo-app
 
 services:
@@ -14,7 +15,6 @@ services:
       HOST: 0.0.0.0
       PORT: "3000"
       DB_PATH: /data/todo.db
-      COMMIT_SHA: ${COMMIT_SHA:-unknown}
     volumes:
       - todo-data:/data
     # 権限を最小にする（compose-check COMPOSE-007）。Node の HTTP サーバーに追加の capability は要らない。

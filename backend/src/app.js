@@ -6,6 +6,10 @@ import { registerTaskRoutes } from "./routes/tasks.js";
 
 // 巨大な本文でメモリを食い尽くさない。タイトル 100000 文字（数百 KB）までは 422 で返せる大きさにする
 export const BODY_LIMIT_BYTES = 1024 * 1024;
+// 本文サイズ超過で 400 を返すとき、クライアントが応答を確実に受け取れるよう、残りの本文を読み捨てる上限と待ち時間。
+// 宣言された Content-Length が上限を超える場合は読み捨てず、応答して接続を閉じる
+export const MAX_DRAIN_BYTES = 64 * 1024 * 1024;
+export const DRAIN_TIMEOUT_MS = 10_000;
 const REQUEST_ID_HEADER = "x-request-id";
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 
@@ -32,7 +36,43 @@ function toAppError(error) {
   return new AppError("INTERNAL_ERROR", { detail: "unexpected error", cause: error });
 }
 
-function errorHandler(error, request, reply) {
+/** 残りの本文を読み捨てる。読み切る・切断される・上限（量・時間）を超えるのいずれかで解決する。 */
+function discardRemainder(raw) {
+  return new Promise((resolve) => {
+    let drained = 0;
+    const finish = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(() => {
+      raw.destroy();
+      finish();
+    }, DRAIN_TIMEOUT_MS);
+    raw.on("data", (chunk) => {
+      drained += chunk.length;
+      if (drained > MAX_DRAIN_BYTES) raw.destroy();
+    });
+    raw.once("end", finish);
+    raw.once("close", finish);
+    raw.once("error", finish);
+    raw.resume();
+  });
+}
+
+/**
+ * 本文サイズ超過（FST_ERR_CTP_BODY_TOO_LARGE）では、Fastify は connection: close を付けて即応答する。
+ * 未読の本文が残ったまま接続を閉じると TCP の RST でクライアントが応答を失う（書込み中の ECONNRESET/EPIPE）。
+ * そこで、上限付きで残りを読み捨ててから応答し、接続は閉じずに使い回せるようにする。
+ */
+async function drainOversizedBody(error, request, reply) {
+  if (error?.code !== "FST_ERR_CTP_BODY_TOO_LARGE") return;
+  if (Number(request.headers["content-length"]) > MAX_DRAIN_BYTES) return;
+  await discardRemainder(request.raw);
+  reply.removeHeader("connection");
+}
+
+async function errorHandler(error, request, reply) {
+  await drainOversizedBody(error, request, reply);
   const appError = toAppError(error);
   // 利用者データ（タイトルなど）は出さない。利用者の入力ミス（4xx）は完了ログだけで足り、error にはしない
   if (SERVER_SIDE_CODES.includes(appError.code)) {

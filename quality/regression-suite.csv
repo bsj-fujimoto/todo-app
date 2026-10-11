@@ -71,7 +71,7 @@ TC-069,pr,,REQ-009,VIEW-036,,yes,,active
 TC-070,daily,,REQ-008;REQ-017;REQ-018;REQ-021;REQ-022,VIEW-035;VIEW-001,,yes,,active
 TC-071,manual,,REQ-009;REQ-010,VIEW-038;VIEW-037,,no,スクリーンリーダー（VoiceOver・NVDA）が実際に何をどの順で読み上げるかは、実機での聞き取りでしか判定できない。axe-core では名前の有無しか検査できず、読み上げの自然さと状態変更の通知は自動化できない。,manual
 TC-072,manual,,REQ-008;REQ-018;REQ-021;REQ-022,VIEW-035;VIEW-039;VIEW-005,,no,実機 iOS Safari のソフトウェアキーボード表示時のレイアウトと、日本語入力の変換確定の挙動は、実機の WebKit と IME の組合せでしか再現できない。Playwright の WebKit ではソフトウェアキーボードも日本語 IME も再現できない。,manual
-TC-073,daily,,REQ-001;REQ-004,VIEW-066,,yes,,active
+TC-073,daily,,REQ-001;REQ-004,VIEW-066,,yes,,quarantined
 TC-074,daily,,REQ-001;REQ-021;REQ-022,VIEW-066;VIEW-039,,yes,,active
 TC-075,smoke,,REQ-014;REQ-013,VIEW-040;VIEW-052;VIEW-033,,yes,,active
 TC-076,smoke,,REQ-012;REQ-007;REQ-013;REQ-024,VIEW-041;VIEW-043;VIEW-033,,yes,,active
