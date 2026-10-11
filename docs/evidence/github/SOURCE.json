@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "kind": "github",
-  "captured_at": "2026-10-11T15:53:34.727Z",
+  "captured_at": "2026-10-11T15:59:41.669Z",
   "source_url": "https://github.com/bsj-fujimoto/todo-app/issues?q=is%3Aissue+label%3Adefect%2Cflaky",
-  "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "head_sha": "bb069a55aabf3c68bfd289288fe8d2a403a6d6f6",
   "version": "pre-1.0.0",
   "collected_by": "scripts/evidence/build-defects.mjs"
 }

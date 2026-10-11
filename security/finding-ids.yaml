@@ -57,3 +57,21 @@ ids:
     tool: owasp-zap
     rule_id: "10049-2"
     location: "http://localhost:8080"
+  - id: FND-010
+    fingerprint: "f5040de9defbe848"
+    first_seen: 2026-10-11
+    tool: codeql
+    rule_id: "js/http-to-file-access"
+    location: "perf/screen/measure.mjs:167"
+  - id: FND-011
+    fingerprint: "0072806ba1207386"
+    first_seen: 2026-10-11
+    tool: codeql
+    rule_id: "js/http-to-file-access"
+    location: "scripts/monitoring/run-monitors.mjs:68"
+  - id: FND-012
+    fingerprint: "53576ce6ece12daa"
+    first_seen: 2026-10-11
+    tool: gitleaks
+    rule_id: "sourcegraph-access-token"
+    location: "docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif:1351"

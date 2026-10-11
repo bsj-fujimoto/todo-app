@@ -6,7 +6,11 @@ title = "todo-app gitleaks"
 [extend]
 useDefault = true
 
-# （現時点で除外しているものは無い。実際に誤検出が出たら、下の形で理由つきで追加する）
+# 除外は 1 件（下）。実際に誤検出が出たら、同じ形で理由つきで追加する。
+[[allowlists]]
+description = "sourcegraph-access-token の誤検出（証跡・生成表）。このルールは「キーワード（sourcegraph / sgp_）を含むファイルの中の 40 桁の 16 進」に当たる。docs/evidence（取り込んだ証跡）と docs/data（そこから生成した表）は、commit の SHA（40 桁の 16 進）を必ず含み、gitleaks 自身の検出ルール名・検出の記録（「sourcegraph-access-token に当たった」という記録そのもの）も含むので、キーワードと SHA が同じファイルに入って自己参照的に当たる。トークンではない。他のルールは docs/ 以下にも適用したまま。見直し: gitleaks のルールが変わったとき、または証跡の形式が変わったとき"
+targetRules = ["sourcegraph-access-token"]
+paths = ['''^docs/evidence/''', '''^docs/data/''']
 # [[allowlists]]
 # description = "なぜ誤検出か。いつ見直すか"
 # paths = ['''path/to/file''']
