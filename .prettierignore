@@ -18,3 +18,4 @@ contract-report
 perf/results/
 monitoring/drills/
 monitoring/out/
+monitoring/history/
