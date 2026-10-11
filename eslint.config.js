@@ -58,12 +58,29 @@ export default [
   {
     // scripts/<領域>/*.mjs は CLI の入口（composition root）。時刻・環境変数・標準出力をここで束ねる。
     // ロジックは scripts/<領域>/lib/*.mjs に置き、そちらには本番コードと同じ規約を適用する（この override の対象外）。
-    files: ["scripts/*/*.mjs"],
+    // perf/screen/measure.mjs は Docker イメージの中で動く画面計測の入口（同じ扱い）。
+    files: ["scripts/*/*.mjs", "perf/screen/measure.mjs"],
     rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
   },
   {
+    // 外形監視の Playwright ジャーニー: 合成データの識別子に時刻を使う
+    files: ["e2e/synthetic/**/*.js"],
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off" },
+  },
+  {
+    // k6 スクリプトは Go 製ランタイム上で動き、DI できない。k6 のグローバルを許可し、時刻の直接参照を許す（乱数は使わない）
+    files: ["perf/k6/**/*.js"],
+    languageOptions: { globals: { __ENV: "readonly", __VU: "readonly", __ITER: "readonly" } },
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off" },
+  },
+  {
+    // 画面計測は page.evaluate の中でブラウザのグローバルを使う
+    files: ["perf/screen/measure.mjs"],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）
-    files: ["**/test/**/*.js", "e2e/**/*.js", "scripts/test/**/*.mjs"],
+    files: ["**/test/**/*.js", "scripts/**/test/**/*.mjs", "e2e/**/*.js"],
     rules: { "max-lines-per-function": "off", "max-lines": "off" },
   },
 ];
