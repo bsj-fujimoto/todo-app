@@ -44,7 +44,7 @@ export function evaluateHealth(summary, limits) {
     problems.push(`${summary.consecutive_failures} 回連続で失敗`);
   }
   const p95 = summary.duration_sec.p95;
-  if (p95 !== null && p95 > limits.max_p95_sec)
-    problems.push(`所要時間 p95 ${p95}s が上限 ${limits.max_p95_sec}s 超`);
+  const cap = limits.per_workflow_p95_sec?.[summary.workflow] ?? limits.max_p95_sec;
+  if (p95 !== null && p95 > cap) problems.push(`所要時間 p95 ${p95}s が上限 ${cap}s 超`);
   return problems;
 }

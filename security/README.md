@@ -5,24 +5,27 @@
 
 ## 検査の一覧
 
-| 検査          | ツール（版は `tools.env` で digest 固定）                                           | 設定ファイル                                        | 出力（artifact に 90 日保存）                  | 失敗の条件                                           |
-| ------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
-| SAST          | CodeQL（javascript-typescript、security-extended）                                  | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）        | triage のゲート                                      |
-| Secret        | gitleaks（git 履歴全体）                                                            | `gitleaks.toml`                                     | SARIF（値は伏字）                              | triage のゲート。履歴を 1 commit も読めなければ失敗  |
-| SCA           | npm audit（`--omit=dev` と全体）、osv-scanner                                       | —                                                   | JSON / SARIF                                   | triage のゲート                                      |
-| SBOM          | `npm sbom`（npm 組み込み）、trivy（イメージ）                                       | —                                                   | CycloneDX JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                 |
-| Container/IaC | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check              | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                   | triage のゲート                                      |
-| License       | 自前の評価（`license-check.mjs`。lock と node_modules の license を読む。依存ゼロ） | `license-policy.yaml`                               | JSON                                           | 許可リスト外が 1 つでもあれば失敗（deny by default） |
-| DAST          | OWASP ZAP（baseline + API 走査。認証なし）                                          | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                 | triage のゲート                                      |
-| ワークフロー  | actionlint、`check-workflows.mjs`（W1〜W10）                                        | `workflow-policy.yaml`                              | JSON                                           | 逸脱があれば失敗                                     |
-| 依存レビュー  | actions/dependency-review-action（PR のみ）                                         | `security.yml` の `allow-licenses`（方針の写し）    | PR の依存差分                                  | high 以上・方針外ライセンス                          |
-| Scorecard     | OpenSSF Scorecard（週次のみ）                                                       | —                                                   | SARIF                                          | 情報提供のみ（ゲートに含めない）                     |
+| 検査           | ツール（版は `tools.env` で digest 固定）                                           | 設定ファイル                                        | 出力（artifact に 90 日保存）                  | 失敗の条件                                                    |
+| -------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------- |
+| SAST           | CodeQL（javascript-typescript、security-extended）                                  | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）        | triage のゲート                                               |
+| Secret         | gitleaks（git 履歴全体）                                                            | `gitleaks.toml`                                     | SARIF（値は伏字）                              | triage のゲート。履歴を 1 commit も読めなければ失敗           |
+| SCA            | npm audit（`--omit=dev` と全体）、osv-scanner                                       | —                                                   | JSON / SARIF                                   | triage のゲート                                               |
+| SBOM           | `npm sbom`（npm 組み込み）、trivy（イメージ）                                       | —                                                   | CycloneDX JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                          |
+| Container/IaC  | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check              | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                   | triage のゲート                                               |
+| License        | 自前の評価（`license-check.mjs`。lock と node_modules の license を読む。依存ゼロ） | `license-policy.yaml`                               | JSON                                           | 許可リスト外が 1 つでもあれば失敗（deny by default）          |
+| DAST           | OWASP ZAP（baseline + API 走査。認証なし）                                          | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                 | triage のゲート                                               |
+| ワークフロー   | actionlint、`check-workflows.mjs`（W1〜W10）                                        | `workflow-policy.yaml`                              | JSON                                           | 逸脱があれば失敗                                              |
+| 保守性         | ESLint（複雑度・大きさ・引数・ネスト・純粋性。`eslint-maintainability.mjs`）        | `eslint.config.js`                                  | SARIF・thresholds.json・summary.json           | 規約違反が 1 件でもあれば失敗（`maintainability` ジョブ）     |
+| アーキテクチャ | `check-arch.mjs`（import 文からレイヤー依存・循環を検査。依存ゼロ）                 | `architecture.yaml`                                 | arch.json                                      | 向きの違反・許可外の依存・未分類のファイル・循環があれば失敗  |
+| 公開物の検査   | trivy（release.yml が公開した digest に対して。脆弱性 + 設定）                      | `tools.env`                                         | JSON / SARIF（digest 入りの scan-run.json）    | 公開物の critical / high の未解決は失敗（Release を作らない） |
+| 依存レビュー   | actions/dependency-review-action（PR のみ）                                         | `security.yml` の `allow-licenses`（方針の写し）    | PR の依存差分                                  | high 以上・方針外ライセンス                                   |
+| Scorecard      | OpenSSF Scorecard（週次のみ）                                                       | —                                                   | SARIF                                          | 情報提供のみ（ゲートに含めない）                              |
 
 どの検査も `scripts/security/scan.sh <検査名>` で **CI とローカルが同じコマンド**を実行する（再現できる）。出力は `security-results/<検査名>/` に置かれ、
 検査ごとに `scan-run.json`（対象リポジトリ・branch・commit SHA・イメージ digest・実行日時・ツール名と版・コマンド・設定ファイル・走査範囲と除外・しきい値・出力ファイルの sha256）を残す。
 SARIF には同じ情報（`versionControlProvenance`・`invocations`）を追記するので、SARIF 単体でも「何を・いつ・どのコマンドで」検査したかが追える。
 
-- イメージ digest: CI の検査はビルド直後のローカルイメージ ID（config digest）を記録する。レジストリの digest は release.yml が push 後に固定・記録する。
+- イメージ digest: security.yml の検査（`trivy-image-*`）はビルド直後のローカルイメージ ID（config digest）を記録する。**公開物そのもの**は release.yml が、push 後のレジストリ digest（dry-run は OCI アーカイブ）を pull して trivy（脆弱性 + 設定）で検査し、検査した digest を `target.image_digest` に入れた scan-run.json と SARIF を `release-evidence/published-scans/` に残す（`release-evidence.zip` と artifact `release-published-scans`。triage の結果は `published-scans-findings/`。期待する検査は `expected-published-scans.yaml`）。critical / high の未解決があれば GitHub Release を作らない。
 - DAST の範囲: 本アプリは認証・認可を持たない（REQ-015）ので、認証なしの走査が全攻撃面。API は `backend/openapi.yaml` の全 operation を ZAP の API 走査に渡す。
 - 実行しない検査とその理由は `scan-run.json` の `status: skipped` と `skipped_reason` に残る。`expected-scans.yaml` にある検査が欠けたら triage が失敗する。
 
@@ -56,19 +59,45 @@ hadolint（Dockerfile の書き方）は脆弱性ではないので 1 段下げ�
 - `fp` / `na` / `accepted` の検出は、台帳の `reverify_condition`（例: 依存の更新時・期限の 7 日前・該当コードの変更時）で見直す。
 - 週次の run（月曜）が、台帳と実際の検出のずれ（`stale_ledger_entries`）を出す。解消した検出の台帳エントリは外す。
 
+### medium の Issue 起票（file-security-issues）
+
+`security.yml` の `file-security-issues` ジョブは、PR 以外（main push・週次・手動）で動く。以前は main push のたびに skipped だった: `inputs.create_issues` は `workflow_call` のときだけ値を持ち、push・schedule では空文字で、`'' != false` は両辺が数値 0 に変換されて偽になるため。現在の条件は `format('{0}', inputs.create_issues) != 'false'`（release.yml が `create_issues: false` を渡したときだけ止まる）。
+起票は指紋（fingerprint）単位で重複しない: 同じ指紋の open Issue があれば新規には作らず、週次の run だけ経過をコメントに追記する。同じ指紋の closed Issue があるのに検出が再発したときは、新規ではなく reopen してコメントする。
+
+## 保守性とアーキテクチャの記録
+
+- **保守性**（`scripts/security/eslint-maintainability.mjs`）: ci.yml の lint と同じ `eslint.config.js` のうち、複雑度（complexity ≤ 8・max-depth ≤ 3）・大きさ（関数 ≤ 40 行・ファイル ≤ 250 行）・引数（≤ 4）・純粋性（Date.now・Math.random・crypto.randomUUID・引数なしの new Date の直接呼び出しの禁止）のルールだけを SARIF にし、`thresholds.json`（ルールごとの閾値と分類）・`summary.json`（分類ごとの件数）を残す。scan-run.json は `check_kind: maintainability`・`rule_classes`（complexity / size / params / purity）・`thresholds`・`exclusions`・`command`・対象 commit を持つ。除外は、テストの行数ルール緩和・composition root と `scripts/*/*.mjs` 入口の純粋性ルールの免除・`ignores`（生成物）。違反が 1 件でもあれば `maintainability` ジョブが失敗する。
+- **アーキテクチャ**（`scripts/security/check-arch.mjs`、規則は `architecture.yaml`）: backend / frontend の import 文（静的・re-export・動的）から、ファイル間の依存を取り、レイヤーの向き（`may_depend_on`）・外部依存（`allow_external`）・どのレイヤーにも属さないファイル・解決できない import・ファイル間の循環を検査する。backend は entry（main・config）→ app → web（routes・http）→ domain → kernel（errors）、store → domain → kernel。domain は他のレイヤーに依存しない（kernel のエラー定義だけは使う。外部依存なし）。frontend は entry → app・view・api・core、app と view は core だけ、api と core は何にも依存しない。結果は `arch.json`（レイヤーとファイル・レイヤー間の依存の本数・違反・循環・config_ref・対象 commit）。
+  - 依存の向きを緩める変更は設計の変更として PR に理由を書く。ファイルを足したら `architecture.yaml` の `paths` に置き場を決める（未分類は失敗）。
+
+## Code Scanning と台帳の突き合わせ
+
+`scripts/security/check-code-scanning.mjs`（`triage` ジョブ。`security-events: read`、GET のみ）が、GitHub の Code Scanning のアラートと `accepted-risks.yaml` を突き合わせる。
+台帳に無い open のアラート・台帳に無いのに dismissed のアラート・台帳にあるのに open のアラート・dismissed のコメントに AR-ID が無いもの・期限切れの受容は失敗にする（API を読めないときは「確認できなかった」と表示して成功扱いにしない）。
+受容した検出に対応するアラートは、GitHub 側で dismissed にし、コメントに AR-ID・期限・Issue を書く（手順: `gh api -X PATCH repos/<owner>/<repo>/code-scanning/alerts/<番号> -f state=dismissed -f dismissed_reason="won't fix" -f dismissed_comment="AR-001 期限 2027-01-01 Issue #N"`）。
+
+## 依存マニフェストの機械検査（check-policy）
+
+`check-policy.mjs` は追跡ファイルから全マニフェスト（package.json・Dockerfile*・compose・composite action）を列挙し、次を検査する（漏れ・食い違いは CI が失敗）。
+
+- **Dependabot の網羅**: `.github/dependabot.yml` が npm・docker・docker-compose・github-actions の全ディレクトリを覆っていること。マニフェストが無いディレクトリを指す古い記載も失敗にする。
+- **依存の選定記録**: `dependency-selection.yaml` が、全 package.json の直接依存（名前と版）と、全 Dockerfile・compose のベースイメージ（リポジトリと digest）と一致すること。記録の無い依存・版の食い違い・digest の食い違い・どこにも無い古い記載・digest で固定されていないイメージは失敗。Playwright のイメージの版は `playwright-core` の版と同じであること。
+
 ## 台帳・方針ファイル
 
-| ファイル                    | 内容                                                                                                                                                                                   |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `triage.yaml`               | 検出ごとの判断・文脈・是正案（人が書く）                                                                                                                                               |
-| `accepted-risks.yaml`       | 期限付き受容（id・理由・owner・受容日・期限・再検査条件）                                                                                                                              |
-| `zap-rules.tsv`             | ZAP のしきい値と除外（IGNORE は理由・owner・期限が必須。`check-policy` が検査）                                                                                                        |
-| `license-policy.yaml`       | 許可・禁止ライセンス、期限付きの例外                                                                                                                                                   |
-| `workflow-policy.yaml`      | ワークフローの write 権限・OIDC を許してよいジョブの許可リスト                                                                                                                         |
-| `finding-ids.yaml`          | 検出の安定 ID（fingerprint → `FND-nnn`）。検出が増減しても同じ検出は同じ番号。新しい検出は `assign-finding-ids.mjs` で番号を振って commit（CI は未登録を仮 ID `FND-NEW-…` にして警告） |
-| `expected-scans.yaml`       | 走るべき検査の一覧（欠けたら失敗）                                                                                                                                                     |
-| `dependency-selection.yaml` | 直接依存の選定理由・検討した代替・保守状況・扱い（180 日ごとに見直す）                                                                                                                 |
-| `tools.env`                 | 検査ツールのイメージ（tag + digest）                                                                                                                                                   |
+| ファイル                        | 内容                                                                                                                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `triage.yaml`                   | 検出ごとの判断・文脈・是正案（人が書く）                                                                                                                                               |
+| `accepted-risks.yaml`           | 期限付き受容（id・理由・owner・受容日・期限・再検査条件）                                                                                                                              |
+| `zap-rules.tsv`                 | ZAP のしきい値と除外（IGNORE は理由・owner・期限が必須。`check-policy` が検査）                                                                                                        |
+| `license-policy.yaml`           | 許可・禁止ライセンス、期限付きの例外                                                                                                                                                   |
+| `workflow-policy.yaml`          | ワークフローの write 権限・OIDC を許してよいジョブの許可リスト                                                                                                                         |
+| `finding-ids.yaml`              | 検出の安定 ID（fingerprint → `FND-nnn`）。検出が増減しても同じ検出は同じ番号。新しい検出は `assign-finding-ids.mjs` で番号を振って commit（CI は未登録を仮 ID `FND-NEW-…` にして警告） |
+| `expected-scans.yaml`           | 走るべき検査の一覧（欠けたら失敗）                                                                                                                                                     |
+| `expected-published-scans.yaml` | release.yml が公開した digest に対して走るべき検査の一覧                                                                                                                               |
+| `architecture.yaml`             | レイヤー依存の宣言（レイヤーのパス・依存してよいレイヤー・許可する外部依存）                                                                                                           |
+| `dependency-selection.yaml`     | 直接依存の選定理由・検討した代替・保守状況・扱い（180 日ごとに見直す）                                                                                                                 |
+| `tools.env`                     | 検査ツールのイメージ（tag + digest）                                                                                                                                                   |
 
 `scripts/security/check-policy.mjs` がこれらの形式・期限を検査する（期限切れ・必須項目の欠落は CI が失敗）。
 
@@ -87,7 +116,10 @@ bash scripts/security/scan.sh gitleaks      # 秘密情報（git 履歴）
 bash scripts/security/scan.sh npm-audit     # npm audit（2 本）
 bash scripts/security/scan.sh trivy-fs      # trivy fs
 bash scripts/security/scan.sh license       # ライセンス方針
-bash scripts/security/scan.sh workflows     # ワークフロー統制 + 方針ファイル
+bash scripts/security/scan.sh workflows     # ワークフロー統制 + 方針ファイル（Dependabot の網羅・依存の選定記録を含む）
+bash scripts/security/scan.sh maintainability  # 保守性（ESLint の閾値と違反）
+bash scripts/security/scan.sh arch          # レイヤー依存・循環
+node scripts/security/check-code-scanning.mjs --repo bsj-fujimoto/todo-app   # Code Scanning と台帳（要: gh のログイン）
 node scripts/security/triage.mjs --results security-results --out security-findings   # トリアージ
 ```
 

@@ -18,10 +18,10 @@ export const SECRET_PATTERNS = [
 ];
 
 export const EMAIL = ["email", /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g];
-/** アカウントのメンション（@name）。npm のスコープ（@scope/pkg。CycloneDX の "group": "@scope" も）・パッケージの版（pkg@1.0）・メールの一部は除く。 */
+/** アカウントのメンション（@name）。npm のスコープ（@scope/pkg。CycloneDX の "group": "@scope" も）・JSON のキー（ZAP の "@version": など。名前の直後が引用符とコロン）・パッケージの版（pkg@1.0）・メールの一部は除く。 */
 export const MENTION = [
   "mention",
-  /(?<![\w@./-])(?<!"group":\s?")@[A-Za-z][A-Za-z0-9-]{2,38}(?![A-Za-z0-9/-])/g,
+  /(?<![\w@./-])(?<!"group":\s?")@[A-Za-z][A-Za-z0-9-]{2,38}(?![A-Za-z0-9/-])(?!"\s*:)/g,
 ];
 
 const PII_PATTERNS = [

@@ -1,0 +1,62 @@
+# レイヤー依存の宣言（scripts/security/check-arch.mjs が import 文と突き合わせる。違反・循環は CI が失敗にする）。
+# 規則: 各レイヤーは may_depend_on に書いたレイヤーのファイルだけを import できる（同じレイヤー内は自由。循環は別に検出する）。
+#   allow_external は、そのレイヤーが使ってよい外部パッケージ・組み込みモジュール（glob。"node:*" など）。書いていなければ何も使えない。
+#   paths は system の root からの相対 glob。どのレイヤーにも属さないファイルは違反（足したファイルの置き場を決めさせる）。
+# 変更するときは理由を PR に書く（依存の向きを緩めることは設計の変更）。
+version: 1
+systems:
+  - id: backend
+    root: backend/src
+    # 依存の向き: entry（main・config）→ app → web（routes・http）→ domain → kernel。store → domain → kernel。
+    # domain は他のどのレイヤーにも依存しない（kernel = errors.js のエラー定義だけ。外部への依存なし）。
+    # store と web は互いに知らない（store は main が注入する）。
+    layers:
+      - id: entry
+        paths: ["main.js", "config.js"]
+        may_depend_on: [app, store, kernel]
+        allow_external: ["node:*"]
+      - id: app
+        paths: ["app.js"]
+        may_depend_on: [web, domain, kernel]
+        allow_external: ["fastify"]
+      - id: web
+        paths: ["routes/**", "http/**"]
+        may_depend_on: [domain, kernel]
+        allow_external: []
+      - id: store
+        paths: ["store/**"]
+        may_depend_on: [domain, kernel]
+        allow_external: ["node:sqlite"]
+      - id: domain
+        paths: ["domain/**"]
+        may_depend_on: [kernel]
+        allow_external: []
+      - id: kernel
+        paths: ["errors.js"]
+        may_depend_on: []
+        allow_external: []
+  - id: frontend
+    root: frontend/src
+    # 依存の向き: entry（main）→ app・view・api・core。app → core。view → core。api と core は何にも依存しない。
+    # app は view と api を直接 import せず、main が注入する（DOM・通信なしで app を試験できる）。
+    layers:
+      - id: entry
+        paths: ["main.js"]
+        may_depend_on: [app, view, api, core]
+        allow_external: []
+      - id: app
+        paths: ["app.js"]
+        may_depend_on: [core]
+        allow_external: []
+      - id: view
+        paths: ["view.js"]
+        may_depend_on: [core]
+        allow_external: []
+      - id: api
+        paths: ["api-client.js"]
+        may_depend_on: []
+        allow_external: []
+      - id: core
+        paths: ["state.js", "validation.js", "messages.js"]
+        may_depend_on: []
+        allow_external: []

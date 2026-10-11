@@ -23,7 +23,7 @@ dependencies:
   - name: node:sqlite（Node.js 組み込み）
     version: Node 24
     workspace: backend
-    kind: runtime
+    kind: builtin
     reason: 保存先は SQLite だが、ネイティブ拡張をビルドするパッケージを入れると、インストール時スクリプト・イメージのビルド環境・サプライチェーンの面が増える。Node 24 の組み込みモジュールなら依存が増えず、Dockerfile も npm ci --ignore-scripts のまま済む。
     alternatives:
       - better-sqlite3（成熟していて高速だが、ネイティブビルドと install スクリプトが要る）
@@ -57,7 +57,7 @@ dependencies:
     last_checked: 2026-10-11
   - name: yaml
     version: 2.9.1
-    workspace: backend
+    workspace: root・backend
     kind: test
     reason: 契約テストが openapi.yaml を読むために使う。YAML 1.2 準拠で、アンカー・複数行文字列を正しく扱える。ルートの devDependency にも同じ版を入れて、GitHub Actions のワークフロー検査（check-workflows）が使う。
     alternatives:
@@ -80,7 +80,7 @@ dependencies:
     last_checked: 2026-10-11
   - name: "@playwright/test"
     version: 1.64.0
-    workspace: e2e
+    workspace: e2e・e2e/synthetic
     kind: test
     reason: 複数ブラウザ（chromium / firefox / webkit）・モバイル幅・trace / video / screenshot・並列実行・JUnit / HTML レポートを 1 つで賄える。retries=0 の運用と、テストごとの隔離（専用スタック）に向いている。
     alternatives:
@@ -160,7 +160,7 @@ dependencies:
   - name: npm sbom（npm 組み込み）
     version: npm 11
     workspace: root
-    kind: tooling
+    kind: builtin
     reason: SBOM を CycloneDX（JSON）で、workspaces を含めて、実行時依存のみ・全体の 2 本で出す。npm 組み込みなので依存パッケージが 1 つも増えない。検査ツール自身が供給網リスクを増やさないことを優先した。
     alternatives:
       - "@cyclonedx/cyclonedx-npm（CycloneDX 公式。仕様版を 1.6 に指定できるが、推移依存が約 100 パッケージ増え、その中の libxmljs2 → nan（LicenseRef-scancode-dco-1.1）や normalize-package-data（JSON ライセンス）がライセンス方針に違反した。いったん採用して、PR の dependency-review で気づいて外した）"
@@ -171,7 +171,7 @@ dependencies:
   - name: scripts/security/lib/licenses.mjs（自作のライセンス評価）
     version: リポジトリ内
     workspace: root
-    kind: tooling
+    kind: internal
     reason: package-lock.json と node_modules/*/package.json の license を読み、SPDX 式（OR / AND / 括弧 / WITH）を許可リストで評価する。外部ツール（license-checker 系）は推移依存が増え、その依存自身がライセンス方針に違反（GPL-2.0-only を含む spdx-satisfies、DCO を含む nan など）・Scorecard の警告（spdx-license-ids ほか）になったため、依存ゼロで自作した。
     alternatives:
       - license-checker-rseidelsohn（保守されているフォークだが、推移依存の spdx-satisfies・nan・normalize-package-data が方針違反）
@@ -190,14 +190,49 @@ dependencies:
     maintenance: Docker Official Images（Node.js チームが保守）。Node 24 は LTS。ベースイメージの更新は Dependabot（docker）が週次で提案し、trivy image が脆弱性を検査する。
     handling: 継続利用。
     last_checked: 2026-10-11
-  - name: nginxinc/nginx-unprivileged:stable-alpine（Docker ベースイメージ。frontend）
-    version: stable-alpine@sha256:15c994d10d6d78658721c3bcafff14cb281fba2a4bdf9d5ba92c416a472516e3
+  - name: nginxinc/nginx-unprivileged:stable-alpine-slim（Docker ベースイメージ。frontend）
+    version: stable-alpine-slim@sha256:3af0c10d960cc2502427fe1219c52989d309e7d65596869c60a34fd2fa2406f0
     workspace: frontend
     kind: base-image
-    reason: 非 root（8080）で動く nginx の公式（nginx 社）イメージ。静的配信と /api の中継だけをする。tag + digest で固定する。
+    reason: 非 root（8080）で動く nginx の公式（nginx 社）イメージの slim 版。静的配信と /api の中継だけをするので、画像・XSLT 用のモジュール（libgd・libtiff など）を含まない slim を選んだ（通常版は libtiff の high 勧告 CVE-2026-4775 を持ち込んだ。#19 の検査で検出）。tag + digest で固定する。
     alternatives:
+      - nginxinc/nginx-unprivileged:stable-alpine（通常版。libgd・libtiff を含み、使わないライブラリの勧告を持ち込む）
       - nginx:stable-alpine（root で動く。非 root 化の設定が増える）
       - caddy / busybox httpd（設定の実績が少ない・機能が足りない）
-    maintenance: nginx 社が保守する公式の派生イメージ。更新は Dependabot（docker）と trivy image で追う。
-    handling: 継続利用。
-    last_checked: 2026-10-11
+    maintenance: nginx 社が保守する公式の派生イメージ（GitHub のリポジトリ nginx/docker-nginx-unprivileged は archived ではなく、最終 push は 2026-09-22）。更新は Dependabot（docker）と trivy image で追う。2026-10-12 時点で trivy image の検出は zlib（CVE-2026-85091、medium、受容 AR-001）のみ。
+    handling: 継続利用。再検討の条件は、更新が止まる・slim 版が廃止される。
+    last_checked: 2026-10-12
+  - name: mcr.microsoft.com/playwright:v1.64.0-noble（Docker ベースイメージ。perf/screen）
+    version: v1.64.0-noble@sha256:06a9939e57531807f8d5fd76ce44b53165ffb7d7501d87ab10e285c20b1e971f
+    workspace: perf/screen
+    kind: base-image
+    reason: 画面側の性能計測（Playwright の表示完了時間 + Lighthouse）をコンテナの中で動かす。ブラウザ（Chromium）と OS の依存ライブラリが同梱された Playwright 公式のイメージで、ブラウザの取得・依存の解決を自分でやらずに済む。版は playwright-core（perf/screen/package.json）と同じにそろえる（ずれるとブラウザの版が合わない。check-policy が検査）。
+    alternatives:
+      - node:24-slim に playwright install --with-deps（ビルドが遅く、OS 依存の解決を自分で持つ）
+      - ホストで直接計測（計測環境が人によって変わり、再現しない）
+    maintenance: Microsoft が保守する公式イメージ（microsoft/playwright の最終 push は 2026-10-10）。計測専用のコンテナで、本番の配布物には含まれない。非 root（uid 1001）・一度きりの実行。
+    handling: 継続利用。更新は Dependabot（docker の /perf/screen）が提案し、playwright-core と同時に上げる。再検討の条件は、Playwright の版追従が止まる。
+    last_checked: 2026-10-12
+  - name: lighthouse
+    version: 13.5.0
+    workspace: perf/screen
+    kind: tooling
+    reason: 画面の性能（LCP・TBT などの Web Vitals）を、ブラウザの実測値として得る標準のツール。perf/screen の計測が Navigation Timing（表示完了までの時間）と合わせて保存する。
+    alternatives:
+      - WebPageTest（外部サービス・別環境が要る）
+      - Playwright の Navigation Timing だけ（Web Vitals・スコアが取れない）
+      - Chrome DevTools の手動計測（毎回の回帰にならない）
+    maintenance: 最新 13.5.0（2026-09-18 公開）、リポジトリ GoogleChrome/lighthouse の最終 push は 2026-10-11、star 約 31k、archived ではない、Apache-2.0。GitHub Advisory Database に、13.5.0 が影響を受ける勧告は無い。依存が多い（計測コンテナの中だけで使い、本番の配布物には含まれない）。
+    handling: 継続利用。計測専用のコンテナ（非 root・compose の内部ネットワーク）で動かす。再検討の条件は、勧告が出て修正が遅い・更新が 12 か月止まる。
+    last_checked: 2026-10-12
+  - name: playwright-core
+    version: 1.64.0
+    workspace: perf/screen
+    kind: tooling
+    reason: perf/screen の計測が、Chromium を操作して表示完了時間を測るために使う（ブラウザ本体はイメージに同梱されているので、テストランナーの @playwright/test は不要で、コアだけを入れる）。Lighthouse の接続にも同じブラウザを使う。
+    alternatives:
+      - "@playwright/test（テストランナーなどが付いてきて、計測コンテナには過剰）"
+      - puppeteer（別のブラウザ操作ライブラリ。E2E と同じ Playwright にそろえる方が運用が 1 つで済む）
+    maintenance: 最新 1.64.0（2026-10-07 公開）、microsoft/playwright の最終 push は 2026-10-10、star 約 97k、archived ではない、Apache-2.0。1.64.0 が影響を受ける勧告は無い。
+    handling: 継続利用。版は Playwright のイメージ（mcr.microsoft.com/playwright）と同じにそろえる（check-policy が検査）。
+    last_checked: 2026-10-12

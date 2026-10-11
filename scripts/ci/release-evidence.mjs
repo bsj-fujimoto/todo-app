@@ -2,12 +2,14 @@
 // リリースの証跡（release-evidence/）を仕上げる: deploy-marker.json・images.json・RELEASE_NOTES.md・manifest.json（全ファイルの sha256）。
 //   node scripts/ci/release-evidence.mjs --dir release-evidence --version v1.2.3 --sha <sha> --repo owner/name \
 //     --run-url <url> --image backend=sha256:... --image frontend=sha256:... [--publish]
+// zip に入れる前に墨消しし（scripts/evidence/lib/redact*.mjs を共有）、manifest.json に redacted: true・元 sha256・墨消し後 sha256・件数を残す。
 // 事前に release-evidence/ に ci-summary.json・security-findings/・security-scan-*/ などを置いておく（workflow が download-artifact で集める）。
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join } from "node:path";
 import { asList, parseArgs } from "./lib/args.mjs";
-import { sha256Of } from "./lib/artifacts.mjs";
+import { buildManifest, redactRelease } from "./lib/release-redact.mjs";
 import { deployMarker, imageRows, renderNotes } from "./lib/release-notes.mjs";
+import { ownersOf } from "../evidence/lib/redact-files.mjs";
 
 const args = parseArgs(process.argv.slice(2), { flags: ["publish"] });
 const dir = args.dir;
@@ -25,10 +27,23 @@ function gateSummary() {
   return { result: f.gate.result, total: f.findings.length, by_severity: by || "検出なし" };
 }
 
-const walk = (d) =>
-  readdirSync(d, { withFileTypes: true }).flatMap((e) =>
-    e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)],
-  );
+// 公開した digest に対する trivy の検査（release.yml が published-scans/ に書く）と、その triage の結果
+function publishedScans() {
+  const base = join(dir, "published-scans");
+  if (!existsSync(base)) return null;
+  const scans = readdirSync(base, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => read(`published-scans/${e.name}/scan-run.json`))
+    .filter(Boolean)
+    .map((r) => ({
+      scan: r.scan,
+      digest: r.target?.image_digest ?? null,
+      status: r.status,
+      findings: r.finding_count_sarif,
+    }));
+  const f = read("published-scans-findings/findings.json");
+  return { scans, gate: f ? f.gate : null };
+}
 
 writeFileSync(
   join(dir, "images.json"),
@@ -46,19 +61,16 @@ const notes = renderNotes({
   rows,
   summary: read("ci-summary/ci-summary.json"),
   gate: gateSummary(),
+  published: publishedScans(),
   publish,
 });
 writeFileSync(join(dir, "RELEASE_NOTES.md"), notes);
 
-// manifest は最後に作る（RELEASE_NOTES.md まで含めて sha256 を残す。manifest 自身は含めない）
-const files = walk(dir)
-  .sort()
-  .map((p) => {
-    const buf = readFileSync(p);
-    return { path: relative(dir, p), bytes: buf.length, sha256: sha256Of(buf) };
-  });
-writeFileSync(
-  join(dir, "manifest.json"),
-  `${JSON.stringify({ schema_version: 1, version: args.version, commit_sha: args.sha, files }, null, 2)}\n`,
+// zip に入れる前に墨消しする（人の氏名・メール・アカウント名・秘密情報らしい値。規則は証跡の取り込みと同じ）。
+// manifest は最後に作る（墨消し後のファイルの sha256、墨消しした記録を残す。manifest 自身は含めない）
+const records = redactRelease(dir, ownersOf(args.repo));
+const manifest = buildManifest({ dir, version: args.version, sha: args.sha, records });
+writeFileSync(join(dir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+process.stdout.write(
+  `${notes}\nmanifest: ${manifest.files.length} ファイル、墨消し ${records.length} ファイル・${manifest.redaction.replacements} 箇所\n`,
 );
-process.stdout.write(`${notes}\nmanifest: ${files.length} ファイル\n`);

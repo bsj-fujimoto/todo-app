@@ -1,5 +1,6 @@
 # 依存の更新（Dependabot version updates）。脆弱性のある依存の更新（security updates）は repo-settings.json で別に有効にする。
-# 対象: npm（ルートの workspaces と backend / frontend / e2e）・GitHub Actions（SHA 固定のまま追従）・Docker（ベースイメージ）・docker compose。
+# 対象: npm（ルートの workspaces と backend / frontend / e2e、workspace でない e2e/synthetic・perf/screen）・GitHub Actions（SHA 固定のまま追従）・Docker（ベースイメージ）・docker compose。
+# 全マニフェスト（package.json・Dockerfile・compose・composite action）を覆っていることは、scripts/security/check-policy.mjs が追跡ファイルの一覧と照合して検査する（漏れは CI が失敗）。
 # 週次（月曜 03:00 JST）、グループ化、reviewers / assignees / labels あり。更新の PR も CI（ci-result・security-result）を通す。
 version: 2
 
@@ -10,6 +11,8 @@ updates:
       - "/backend"
       - "/frontend"
       - "/e2e"
+      - "/e2e/synthetic" # 外形監視（workspace ではない。独自の lock）
+      - "/perf/screen" # 画面計測（lighthouse・playwright-core。workspace ではない。独自の lock）
     schedule:
       interval: weekly
       day: monday
@@ -52,6 +55,7 @@ updates:
     directories:
       - "/backend"
       - "/frontend"
+      - "/perf/screen" # mcr.microsoft.com/playwright。版は playwright-core（perf/screen/package.json）と同じにそろえる（check-policy が検査）
     schedule:
       interval: weekly
       day: monday
@@ -72,7 +76,9 @@ updates:
       prefix: "chore(docker)"
 
   - package-ecosystem: docker-compose
-    directory: "/"
+    directories:
+      - "/"
+      - "/perf" # perf/compose.perf.yml
     schedule:
       interval: weekly
       day: monday

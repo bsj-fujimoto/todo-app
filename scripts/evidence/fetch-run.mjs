@@ -12,7 +12,7 @@ import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { EVIDENCE_DIR, readJson, toPosix, writeJson } from "./lib/common.mjs";
 import { KINDS, planKindFiles } from "./lib/kinds.mjs";
-import { redactFiles, redactionSection } from "./lib/redact-files.mjs";
+import { ownersOf, redactFiles, redactionSection } from "./lib/redact-files.mjs";
 import { artifactNames, buildRunSource, planRunFiles, versionOf } from "./lib/run-layout.mjs";
 
 const args = parseArgs(process.argv.slice(2));
@@ -55,10 +55,6 @@ function download() {
   }
   return dir;
 }
-
-/** リポジトリのオーナー名（owner/name または https://github.com/owner/…）。人名・アカウント名として書かれたものを墨消しするのに使う。 */
-const ownersOf = (text) =>
-  [/(?:github\.com\/)?([\w-]+)\/[\w.-]+/.exec(String(text ?? ""))?.[1]].filter(Boolean);
 
 function copyPlan(rawDir, plan, destDir) {
   for (const { from, to } of plan) {

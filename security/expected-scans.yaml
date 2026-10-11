@@ -26,5 +26,9 @@ scans:
     kind: config
   - name: license
     kind: license
+  - name: maintainability
+    kind: maintainability
+  - name: architecture
+    kind: architecture
   - name: zap
     kind: dast

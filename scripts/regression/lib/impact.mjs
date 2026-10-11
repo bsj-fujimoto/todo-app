@@ -5,6 +5,9 @@ import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
 
 const caseIdRe = /^TC-\d{3}$/;
 
+/** 変更の種類（impact-map の change_kind）。backend の store / migration は db、openapi.yaml は api、compose・Dockerfile・CI は infra。 */
+export const CHANGE_KINDS = ["code", "config", "db", "api", "infra", "docs"];
+
 export function loadImpactMap(root) {
   const map = parseYaml(readText(root, "quality/impact-map.yaml"));
   const problems = validateMap(map);
@@ -16,12 +19,17 @@ export function loadCases(root) {
   return parseCsvObjects(readText(root, "docs/data/cases.csv")).rows;
 }
 
+const kindProblems = (e) =>
+  e.change_kind && !CHANGE_KINDS.includes(e.change_kind)
+    ? [`${e.id}: 不正な change_kind ${e.change_kind}（${CHANGE_KINDS.join("/")}）`]
+    : [];
+
 function validateEntry(e) {
   const out = (e.case_ids ?? []).filter((c) => !caseIdRe.test(c)).map((c) => `${e.id}: 不正な TC-ID ${c}`);
   if (!e.id) out.push("id の無いエントリがある");
   if (!Array.isArray(e.paths) || e.paths.length === 0) out.push(`${e.id}: paths が空`);
   if (!e.feature && !e.reason) out.push(`${e.id}: feature か reason が無い`);
-  return out;
+  return [...out, ...kindProblems(e)];
 }
 
 export function validateMap(map) {
@@ -96,6 +104,9 @@ export function select({ map, files, cases }) {
     changed_files: files,
     mapped: mapped.map((m) => ({ file: m.file, entries: m.entries.map((e) => e.id) })),
     unmapped_paths: unmapped,
+    change_kinds: [
+      ...new Set(mapped.flatMap((m) => m.entries.map((e) => e.change_kind)).filter(Boolean)),
+    ].sort(),
   };
   const fullEntries = [
     ...new Set(

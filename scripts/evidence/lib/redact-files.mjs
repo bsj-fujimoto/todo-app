@@ -34,3 +34,7 @@ export const redactionSection = (records) => ({
     ? "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル。元の取得物は GitHub Actions の artifact（90 日）にだけある（original_sha256 で対応が追える）"
     : "墨消しした箇所は無い",
 });
+
+/** リポジトリのオーナー名（owner/name または https://github.com/owner/…）。人名・アカウント名として書かれたものを墨消しするのに使う。 */
+export const ownersOf = (text) =>
+  [/(?:github\.com\/)?([\w-]+)\/[\w.-]+/.exec(String(text ?? ""))?.[1]].filter(Boolean);

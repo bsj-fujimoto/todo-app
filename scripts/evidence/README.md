@@ -98,6 +98,28 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 - CI の docs-check は、PR のたびに `check-evidence.mjs` と `npm run evidence:test` を回す。
 - **成果物台帳の古さは、通常の CI では警告**。文書 PR を並列で出すと、`docs/*.md` を足すたびに台帳（`artifacts.yaml`）・manifest・追跡表などの生成物が古くなり、全 PR が再生成で衝突するため。台帳は最後に 1 回 `npm run evidence:build` で再生成し、`--strict-artifacts` で確かめる。まだ台帳に無い文書（main に入ったばかりの `docs/README.md` など）は警告になる（それで正しい）。
 
+### リリースの release-evidence.zip の墨消しと差し替え
+
+GitHub Release に添付する `release-evidence.zip` も、証跡の取り込みと**同じ墨消し**（`scripts/evidence/lib/redact.mjs`・`redact-rules.mjs`・`sensitive.mjs` を共有）を通す。
+
+- `release.yml` の publish ジョブ: `scripts/ci/release-evidence.mjs` が zip に入れる前に墨消しし、`manifest.json` に `redacted: true`・`redaction`（変えたファイル数・置換数）・`redactions[]`（ファイルごとの元 sha256・墨消し後 sha256・規則ごとの件数）を残す。`files[].sha256` は墨消し後のファイル。
+- 続けて `scripts/ci/check-release-evidence.mjs --zip release-evidence.zip` が zip の中身を検査する（メール・氏名のキー・メンション・オーナー名・秘密情報らしい値が 1 件でもあれば、または manifest の `redacted: true`・sha256 が合わなければ失敗）。失敗すると zip を artifact に保存せず、GitHub Release も作らない。
+- ZAP の JSON のキー（`"@version"` など）はメンションと見なさない。
+
+**既に公開した Release の添付を、墨消し済みの zip で差し替える**（管理者が手元で行う）:
+
+```fish
+# 元の run（タグの release.yml の run。URL の .../actions/runs/<id>）の artifact release-evidence を取得 → 墨消し → manifest 作り直し → zip → 検査
+node scripts/ci/rebuild-release-evidence.mjs --run 38152472087 --out ~/tmp/release-v1.0.0
+# 出力: ~/tmp/release-v1.0.0/release-evidence.zip と rebuild-report.json（検査が pass で、files_changed・replacements・元 / 墨消し後の zip の sha256 が入る）
+node scripts/ci/check-release-evidence.mjs --zip ~/tmp/release-v1.0.0/release-evidence.zip --repo bsj-fujimoto/todo-app   # 単独で再検査してもよい
+gh release upload v1.0.0 ~/tmp/release-v1.0.0/release-evidence.zip --clobber --repo bsj-fujimoto/todo-app
+```
+
+- `--from <dir>` を使うと、取得済みの artifact（`release-evidence.zip` を含むディレクトリ）から作り直せる。`<out>/original/` と `<out>/release-evidence/` に元の取得物（個人情報を含む）が残るので、commit せず、差し替え後に消す。
+- 元の値は、Git 履歴・Actions の artifact（90 日）には残る（`docs/evidence/README.md` の制約）。差し替えるのは Release の添付だけ。
+- `attestations/` の SBOM・provenance は、レジストリに付いた署名済みの原本の**写し**で、墨消し後は原本と一致しない（原本は `docker buildx imagetools inspect <image>@<digest>` と `gh attestation verify` で取る）。
+
 ### 再生成の冪等性
 
 - `executions.csv`: 同じ run の行は置き換える。EXEC-0001 形式の ID は（run, TC, 環境）が同じなら引き継ぐ。別の版の行が残るときは失敗（`--prune-other-versions` で捨てる）。

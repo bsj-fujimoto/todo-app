@@ -3,9 +3,10 @@
 //   node scripts/security/scan-run.mjs --scan gitleaks --kind secret --tool gitleaks --tool-version 8.30.1 \
 //     --image ghcr.io/gitleaks/gitleaks@sha256:... --command "gitleaks git ..." --config security/gitleaks.toml \
 //     --started 2026-10-11T00:00:00Z --exit-code 0 --ok-codes 0 --out-dir security-results/gitleaks
+// 保守性の検査（check_kind=maintainability）は --rule-class（complexity / size / params / purity。複数可）と --thresholds-json（ファイル）も付ける。
 // scan.sh から呼ばれる。git の情報は環境変数（GitHub Actions）か git コマンドから取る。
 import { execFileSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { asList, parseArgs } from "../ci/lib/args.mjs";
 import { annotateFiles, outputFiles, sarifInfo } from "./lib/scan-run.mjs";
@@ -74,7 +75,11 @@ const record = {
   config_ref: args.config ?? null,
   rules_ref: args.rules ?? null,
   exclusions: asList(args.exclusion),
-  thresholds: args.threshold ?? null,
+  // --thresholds-json: ルールごとの閾値などの構造化した値（ファイルから読む）。無ければ --threshold の文字列
+  thresholds: args["thresholds-json"]
+    ? JSON.parse(readFileSync(args["thresholds-json"], "utf8"))
+    : (args.threshold ?? null),
+  rule_classes: asList(args["rule-class"]),
   coverage: {
     languages: asList(args["coverage-language"]),
     paths: asList(args["coverage-path"]),
