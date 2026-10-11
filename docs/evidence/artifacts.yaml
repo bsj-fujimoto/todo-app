@@ -836,14 +836,18 @@ artifacts:
     path: quality/regression-suite.csv
     type: quality_ledger
     title: quality/regression-suite.csv
-    version: "git:1abf247"
+    version: "git:1d8d6b5"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-11T21:59:52+09:00"
+    updated_at: "2026-10-12T01:04:58+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T01:04:58+09:00"
+        by: maintainer
+        change: "data(evidence): 成果物台帳と回帰スイート台帳（defects.csv の関連ケース）を再生成"
+        commit: "1d8d6b5"
       - at: "2026-10-11T21:59:52+09:00"
         by: maintainer
         change: "fix(e2e): TC-074 の性能しきい値を CI で 3 倍にし、機能層は番兵・本判定は perf 層の方針に揃える（#37） (#38)"
@@ -856,7 +860,7 @@ artifacts:
         by: maintainer
         change: "ci: CI パイプライン・回帰運用（ci.yml / nightly.yml / scripts / quality） (#8)"
         commit: "1f23d5f"
-    source_sha256: "0e6955eaa76fc164267b766cb4b329926edd8c3b9251d0b28c20e25f54eeeb02"
+    source_sha256: "1be7f8da9a1a694112d19ae0897aa57538522fa96367b6d4bf0418b993a628b8"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-25
