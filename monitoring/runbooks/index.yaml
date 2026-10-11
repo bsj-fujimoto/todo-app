@@ -38,7 +38,7 @@ runbooks:
   - runbook_id: RB-005
     path: monitoring/runbooks/RB-005-monitor-infra.md
     service: todo-app
-    monitor_ids: []
+    monitor_ids: [MON-META]
     triage: true
     isolate: true
     rollback: true

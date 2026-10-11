@@ -80,6 +80,40 @@ function checkRunbooks(monitors, runbooks, read) {
   return [...missing, ...runbooks.flatMap((rb) => checkRunbook(rb, read))];
 }
 
+// browser 監視の「応答時間」の定義（limit_key）が、journey.spec.js に実装されているか（キーがあり、既定値が定義と同じ）
+const SPEC = "e2e/synthetic/journey.spec.js";
+
+function checkLimit(m, c, spec) {
+  if (spec === null) return [`${m.monitor_id}: ${SPEC} が無い`];
+  if (!spec.includes(`LIMITS.${c.limit_key}`)) {
+    return [
+      `${m.monitor_id}: 応答時間 ${c.limit_key} が journey.spec.js で検査されていない（定義と実装の食い違い）`,
+    ];
+  }
+  const dflt = new RegExp(`${c.limit_key}:\\s*${c.latency_ms_max}\\b`);
+  return dflt.test(spec)
+    ? []
+    : [`${m.monitor_id}: journey.spec.js の ${c.limit_key} の既定値が定義の ${c.latency_ms_max} と違う`];
+}
+
+function checkMonitorLimits(m, spec) {
+  const latencies = (m.assertions || []).filter((a) => a.kind === "latency");
+  const unmeasured = latencies.filter((a) => !(a.check || {}).limit_key);
+  const problems = unmeasured.map(
+    () => `${m.monitor_id}: latency の assertion に limit_key が無い（測れる形になっていない）`,
+  );
+  for (const a of latencies.filter((x) => (x.check || {}).limit_key))
+    problems.push(...checkLimit(m, a.check, spec));
+  return problems;
+}
+
+function checkLimits(monitors, read) {
+  const spec = read(SPEC);
+  return monitors
+    .filter((m) => m.type === "browser" && m.enabled !== false)
+    .flatMap((m) => checkMonitorLimits(m, spec));
+}
+
 export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, read }) {
   const sloNames = new Set(slo.slos.map((s) => s.metric));
   const monitors = monitorsDoc.monitors.map((m) => ({ ...monitorsDoc.defaults, ...m }));
@@ -88,6 +122,7 @@ export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, r
     ...checkRoutes(monitors, routes),
     ...checkJourneys(monitors, journeys),
     ...checkRunbooks(monitors, runbooksDoc.runbooks, read),
+    ...checkLimits(monitors, read),
   );
   return problems;
 }

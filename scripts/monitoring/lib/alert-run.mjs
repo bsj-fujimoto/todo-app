@@ -73,7 +73,11 @@ const HANDLERS = {
 
 // 結果から Issue を操作する。返り値は発生したイベント（alert-history.jsonl に残す）
 export async function processResults(ctx, results) {
-  const open = indexOpenIssues(await ctx.gh.listOpenIncidents(), ctx.drill);
+  // 一覧は検索の索引を使うため、作った直後の Issue はまだ載らないことがある（GitHub Actions の drill で、失敗フェーズの直後に回復フェーズを
+  // 呼ぶと #45 が載らず回復できなかった）。番号が分かっている Issue（drill-state.json）は ctx.knownOpen として足す
+  const listed = await ctx.gh.listOpenIncidents();
+  const known = (ctx.knownOpen || []).filter((k) => !listed.some((l) => l.number === k.number));
+  const open = indexOpenIssues([...listed, ...known], ctx.drill);
   const events = [];
   for (const action of decideActions(results, open)) events.push(await HANDLERS[action.kind](ctx, action));
   return events;

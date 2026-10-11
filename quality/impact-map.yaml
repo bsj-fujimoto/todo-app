@@ -533,6 +533,7 @@ entries:
       - "scripts/lib/**"
       - "e2e/synthetic/**"
       - ".github/workflows/synthetic.yml"
+      - ".github/workflows/monitoring-watchdog.yml"
     case_ids: [TC-075, TC-077]
     excluded_risk: "機能ケース（監視設定の変更では機能を触らない）"
   - id: ci-pipeline

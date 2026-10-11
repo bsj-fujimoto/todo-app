@@ -4,6 +4,7 @@ about: 外形監視のアラート、または運用で気づいた障害
 labels: incident
 ---
 
+<!-- incident を調べた結果、欠陥（defect）として扱う内容だった場合は、本文を書き換えずに、このテンプレートの項目（再発防止のチェックリスト・deployment_ref・ack 欄）を残したまま、末尾に defect.md の項目を「追記」する（monitoring/README.md「incident と defect を兼ねる Issue の書式」）。 -->
 <!-- 外形監視（monitoring/）のアラートは scripts/monitoring/alert.mjs がこの書式で自動起票する。手で起票するときも同じ項目を埋める。 -->
 
 ## 概要

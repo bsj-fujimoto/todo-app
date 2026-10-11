@@ -80,6 +80,11 @@ jobs:
         run: npm run format:check
       - name: CI・回帰運用の道具のテスト
         run: npm run test:scripts
+      - name: 外形監視の設定の整合性（monitors・通知経路・runbook・SLO 参照・応答時間の実装）と、監視・性能試験の道具の単体テスト
+        # 設定が壊れた PR が main に入ると監視が沈黙して incident も立たないため、synthetic.yml だけでなく PR の CI でも確かめる
+        run: |
+          node scripts/monitoring/check-config.mjs
+          node --test "scripts/monitoring/test/*.test.mjs" "scripts/perf/test/*.test.mjs"
       - name: 証跡の道具（実施表・不具合表・証拠索引・台帳の生成と検査）のテスト
         run: npm run evidence:test
 

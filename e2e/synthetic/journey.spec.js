@@ -7,6 +7,13 @@
 // 製品の画面の振る舞いが変わったら（例: PR #12「チェックは API 成功後にだけ反転する」）、この定義も見直す（monitoring/README.md の運用規則）。
 import { expect, test } from "@playwright/test";
 
+// 応答時間の上限は monitoring/monitors.yaml の assertions（check.limit_key）が正本。run-monitors.mjs が環境変数 SYNTHETIC_LIMITS（JSON）で渡す。
+// 単体で実行したとき用の既定値は、定義（monitors.yaml）と同じ値。check-config.mjs が、定義の limit_key がこのファイルにあることと既定値の一致を検査する。
+const LIMITS = {
+  screen_ready_ms: 2000,
+  journey_ms: 10000,
+  ...JSON.parse(process.env.SYNTHETIC_LIMITS || "{}"),
+};
 const RUN_ID = process.env.SYNTHETIC_RUN_ID || String(Date.now());
 const PREFIX = `synthetic-${RUN_ID}`;
 const created = [];
@@ -26,10 +33,20 @@ async function setChecked(page, text, checked) {
   await expect(row(page, text)).toHaveAttribute("aria-busy", "false");
 }
 
-async function openApp(page) {
+// 画面を開く。画面表示完了 = ナビゲーション開始から、入力欄が使える（一覧の取得が終わった）までの時間（performance.now()）。
+// measure: true のとき、LIMITS.screen_ready_ms（monitors.yaml の MON-007 の「画面表示完了」）を超えたら失敗にする。
+async function openApp(page, { measure = false } = {}) {
   const res = await page.goto("/");
   expect(res.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "My TODO" })).toBeVisible();
+  await expect(page.getByLabel("タスク名", { exact: true })).toBeEnabled();
+  if (measure) {
+    const readyMs = await page.evaluate(() => performance.now());
+    expect(
+      readyMs,
+      `画面表示完了（開いてから入力できるまで）が ${LIMITS.screen_ready_ms}ms 以内`,
+    ).toBeLessThanOrEqual(LIMITS.screen_ready_ms);
+  }
 }
 
 async function addTask(page, text) {
@@ -53,11 +70,14 @@ test.afterEach(async ({ request }) => {
 test("[MON-007] J-01 追加すると一覧に出て、再読込しても残る", async ({ page }) => {
   const text = title("MON-007");
   const t0 = Date.now();
-  await openApp(page);
+  await openApp(page, { measure: true });
   await addTask(page, text);
   await page.reload();
   await expect(row(page, text)).toBeVisible();
-  expect(Date.now() - t0, "画面表示から追加・再読込の確認までが 10 秒以内").toBeLessThan(10000);
+  expect(
+    Date.now() - t0,
+    `追加・再読込を含むジャーニー全体が ${LIMITS.journey_ms}ms 以内`,
+  ).toBeLessThanOrEqual(LIMITS.journey_ms);
   await row(page, text).getByRole("button", { name: /削除/ }).click();
   await expect(row(page, text)).toHaveCount(0);
 });

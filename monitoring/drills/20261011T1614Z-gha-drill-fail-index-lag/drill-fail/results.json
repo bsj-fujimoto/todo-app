@@ -1,0 +1,58 @@
+{
+  "run": {
+    "run_id": "38154528493",
+    "phase": "drill-fail",
+    "started_at": "2026-10-11T16:14:10.087Z",
+    "region": "github-hosted-runner",
+    "retry_delay_sec": 2,
+    "version": null,
+    "mode": "release",
+    "expected_version": "1.0.0",
+    "expected_commit": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+  },
+  "results": [
+    {
+      "monitor_id": "MON-002",
+      "at": "2026-10-11T16:14:10.170Z",
+      "result": "fail",
+      "duration_ms": 5,
+      "failure_detail": "試行 1: status が 502（期待 200）; 本文が JSON でなく Health を検証できない; 本文が JSON でない | 試行 2: status が 502（期待 200）; 本文が JSON でなく Health を検証できない; 本文が JSON でない | 試行 3: status が 502（期待 200）; 本文が JSON でなく Health を検証できない; 本文が JSON でない",
+      "version": null,
+      "attempts": 3,
+      "alert_suppressed": false,
+      "suppression_reason": null,
+      "run_id": "38154528493",
+      "phase": "drill-fail",
+      "mode": "release",
+      "region": "github-hosted-runner",
+      "name": "backend health とデプロイマーカー（GET /api/v1/health）",
+      "type": "http",
+      "severity": "sev1",
+      "journey_id": null,
+      "user_impact": "backend 停止・DB 異常。保存と読み込みができず、画面は保存失敗の表示になる（sev1）。",
+      "slo_ref": "health_p95_ms"
+    },
+    {
+      "monitor_id": "MON-003",
+      "at": "2026-10-11T16:14:14.198Z",
+      "result": "fail",
+      "duration_ms": 4,
+      "failure_detail": "試行 1: step create: status が 502（期待 201）; 本文が JSON でなく Task を検証できない; 本文が JSON でない | 試行 2: step create: status が 502（期待 201）; 本文が JSON でなく Task を検証できない; 本文が JSON でない",
+      "version": null,
+      "attempts": 2,
+      "alert_suppressed": false,
+      "suppression_reason": null,
+      "run_id": "38154528493",
+      "phase": "drill-fail",
+      "mode": "release",
+      "region": "github-hosted-runner",
+      "name": "API ジャーニー J-01 追加して一覧に残る（POST → GET → DELETE）",
+      "type": "api",
+      "severity": "sev2",
+      "journey_id": "J-01",
+      "user_impact": "追加したタスクが保存されない、または一覧に出ない。入力した内容が失われる（sev2）。",
+      "slo_ref": "api_create_p95_ms"
+    }
+  ],
+  "skipped": []
+}

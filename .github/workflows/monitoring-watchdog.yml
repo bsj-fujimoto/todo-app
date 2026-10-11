@@ -1,0 +1,48 @@
+# 監視の死活監視（監視基盤自身の沈黙の検知）。synthetic.yml の最終実行が 3 時間以上前なら、incident Issue
+# `[sev3][MON-META] 外形監視が 3 時間以上実行されていない` を起票する（RB-005）。synthetic.yml が回復して成功すると、そちらの alert ジョブが close する。
+# 制約: これも GitHub の schedule で動く。schedule 自体が無効化（60 日無活動）されたり GitHub 側が止まったりすると、この監視も一緒に止まる
+# （同じ基盤の死活は同じ基盤では監視できない）。その残存リスクは monitoring/README.md に書いた。
+name: monitoring-watchdog
+
+on:
+  schedule:
+    - cron: "47 */3 * * *" # 3 時間ごと（遅延しうる）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monitoring-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read # synthetic.yml の実行履歴を読む
+      issues: write # 停止を incident Issue にする（作成・コメント）
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: node
+      - run: mise x -- npm ci
+      - name: "synthetic.yml の最終実行を確かめる（3 時間以内か）"
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: mise x -- node scripts/monitoring/watchdog.mjs --hours 3
+      - name: "停止していたら incident を起票する"
+        if: steps.check.outputs.stale == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DETAIL: ${{ steps.check.outputs.detail }}
+        run: |
+          mise x -- node scripts/monitoring/alert.mjs --meta fail --out monitoring/out \
+            --title "外形監視が 3 時間以上実行されていない" --detail "$DETAIL" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
