@@ -1,0 +1,29 @@
+{
+  "name": "@todo-app/backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "todo-app backend（Fastify + node:sqlite）",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    "./test-support": "./test-support/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node scripts/run-tests.js all",
+    "test:unit": "node scripts/run-tests.js unit",
+    "test:api": "node scripts/run-tests.js api",
+    "contract:check": "node scripts/run-tests.js contract"
+  },
+  "dependencies": {
+    "fastify": "5.12.5"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "yaml": "2.9.1"
+  }
+}
