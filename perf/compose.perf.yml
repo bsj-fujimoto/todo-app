@@ -1,0 +1,11 @@
+# 性能試験用の compose 上書き（docker-compose.yml の上に重ねる: docker compose -f docker-compose.yml -f perf/compose.perf.yml）。
+# 目的: 想定する本番（個人が使う小さな VM = 1 vCPU・1 GiB メモリ程度。実在しない想定）に資源を合わせ、
+#       測定機（開発機・GitHub-hosted runner）の違いで「余裕があるように見える」ことを減らす。
+# CPU の「速さ」の差（コアの世代・クロック）はこの設定では揃わない。外挿の限界は perf/environment.md に書く。
+services:
+  backend:
+    cpus: 1.0
+    mem_limit: 512m
+  frontend:
+    cpus: 0.5
+    mem_limit: 128m

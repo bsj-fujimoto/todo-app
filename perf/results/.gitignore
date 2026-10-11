@@ -1,0 +1,6 @@
+# 生ログ（巨大）はコミットしない。sha256 は各 run の manifest.json に記録し、追跡できるようにする
+*.raw.json.gz
+observe.jsonl
+*.k6.log
+backend.log
+lighthouse-report-*.json
