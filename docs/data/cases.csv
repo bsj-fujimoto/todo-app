@@ -55,15 +55,15 @@ TC-009,VIEW-018;VIEW-003;VIEW-008;VIEW-031,REQ-021;REQ-026;REQ-019;REQ-013;REQ-0
 5. GET /api/v1/tasks を呼ぶ。","API: 手順 1 は 200 で completed が false、手順 2・3 は 200 で completed が true、手順 4 は 200 で completed が false。いずれも本文の id・title・createdAt が変更前と同一（同値の再送でもエラーにならず状態も変わらない）。手順 5 の tasks の並びが 打ち合わせの準備をする → 仕様書をレビューする → 牛乳を買う のまま。
 DB: 対象行の completed が 0 → 0 → 1 → 1 → 0 と変わり、title と createdAt は変化しない。他の 2 行は変化しない。
 ログ: PATCH の完了ログが statusCode 200 で 4 行出力される。",DS-002,api,,backend プロセスを停止し、一時ディレクトリ（DB ファイル）を削除する。,"docs/03-test-spec.md §8.2 ST-02, ST-03, ST-04, ST-05",spec-1.1
-TC-010,VIEW-020;VIEW-017;VIEW-019,REQ-033;REQ-034;REQ-026;REQ-013;REQ-021,RISK-008,medium,必須,DS-002 の標準タスク 3 件が保存済みで、操作対象は 牛乳を買う の id。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"ボディ: {""completed"":true,""title"":""x""}、{""createdAt"":""2020-01-01T00:00:00.000Z""}、{""id"":""00000000-0000-4000-8000-000000000000""}、{}、{""completed"":""yes""}。 状態遷移表の項番: ST-10。","1. PATCH /api/v1/tasks/{牛乳を買う の id} に {""completed"":true,""title"":""x""} を送る。
+TC-010,VIEW-020;VIEW-017;VIEW-019,REQ-033;REQ-034;REQ-026;REQ-013;REQ-021,RISK-008,medium,必須,DS-002 の標準タスク 3 件が保存済みで、操作対象は 牛乳を買う の id。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"ボディ: {""completed"":true,""title"":""x""}、{""createdAt"":""2020-01-01T00:00:00.000Z""}、{""id"":""3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36""}、{}、{""completed"":""yes""}。 状態遷移表の項番: ST-10。","1. PATCH /api/v1/tasks/{牛乳を買う の id} に {""completed"":true,""title"":""x""} を送る。
 2. 同じ id に {""createdAt"":""2020-01-01T00:00:00.000Z""} を送る。
-3. 同じ id に {""id"":""00000000-0000-4000-8000-000000000000""} を送る。
+3. 同じ id に {""id"":""3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36""} を送る。
 4. 同じ id に {} を送る。
 5. 同じ id に {""completed"":""yes""} を送る。
 6. GET /api/v1/tasks を呼ぶ。","API: 手順 1〜5 はすべて 400 で、本文が {""error"":{""code"":""INVALID_REQUEST"",""message"":<空でない文字列>}}（title・createdAt・id の変更、空本文、型違いは受け付けない）。手順 6 は 200 で、対象タスクの title=牛乳を買う・createdAt=2026-10-01T09:00:00.000Z・completed=false のまま。
 DB: 対象行の id・title・completed・createdAt が操作前と同一で、他の行も変化しない。",DS-002;DS-009,api,,backend プロセスを停止し、一時ディレクトリ（DB ファイル）を削除する。,docs/03-test-spec.md §8.2 ST-10,spec-1.1
-TC-011,VIEW-019;VIEW-018,REQ-022;REQ-013;REQ-021,RISK-013;RISK-008,medium,必須,DS-002 の標準タスク 3 件が保存済み。削除済みの id は、POST で追加したタスクを DELETE して用意する。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"id: 00000000-0000-4000-8000-000000000000（形式は有効で未登録）、削除済みタスクの id。ボディ: {""completed"":true}。 状態遷移表の項番: ST-08, ST-09。","1. PATCH /api/v1/tasks/00000000-0000-4000-8000-000000000000 に {""completed"":true} を送る。
-2. DELETE /api/v1/tasks/00000000-0000-4000-8000-000000000000 を呼ぶ。
+TC-011,VIEW-019;VIEW-018,REQ-022;REQ-013;REQ-021,RISK-013;RISK-008,medium,必須,DS-002 の標準タスク 3 件が保存済み。削除済みの id は、POST で追加したタスクを DELETE して用意する。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"id: 3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36（形式は有効で未登録）、削除済みタスクの id。ボディ: {""completed"":true}。 状態遷移表の項番: ST-08, ST-09。","1. PATCH /api/v1/tasks/3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36 に {""completed"":true} を送る。
+2. DELETE /api/v1/tasks/3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36 を呼ぶ。
 3. POST でタスクを 1 件追加し、その id を DELETE して 204 を確認する。
 4. 削除済みの id に PATCH {""completed"":true} を送る。
 5. 削除済みの id に DELETE を送る。
@@ -271,10 +271,10 @@ TC-052,VIEW-054;VIEW-030,REQ-025;REQ-013;REQ-024,RISK-004;RISK-001,high,必須,D
 4. DB ファイルの SHA-256 を記録し直す。","API: 手順 3 は 500 で、本文が {""error"":{""code"":""DATA_CORRUPT"",""message"":""保存データを読み込めませんでした""}}。空配列の 200 は返らない。
 DB: 手順 4 の SHA-256 が手順 1 と同一（ファイルが書き換えられず、空の DB で上書きされない）。
 ログ: 手順 3 で level 50（error）の行が 1 件出力され、DATA_CORRUPT を識別できる。",DS-007,api,,backend プロセスを停止し、一時ディレクトリ（DB ファイル）を削除する。,,spec-1.1
-TC-053,VIEW-054;VIEW-002,REQ-025;REQ-013;REQ-018;REQ-021;REQ-022,RISK-004,high,必須,DS-007 の破損 DB ファイルを DB パスに置き、backend を起動済み。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"ボディ: POST {""title"":""資料を印刷する""}、PATCH {""completed"":true}。id: 00000000-0000-4000-8000-000000000000。","1. DB ファイルの SHA-256 を記録する。
+TC-053,VIEW-054;VIEW-002,REQ-025;REQ-013;REQ-018;REQ-021;REQ-022,RISK-004,high,必須,DS-007 の破損 DB ファイルを DB パスに置き、backend を起動済み。ユーザー: 認証なし（Authorization ヘッダ・Cookie を付けず、権限の概念もない）。設定: DB パスとポートは起動時の環境変数で指定する。環境: backend を専用の一時 SQLite DB・空きポートで起動し、HTTP クライアント（fetch）から /api/v1 を直接呼ぶ。,"ボディ: POST {""title"":""資料を印刷する""}、PATCH {""completed"":true}。id: 3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36。","1. DB ファイルの SHA-256 を記録する。
 2. POST /api/v1/tasks に {""title"":""資料を印刷する""} を送る。
-3. PATCH /api/v1/tasks/00000000-0000-4000-8000-000000000000 に {""completed"":true} を送る。
-4. DELETE /api/v1/tasks/00000000-0000-4000-8000-000000000000 を呼ぶ。
+3. PATCH /api/v1/tasks/3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36 に {""completed"":true} を送る。
+4. DELETE /api/v1/tasks/3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36 を呼ぶ。
 5. DB ファイルの SHA-256 を記録し直す。","API: 手順 2・3・4 はすべて 500 で、本文が {""error"":{""code"":""DATA_CORRUPT"",""message"":""保存データを読み込めませんでした""}}（操作を停止する。PATCH・DELETE は 404 ではなく DATA_CORRUPT を返す）。
 DB: 手順 5 の SHA-256 が手順 1 と同一（書込み系の操作でも破損ファイルを書き換えず、新しい DB を作らない）。
 ログ: 手順 2・3・4 のそれぞれで level 50（error）の行が出力される。",DS-007;DS-009,api,,backend プロセスを停止し、一時ディレクトリ（DB ファイル）を削除する。,,spec-1.1

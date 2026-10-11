@@ -7,7 +7,7 @@ import { assertError, titlesOf, without } from "../helpers/assertions.js";
 import { createHarness, errorLogs } from "../helpers/harness.js";
 
 const [MILK, SPEC, PREP] = STANDARD_TASKS;
-const UNREGISTERED_ID = "00000000-0000-4000-8000-000000000000";
+const UNREGISTERED_ID = "3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36";
 
 describe("PATCH / DELETE /api/v1/tasks/:id", () => {
   const harness = createHarness();

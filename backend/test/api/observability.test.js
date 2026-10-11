@@ -43,7 +43,7 @@ describe("x-request-id とログ", () => {
     const responses = [
       await api.post("/api/v1/tasks", { title: "" }),
       await api.post("/api/v1/tasks", { nope: 1 }),
-      await api.delete("/api/v1/tasks/00000000-0000-4000-8000-000000000000"),
+      await api.delete("/api/v1/tasks/3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36"),
       await api.get("/api/v1/unknown"),
     ];
     const ids = responses.map((res) => res.headers.get("x-request-id"));
