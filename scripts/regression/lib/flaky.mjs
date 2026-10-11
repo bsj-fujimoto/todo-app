@@ -64,14 +64,58 @@ export const validateLedger = (entries, today) => entries.flatMap((e) => entryPr
 const inLedger = (t, entries) =>
   entries.some((e) => t.tc_ids.includes(e.test_id) || t.name.includes(String(e.test_id)));
 
+const FEATURE = { e2e: "ui", api: "api", unit: "validation", compose: "infra" };
+
+const bodyTail = (t, tc, fact) => [
+  "## 再現手順",
+  "",
+  `1. nightly の全件回帰（週次は --repeat-each=3 / unit・api は 3 周）で、\`${t.name}\`（層 ${t.layer}）を同じ SHA で繰り返し実行する。`,
+  "2. 実行のたびに pass と fail が混在する。",
+  "",
+  "## 期待結果",
+  "",
+  `同じコード・同じデータで、${tc ?? "このテスト"} は毎回同じ結果になる（retry で隠さず、安定して通る）。`,
+  "",
+  "## 実際の結果",
+  "",
+  fact,
+  "",
+  "## 影響",
+  "",
+  "main / PR の CI がアプリの不具合ではなく不安定さで赤になりうる。retry では隠さない（quality/README.md の運用ルール）。",
+  "",
+  "## 関連ケース / 証拠",
+  "",
+  `- ケース: ${tc ?? "（TC-ID なし）"}`,
+  "- 証拠: nightly の flaky-report.json（artifact nightly-report-*）",
+  "",
+  "## 原因分類（判明後に記入）",
+  "",
+  "- 根本原因: 未判明（調査中）",
+  "- 原因分類: test",
+  "- 検出可能だった工程: test",
+  "- 修正: 未修正。直せないときは quality/flaky-ledger.yaml に原因・owner・期限（30 日以内）を書く。",
+];
+
+// 不具合 Issue の様式（.github/ISSUE_TEMPLATE/defect.md）に合わせる。証跡（docs/data/defects.csv）の生成が、必須の項目の欠落で失敗しないように。
+// 原因は起票時点では推定。判明したら Issue 本文の「原因分類」を人が直す。
 function candidate(t, sha) {
   const label = t.tc_ids.join(",") || t.name;
+  const tc = t.tc_ids[0];
+  const rate = `${(t.rate * 100).toFixed(1)}%`;
+  const fact = `同一 SHA（${sha}）・同一テストで pass と fail が混在した（実行 ${t.runs} 回 / 失敗 ${t.failures} 回、失敗率 ${rate}）。`;
   const body = [
-    `同一 SHA（${sha}）・同一テストで pass と fail が混在した。`,
+    "## 識別",
     "",
-    `- テスト: \`${t.name}\`（層 ${t.layer}）`,
-    `- 実行 ${t.runs} 回 / 失敗 ${t.failures} 回（失敗率 ${(t.rate * 100).toFixed(1)}%）`,
-    "- 対応: quality/README.md の運用ルールに従う（retry で隠さない。隔離する場合は quality/flaky-ledger.yaml に原因・owner・期限を書く）。",
+    `- 検出工程: ${t.layer}（${fact}）`,
+    "- 混入工程: test（推定。テストの待機・データ共有・環境依存のいずれか。原因の確定は調査で行う）",
+    "- 重大度: minor",
+    `- 機能: ${FEATURE[t.layer] ?? "infra"}`,
+    "- 品質特性: reliability",
+    `- 対象版: ${sha}`,
+    `- 上流文書: ${tc ? `docs/data/cases.csv#${tc}` : "docs/data/cases.csv"}`,
+    "",
+    ...bodyTail(t, tc, fact),
   ].join("\n");
   return { fingerprint: t.key, title: `[flaky] ${label}`, labels: ["flaky"], body };
 }

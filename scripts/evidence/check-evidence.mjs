@@ -4,6 +4,9 @@
 //   ⑦ アクション表 ⑧ 追跡表が生成結果と一致 ⑨ 成果物台帳・正本の所在地が最新 ⑩ 秘密情報・個人情報らしい値の簡易検査
 //   node scripts/evidence/check-evidence.mjs [--out report.json] [--release <40桁の SHA>] [--allow-mixed-versions] [--strict]
 // --strict: 成果物台帳（artifacts.yaml）が古いことも失敗にする（既定は警告。台帳は文書を更新するたびに再生成する）。
+// docs/evidence/release.json（リリースの記録。人が取り込み時に書く）があれば、その commit_sha を --release に、--strict で検査する
+// （実施表の全行がテストした製品 commit X のもので、版の混在が無いこと）。無ければスキップと明示し、非 strict。
+// --structure-only: release.json を見ない構造検査だけ（ID 解決・manifest・パリティ・秘密混入など）。タグの commit X で実行する release.yml が使う。
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -23,8 +26,11 @@ import {
 } from "./lib/check-all.mjs";
 import { checkEvidenceIndex } from "./lib/evidence-checks.mjs";
 import { readManifest, verifyManifest } from "./lib/manifest.mjs";
+import { readReleaseRecord, releasePlan, releaseRecordCheck } from "./lib/release-record.mjs";
 
-const args = parseArgs(process.argv.slice(2), { flags: ["allow-mixed-versions", "strict"] });
+const args = parseArgs(process.argv.slice(2), {
+  flags: ["allow-mixed-versions", "strict", "structure-only"],
+});
 const root = resolve(args.root ?? ".");
 const TEXT_EXT = /\.(csv|json|jsonl|xml|md|ya?ml|sarif|txt|html|log|tsv)$/;
 const MAX_SCAN_BYTES = 8 * 1024 * 1024;
@@ -112,6 +118,14 @@ function traceabilityCheck(bundle) {
   return traceability(bundle, current);
 }
 
+const record = readReleaseRecord(root);
+const plan = releasePlan({
+  record,
+  releaseArg: args.release,
+  strictArg: args.strict,
+  structureOnly: args["structure-only"],
+});
+
 function artifactsCheck() {
   const run = spawnSync(
     process.execPath,
@@ -121,7 +135,7 @@ function artifactsCheck() {
   const stale = run.status !== 0;
   const message =
     "成果物台帳（artifacts.yaml・source-of-truth.yaml）が最新でない（build-artifacts.mjs で再生成する）";
-  const failed = stale && args.strict;
+  const failed = stale && plan.strict;
   return {
     id: "artifacts",
     title: "成果物台帳・正本の所在地が文書の現状と一致する",
@@ -139,7 +153,7 @@ const checks = [
   parity(bundle),
   executions(bundle, {
     allowMixedVersions: Boolean(args["allow-mixed-versions"]),
-    release: args.release ?? null,
+    release: plan.release,
   }),
   defects(bundle),
   evidenceIndexCheck(bundle),
@@ -147,6 +161,7 @@ const checks = [
   traceabilityCheck(bundle),
   artifactsCheck(),
   sensitive(bundle),
+  releaseRecordCheck(record, plan, args["structure-only"]),
 ];
 
 const icon = { pass: "PASS", fail: "FAIL", skipped: "SKIP" };

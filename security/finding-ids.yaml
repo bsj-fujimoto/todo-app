@@ -1,0 +1,59 @@
+# 検出の安定 ID の台帳。fingerprint（ツール + ルール + 場所 + 部品）→ FND-nnn。triage.mjs が findings.json の finding_id にこの ID を使う。
+# 番号は一度振ったら振り直さない・再利用しない（検出が解消しても残す）。追記は scripts/security/assign-finding-ids.mjs（人が実行して commit する）。
+# docs/data/findings.csv の finding_id（FND-nnn）と同じ。CI は台帳に無い検出を仮 ID（FND-NEW-xxxxxx）にして警告する。
+version: 1
+ids:
+  - id: FND-001
+    fingerprint: "1079ce963fc52409"
+    first_seen: 2026-10-11
+    tool: compose-check
+    rule_id: "COMPOSE-006"
+    location: "docker-compose.yml:1"
+  - id: FND-002
+    fingerprint: "ebb2535e91cd1670"
+    first_seen: 2026-10-11
+    tool: trivy
+    rule_id: "CVE-2026-85091"
+    location: "todo-app-backend:ci"
+  - id: FND-003
+    fingerprint: "a84e2b0a7f42530c"
+    first_seen: 2026-10-11
+    tool: trivy
+    rule_id: "CVE-2026-85091"
+    location: "todo-app-frontend:ci"
+  - id: FND-004
+    fingerprint: "c97a28418bf37c99"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "100001"
+    location: "http://localhost:8080"
+  - id: FND-005
+    fingerprint: "527b10e55a1dcc26"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "100000-1"
+    location: "http://localhost:8080"
+  - id: FND-006
+    fingerprint: "0c4e6dd349a70dc6"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "10049-1"
+    location: "http://localhost:8080"
+  - id: FND-007
+    fingerprint: "ed70596461d625b2"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "10049-3"
+    location: "http://localhost:8080"
+  - id: FND-008
+    fingerprint: "00a79debbf4a1462"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "10109"
+    location: "http://localhost:8080"
+  - id: FND-009
+    fingerprint: "8a16bb6302e2e0c1"
+    first_seen: 2026-10-11
+    tool: owasp-zap
+    rule_id: "10049-2"
+    location: "http://localhost:8080"

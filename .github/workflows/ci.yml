@@ -80,6 +80,8 @@ jobs:
         run: npm run format:check
       - name: CI・回帰運用の道具のテスト
         run: npm run test:scripts
+      - name: 証跡の道具（実施表・不具合表・証拠索引・台帳の生成と検査）のテスト
+        run: npm run evidence:test
 
   # ---- unit / api（backend + frontend）-----------------------------------------------------
   unit-api:
@@ -350,6 +352,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0 # 成果物台帳（artifacts.yaml）の履歴を、コミット履歴と突き合わせる（release.json があるときの --strict で使う）
           persist-credentials: false
       - uses: ./.github/actions/setup-node-npm
         with:
@@ -362,6 +365,8 @@ jobs:
         run: node scripts/regression/build-suite.mjs --check
       - name: flaky 隔離台帳の形式・期限
         run: node scripts/regression/flaky-report.mjs --validate-ledger
+      - name: 証跡一式の検査（manifest の sha256・ID 参照・パリティ・実施表・不具合・証拠索引・アクション・追跡表・秘密情報。docs/evidence/release.json があれば、その commit を --release に --strict で検査）
+        run: node scripts/evidence/check-evidence.mjs --out reports/evidence-check-report.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

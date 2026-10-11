@@ -1,6 +1,7 @@
 // セキュリティの方針ファイル（台帳）の形式・期限の検査。検出が無くても、台帳が腐っていれば落とす。
 import { isFile, readText } from "../../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
+import { loadFindingIds, validateFindingIds } from "./finding-ids.mjs";
 import { loadEntries, validateAccepted, validateTriage } from "./ledger.mjs";
 import { parseRules, validateRules } from "./zap.mjs";
 
@@ -83,6 +84,7 @@ export function checkPolicy(root, today) {
     ...zap,
     ...validateTriage(loadEntries(root, "security/triage.yaml")),
     ...validateAccepted(loadEntries(root, "security/accepted-risks.yaml"), today),
+    ...validateFindingIds(loadFindingIds(root)),
     ...licenseProblems(root, today),
     ...mirrorProblems(root),
     ...selectionProblems(root, today),

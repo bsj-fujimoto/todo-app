@@ -1,5 +1,6 @@
 // findings.json の組み立て（純粋関数。読み込みと書き出しは triage.mjs が行う）。
 import { missingScans } from "./collect.mjs";
+import { assignIds, idMap } from "./finding-ids.mjs";
 import { validateAccepted, validateTriage, matches } from "./ledger.mjs";
 import { applyLedgers, countBy, gate, trend, withTrend } from "./triage.mjs";
 
@@ -16,11 +17,16 @@ const runSummary = (r) => ({
   run_url: r.run_url ?? null,
 });
 
-const fixedFrom = (previous, t) => {
+const fixedFrom = (previous, t, ids) => {
   const gone = new Set(t.fixed);
   return (previous?.findings ?? [])
     .filter((f) => gone.has(f.fingerprint))
-    .map((f) => ({ ...f, status: "fixed", trend: "fixed" }));
+    .map((f) => ({
+      ...f,
+      finding_id: ids.get(f.fingerprint) ?? f.finding_id,
+      status: "fixed",
+      trend: "fixed",
+    }));
 };
 
 const staleEntries = (entries, findings, label) =>
@@ -31,14 +37,12 @@ const staleEntries = (entries, findings, label) =>
         `${label}: ${e.id ?? JSON.stringify(e.match ?? e.fingerprint)} はどの検出にも当たらない（解消したなら台帳から外す）`,
     );
 
-export function buildDocument({ scans, ledgers, previous, expected, today, nowIso, run }) {
+export function buildDocument({ scans, ledgers, previous, expected, today, nowIso, run, findingIds = [] }) {
   const raw = scans.flatMap((s) => s.findings);
   const applied = applyLedgers(raw, ledgers);
   const t = trend(applied, previous);
-  const findings = withTrend(applied, t).map((f, i) => ({
-    finding_id: `F-${String(i + 1).padStart(3, "0")}`,
-    ...f,
-  }));
+  // finding_id は並び順ではなく fingerprint から決まる安定 ID（security/finding-ids.yaml）。台帳に無いものは仮 ID にして警告する
+  const { findings, unregistered } = assignIds(withTrend(applied, t), findingIds);
   const runs = scans.map((s) => s.run);
   const missing = missingScans(expected, runs);
   const ledgerProblems = [...validateTriage(ledgers.triage), ...validateAccepted(ledgers.accepted, today)];
@@ -60,12 +64,14 @@ export function buildDocument({ scans, ledgers, previous, expected, today, nowIs
       ...g,
       result: g.result === "fail" || missing.length || ledgerProblems.length ? "fail" : "pass",
       ledger_problems: ledgerProblems,
+      // 台帳（security/finding-ids.yaml）に無い検出。失敗にはしないが、assign-finding-ids.mjs で ID を振って commit する
+      unregistered_finding_ids: unregistered,
     },
     stale_ledger_entries: [
       ...staleEntries(ledgers.triage, findings, "triage.yaml"),
       ...staleEntries(ledgers.accepted, findings, "accepted-risks.yaml"),
     ],
     findings,
-    fixed: fixedFrom(previous, t),
+    fixed: fixedFrom(previous, t, idMap(findingIds)),
   };
 }

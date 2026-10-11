@@ -59,6 +59,43 @@ npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不
 `--artifacts <gh run download の出力ディレクトリ>` で、取得済みの artifact から取り込める。リリース用の最終生成は、`v*.*.*` タグの run で `--run <id> --prune-other-versions --release <SHA>` を付けて行う
 （実施表に別の版の行を残さない。残っていると失敗する）。
 
+### リリースの証跡の運用（タグ X → run → 取り込みコミット Y）
+
+**タグは必ず「テストした製品 commit X」に打つ。** 実施表・証跡は X の run から作り、あとで commit Y として main に入れる。したがって X の時点の `release.yml` は、X の実施表をまだ持てない。検査はこの前提で分けてある。
+
+| いつ・どこで                                                         | 何を検査するか                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| タグ X の `release.yml`（`evidence-check` ジョブ。`publish` の条件） | **構造だけ**（`check-evidence.mjs --structure-only`: ID 解決・manifest の sha256・パリティ・不具合表・証拠索引・秘密混入など）。版は固定しない                                                                                 |
+| Y 以降の `ci.yml`（docs-check の `check-evidence.mjs`）              | `docs/evidence/release.json` があれば、その `commit_sha`（= X）を `--release` に **`--strict`** で検査（実施表の全行の `commit_sha` が X で、版の混在が無い。成果物台帳が古いことも失敗）。無ければスキップと明示し、非 strict |
+
+`docs/evidence/release.json`（取り込み時に管理者が書く。ワークフローは書かない）:
+
+```json
+{
+  "release": "v1.0.0",
+  "tag": "v1.0.0",
+  "commit_sha": "<X: テストした製品 commit の 40 桁の SHA>",
+  "images": { "backend": "sha256:…", "frontend": "sha256:…" },
+  "run_id": 123456789,
+  "recorded_at": "2026-10-11T10:00:00Z"
+}
+```
+
+形式（版・タグ・SHA・digest・run・日時）は `check-evidence.mjs` の `release-record` 検査が確かめる。手順（管理者が行う。ワークフローから main へ直接 commit しない）:
+
+```sh
+# 1. X にタグを打つと release.yml が走る。run の id は URL（.../actions/runs/<id>）かリリースノートの「ビルドした run」から分かる
+node scripts/evidence/fetch-run.mjs --run <run-id>                       # CI の成果物（JUnit・観察値・ci-summary・regression-selection）
+node scripts/evidence/fetch-run.mjs --kind security --run <run-id>       # security の SARIF・SBOM・scan-run・findings・gate
+node scripts/evidence/build-executions.mjs --run <run-id> --prune-other-versions --release <X>
+# 2. docs/evidence/release.json を書く（X・イメージ digest・run id）
+npm run evidence:build && npm run evidence:check   # release.json があるので、X で --strict の検査になる
+# 3. これを commit Y として main に入れる（PR）。Y 以降の CI が、X の実施表を strict で検査し続ける
+```
+
+- 新しい検出（`FND-NEW-xxxxxx`）が出たら、`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で `security/finding-ids.yaml` に番号を振って commit する。
+- CI の docs-check は、PR のたびに `check-evidence.mjs` と `npm run evidence:test` を回す。
+
 ### 再生成の冪等性
 
 - `executions.csv`: 同じ run の行は置き換える。EXEC-0001 形式の ID は（run, TC, 環境）が同じなら引き継ぐ。別の版の行が残るときは失敗（`--prune-other-versions` で捨てる）。
@@ -73,21 +110,23 @@ npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不
 | `fetch-run.mjs`            | artifact を 1 つずつ取り（`*.dockerbuild` は除く）、小さな成果物だけを `docs/evidence/` へ。`SOURCE.json` を作る。`--kind ci / security / perf / monitoring / github`                                                                                                |
 | `build-executions.mjs`     | JUnit・観察値・`ci-summary.json`・`regression-selection.json` から実施表。1 行 = 1 ケース × 1 実行環境 × 1 run。全ケースに 1 行以上（無ければ `not_run` + 理由）。手動ケースは実施していなければ `not_run`（理由・owner・予定日は `docs/evidence/manual-plan.yaml`） |
 | `build-defects.mjs`        | Issue（`defect`・`flaky`）→ `defects.csv`。本文は `.github/ISSUE_TEMPLATE/defect.md` の見出しと「- キー: 値」を読む。語彙を統一し、欠けた項目は Issue 番号つきで指摘して失敗する（事実に基づいて Issue 本文を補筆してから再実行）                                    |
-| `build-findings.mjs`       | security の `findings.json` → `findings.csv`。`F-001` を `FND-001` に写す（FND を docs/data の中で定義する）                                                                                                                                                         |
+| `build-findings.mjs`       | security の `findings.json` → `findings.csv`。finding_id は triage が振った安定 ID `FND-nnn`（FND を docs/data の中で定義する。未登録の仮 ID があれば失敗）                                                                                                          |
 | `build-evidence-index.mjs` | 証拠索引。run 全体・セキュリティ（検出 1 件ごと）・性能・監視・GitHub 統制の証拠を足し、全参照（ファイル・アンカー・sha256）を検査                                                                                                                                   |
 | `build-traceability.mjs`   | REQ → RISK → VIEW → TC → EXEC → DEF → FND → ACT。ケースに結び付かない要求・リスク・観点・検出・アクションは `gaps` つきの行で残す                                                                                                                                    |
 | `build-manifest.mjs`       | `docs/evidence/manifest.json`（path / sha256 / size / captured_at / source / version / head_sha）                                                                                                                                                                    |
 | `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                       |
 | `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                   |
 | `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                       |
-| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`                                                                                                                                                                        |
+| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                             |
 
 ## 4. 設計判断と制約
 
 - **観察値と JUnit が正本**。`actual_result` は観察値だけから組む（期待結果は読まない）。観察値が無い行は「観察値なし」と書き、JUnit が記録した事実（件数・結果・所要）だけを添える。期待結果と同一なら失敗、全文を含む・短すぎるものは警告。
 - `kind`: `pull_request` の run は `automated`、それ以外（push・schedule・dispatch・release）の全件回帰は `regression`、手動ケースは `manual`。`status` は `pass / fail / blocked / not_run / skipped`（小文字）。
 - 版の混在: 実施表の `commit_sha` は 1 種類。観察値・ci-summary・SOURCE.json の SHA と run id も突き合わせる。JUnit の層ごとの件数が `ci-summary.json` と違うときも失敗（取り込み漏れ・別 run の混入）。
-- `finding_id` は security の triage が検出の並び順で振る（検出が増減すると番号が変わる）。`FND-nnn` を使う表（アクション・追跡）は、取り込んだ `findings.json` と同じ時点のものにする。安定した識別は `fingerprint`。
+- `finding_id` は security の triage が、fingerprint から決まる**安定 ID**（`FND-nnn`。台帳 `security/finding-ids.yaml`）で振る。検出が増減しても同じ検出は同じ番号を保つ。
+  台帳に無い新しい検出は仮 ID（`FND-NEW-xxxxxx`）で出て、`build-findings.mjs` が失敗する。`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で番号を振って commit してから取り込み直す
+  （旧形式の `F-001` の findings.json も `FND-001` に写せる）。
 - `artifacts.yaml` の履歴・更新日時は**コミット済み**の内容から作る。文書を更新したら、コミット後に `build-artifacts.mjs` を再実行する（古ければ `check-evidence.mjs` が警告、`--strict` で失敗）。
 - `build-defects.mjs` の `release` は、起票日以前で最新の `v*` タグ（無ければ `pre-1.0.0`）。`source` は検出工程が production なら production、それ以外は test。
 - 正規表現による秘密情報・個人情報の検査は**不在を証明しない**（`docs/evidence/README.md`）。

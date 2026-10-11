@@ -152,6 +152,22 @@ export function countBy(findings, key) {
   return out;
 }
 
+function gateNotes(gate) {
+  const un = gate.unregistered_finding_ids ?? [];
+  const medium = gate.medium_needs_issue_or_acceptance.length;
+  return [
+    ...(medium
+      ? [`- medium の未解決 ${medium} 件（Issue 化して accepted-risks.yaml で期限付き受容、または修正）`]
+      : []),
+    ...gate.acceptance_problems.map((p) => `- 受容の問題: ${p}`),
+    ...(un.length
+      ? [
+          `- 安定 ID が未登録の検出 ${un.length} 件（FND-NEW-…）。node scripts/security/assign-finding-ids.mjs で ID を振って commit する`,
+        ]
+      : []),
+  ];
+}
+
 export function renderSummary(doc) {
   const sev = SEVERITIES.map((s) => `${s} ${doc.summary.by_severity[s] ?? 0}`).join(" / ");
   const st =
@@ -171,12 +187,7 @@ export function renderSummary(doc) {
     lines.push(
       `  - [${b.severity}] ${b.tool} ${b.rule_id} ${b.component ?? ""} ${b.location}（${b.status}）`,
     );
-  if (doc.gate.medium_needs_issue_or_acceptance.length) {
-    lines.push(
-      `- medium の未解決 ${doc.gate.medium_needs_issue_or_acceptance.length} 件（Issue 化して accepted-risks.yaml で期限付き受容、または修正）`,
-    );
-  }
-  for (const p of doc.gate.acceptance_problems) lines.push(`- 受容の問題: ${p}`);
+  lines.push(...gateNotes(doc.gate));
   for (const m of doc.missing_scans) lines.push(`- 実行されなかった検査: ${m}`);
   return `${lines.join("\n")}\n`;
 }

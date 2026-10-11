@@ -47,6 +47,7 @@ hadolint（Dockerfile の書き方）は脆弱性ではないので 1 段下げ�
   真陽性か（`tp`）・誤検出か（`fp`）・該当しないか（`na`）、到達可能性・公開範囲・資産影響・補完統制、修正方法・代替案・owner（ロール）・期限・再検査条件。
 - ステータス: `tp`（真陽性・要是正）/ `fp`（誤検出）/ `dup`（重複）/ `accepted`（期限付き受容）/ `fixed`（前回あって今回無い）/ `na`（該当しない）/ `untriaged`（未判断）。
 - ゲート: critical/high で `untriaged` または `tp` が 1 件でもあれば失敗。受容は high が 30 日・medium が 90 日まで（critical は受容不可）で、期限が切れたら未解決に戻る。
+- `findings.json` の `finding_id` は並び順ではなく fingerprint から決まる安定 ID（`finding-ids.yaml`）。`docs/data/findings.csv` の `FND-nnn` と同じ。
 - `fixed` は「前回の `findings.json`（main の直近の成功 run）にあって、今回は検出されない」ことで機械が付ける。再検査して消えたことが根拠。
 
 ### 再検査の条件
@@ -57,16 +58,17 @@ hadolint（Dockerfile の書き方）は脆弱性ではないので 1 段下げ�
 
 ## 台帳・方針ファイル
 
-| ファイル                    | 内容                                                                            |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `triage.yaml`               | 検出ごとの判断・文脈・是正案（人が書く）                                        |
-| `accepted-risks.yaml`       | 期限付き受容（id・理由・owner・受容日・期限・再検査条件）                       |
-| `zap-rules.tsv`             | ZAP のしきい値と除外（IGNORE は理由・owner・期限が必須。`check-policy` が検査） |
-| `license-policy.yaml`       | 許可・禁止ライセンス、期限付きの例外                                            |
-| `workflow-policy.yaml`      | ワークフローの write 権限・OIDC を許してよいジョブの許可リスト                  |
-| `expected-scans.yaml`       | 走るべき検査の一覧（欠けたら失敗）                                              |
-| `dependency-selection.yaml` | 直接依存の選定理由・検討した代替・保守状況・扱い（180 日ごとに見直す）          |
-| `tools.env`                 | 検査ツールのイメージ（tag + digest）                                            |
+| ファイル                    | 内容                                                                                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `triage.yaml`               | 検出ごとの判断・文脈・是正案（人が書く）                                                                                                                                               |
+| `accepted-risks.yaml`       | 期限付き受容（id・理由・owner・受容日・期限・再検査条件）                                                                                                                              |
+| `zap-rules.tsv`             | ZAP のしきい値と除外（IGNORE は理由・owner・期限が必須。`check-policy` が検査）                                                                                                        |
+| `license-policy.yaml`       | 許可・禁止ライセンス、期限付きの例外                                                                                                                                                   |
+| `workflow-policy.yaml`      | ワークフローの write 権限・OIDC を許してよいジョブの許可リスト                                                                                                                         |
+| `finding-ids.yaml`          | 検出の安定 ID（fingerprint → `FND-nnn`）。検出が増減しても同じ検出は同じ番号。新しい検出は `assign-finding-ids.mjs` で番号を振って commit（CI は未登録を仮 ID `FND-NEW-…` にして警告） |
+| `expected-scans.yaml`       | 走るべき検査の一覧（欠けたら失敗）                                                                                                                                                     |
+| `dependency-selection.yaml` | 直接依存の選定理由・検討した代替・保守状況・扱い（180 日ごとに見直す）                                                                                                                 |
+| `tools.env`                 | 検査ツールのイメージ（tag + digest）                                                                                                                                                   |
 
 `scripts/security/check-policy.mjs` がこれらの形式・期限を検査する（期限切れ・必須項目の欠落は CI が失敗）。
 
