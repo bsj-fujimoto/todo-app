@@ -157,28 +157,27 @@ dependencies:
     maintenance: 最新 2.62.1（2026-10-09 公開）、リポジトリの最終 push は 2026-10-09、star 約 1.5k、archived ではない、MIT（Redocly が保守）。依存が多い（インストールで約 140 パッケージ）。
     handling: 継続利用。依存の多さは SBOM・osv-scanner・trivy が監視する。再検討の条件は、依存に未修正の high 以上が残る状態が続く場合（Spectral か vacuum に置き換える）。
     last_checked: 2026-10-11
-  - name: "@cyclonedx/cyclonedx-npm"
-    version: 6.0.1
+  - name: npm sbom（npm 組み込み）
+    version: npm 11
     workspace: root
     kind: tooling
-    reason: SBOM を CycloneDX 1.6 の JSON で、workspaces を含めて、実行時依存のみ・全体の 2 本で出す。CycloneDX プロジェクトの公式ツールで、仕様のバージョン指定と出力の検証ができる。
+    reason: SBOM を CycloneDX（JSON）で、workspaces を含めて、実行時依存のみ・全体の 2 本で出す。npm 組み込みなので依存パッケージが 1 つも増えない。検査ツール自身が供給網リスクを増やさないことを優先した。
     alternatives:
-      - npm sbom（npm 組み込みで依存が増えない。仕様版・メタデータの制御が限られるので今回は見送り。npm が CycloneDX 1.6 に対応したら置き換えて依存を 1 つ減らす）
-      - trivy / syft で SBOM を出す（コンテナ向けには trivy を併用している。npm の依存関係グラフの精度は lock ベースの方が高い）
-    maintenance: 最新 6.0.1（2026-08-11 公開）、リポジトリの最終 push は 2026-10-10、star 約 150、archived ではない、Apache-2.0。
-    handling: 継続利用。再検討の条件は、更新が 12 か月止まる・npm sbom が要件を満たす。
+      - "@cyclonedx/cyclonedx-npm（CycloneDX 公式。仕様版を 1.6 に指定できるが、推移依存が約 100 パッケージ増え、その中の libxmljs2 → nan（LicenseRef-scancode-dco-1.1）や normalize-package-data（JSON ライセンス）がライセンス方針に違反した。いったん採用して、PR の dependency-review で気づいて外した）"
+      - trivy / syft で SBOM を出す（コンテナ向けには trivy を併用している）
+    maintenance: npm 本体の機能（npm は Node.js に同梱）。CycloneDX は 1.5。
+    handling: 継続利用。再検討の条件は、仕様版 1.6 以上が必要になった場合（そのときは依存の増え方とライセンスを評価して選ぶ）。
     last_checked: 2026-10-11
-  - name: license-checker-rseidelsohn
-    version: 5.0.1
+  - name: scripts/security/lib/licenses.mjs（自作のライセンス評価）
+    version: リポジトリ内
     workspace: root
     kind: tooling
-    reason: 依存のライセンスを JSON で出し、security/license-policy.yaml で評価するための入力にする。元の license-checker が長く更新されていないため、保守が続いているフォークを選んだ。
+    reason: package-lock.json と node_modules/*/package.json の license を読み、SPDX 式（OR / AND / 括弧 / WITH）を許可リストで評価する。外部ツール（license-checker 系）は推移依存が増え、その依存自身がライセンス方針に違反（GPL-2.0-only を含む spdx-satisfies、DCO を含む nan など）・Scorecard の警告（spdx-license-ids ほか）になったため、依存ゼロで自作した。
     alternatives:
-      - license-checker（元のパッケージ。2020 年頃から更新が止まっている）
-      - license-report（出力形式が異なり、SPDX 式の扱いが弱い）
-      - trivy の license スキャナ（コンテナ・ファイル向け。npm の開発依存まで含めた評価は lock 経由になる）
-    maintenance: 最新 5.0.1（2026-05-27 公開）、リポジトリの最終 push は 2026-10-08、star 約 200、archived ではない。小規模なフォークで、メンテナは少数。
-    handling: 継続利用。評価ロジック（SPDX 式・許可リスト・例外）は自前の scripts/security/lib/licenses.mjs に持ち、このツールは入力の取得だけに使うので、置き換えが容易。再検討の条件は、更新が 12 か月止まる・勧告が出る。
+      - license-checker-rseidelsohn（保守されているフォークだが、推移依存の spdx-satisfies・nan・normalize-package-data が方針違反）
+      - trivy の license スキャナ（コンテナ・ファイル向け。許可リスト方針・期限付き例外・SPDX 式の評価は自前になる）
+    maintenance: このリポジトリで保守する（単体テストあり: scripts/test/security-lib.test.mjs）。
+    handling: 継続。再検討の条件は、評価の抜け（SPDX 式の新しい書き方）が見つかったとき。
     last_checked: 2026-10-11
   - name: node:24-alpine（Docker ベースイメージ。backend）
     version: 24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1

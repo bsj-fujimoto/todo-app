@@ -5,18 +5,18 @@
 
 ## 検査の一覧
 
-| 検査          | ツール（版は `tools.env` で digest 固定）                              | 設定ファイル                                        | 出力（artifact に 90 日保存）                      | 失敗の条件                                           |
-| ------------- | ---------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------- |
-| SAST          | CodeQL（javascript-typescript、security-extended）                     | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）            | triage のゲート                                      |
-| Secret        | gitleaks（git 履歴全体）                                               | `gitleaks.toml`                                     | SARIF（値は伏字）                                  | triage のゲート。履歴を 1 commit も読めなければ失敗  |
-| SCA           | npm audit（`--omit=dev` と全体）、osv-scanner                          | —                                                   | JSON / SARIF                                       | triage のゲート                                      |
-| SBOM          | `@cyclonedx/cyclonedx-npm`、trivy（イメージ）                          | —                                                   | CycloneDX 1.6 JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                 |
-| Container/IaC | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                       | triage のゲート                                      |
-| License       | license-checker-rseidelsohn + 自前の方針評価                           | `license-policy.yaml`                               | JSON                                               | 許可リスト外が 1 つでもあれば失敗（deny by default） |
-| DAST          | OWASP ZAP（baseline + API 走査。認証なし）                             | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                     | triage のゲート                                      |
-| ワークフロー  | actionlint、`check-workflows.mjs`（W1〜W10）                           | `workflow-policy.yaml`                              | JSON                                               | 逸脱があれば失敗                                     |
-| 依存レビュー  | actions/dependency-review-action（PR のみ）                            | `security.yml` の `allow-licenses`（方針の写し）    | PR の依存差分                                      | high 以上・方針外ライセンス                          |
-| Scorecard     | OpenSSF Scorecard（週次のみ）                                          | —                                                   | SARIF                                              | 情報提供のみ（ゲートに含めない）                     |
+| 検査          | ツール（版は `tools.env` で digest 固定）                                           | 設定ファイル                                        | 出力（artifact に 90 日保存）                  | 失敗の条件                                           |
+| ------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| SAST          | CodeQL（javascript-typescript、security-extended）                                  | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）        | triage のゲート                                      |
+| Secret        | gitleaks（git 履歴全体）                                                            | `gitleaks.toml`                                     | SARIF（値は伏字）                              | triage のゲート。履歴を 1 commit も読めなければ失敗  |
+| SCA           | npm audit（`--omit=dev` と全体）、osv-scanner                                       | —                                                   | JSON / SARIF                                   | triage のゲート                                      |
+| SBOM          | `npm sbom`（npm 組み込み）、trivy（イメージ）                                       | —                                                   | CycloneDX JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                 |
+| Container/IaC | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check              | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                   | triage のゲート                                      |
+| License       | 自前の評価（`license-check.mjs`。lock と node_modules の license を読む。依存ゼロ） | `license-policy.yaml`                               | JSON                                           | 許可リスト外が 1 つでもあれば失敗（deny by default） |
+| DAST          | OWASP ZAP（baseline + API 走査。認証なし）                                          | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                 | triage のゲート                                      |
+| ワークフロー  | actionlint、`check-workflows.mjs`（W1〜W10）                                        | `workflow-policy.yaml`                              | JSON                                           | 逸脱があれば失敗                                     |
+| 依存レビュー  | actions/dependency-review-action（PR のみ）                                         | `security.yml` の `allow-licenses`（方針の写し）    | PR の依存差分                                  | high 以上・方針外ライセンス                          |
+| Scorecard     | OpenSSF Scorecard（週次のみ）                                                       | —                                                   | SARIF                                          | 情報提供のみ（ゲートに含めない）                     |
 
 どの検査も `scripts/security/scan.sh <検査名>` で **CI とローカルが同じコマンド**を実行する（再現できる）。出力は `security-results/<検査名>/` に置かれ、
 検査ごとに `scan-run.json`（対象リポジトリ・branch・commit SHA・イメージ digest・実行日時・ツール名と版・コマンド・設定ファイル・走査範囲と除外・しきい値・出力ファイルの sha256）を残す。
@@ -113,3 +113,11 @@ GitHub Actions の action は Dependabot（github-actions）が SHA 固定のま
 | ZAP 100000・100001・10109、compose-check COMPOSE-006                                              | info / low 4               | `na`（理由は `triage.yaml`）                                                                                                   |
 
 SCA（npm audit・osv-scanner）、Secret（gitleaks）、License は検出 0 件（License は MPL-2.0 と CC-BY-3.0 を期限付き例外として記録。`license-policy.yaml`）。
+
+### 検査ツール自身の依存（供給網）の扱い
+
+初回は SBOM に `@cyclonedx/cyclonedx-npm`、ライセンス検査に `license-checker-rseidelsohn` を使ったが、PR の dependency-review が
+それらの推移依存（`nan`: DCO、`normalize-package-data`: JSON、`spdx-satisfies`: GPL-2.0-only を含む式）をライセンス方針違反として検出し、
+`spdx-license-ids` などは Scorecard の警告（しきい値 3 未満）だった。**検査ツールが供給網リスクと方針違反を増やすのは本末転倒**なので、
+SBOM は `npm sbom`（組み込み）、ライセンス評価は自作の依存ゼロ実装（`scripts/security/license-check.mjs`）に置き換えて、devDependency から外した
+（インストールされるパッケージが約 260 減った）。MPL-2.0（axe-core）の例外は、E2E の開発依存として残っているので引き続き必要（期限付き）。CC-BY-3.0 の例外は不要になったので外した。
