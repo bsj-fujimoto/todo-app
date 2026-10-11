@@ -11,14 +11,14 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:49Z",
-  "finished_at": "2026-10-11T09:03:34.688Z",
+  "started_at": "2026-10-11T15:43:37Z",
+  "finished_at": "2026-10-11T15:44:34.085Z",
   "command": "github/codeql-action/init + analyze（languages=javascript-typescript, build-mode=none, queries=security-extended）",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -41,17 +41,17 @@
     "images": []
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/codeql",
   "output_files": [
     {
       "path": "security-results/codeql/javascript.sarif",
-      "bytes": 927439,
-      "sha256": "342fed08eb63e1581b320f3a22f27c97cc7b4b531cf9babda5b1eb2c1db2adef"
+      "bytes": 1341450,
+      "sha256": "8b0deb3157158532cc2fa6ed521465d61f2b43ecb8ddcce5d241882f9ff445ce"
     }
   ],
-  "finding_count_sarif": 0,
+  "finding_count_sarif": 4,
   "informational": false,
   "note": null
 }

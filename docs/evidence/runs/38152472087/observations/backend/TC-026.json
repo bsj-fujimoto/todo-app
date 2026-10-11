@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-026",
+  "entries": [
+    {
+      "title": "[TC-026] 長さは前後の空白を除去した後で判定し、title は除去後の値を返す",
+      "test_case_ids": [
+        "TC-026"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.534Z",
+      "finished_at": "2026-10-11T15:43:53.535Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"  買い物  \"",
+          "result": "合格 title=\"買い物\""
+        },
+        {
+          "input": "\" aaaaaaaaaaa\"…(102コードポイント)",
+          "result": "合格 title=\"aaaaaaaaaaaa\"…(100コードポイント)"
+        },
+        {
+          "input": "\"  aaaaaaaaaa\"…(105コードポイント)",
+          "result": "不合格 TITLE_TOO_LONG"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

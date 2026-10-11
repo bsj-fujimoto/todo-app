@@ -62,7 +62,7 @@
           "ruleId": "10109",
           "level": "none",
           "message": {
-            "text": "Modern Web Application（Informational (Medium)）。影響する URL 1 件: GET http://localhost:8080/?title=ZAP"
+            "text": "Modern Web Application（Informational (Medium)）。影響する URL 2 件: GET http://localhost:8080, GET http://localhost:8080/?title=ZAP"
           },
           "locations": [
             {
@@ -75,7 +75,7 @@
           ],
           "properties": {
             "security-severity": "0",
-            "instances": 1,
+            "instances": 2,
             "cweid": "-1",
             "confidence": "2"
           }
@@ -135,15 +135,15 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:02:48Z",
-          "endTimeUtc": "2026-10-11T09:04:19.394Z",
+          "startTimeUtc": "2026-10-11T15:43:34Z",
+          "endTimeUtc": "2026-10-11T15:45:13.267Z",
           "commandLine": "docker run ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2 zap-baseline.py -t http://localhost:8080 -c zap-rules.tsv; zap-api-scan.py -t openapi.yaml -f openapi -O http://localhost:8080 -c zap-rules.tsv (exit 2 / 2)"
         }
       ]

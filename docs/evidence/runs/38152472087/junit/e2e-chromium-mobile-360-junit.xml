@@ -1,0 +1,10 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="2.6122560000000004">
+<testsuite name="a11y-responsive.spec.js" timestamp="2026-10-11T15:44:03.491Z" hostname="chromium-mobile-360" tests="1" failures="0" skipped="0" time="1.425" errors="0">
+<testcase name="[TC-067] 幅 360px のタッチ操作で、横スクロールなしに追加・完了・削除ができる" classname="a11y-responsive.spec.js" time="1.425">
+<properties>
+<property name="observed" value="一覧 3 行、エラー表示なし、API 4 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+</testsuites>

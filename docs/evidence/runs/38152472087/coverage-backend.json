@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source": "backend/test-results/test-output-all.txt",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "generated_at": "2026-10-11T15:43:54.249Z",
+  "total": {
+    "lines": 99.69,
+    "branches": 98.09,
+    "functions": 98.78
+  },
+  "files": [
+    {
+      "path": "src/app.js",
+      "lines": 98.46,
+      "branches": 97.06,
+      "functions": 94.12,
+      "uncovered": "48-49"
+    },
+    {
+      "path": "src/config.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/domain/task.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/domain/title.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/errors.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/http/request.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/main.js",
+      "lines": 100,
+      "branches": 90.91,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/routes/health.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/routes/tasks.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/store/migrations.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/store/sqlite-errors.js",
+      "lines": 100,
+      "branches": 100,
+      "functions": 100,
+      "uncovered": ""
+    },
+    {
+      "path": "src/store/sqlite-store.js",
+      "lines": 100,
+      "branches": 94.12,
+      "functions": 100,
+      "uncovered": ""
+    }
+  ]
+}

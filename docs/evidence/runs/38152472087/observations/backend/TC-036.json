@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-036",
+  "entries": [
+    {
+      "title": "[TC-036] 未知のフィールド・不正な JSON は 400 INVALID_REQUEST（無視せず拒否）で、一覧は空のまま",
+      "test_case_ids": [
+        "TC-036"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:47.773Z",
+      "finished_at": "2026-10-11T15:43:47.816Z",
+      "duration_ms": 43,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 400,
+          "request": "{\"title\":\"a\",\"extra\":1}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 400,
+          "request": "(本文 9 文字)",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-008",
+  "entries": [
+    {
+      "title": "[TC-008] 完了にして未完了に戻すと、チェックと取り消し線が切り替わり、並びは変わらない [ST-02, ST-03]",
+      "test_case_ids": [
+        "TC-008"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:22.681Z",
+      "finished_at": "2026-10-11T15:44:23.443Z",
+      "duration_ms": 755,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 3,
+        "rows": [
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "「仕様書をレビューする」を完了にする"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"仕様書をレビューする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:01.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":false}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"仕様書をレビューする\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:01.000Z\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-008] 通信中はチェック・取り消し線が元のままで、成功後にだけ切り替わる。連打は 1 回だけ、別の行の操作は妨げない",
+      "test_case_ids": [
+        "TC-008"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:23.408Z",
+      "finished_at": "2026-10-11T15:44:24.114Z",
+      "duration_ms": 699,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 3,
+        "rows": [
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": true,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "「仕様書をレビューする」を完了にする"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"仕様書をレビューする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:01.000Z\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

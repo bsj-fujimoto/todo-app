@@ -11,14 +11,14 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
   },
-  "started_at": "2026-10-11T09:02:57Z",
-  "finished_at": "2026-10-11T09:03:06.107Z",
+  "started_at": "2026-10-11T15:43:43Z",
+  "finished_at": "2026-10-11T15:43:58.890Z",
   "command": "docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy fs --scanners vuln,misconfig,secret --include-dev-deps --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --skip-dirs node_modules,.cache,security-results,.git --exit-code 0 --no-progress --format json --output security-results/trivy-fs/trivy-fs.json .",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -39,19 +39,19 @@
     "images": []
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/trivy-fs",
   "output_files": [
     {
       "path": "security-results/trivy-fs/trivy-fs.json",
-      "bytes": 94168,
-      "sha256": "0bcc9fac8ea932fd23c9f0f7b6e238b6aa131a29459dbab8e6b7c908db91fc62"
+      "bytes": 166502,
+      "sha256": "134f51e182d00e0e361d7ffabfaa1548112faf80a1fb43a67664bee85ac1cb05"
     },
     {
       "path": "security-results/trivy-fs/trivy-fs.sarif",
-      "bytes": 1566,
-      "sha256": "cdc0ab49b6e59facabebc3df99d041b565babb1aa416e85973207b26496e8c51"
+      "bytes": 1568,
+      "sha256": "7ab56ac83241b90191bbc827c54e3ce720006ec95123e267edb4e250c5ec37b5"
     }
   ],
   "finding_count_sarif": 0,

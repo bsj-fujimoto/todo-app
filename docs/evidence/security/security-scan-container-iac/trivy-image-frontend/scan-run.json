@@ -11,16 +11,16 @@
   "skipped_reason": null,
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-    "image_digest": "sha256:a5df48d7fc192fd25a67e7ecd179d275fcc66150a388501efe55c9a6a9c9a186",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+    "image_digest": "sha256:e698b13cf062a1ed2856c652a51f4c2bc0e53fb9a06aaf2b719392b85865d814",
     "image_digest_kind": "ローカルイメージ ID（config digest。レジストリ digest は release.yml で push 後に記録）",
     "images": [
       "todo-app-frontend:ci"
     ]
   },
-  "started_at": "2026-10-11T09:03:25Z",
-  "finished_at": "2026-10-11T09:03:26.991Z",
+  "started_at": "2026-10-11T15:44:22Z",
+  "finished_at": "2026-10-11T15:44:23.689Z",
   "command": "docker save todo-app-frontend:ci; docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy image --input <tar> --format json → convert sarif|cyclonedx",
   "exit_code": 0,
   "accepted_exit_codes": [
@@ -39,24 +39,24 @@
     ]
   },
   "authenticated": null,
-  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/release.yml@refs/tags/v1.0.0",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "output_location": "security-results/trivy-image-frontend",
   "output_files": [
     {
       "path": "security-results/trivy-image-frontend/sbom-image-frontend.cdx.json",
       "bytes": 38061,
-      "sha256": "f5f3aa8bc751a322a2a2244ef093fc301b84ed6c24e5d14ae68e7562c88d4b39"
+      "sha256": "ecbbd563188f82abd57df6e5630cebba57982be91917db680ed34f5e18f30951"
     },
     {
       "path": "security-results/trivy-image-frontend/trivy-image-frontend.json",
       "bytes": 74117,
-      "sha256": "6151502bd61161cafaac7f7564f82056076fd5524511e8c312a636574dce8827"
+      "sha256": "fb44fca5420e7c676206c90f169671ef743b26b329ea842b8fd4b84011003582"
     },
     {
       "path": "security-results/trivy-image-frontend/trivy-image-frontend.sarif",
-      "bytes": 4963,
-      "sha256": "8fd994296bf426fb36e41426c4c709ff09688e99846331dc41a8fbf8b53705a5"
+      "bytes": 4965,
+      "sha256": "d9971f6566a4b9df6f79ed0beff63d3601a5536bc16c6adfed82d2a31e96b92f"
     }
   ],
   "finding_count_sarif": 1,

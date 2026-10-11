@@ -1,0 +1,8 @@
+{
+  "release": "v1.0.0",
+  "tag": "v1.0.0",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "images": { "backend": "sha256:87addb2e3998f9c793e1c979f9b65d98d3cca98e1eea57be8c6ac28705f5a213", "frontend": "sha256:c82e88bae5e0aeb7d04df9e31808d1d490cdc6bc01b98efe11db7cd9b526ee9a" },
+  "run_id": "38152472087",
+  "recorded_at": "2026-10-11T15:53:40Z"
+}

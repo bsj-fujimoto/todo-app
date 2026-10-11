@@ -1,0 +1,1038 @@
+{
+  "schema_version": 1,
+  "repository": "bsj-fujimoto/todo-app",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "ref": "v1.0.0",
+  "run_id": "38152472087",
+  "run_attempt": "1",
+  "workflow": "Release",
+  "event": "push",
+  "job": "ci-result",
+  "started_at": "2026-10-11T15:45:50Z",
+  "finished_at": "2026-10-11T15:45:51.659Z",
+  "duration_sec": 2,
+  "layers": {
+    "compose": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "retried_success": 0,
+      "duration_sec": 101.185
+    },
+    "contract": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "retried_success": 0,
+      "duration_sec": 0.772
+    },
+    "e2e": {
+      "total": 43,
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "retried_success": 0,
+      "duration_sec": 51.135
+    },
+    "unit": {
+      "total": 143,
+      "passed": 143,
+      "failed": 0,
+      "skipped": 0,
+      "retried_success": 0,
+      "duration_sec": 0.563
+    },
+    "api": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "retried_success": 0,
+      "duration_sec": 13.164
+    }
+  },
+  "test_cases": {
+    "TC-076": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "compose"
+      ],
+      "flaky": false
+    },
+    "TC-043": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "compose"
+      ],
+      "flaky": false
+    },
+    "TC-044": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "compose"
+      ],
+      "flaky": false
+    },
+    "TC-077": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "compose"
+      ],
+      "flaky": false
+    },
+    "TC-037": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "contract",
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-075": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "contract",
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-067": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-068": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-069": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-002": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-003": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-004": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-005": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-006": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-007": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-016": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-017": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-018": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-019": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-020": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-063": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-066": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-001": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-041": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-070": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-040": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-074": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-045": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-046": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-047": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-048": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-049": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e"
+      ],
+      "flaky": false
+    },
+    "TC-055": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-056": {
+      "status": "passed",
+      "runs": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-057": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-058": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-061": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-008": {
+      "status": "passed",
+      "runs": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-013": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-014": {
+      "status": "passed",
+      "runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "e2e",
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-064": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-065": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-030": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-032": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-033": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-034": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-035": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-036": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-031": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-052": {
+      "status": "passed",
+      "runs": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-053": {
+      "status": "passed",
+      "runs": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-054": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-038": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-039": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-073": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-042": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-059": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-060": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-050": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-051": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-009": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-010": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-011": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-012": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-015": {
+      "status": "passed",
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "api"
+      ],
+      "flaky": false
+    },
+    "TC-021": {
+      "status": "passed",
+      "runs": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-022": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-023": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-024": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-025": {
+      "status": "passed",
+      "runs": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-026": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-027": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-028": {
+      "status": "passed",
+      "runs": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-029": {
+      "status": "passed",
+      "runs": 29,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    },
+    "TC-062": {
+      "status": "passed",
+      "runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "layers": [
+        "unit"
+      ],
+      "flaky": false
+    }
+  },
+  "coverage": {
+    "backend": {
+      "lines": 99.69,
+      "branches": 98.09,
+      "functions": 98.78
+    },
+    "frontend": {
+      "lines": 100,
+      "branches": 98.18,
+      "functions": 100
+    }
+  },
+  "jobs": {
+    "select": "success",
+    "lint": "success",
+    "unit-api": "success",
+    "contract": "success",
+    "e2e": "success",
+    "compose": "success",
+    "images": "success",
+    "docs-check": "success"
+  },
+  "gate": "pass",
+  "junit_files": [
+    "backend/test-results/all.xml",
+    "backend/test-results/contract.xml",
+    "e2e/test-results/junit.xml",
+    "e2e/test-results/junit.xml",
+    "e2e/test-results/junit.xml",
+    "e2e/test-results/junit.xml",
+    "e2e/test-results/junit.xml",
+    "frontend/test-results/junit.xml"
+  ],
+  "artifacts": [
+    {
+      "name": "e2e-results",
+      "path": "e2e/test-results",
+      "exists": true,
+      "files": 6,
+      "bytes": 10241
+    },
+    {
+      "name": "contract-report",
+      "path": "contract-report",
+      "exists": true,
+      "files": 6,
+      "bytes": 16189
+    },
+    {
+      "name": "e2e-results",
+      "path": "e2e/test-results",
+      "exists": true,
+      "files": 3,
+      "bytes": 3745
+    },
+    {
+      "name": "e2e-results",
+      "path": "e2e/test-results",
+      "exists": true,
+      "files": 35,
+      "bytes": 102446
+    },
+    {
+      "name": "e2e-results",
+      "path": "e2e/test-results",
+      "exists": true,
+      "files": 5,
+      "bytes": 9013
+    },
+    {
+      "name": "e2e-results",
+      "path": "e2e/test-results",
+      "exists": true,
+      "files": 5,
+      "bytes": 9008
+    },
+    {
+      "name": "backend-test-results",
+      "path": "backend/test-results",
+      "exists": true,
+      "files": 39,
+      "bytes": 185727
+    },
+    {
+      "name": "frontend-test-results",
+      "path": "frontend/test-results",
+      "exists": true,
+      "files": 30,
+      "bytes": 136725
+    }
+  ],
+  "parts": [
+    {
+      "job": "compose",
+      "layers": [
+        "compose"
+      ]
+    },
+    {
+      "job": "contract",
+      "layers": [
+        "contract"
+      ]
+    },
+    {
+      "job": "e2e",
+      "layers": [
+        "e2e"
+      ]
+    },
+    {
+      "job": "e2e",
+      "layers": [
+        "e2e"
+      ]
+    },
+    {
+      "job": "e2e",
+      "layers": [
+        "e2e"
+      ]
+    },
+    {
+      "job": "e2e",
+      "layers": [
+        "e2e"
+      ]
+    },
+    {
+      "job": "unit-api",
+      "layers": [
+        "unit",
+        "api"
+      ]
+    }
+  ]
+}

@@ -71,28 +71,28 @@
       ],
       "columnKind": "utf16CodeUnits",
       "properties": {
-        "imageID": "sha256:a5df48d7fc192fd25a67e7ecd179d275fcc66150a388501efe55c9a6a9c9a186",
+        "imageID": "sha256:e698b13cf062a1ed2856c652a51f4c2bc0e53fb9a06aaf2b719392b85865d814",
         "imageName": "security-results/trivy-image-frontend/frontend-image.tar",
         "repoDigests": null,
         "repoTags": [
           "todo-app-frontend:ci"
         ],
         "scan": "trivy-image-frontend",
-        "image_digest": "sha256:a5df48d7fc192fd25a67e7ecd179d275fcc66150a388501efe55c9a6a9c9a186",
+        "image_digest": "sha256:e698b13cf062a1ed2856c652a51f4c2bc0e53fb9a06aaf2b719392b85865d814",
         "config_ref": null
       },
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:03:25Z",
-          "endTimeUtc": "2026-10-11T09:03:26.991Z",
+          "startTimeUtc": "2026-10-11T15:44:22Z",
+          "endTimeUtc": "2026-10-11T15:44:23.689Z",
           "commandLine": "docker save todo-app-frontend:ci; docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy image --input <tar> --format json → convert sarif|cyclonedx"
         }
       ]

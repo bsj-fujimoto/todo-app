@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-043",
+  "entries": [
+    {
+      "title": "[TC-043] backend の再起動・スタック全体の再起動の後も、タスクが保持される",
+      "test_case_ids": [
+        "TC-043"
+      ],
+      "layer": "compose",
+      "component": "e2e",
+      "project": "compose",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:23.883Z",
+      "finished_at": "2026-10-11T15:44:43.468Z",
+      "duration_ms": 19639,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "compose",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 2,
+        "rows": [
+          {
+            "text": "資料を印刷する",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "買い物",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "backend 再起動後の health 200 まで(ms)",
+          "value": "515"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

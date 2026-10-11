@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-073",
+  "entries": [
+    {
+      "title": "[TC-073] 一覧 20 回・追加 10 回の 95 パーセンタイルが暫定しきい値以内で、件数と並びが正しい",
+      "test_case_ids": [
+        "TC-073"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.952Z",
+      "finished_at": "2026-10-11T15:43:50.842Z",
+      "duration_ms": 890,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(121511 バイト)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:01.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:02.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:03.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:04.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:05.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:06.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:07.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:08.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"性能確認\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"性能確認\",\"completed\":false,\"createdAt\":\"2026-10-02T00:00:09.000Z\"}"
+        }
+      ],
+      "api_calls_omitted": 1,
+      "notes": [
+        {
+          "label": "一覧 p95",
+          "value": "40.4ms（20 回、しきい値 1500ms）"
+        },
+        {
+          "label": "追加 p95",
+          "value": "27.0ms（10 回、しきい値 900ms）"
+        },
+        {
+          "label": "件数",
+          "value": "追加後の一覧 1010 件、先頭 性能確認、DB 1010 行"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

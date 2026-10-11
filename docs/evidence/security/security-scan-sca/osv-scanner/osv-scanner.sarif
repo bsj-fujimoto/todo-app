@@ -8,8 +8,8 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T09:02:51Z",
-          "endTimeUtc": "2026-10-11T09:03:05.665Z",
+          "startTimeUtc": "2026-10-11T15:43:38Z",
+          "endTimeUtc": "2026-10-11T15:43:49.457Z",
           "commandLine": "docker run ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa scan source -L package-lock.json --format sarif|json"
         }
       ],
@@ -48,8 +48,8 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "webRequests": [],

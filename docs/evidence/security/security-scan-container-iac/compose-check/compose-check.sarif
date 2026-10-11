@@ -57,16 +57,16 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-10-11T09:03:10.102Z",
-          "startTimeUtc": "2026-10-11T09:03:07Z",
+          "endTimeUtc": "2026-10-11T15:44:04.843Z",
+          "startTimeUtc": "2026-10-11T15:44:00Z",
           "commandLine": "docker compose -f docker-compose.yml config --format json | node scripts/security/check-compose.mjs"
         }
       ],
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
-          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-          "branch": "main"
+          "revisionId": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+          "branch": "v1.0.0"
         }
       ],
       "properties": {

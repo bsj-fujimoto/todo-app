@@ -1,0 +1,747 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-052",
+  "entries": [
+    {
+      "title": "[TC-052] 一覧は 500 DATA_CORRUPT（空配列の 200 を返さない）で、DB ファイルは書き換えられない",
+      "test_case_ids": [
+        "TC-052"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:48.459Z",
+      "finished_at": "2026-10-11T15:43:48.727Z",
+      "duration_ms": 268,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] title が空: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:48.945Z",
+      "finished_at": "2026-10-11T15:43:49.011Z",
+      "duration_ms": 66,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] title が空白だけ: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.013Z",
+      "finished_at": "2026-10-11T15:43:49.047Z",
+      "duration_ms": 34,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] title が 101 コードポイント: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.049Z",
+      "finished_at": "2026-10-11T15:43:49.074Z",
+      "duration_ms": 25,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] title に改行を含む: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.076Z",
+      "finished_at": "2026-10-11T15:43:49.133Z",
+      "duration_ms": 57,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] title の前後に空白が残っている: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.137Z",
+      "finished_at": "2026-10-11T15:43:49.183Z",
+      "duration_ms": 46,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] created_at が ISO 8601 でない: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.186Z",
+      "finished_at": "2026-10-11T15:43:49.207Z",
+      "duration_ms": 21,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] created_at がミリ秒・Z のない日付だけ: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.208Z",
+      "finished_at": "2026-10-11T15:43:49.233Z",
+      "duration_ms": 25,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] created_at が存在しない日付: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.234Z",
+      "finished_at": "2026-10-11T15:43:49.257Z",
+      "duration_ms": 23,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] completed が 0/1 でない（数値 2）: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.258Z",
+      "finished_at": "2026-10-11T15:43:49.279Z",
+      "duration_ms": 21,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] completed が 0/1 でない（文字列）: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.281Z",
+      "finished_at": "2026-10-11T15:43:49.301Z",
+      "duration_ms": 20,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-052] [TC-053] id が UUID でない: 読み書きすべてが 500 DATA_CORRUPT で、DB は変わらない",
+      "test_case_ids": [
+        "TC-052",
+        "TC-053"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:49.303Z",
+      "finished_at": "2026-10-11T15:43:49.337Z",
+      "duration_ms": 34,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

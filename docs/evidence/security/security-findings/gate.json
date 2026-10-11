@@ -1,10 +1,26 @@
 {
-  "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-  "generated_at": "2026-10-11T09:04:32.975Z",
+  "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+  "generated_at": "2026-10-11T15:45:23.872Z",
   "blocking": [],
-  "medium_needs_issue_or_acceptance": [],
+  "medium_needs_issue_or_acceptance": [
+    {
+      "fingerprint": "53576ce6ece12daa",
+      "severity": "medium",
+      "tool": "gitleaks",
+      "rule_id": "sourcegraph-access-token",
+      "location": "docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif:1351",
+      "component": null,
+      "status": "untriaged",
+      "title": "Sourcegraph is a code search and navigation engine."
+    }
+  ],
   "acceptance_problems": [],
   "result": "pass",
   "ledger_problems": [],
+  "unregistered_finding_ids": [
+    "f5040de9defbe848",
+    "0072806ba1207386",
+    "53576ce6ece12daa"
+  ],
   "missing_scans": []
 }

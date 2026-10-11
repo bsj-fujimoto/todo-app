@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-050",
+  "entries": [
+    {
+      "title": "[TC-050] 追加は 503 STORAGE_FAILURE で DB に一切書かれず、権限を戻すと同じ操作が 1 回だけ成功する",
+      "test_case_ids": [
+        "TC-050"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.425Z",
+      "finished_at": "2026-10-11T15:43:53.708Z",
+      "duration_ms": 283,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 503,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"error\":{\"code\":\"STORAGE_FAILURE\",\"message\":\"保存できませんでした。もう一度お試しください\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"},{\"id\":\"{uuid}\",\"tit…(379文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

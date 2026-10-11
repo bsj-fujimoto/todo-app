@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-063",
+  "entries": [
+    {
+      "title": "[TC-063] 送信中は追加ボタンを無効化し、連打しても POST は 1 回だけ",
+      "test_case_ids": [
+        "TC-063"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.133Z",
+      "finished_at": "2026-10-11T15:43:55.145Z",
+      "duration_ms": 12,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 1 行 [連打確認(未)]、入力欄=なし、入力エラー=なし、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → create(\"連打確認\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-063] 通信中の行への重複操作は無視する",
+      "test_case_ids": [
+        "TC-063"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.275Z",
+      "finished_at": "2026-10-11T15:43:55.291Z",
+      "duration_ms": 16,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 2 行 [タスク2(済), タスク1(未)]、入力欄=なし、入力エラー=なし、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → delete(\"{uuid}\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-063] 送信中は submitting。成功・失敗のどちらでも解除される",
+      "test_case_ids": [
+        "TC-063"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.547Z",
+      "finished_at": "2026-10-11T15:43:55.548Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "状態",
+          "value": "phase=ready 件数=0 上部エラー=なし 入力エラー=なし 送信中=true 通信中の行=0"
+        },
+        {
+          "label": "状態",
+          "value": "phase=ready 件数=0 上部エラー=\"STORAGE_FAILURE\" 入力エラー=なし 送信中=false 通信中の行=0"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

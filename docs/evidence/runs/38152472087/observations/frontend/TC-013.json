@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-013",
+  "entries": [
+    {
+      "title": "[TC-013] 削除は成功後に行が消える。確認は挟まない",
+      "test_case_ids": [
+        "TC-013"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.184Z",
+      "finished_at": "2026-10-11T15:43:55.191Z",
+      "duration_ms": 7,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 2 行 [タスク3(未), タスク1(未)]、入力欄=なし、入力エラー=なし、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → delete(\"{uuid}\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-013] 削除は対象だけ消す",
+      "test_case_ids": [
+        "TC-013"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.557Z",
+      "finished_at": "2026-10-11T15:43:55.557Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "状態",
+          "value": "phase=ready 件数=1 上部エラー=なし 入力エラー=なし 送信中=false 通信中の行=0"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-056",
+  "entries": [
+    {
+      "title": "[TC-056] 初回起動（空の DB）は見出し・入力欄・追加ボタンと「タスクはありません」を表示する",
+      "test_case_ids": [
+        "TC-056"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "firefox",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:09.953Z",
+      "finished_at": "2026-10-11T15:44:10.853Z",
+      "duration_ms": 887,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "firefox",
+        "browser": "firefox 157.0",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "タスクはありません",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

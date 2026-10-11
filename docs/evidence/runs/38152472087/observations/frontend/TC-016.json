@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-016",
+  "entries": [
+    {
+      "title": "[TC-016] 空欄はクライアント側で検証し、POST を送らず入力欄の直下にエラーを出す",
+      "test_case_ids": [
+        "TC-016"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.059Z",
+      "finished_at": "2026-10-11T15:43:55.069Z",
+      "duration_ms": 10,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 3 行 [タスク3(未), タスク2(済), タスク1(未)]、入力欄=\"   \"、入力エラー=\"タスク名を入力してください\"、保存エラー=なし、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list()"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

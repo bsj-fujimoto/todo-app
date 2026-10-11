@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-054",
+  "entries": [
+    {
+      "title": "[TC-054] 起動・停止を繰り返しても破損ファイルを書き換えず、health は 503/degraded、正常な DB に替えれば 200",
+      "test_case_ids": [
+        "TC-054"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:48.824Z",
+      "finished_at": "2026-10-11T15:43:48.943Z",
+      "duration_ms": 119,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 503,
+          "response": "{\"status\":\"degraded\",\"version\":\"1.0.0-test\",\"commit\":\"unknown\",\"db\":\"error\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 503,
+          "response": "{\"status\":\"degraded\",\"version\":\"1.0.0-test\",\"commit\":\"unknown\",\"db\":\"error\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 503,
+          "response": "{\"status\":\"degraded\",\"version\":\"1.0.0-test\",\"commit\":\"unknown\",\"db\":\"error\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 500,
+          "response": "{\"error\":{\"code\":\"DATA_CORRUPT\",\"message\":\"保存データを読み込めませんでした\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "status": 200,
+          "response": "{\"status\":\"ok\",\"version\":\"1.0.0-test\",\"commit\":\"unknown\",\"db\":\"ok\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

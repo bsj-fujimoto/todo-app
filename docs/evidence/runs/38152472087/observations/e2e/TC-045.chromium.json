@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-045",
+  "entries": [
+    {
+      "title": "[TC-045] 追加の保存失敗は上部に文言を出し、入力値を保持し、一覧は変わらない",
+      "test_case_ids": [
+        "TC-045"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:44:18.537Z",
+      "finished_at": "2026-10-11T15:44:19.074Z",
+      "duration_ms": 531,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 3,
+        "rows": [
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "資料を印刷する",
+        "input_disabled": false,
+        "save_error": "保存できませんでした。もう一度お試しください",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

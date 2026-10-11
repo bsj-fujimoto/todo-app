@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-069",
+  "entries": [
+    {
+      "title": "[TC-069] チェックボックスと削除ボタンのアクセシブルネームにタイトルが含まれる",
+      "test_case_ids": [
+        "TC-069"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.062Z",
+      "finished_at": "2026-10-11T15:43:55.063Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "アクセシブルネーム",
+          "value": "checkbox=「牛乳を買う」を完了にする、button=「牛乳を買う」を削除"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-11T09:04:32.975Z",
-  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "generated_at": "2026-10-11T15:45:23.872Z",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "target": {
     "repository": "https://github.com/bsj-fujimoto/todo-app",
-    "branch": "main",
-    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "branch": "v1.0.0",
+    "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
     "image_digest": null,
     "image_digest_kind": null,
     "images": []
@@ -21,11 +21,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:53Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:35Z",
       "finding_count_sarif": 0,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "codeql",
@@ -37,11 +37,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:49Z",
-      "finding_count_sarif": 0,
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:37Z",
+      "finding_count_sarif": 4,
       "config_ref": "security/codeql-config.yml",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "compose-check",
@@ -53,11 +53,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:03:07Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:44:00Z",
       "finding_count_sarif": 1,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "gitleaks",
@@ -69,11 +69,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:50Z",
-      "finding_count_sarif": 0,
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:35Z",
+      "finding_count_sarif": 1,
       "config_ref": "security/gitleaks.toml",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "hadolint",
@@ -85,11 +85,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:03:06Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:58Z",
       "finding_count_sarif": 0,
       "config_ref": "security/hadolint.yaml",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "license",
@@ -101,11 +101,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:50Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:38Z",
       "finding_count_sarif": 0,
       "config_ref": "security/license-policy.yaml",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "npm-audit-all",
@@ -117,11 +117,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:51Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:37Z",
       "finding_count_sarif": 0,
       "config_ref": "package-lock.json",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "npm-audit-prod",
@@ -133,11 +133,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:51Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:37Z",
       "finding_count_sarif": 0,
       "config_ref": "package-lock.json",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "osv-scanner",
@@ -149,11 +149,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:51Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:38Z",
       "finding_count_sarif": 0,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "sbom",
@@ -165,11 +165,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:03:05Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:49Z",
       "finding_count_sarif": 0,
       "config_ref": "package-lock.json",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "trivy-fs",
@@ -181,11 +181,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:57Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:43Z",
       "finding_count_sarif": 0,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "trivy-image-backend",
@@ -197,11 +197,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:03:23Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:44:19Z",
       "finding_count_sarif": 1,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "trivy-image-frontend",
@@ -213,11 +213,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:03:25Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:44:22Z",
       "finding_count_sarif": 1,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "workflow-governance",
@@ -229,11 +229,11 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:58Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:39Z",
       "finding_count_sarif": 0,
       "config_ref": null,
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     },
     {
       "scan": "zap",
@@ -245,36 +245,42 @@
       },
       "status": "ok",
       "skipped_reason": null,
-      "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
-      "started_at": "2026-10-11T09:02:48Z",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "started_at": "2026-10-11T15:43:34Z",
       "finding_count_sarif": 7,
       "config_ref": "security/zap-rules.tsv",
-      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868"
+      "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087"
     }
   ],
   "missing_scans": [],
   "summary": {
     "by_status": {
+      "accepted": 4,
       "na": 6,
-      "accepted": 2,
+      "untriaged": 1,
       "tp": 1
     },
     "by_severity": {
+      "medium": 5,
       "low": 2,
-      "medium": 2,
       "info": 5
     },
     "by_category": {
+      "sast": 2,
       "config": 1,
+      "secret": 1,
       "container": 2,
       "dast": 6
     }
   },
   "trend": {
-    "previous_run_ref": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126684739",
+    "previous_run_ref": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152163102",
     "new": [],
     "persistent": [
+      "f5040de9defbe848",
+      "0072806ba1207386",
       "1079ce963fc52409",
+      "53576ce6ece12daa",
       "ebb2535e91cd1670",
       "a84e2b0a7f42530c",
       "c97a28418bf37c99",
@@ -288,15 +294,108 @@
   },
   "gate": {
     "blocking": [],
-    "medium_needs_issue_or_acceptance": [],
+    "medium_needs_issue_or_acceptance": [
+      {
+        "fingerprint": "53576ce6ece12daa",
+        "severity": "medium",
+        "tool": "gitleaks",
+        "rule_id": "sourcegraph-access-token",
+        "location": "docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif:1351",
+        "component": null,
+        "status": "untriaged",
+        "title": "Sourcegraph is a code search and navigation engine."
+      }
+    ],
     "acceptance_problems": [],
     "result": "pass",
-    "ledger_problems": []
+    "ledger_problems": [],
+    "unregistered_finding_ids": [
+      "f5040de9defbe848",
+      "0072806ba1207386",
+      "53576ce6ece12daa"
+    ]
   },
   "stale_ledger_entries": [],
   "findings": [
     {
-      "finding_id": "F-001",
+      "fingerprint": "f5040de9defbe848",
+      "tool": "codeql",
+      "scan": "codeql",
+      "category": "sast",
+      "rule_id": "js/http-to-file-access",
+      "title": "Network data written to file",
+      "severity": "medium",
+      "location": "perf/screen/measure.mjs:167",
+      "component": null,
+      "message": "Write to file system depends on [Untrusted data](1).",
+      "advisories": [],
+      "help_uri": null,
+      "fixed_version": null,
+      "installed_version": null,
+      "scan_dir": "security-results/codeql",
+      "source_file": "javascript.sarif",
+      "status": "accepted",
+      "reason": "画面計測（Docker イメージの中で動く）が、計測値（ブラウザの Navigation Timing・Lighthouse・一覧 API の件数）を screen.json に書く。 計測値の保存が目的で、書込み先は固定の /out。書いた内容を実行・解釈する経路は無い。",
+      "reachability": "なし（保存するだけ）",
+      "exposure": "計測用のコンテナ（非 root、compose の内部ネットワークのみ）と CI の artifact。外部に公開しない",
+      "asset_impact": "低（計測値の保存）",
+      "compensating_controls": "コンテナは非 root（uid 1001）・一度きりの実行。保存する値の大半は数値",
+      "recommendation": null,
+      "alternative": null,
+      "owner": "SRE 担当",
+      "due": null,
+      "reverify_condition": "保存する値を数値と検証済みの文字列に限定する整理を入れたとき / 期限の 7 日前",
+      "decided_by": null,
+      "decided_at": null,
+      "issue": "#33",
+      "ledger": "accepted-risks.yaml",
+      "accepted_by": "AR-003",
+      "expires_at": "2027-01-09",
+      "trend": "persistent",
+      "finding_id": "FND-NEW-f5040d"
+    },
+    {
+      "fingerprint": "0072806ba1207386",
+      "tool": "codeql",
+      "scan": "codeql",
+      "category": "sast",
+      "rule_id": "js/http-to-file-access",
+      "title": "Network data written to file",
+      "severity": "medium",
+      "location": "scripts/monitoring/run-monitors.mjs:68",
+      "component": null,
+      "message": "Write to file system depends on [Untrusted data](1).",
+      "advisories": [],
+      "help_uri": null,
+      "fixed_version": null,
+      "installed_version": null,
+      "scan_dir": "security-results/codeql",
+      "source_file": "javascript.sarif",
+      "also_in": [
+        "javascript.sarif",
+        "javascript.sarif"
+      ],
+      "status": "accepted",
+      "reason": "外形監視の結果ファイル（results.json）に、監視の失敗詳細として測定対象（自分たちの backend）の応答に由来する文字列を書く。これは証跡が目的で、 除去すると失敗の原因が残らない。書込み先は固定のパス（--out）で、書いた内容を実行・解釈する経路は無い（保存するだけ。読むのは JSON.parse のみ）。",
+      "reachability": "なし（書いたファイルを実行・解釈しない）",
+      "exposure": "CI の作業ディレクトリと artifact（90 日）。外部に公開しない",
+      "asset_impact": "低（測定対象の応答の文字列が結果ファイルに入るだけ）",
+      "compensating_controls": "Markdown の要約は `|` と `\\` をエスケープ。応答の検証は契約（スキーマ）で行い、失敗詳細に引用する値は 80 文字で切り詰める",
+      "recommendation": null,
+      "alternative": null,
+      "owner": "SRE 担当",
+      "due": null,
+      "reverify_condition": "結果ファイルへ書く文字列の長さ上限・制御文字の除去を共通化したとき / 期限の 7 日前",
+      "decided_by": null,
+      "decided_at": null,
+      "issue": "#33",
+      "ledger": "accepted-risks.yaml",
+      "accepted_by": "AR-002",
+      "expires_at": "2027-01-09",
+      "trend": "persistent",
+      "finding_id": "FND-NEW-007280"
+    },
+    {
       "fingerprint": "1079ce963fc52409",
       "tool": "compose-check",
       "scan": "compose-check",
@@ -328,10 +427,44 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-001"
     },
     {
-      "finding_id": "F-002",
+      "fingerprint": "53576ce6ece12daa",
+      "tool": "gitleaks",
+      "scan": "gitleaks",
+      "category": "secret",
+      "rule_id": "sourcegraph-access-token",
+      "title": "Sourcegraph is a code search and navigation engine.",
+      "severity": "medium",
+      "location": "docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif:1351",
+      "component": null,
+      "message": "sourcegraph-access-token has detected secret for file docs/evidence/security/security-scan-secrets/gitleaks/gitleaks.sarif at commit b8000978e1f0657894a4fda1090d62461fa09a0f.",
+      "advisories": [],
+      "help_uri": null,
+      "fixed_version": null,
+      "installed_version": null,
+      "scan_dir": "security-results/gitleaks",
+      "source_file": "gitleaks.sarif",
+      "status": "untriaged",
+      "reason": null,
+      "reachability": null,
+      "exposure": null,
+      "asset_impact": null,
+      "compensating_controls": null,
+      "recommendation": null,
+      "alternative": null,
+      "owner": null,
+      "due": null,
+      "reverify_condition": null,
+      "decided_by": null,
+      "decided_at": null,
+      "issue": null,
+      "trend": "persistent",
+      "finding_id": "FND-NEW-53576c"
+    },
+    {
       "fingerprint": "ebb2535e91cd1670",
       "tool": "trivy",
       "scan": "trivy-image-backend",
@@ -367,10 +500,10 @@
       "ledger": "accepted-risks.yaml",
       "accepted_by": "AR-001",
       "expires_at": "2027-01-09",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-002"
     },
     {
-      "finding_id": "F-003",
       "fingerprint": "a84e2b0a7f42530c",
       "tool": "trivy",
       "scan": "trivy-image-frontend",
@@ -407,10 +540,10 @@
       "ledger": "accepted-risks.yaml",
       "accepted_by": "AR-001",
       "expires_at": "2027-01-09",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-003"
     },
     {
-      "finding_id": "F-004",
       "fingerprint": "c97a28418bf37c99",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -442,10 +575,10 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-004"
     },
     {
-      "finding_id": "F-005",
       "fingerprint": "527b10e55a1dcc26",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -477,10 +610,10 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-005"
     },
     {
-      "finding_id": "F-006",
       "fingerprint": "0c4e6dd349a70dc6",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -512,10 +645,10 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-006"
     },
     {
-      "finding_id": "F-007",
       "fingerprint": "ed70596461d625b2",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -550,10 +683,10 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-007"
     },
     {
-      "finding_id": "F-008",
       "fingerprint": "00a79debbf4a1462",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -563,7 +696,7 @@
       "severity": "info",
       "location": "http://localhost:8080",
       "component": null,
-      "message": "Modern Web Application（Informational (Medium)）。影響する URL 1 件: GET http://localhost:8080/?title=ZAP",
+      "message": "Modern Web Application（Informational (Medium)）。影響する URL 2 件: GET http://localhost:8080, GET http://localhost:8080/?title=ZAP",
       "advisories": [],
       "help_uri": "https://www.zaproxy.org/docs/alerts/10109/",
       "fixed_version": null,
@@ -585,10 +718,10 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-008"
     },
     {
-      "finding_id": "F-009",
       "fingerprint": "8a16bb6302e2e0c1",
       "tool": "owasp-zap",
       "scan": "zap",
@@ -620,7 +753,8 @@
       "decided_at": "2026-10-11",
       "issue": null,
       "ledger": "triage.yaml",
-      "trend": "persistent"
+      "trend": "persistent",
+      "finding_id": "FND-009"
     }
   ],
   "fixed": []

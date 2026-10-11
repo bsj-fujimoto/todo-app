@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-011",
+  "entries": [
+    {
+      "title": "[TC-011] 形式が有効で未登録・削除済みの id は 404 TASK_NOT_FOUND（404 はサーバー障害ではない）",
+      "test_case_ids": [
+        "TC-011"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.804Z",
+      "finished_at": "2026-10-11T15:43:53.845Z",
+      "duration_ms": 41,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"あとで消す\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"あとで消す\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 404,
+          "response": "{\"error\":{\"code\":\"TASK_NOT_FOUND\",\"message\":\"タスクが見つかりません\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

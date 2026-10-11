@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-009",
+  "entries": [
+    {
+      "title": "[TC-009] 完了切替: 同値の再送もエラーにならず、title・createdAt は変わらず、並びも変わらない",
+      "test_case_ids": [
+        "TC-009"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:53.449Z",
+      "finished_at": "2026-10-11T15:43:53.739Z",
+      "duration_ms": 290,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":false}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":false}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

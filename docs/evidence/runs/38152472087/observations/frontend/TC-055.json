@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-055",
+  "entries": [
+    {
+      "title": "[TC-055] DATA_CORRUPT は文言を出し、入力・追加を無効化し、「タスクはありません」を出さない。POST も送らない",
+      "test_case_ids": [
+        "TC-055"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.026Z",
+      "finished_at": "2026-10-11T15:43:55.039Z",
+      "duration_ms": 13,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 0 行 []、入力欄=\"資料を印刷する\"、入力エラー=なし、保存エラー=\"保存データを読み込めませんでした\"、一覧メッセージ=なし、追加ボタン=無効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list()"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-055] 取得で DATA_CORRUPT は corrupt。操作を止め、一覧は持たない",
+      "test_case_ids": [
+        "TC-055"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T15:43:55.544Z",
+      "finished_at": "2026-10-11T15:43:55.545Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+        "run_id": "38152472087",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "Release",
+        "event": "push"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "状態",
+          "value": "phase=corrupt 件数=0 上部エラー=\"DATA_CORRUPT\" 入力エラー=なし 送信中=false 通信中の行=0"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}
