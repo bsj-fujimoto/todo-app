@@ -1,0 +1,241 @@
+{
+ "scenario": "load",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "slo_judgements": [
+  {
+   "metric": "api_list_p95_ms",
+   "operator": "<=",
+   "target": 500,
+   "unit": "ms",
+   "values": [
+    10.909,
+    10.564,
+    10.469
+   ],
+   "mean": 10.647333,
+   "sd": 0.231535,
+   "ci95": [
+    10.072123,
+    11.222544
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_list_p99_ms",
+   "operator": "<=",
+   "target": 1000,
+   "unit": "ms",
+   "values": [
+    11.869,
+    11.531,
+    11.729
+   ],
+   "mean": 11.709667,
+   "sd": 0.169827,
+   "ci95": [
+    11.287758,
+    12.131575
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_create_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    11.656,
+    11.952,
+    11.83
+   ],
+   "mean": 11.812667,
+   "sd": 0.148759,
+   "ci95": [
+    11.443098,
+    12.182235
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_update_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    11.878,
+    12.357,
+    11.992
+   ],
+   "mean": 12.075667,
+   "sd": 0.250221,
+   "ci95": [
+    11.454034,
+    12.697299
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_delete_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    10.7,
+    11.158,
+    10.799
+   ],
+   "mean": 10.885667,
+   "sd": 0.240986,
+   "ci95": [
+    10.286976,
+    11.484358
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "error_rate",
+   "operator": "<",
+   "target": 0.01,
+   "unit": "ratio",
+   "values": [
+    0,
+    0,
+    0
+   ],
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "throughput_rps",
+   "operator": ">=",
+   "target": 0.95,
+   "unit": "ratio_of_target_rate",
+   "values": [
+    1.0002,
+    1.0002,
+    1
+   ],
+   "mean": 1.000133,
+   "sd": 0.000115,
+   "ci95": [
+    0.999846,
+    1.00042
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "health_p95_ms",
+   "operator": "<=",
+   "target": 200,
+   "unit": "ms",
+   "values": [
+    14.437,
+    14.042,
+    13.711
+   ],
+   "mean": 14.063333,
+   "sd": 0.36347,
+   "ci95": [
+    13.160351,
+    14.966315
+   ],
+   "pass": true,
+   "warnings": []
+  }
+ ],
+ "not_judged_here": [
+  "screen_ready_ms",
+  "availability_synthetic_ratio"
+ ],
+ "variance_stats": {
+  "api_list_p95_ms": {
+   "n": 3,
+   "mean": 10.647333,
+   "sd": 0.231535,
+   "ci95": [
+    10.072123,
+    11.222544
+   ]
+  },
+  "api_list_p99_ms": {
+   "n": 3,
+   "mean": 11.709667,
+   "sd": 0.169827,
+   "ci95": [
+    11.287758,
+    12.131575
+   ]
+  },
+  "api_create_p95_ms": {
+   "n": 3,
+   "mean": 11.812667,
+   "sd": 0.148759,
+   "ci95": [
+    11.443098,
+    12.182235
+   ]
+  },
+  "api_update_p95_ms": {
+   "n": 3,
+   "mean": 12.075667,
+   "sd": 0.250221,
+   "ci95": [
+    11.454034,
+    12.697299
+   ]
+  },
+  "api_delete_p95_ms": {
+   "n": 3,
+   "mean": 10.885667,
+   "sd": 0.240986,
+   "ci95": [
+    10.286976,
+    11.484358
+   ]
+  },
+  "error_rate": {
+   "n": 3,
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "throughput_rps": {
+   "n": 3,
+   "mean": 1.000133,
+   "sd": 0.000115,
+   "ci95": [
+    0.999846,
+    1.00042
+   ]
+  },
+  "health_p95_ms": {
+   "n": 3,
+   "mean": 14.063333,
+   "sd": 0.36347,
+   "ci95": [
+    13.160351,
+    14.966315
+   ]
+  }
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats_text": "api_list_p95_ms: n=3 mean=10.647333 sd=0.231535 ci95=[10.072123, 11.222544]; api_list_p99_ms: n=3 mean=11.709667 sd=0.169827 ci95=[11.287758, 12.131575]; api_create_p95_ms: n=3 mean=11.812667 sd=0.148759 ci95=[11.443098, 12.182235]; api_update_p95_ms: n=3 mean=12.075667 sd=0.250221 ci95=[11.454034, 12.697299]; api_delete_p95_ms: n=3 mean=10.885667 sd=0.240986 ci95=[10.286976, 11.484358]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; throughput_rps: n=3 mean=1.000133 sd=0.000115 ci95=[0.999846, 1.00042]; health_p95_ms: n=3 mean=14.063333 sd=0.36347 ci95=[13.160351, 14.966315]"
+}
