@@ -1,4 +1,4 @@
-// ライセンス方針（security/license-policy.yaml）に対する評価。入力は license-checker-rseidelsohn の --json 出力。
+// ライセンス方針（security/license-policy.yaml）に対する評価。入力は license-inventory.mjs が lock から作る { "名前@版": { licenses } }。
 // 方針: 許可リストに無いものはすべて違反（deny by default）。禁止パターンに当たるものは「禁止」、それ以外は「未許可・不明」と区別する。
 import { globToRegExp } from "../../ci/lib/repo-fs.mjs";
 

@@ -141,7 +141,7 @@ jobs:
         run: bash scripts/security/scan.sh npm-audit
       - name: osv-scanner（直接・推移依存）
         run: bash scripts/security/scan.sh osv
-      - name: CycloneDX SBOM（実行時依存 / 全体）
+      - name: CycloneDX SBOM（npm sbom。実行時依存 / 全体）
         run: bash scripts/security/scan.sh sbom
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
@@ -270,8 +270,8 @@ jobs:
           fail-on-scopes: runtime, development
           # security/license-policy.yaml の allow と同じ（check-policy が一致を検査する）
           allow-licenses: MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, Python-2.0, CC0-1.0, BlueOak-1.0.0, Unlicense
-          # license-policy.yaml の exceptions と同じ（開発依存の推移依存。期限は license-policy.yaml 側で管理）
-          allow-dependencies-licenses: pkg:npm/spdx-exceptions, pkg:npm/spdx-ranges, pkg:npm/%40axe-core/playwright, pkg:npm/axe-core
+          # license-policy.yaml の exceptions と同じ（E2E の開発依存。期限は license-policy.yaml 側で管理。check-policy が一致を検査する）
+          allow-dependencies-licenses: pkg:npm/%40axe-core/playwright, pkg:npm/axe-core
           retry-on-snapshot-warnings: true
 
   # ---- OpenSSF Scorecard（週次のみ。情報提供で、ゲートには含めない）------------------------------

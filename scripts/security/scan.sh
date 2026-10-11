@@ -84,12 +84,11 @@ scan_osv() {
 scan_sbom() {
   local out="$OUT_BASE/sbom" started code
   mkdir -p "$out"; started="$(now)"
-  npx --no-install cyclonedx-npm --package-lock-only --omit dev --output-format JSON --spec-version 1.6 --output-file "$out/sbom-runtime.cdx.json"; code=$?
-  if [ "$code" -eq 0 ]; then
-    npx --no-install cyclonedx-npm --package-lock-only --output-format JSON --spec-version 1.6 --output-file "$out/sbom.cdx.json"; code=$?
-  fi
-  record sbom sca cyclonedx-npm "$(npx --no-install cyclonedx-npm --version)" "" package-lock.json "$code" 0 "$started" \
-    "cyclonedx-npm --package-lock-only [--omit dev] --output-format JSON --spec-version 1.6" --coverage-path "package-lock.json（直接・推移依存の全体 / 実行時依存のみの 2 本）"
+  # npm 組み込みの sbom（外部パッケージを増やさない）。CycloneDX の JSON。実行時依存のみ / 開発依存を含む全体の 2 本
+  npm sbom --sbom-format cyclonedx --package-lock-only --omit dev > "$out/sbom-runtime.cdx.json"; code=$?
+  if [ "$code" -eq 0 ]; then npm sbom --sbom-format cyclonedx --package-lock-only > "$out/sbom.cdx.json"; code=$?; fi
+  record sbom sca npm-sbom "$(npm --version)" "" package-lock.json "$code" 0 "$started" \
+    "npm sbom --sbom-format cyclonedx --package-lock-only [--omit dev]" --coverage-path "package-lock.json（直接・推移依存の全体 / 実行時依存のみの 2 本）"
 }
 
 scan_trivy_fs() {
@@ -153,11 +152,10 @@ scan_compose_check() {
 scan_license() {
   local out="$OUT_BASE/license" started code
   mkdir -p "$out"; started="$(now)"
-  npx --no-install license-checker-rseidelsohn --json --excludePrivatePackages --out "$out/license-checker-all.json"; code=$?
-  if [ "$code" -eq 0 ]; then node scripts/security/license-check.mjs --input "$out/license-checker-all.json" --out "$out"; code=$?; fi
-  record license license license-checker-rseidelsohn "$(npx --no-install license-checker-rseidelsohn --version 2>/dev/null | head -n 1)" "" security/license-policy.yaml "$code" 0,1 "$started" \
-    "license-checker-rseidelsohn --json --excludePrivatePackages && node scripts/security/license-check.mjs" --rules security/license-policy.yaml \
-    --coverage-path "node_modules（開発依存を含む全体）" --threshold "許可リスト外は違反（deny by default）"
+  node scripts/security/license-check.mjs --out "$out"; code=$?
+  record license license license-check.mjs 1.0.0 "" security/license-policy.yaml "$code" 0,1 "$started" \
+    "node scripts/security/license-check.mjs（package-lock.json と node_modules/*/package.json の license を、自前の SPDX 式評価で方針と突き合わせる）" --rules security/license-policy.yaml \
+    --coverage-path "package-lock.json（開発依存を含む全体）" --threshold "許可リスト外は違反（deny by default）"
   return "$code"
 }
 
