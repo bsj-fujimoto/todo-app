@@ -98,11 +98,8 @@ jobs:
           MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
           NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
         run: bash scripts/ci/run-node-tests.sh backend "$MODE" "$NAME_PATTERN"
-      - name: frontend（unit。JUnit は frontend/test-results）
-        env:
-          MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
-          NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
-        run: bash scripts/ci/run-node-tests.sh frontend "$MODE" "$NAME_PATTERN"
+      - name: frontend（unit。JUnit は frontend/test-results。小さく速いので選択せず常に全件）
+        run: bash scripts/ci/run-node-tests.sh frontend full
       - name: 結果を ci-summary にまとめる
         if: always()
         run: |
@@ -322,7 +319,6 @@ jobs:
           context: .
           file: frontend/Dockerfile
           push: false
-          build-args: COMMIT_SHA=${{ env.TARGET_SHA }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
       - name: ビルド結果（イメージ ID）を記録する

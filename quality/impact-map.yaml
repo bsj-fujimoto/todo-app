@@ -1,11 +1,12 @@
 # 変更影響マップ: 変更ファイル（パスの glob）→ 影響する機能 → 実行する TC-ID。
 # 使われ方:
-#   - scripts/regression/select.mjs が PR の変更ファイルから実行するケースを選ぶ（PR 層）。
-#   - どのエントリにも当たらないパスが 1 つでもあれば、選択せず全件実行にフォールバックする。
+#   - scripts/regression/select.mjs が PR の変更ファイルから実行するケースを選ぶ（PR 層）。複数のエントリに当たれば和集合。
+#   - どのエントリにも当たらないパスが 1 つでもあれば、選択せず全件実行にフォールバックする。`full: true` のエントリに当たっても全件。
 #   - scripts/regression/impact-check.mjs が「追跡ファイルのすべてがどれかに当たる」「全自動ケースがどれかから選ばれる」
 #     ことを CI で検査する（マップの陳腐化を防ぐ）。
-# 保守ルール: ファイルを足す・機能を足す PR で、この表も更新する。迷ったら広く書く（選びすぎは安全、外しすぎは漏れ）。
+# 保守ルール: ファイル・機能を足す PR で、この表も更新する。迷ったら広く書く（選びすぎは安全、外しすぎは漏れ）。
 #   excluded_risk には「このエントリだけで選んだときに検証されなくなるもの」を書く（選択実行の限界を明示する）。
+#   ケースの対応は docs/03-test-spec.md §13.3（テストコードの置き場所）と §14.3（変更時の影響ケースの特定）に従う。
 version: 1
 smoke_case_ids: [TC-001, TC-030, TC-056, TC-075, TC-076] # 主要フロー・入力検証・初期画面・ヘルス・compose 起動。変更内容に関わらず毎回実行する。
 entries:
@@ -42,9 +43,9 @@ entries:
   - id: backend-validation
     feature: タイトル検証（backend）
     paths:
-      - "backend/src/**/valid*"
-      - "backend/src/**/valid*/**"
-      - "backend/test/**/validate*"
+      - "backend/src/domain/title.js"
+      - "backend/test/unit/validate-title.test.js"
+      - "backend/test/api/create-validation.test.js"
     case_ids:
       [
         TC-002,
@@ -78,16 +79,51 @@ entries:
         TC-060,
         TC-062,
       ]
-    excluded_risk: "保存層・画面表示の変更は別エントリで選ぶ"
-  - id: backend-storage
-    feature: 保存層（SQLite・永続化・破損・書込み失敗）
+    excluded_risk: "保存層・画面表示・保存失敗の扱い"
+  - id: backend-domain
+    feature: タスクのドメイン（採番・既定値・状態）
     paths:
-      - "backend/src/**/db*"
-      - "backend/src/**/db*/**"
-      - "backend/src/**/storage*"
-      - "backend/src/**/storage*/**"
-      - "backend/src/**/repo*"
-      - "backend/src/**/repo*/**"
+      - "backend/src/domain/task.js"
+      - "backend/test/unit/domain-and-config.test.js"
+    case_ids:
+      [
+        TC-009,
+        TC-010,
+        TC-011,
+        TC-012,
+        TC-015,
+        TC-030,
+        TC-031,
+        TC-032,
+        TC-033,
+        TC-034,
+        TC-035,
+        TC-036,
+        TC-037,
+        TC-038,
+        TC-039,
+        TC-040,
+        TC-050,
+        TC-051,
+        TC-052,
+        TC-053,
+        TC-059,
+        TC-060,
+        TC-065,
+        TC-075,
+        TC-076,
+      ]
+    excluded_risk: "入力検証の境界値・保存層の障害"
+  - id: backend-storage
+    feature: 保存層（SQLite・永続化・マイグレーション・破損・書込み失敗）
+    paths:
+      - "backend/src/store/**"
+      - "backend/test/api/persistence.test.js"
+      - "backend/test/api/storage-failure.test.js"
+      - "backend/test/api/data-corrupt.test.js"
+      - "backend/test/api/migrations.test.js"
+      - "backend/test/api/list-order.test.js"
+      - "backend/test/api/concurrency.test.js"
     case_ids:
       [
         TC-001,
@@ -110,23 +146,18 @@ entries:
         TC-053,
         TC-054,
         TC-055,
-        TC-056,
-        TC-057,
-        TC-058,
-        TC-063,
         TC-064,
         TC-065,
         TC-066,
       ]
-    excluded_risk: "入力検証・画面の見た目"
-  - id: backend-api
-    feature: backend の API・起動（ルーティング・エラー応答・ヘルス）
+    excluded_risk: "入力検証・画面の見た目・ブラウザ差"
+  - id: backend-routes
+    feature: API ルーティング・エラー応答（tasks・HTTP・共通エラー・アプリ組み立て）
     paths:
-      - "backend/src/**"
-      - "backend/test/**"
-      - "backend/package.json"
-      - "backend/*.json"
-      - "backend/*.js"
+      - "backend/src/routes/tasks.js"
+      - "backend/src/http/**"
+      - "backend/src/errors.js"
+      - "backend/src/app.js"
     case_ids:
       [
         TC-001,
@@ -156,8 +187,6 @@ entries:
         TC-039,
         TC-041,
         TC-042,
-        TC-043,
-        TC-044,
         TC-045,
         TC-046,
         TC-047,
@@ -177,19 +206,165 @@ entries:
         TC-065,
         TC-073,
         TC-075,
+      ]
+    excluded_risk: "画面固有の表示・a11y・ブラウザ差"
+  - id: backend-health
+    feature: ヘルスチェック・観測性
+    paths:
+      - "backend/src/routes/health.js"
+      - "backend/test/api/observability.test.js"
+    case_ids: [TC-054, TC-075, TC-076, TC-077]
+    excluded_risk: "タスク操作の API 挙動"
+  - id: backend-startup
+    feature: 起動・設定（環境変数・ポート・DB パス）
+    paths:
+      - "backend/src/main.js"
+      - "backend/src/config.js"
+      - "backend/test/api/main-process.test.js"
+    case_ids: [TC-042, TC-043, TC-044, TC-075, TC-076, TC-077]
+    excluded_risk: "入力検証・画面の表示"
+  - id: backend-tests
+    feature: backend のテスト（上のエントリに含まれないもの）
+    paths:
+      - "backend/test/**"
+    case_ids:
+      [
+        TC-009,
+        TC-010,
+        TC-011,
+        TC-012,
+        TC-015,
+        TC-021,
+        TC-022,
+        TC-023,
+        TC-024,
+        TC-025,
+        TC-026,
+        TC-027,
+        TC-028,
+        TC-029,
+        TC-030,
+        TC-031,
+        TC-032,
+        TC-033,
+        TC-034,
+        TC-035,
+        TC-036,
+        TC-037,
+        TC-038,
+        TC-039,
+        TC-042,
+        TC-050,
+        TC-051,
+        TC-052,
+        TC-053,
+        TC-054,
+        TC-059,
+        TC-060,
+        TC-062,
+        TC-064,
+        TC-065,
+        TC-073,
+        TC-075,
+      ]
+    excluded_risk: "画面（E2E）の振る舞い"
+  - id: backend-test-infra
+    feature: backend のテスト基盤・依存・テストランナー（E2E も test-support を使う）
+    paths:
+      - "backend/test-support/**"
+      - "backend/scripts/**"
+      - "backend/package.json"
+    full: true
+    case_ids: []
+    excluded_risk: "なし（共有基盤の変更は全件実行にフォールバックする）"
+  - id: frontend-validation
+    feature: タイトル検証（frontend）
+    paths:
+      - "frontend/src/validation.js"
+      - "frontend/test/unit/validate-title.test.js"
+    case_ids:
+      [
+        TC-002,
+        TC-007,
+        TC-016,
+        TC-017,
+        TC-018,
+        TC-019,
+        TC-020,
+        TC-021,
+        TC-022,
+        TC-023,
+        TC-024,
+        TC-025,
+        TC-026,
+        TC-027,
+        TC-028,
+        TC-029,
+        TC-062,
+      ]
+    excluded_risk: "保存層・API の検証（backend 側）"
+  - id: frontend-view
+    feature: 画面の描画・文言・スタイル
+    paths:
+      - "frontend/src/view.js"
+      - "frontend/src/messages.js"
+      - "frontend/styles.css"
+      - "frontend/index.html"
+      - "frontend/test/unit/render-task.test.js"
+    case_ids:
+      [
+        TC-001,
+        TC-002,
+        TC-003,
+        TC-004,
+        TC-005,
+        TC-006,
+        TC-007,
+        TC-008,
+        TC-013,
+        TC-014,
+        TC-016,
+        TC-017,
+        TC-018,
+        TC-019,
+        TC-020,
+        TC-040,
+        TC-041,
+        TC-043,
+        TC-044,
+        TC-045,
+        TC-046,
+        TC-047,
+        TC-048,
+        TC-049,
+        TC-055,
+        TC-056,
+        TC-057,
+        TC-058,
+        TC-061,
+        TC-062,
+        TC-063,
+        TC-066,
+        TC-067,
+        TC-068,
+        TC-069,
+        TC-070,
+        TC-074,
         TC-076,
         TC-077,
       ]
-    excluded_risk: "画面（frontend）固有の表示・a11y・ブラウザ差"
-  - id: frontend-source
-    feature: frontend の画面・API クライアント
+    excluded_risk: "API 単体の入力検証・保存層の障害（backend 側）"
+  - id: frontend-logic
+    feature: 画面の状態管理・API クライアント
     paths:
-      - "frontend/src/**"
-      - "frontend/test/**"
-      - "frontend/*.html"
-      - "frontend/*.css"
-      - "frontend/*.json"
-      - "frontend/*.js"
+      - "frontend/src/state.js"
+      - "frontend/src/app.js"
+      - "frontend/src/api-client.js"
+      - "frontend/src/main.js"
+      - "frontend/test/unit/app.test.js"
+      - "frontend/test/unit/state.test.js"
+      - "frontend/test/unit/api-client.test.js"
+      - "frontend/test/unit/dom.js"
     case_ids:
       [
         TC-001,
@@ -242,65 +417,105 @@ entries:
         TC-077,
       ]
     excluded_risk: "API 単体の入力検証・保存層の障害（backend 側）"
-  - id: frontend-serving
-    feature: frontend の配信・API 中継（nginx / Dockerfile / compose）
+  - id: frontend-assets
+    feature: 画面の静的資産（アイコン）
     paths:
-      - "frontend/nginx*"
+      - "frontend/favicon.svg"
+    case_ids: [TC-056]
+    excluded_risk: "機能（アイコンは機能に影響しない。初期画面だけ確認する）"
+  - id: frontend-package
+    feature: frontend の依存
+    paths:
+      - "frontend/package.json"
+    full: true
+    case_ids: []
+    excluded_risk: "なし（依存の変更は全件実行にフォールバックする）"
+  - id: serving-compose
+    feature: 配信・API 中継・コンテナ構成（nginx / Dockerfile / compose）
+    paths:
+      - "frontend/nginx.conf"
       - "frontend/Dockerfile"
-      - "frontend/.dockerignore"
       - "backend/Dockerfile"
-      - "backend/.dockerignore"
-      - "docker-compose*.yml"
+      - "docker-compose.yml"
       - ".dockerignore"
     case_ids:
       [TC-001, TC-041, TC-043, TC-044, TC-045, TC-049, TC-055, TC-056, TC-058, TC-070, TC-075, TC-076, TC-077]
     excluded_risk: "ドメインロジックの境界値（unit / api 層）"
-  - id: e2e-tests
-    feature: E2E テストコード・設定
+  - id: e2e-main-flow
+    feature: E2E テスト e2e/tests/main-flow.spec.js
     paths:
-      - "e2e/**"
-    case_ids:
-      [
-        TC-001,
-        TC-002,
-        TC-003,
-        TC-004,
-        TC-005,
-        TC-006,
-        TC-007,
-        TC-008,
-        TC-013,
-        TC-014,
-        TC-016,
-        TC-017,
-        TC-018,
-        TC-019,
-        TC-020,
-        TC-040,
-        TC-041,
-        TC-043,
-        TC-044,
-        TC-045,
-        TC-046,
-        TC-047,
-        TC-048,
-        TC-049,
-        TC-055,
-        TC-056,
-        TC-057,
-        TC-058,
-        TC-061,
-        TC-063,
-        TC-066,
-        TC-067,
-        TC-068,
-        TC-069,
-        TC-070,
-        TC-074,
-        TC-076,
-        TC-077,
-      ]
-    excluded_risk: "unit / api 層（E2E の変更では動かない）"
+      - "e2e/tests/main-flow.spec.js"
+    case_ids: [TC-001, TC-041, TC-070]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-add-task
+    feature: E2E テスト e2e/tests/add-task.spec.js
+    paths:
+      - "e2e/tests/add-task.spec.js"
+    case_ids: [TC-002, TC-003, TC-004, TC-005, TC-006, TC-007, TC-016, TC-017, TC-018, TC-019, TC-020]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-toggle-delete
+    feature: E2E テスト e2e/tests/toggle-delete.spec.js
+    paths:
+      - "e2e/tests/toggle-delete.spec.js"
+    case_ids: [TC-008, TC-013, TC-014]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-order
+    feature: E2E テスト e2e/tests/order.spec.js
+    paths:
+      - "e2e/tests/order.spec.js"
+    case_ids: [TC-040]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-save-failure
+    feature: E2E テスト e2e/tests/save-failure.spec.js
+    paths:
+      - "e2e/tests/save-failure.spec.js"
+    case_ids: [TC-045, TC-046, TC-047, TC-048, TC-049]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-screen-states
+    feature: E2E テスト e2e/tests/screen-states.spec.js
+    paths:
+      - "e2e/tests/screen-states.spec.js"
+    case_ids: [TC-055, TC-056, TC-057, TC-058]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-security
+    feature: E2E テスト e2e/tests/security.spec.js
+    paths:
+      - "e2e/tests/security.spec.js"
+    case_ids: [TC-061]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-concurrency
+    feature: E2E テスト e2e/tests/concurrency.spec.js
+    paths:
+      - "e2e/tests/concurrency.spec.js"
+    case_ids: [TC-063, TC-066]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-a11y-responsive
+    feature: E2E テスト e2e/tests/a11y-responsive.spec.js
+    paths:
+      - "e2e/tests/a11y-responsive.spec.js"
+    case_ids: [TC-067, TC-068, TC-069]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-performance
+    feature: E2E テスト e2e/tests/performance.spec.js
+    paths:
+      - "e2e/tests/performance.spec.js"
+    case_ids: [TC-074]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-compose
+    feature: E2E テスト e2e/compose/**
+    paths:
+      - "e2e/compose/**"
+    case_ids: [TC-043, TC-044, TC-076, TC-077]
+    excluded_risk: "他のテストファイルのケース"
+  - id: e2e-shared
+    feature: E2E の共有（fixtures・Playwright 設定・依存）
+    paths:
+      - "e2e/fixtures/**"
+      - "e2e/playwright.config.js"
+      - "e2e/package.json"
+    full: true
+    case_ids: []
+    excluded_risk: "なし（共有部分の変更は全件実行にフォールバックする）"
   - id: perf-tooling
     feature: 性能試験の道具（k6 / 性能ワークフロー）
     paths:
@@ -323,10 +538,10 @@ entries:
       - ".github/workflows/ci.yml"
       - ".github/workflows/nightly.yml"
       - ".github/workflows/release.yml"
+      - ".github/actions/**"
       - "scripts/ci/**"
       - "scripts/regression/**"
       - "scripts/test/**"
-      - ".github/actions/**"
       - "quality/**"
       - "package.json"
       - "package-lock.json"

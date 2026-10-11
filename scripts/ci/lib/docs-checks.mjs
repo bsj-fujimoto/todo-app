@@ -93,11 +93,20 @@ export function checkManifest(root) {
 }
 
 // ③ テスト名の [TC-xxx] ↔ cases.csv --------------------------------------------------------
+const PARAM_ID_RE = /\btc:\s*["'](TC-\d{3})["']/g;
+
+// テスト名に直接書かれた [TC-xxx] と、パラメータ化したテスト（名前が `[${tc}]` のテンプレート）の `tc: "TC-xxx"` を拾う。
+export function idsInSource(text) {
+  const direct = [...text.matchAll(TEST_ID_RE)].map((m) => m[1]);
+  const templated = text.includes("`[${") ? [...text.matchAll(PARAM_ID_RE)].map((m) => m[1]) : [];
+  return [...direct, ...templated];
+}
+
 export function collectTestIds(root) {
   const found = new Map();
   const files = TEST_DIRS.flatMap((d) => walkFiles(root, d, (p) => TEST_EXT.test(p)));
   for (const f of files) {
-    for (const m of readText(root, f).matchAll(TEST_ID_RE)) found.set(m[1], [...(found.get(m[1]) ?? []), f]);
+    for (const id of idsInSource(readText(root, f))) found.set(id, [...(found.get(id) ?? []), f]);
   }
   return found;
 }

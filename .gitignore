@@ -8,3 +8,10 @@ playwright-report/
 backend/data/
 dist/
 .claude/
+.cache/
+security-results/
+security-findings/
+reports/
+contract-report/
+ci-summary*.json
+regression-selection.json

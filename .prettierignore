@@ -9,3 +9,8 @@ docs/data/
 **/playwright-report
 docs/
 .github/
+.cache
+security-results
+security-findings
+reports
+contract-report
