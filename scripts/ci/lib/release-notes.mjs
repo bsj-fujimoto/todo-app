@@ -60,14 +60,14 @@ export function renderNotes({ version, sha, repo, runUrl, rows, summary, gate, p
     `- ビルドした run: ${runUrl}`,
     "- デプロイは行わない（本番環境は無い）。このリリースは、synthetic / 外形監視が参照する**版情報（デプロイマーカー）の源**。",
     "",
-    "## イメージ（digest 固定・署名・provenance・SBOM つき）",
+    publish
+      ? "## イメージ（digest 固定・署名・provenance・SBOM つき）"
+      : "## イメージ（dry-run: OCI アーカイブにビルドしただけ。push・署名・attest はしていない）",
     ...table(["イメージ", "参照（digest）", "タグ"], images),
     "",
-    "検証:",
-    "```sh",
-    ...verifyCommands(rows, repo),
-    "```",
-    "",
+    ...(publish
+      ? ["検証:", "```sh", ...verifyCommands(rows, repo), "```", ""]
+      : ["dry-run の digest はビルド結果の確認用で、公開されるイメージの digest ではない。", ""]),
     "## リリース前の検査結果（対象 commit）",
     ...(layers.length ? table(["層", "合計", "成功", "失敗", "スキップ"], layers) : ["- ci-summary が無い"]),
     "",
