@@ -1,0 +1,123 @@
+# 性能 SLO（機械可読の正本）。判定は scripts/perf/verdict.mjs、k6 の threshold、
+# 外形監視（monitoring/monitors.yaml の slo_ref）がこのファイルの `metric` を参照する。
+#
+# 由来: docs/02-test-perspectives.md / docs/03-test-spec.md の暫定しきい値（TC-073・TC-074）を
+#       本ファイルで確定する。暫定値を変えていないものは `basis: provisional-confirmed`、
+#       本ファイルで新設したものは `basis: assumed`（実測の利用実態が無いので「想定」）と明記する。
+# 適用条件: データ 1,000 件（DS-006）、単一インスタンス（compose）、認証なし。10,000 件は capacity で別に測り、
+#           SLO の対象外（観測値として perf/analysis.md に載せる）。
+version: 1
+service: todo-app
+slos:
+  - metric: api_list_p95_ms
+    description: タスク一覧取得（GET /api/v1/tasks、1,000 件）の応答時間 p95
+    operator: "<="
+    target: 500
+    unit: ms
+    statistic: p95
+    source: "k6 http_req_duration{endpoint:list}（load シナリオ。warm-up と上位 0.1% を除く）"
+    k6_metric: "http_req_duration{endpoint:list}"
+    test_cases: [TC-073]
+    basis: provisional-confirmed
+    user_impact: 起動直後や再読込のたびに一覧が出るまで待たされる。500ms を超えると操作のたびに「遅い」と感じ始める。
+  - metric: api_list_p99_ms
+    description: タスク一覧取得の応答時間 p99（たまに起きる遅延の上限）
+    operator: "<="
+    target: 1000
+    unit: ms
+    statistic: p99
+    source: "k6 http_req_duration{endpoint:list}（load シナリオ）"
+    k6_metric: "http_req_duration{endpoint:list}"
+    test_cases: [TC-073]
+    basis: assumed
+    user_impact: 数十回に 1 回の遅い表示。1 秒を超えると画面が固まったように見える。
+  - metric: api_create_p95_ms
+    description: タスク追加（POST /api/v1/tasks）の応答時間 p95
+    operator: "<="
+    target: 300
+    unit: ms
+    statistic: p95
+    source: "k6 http_req_duration{endpoint:create}（load シナリオ）"
+    k6_metric: "http_req_duration{endpoint:create}"
+    test_cases: [TC-073]
+    basis: provisional-confirmed
+    user_impact: 追加ボタンを押してから一覧に反映されるまでの待ち。成功確認後に画面へ反映する仕様のため、そのまま体感になる。
+  - metric: api_update_p95_ms
+    description: 完了切替（PATCH /api/v1/tasks/{id}）の応答時間 p95
+    operator: "<="
+    target: 300
+    unit: ms
+    statistic: p95
+    source: "k6 http_req_duration{endpoint:toggle}（load シナリオ）"
+    k6_metric: "http_req_duration{endpoint:toggle}"
+    test_cases: [TC-074]
+    basis: assumed
+    user_impact: チェックを入れてから反映されるまでの待ち。追加と同じ書込み操作なので追加と同じ 300ms とした。
+  - metric: api_delete_p95_ms
+    description: 削除（DELETE /api/v1/tasks/{id}）の応答時間 p95
+    operator: "<="
+    target: 300
+    unit: ms
+    statistic: p95
+    source: "k6 http_req_duration{endpoint:delete}（load シナリオ）"
+    k6_metric: "http_req_duration{endpoint:delete}"
+    test_cases: [TC-074]
+    basis: assumed
+    user_impact: 削除ボタンから行が消えるまでの待ち（確認画面が無く即時削除のため）。
+  - metric: screen_ready_ms
+    description: 画面（/）を開いてから 1,000 行が描画されるまで（表示完了）。10 回計測の最大値（n が小さく p95 は最大に等しいため最大で判定）
+    operator: "<="
+    target: 2000
+    unit: ms
+    statistic: p95
+    source: "scripts/perf/screen（Playwright で行数 1,000 に達するまで。perf/results/<run_id>/screen/screen.json）"
+    test_cases: [TC-074]
+    basis: provisional-confirmed
+    user_impact: 開いてから使えるようになるまでの待ち。全件描画のため件数に比例して劣化する。
+  - metric: error_rate
+    description: 失敗した HTTP 要求の割合（5xx・接続失敗・応答検証の失敗。想定された 4xx は除く）
+    operator: "<"
+    target: 0.01
+    unit: ratio
+    statistic: rate
+    source: "k6 http_req_failed ＋ 応答検証 checks の失敗率（全シナリオ共通。warm-up を除く）"
+    k6_metric: http_req_failed
+    test_cases: [TC-073]
+    basis: provisional-confirmed
+    user_impact: 保存失敗の表示が利用者に出る割合。1% 超だと「ときどき保存できない」アプリになる。
+  - metric: throughput_rps
+    description: 想定到着率（perf/workload.yaml の load.arrival_rate_rps）を取りこぼさず処理できた割合を達成スループットで表す。到着率の 95% 以上
+    operator: ">="
+    target: 0.95
+    unit: ratio_of_target_rate
+    statistic: ratio
+    source: "k6 iterations rate ÷ 目標到着率（load シナリオ。dropped_iterations が出ると下がる）"
+    test_cases: [TC-073]
+    basis: assumed
+    user_impact: 処理が追いつかず要求が捨てられる（待たされる）割合の裏返し。
+  - metric: health_p95_ms
+    description: ヘルスチェック（GET /api/v1/health）の応答時間 p95（観測プローブ・nginx 経由）
+    operator: "<="
+    target: 200
+    unit: ms
+    statistic: p95
+    source: "scripts/perf/observe.mjs の health_ms（負荷中。外形監視 monitors.yaml の応答時間 assertion でも使う）"
+    test_cases: [TC-075]
+    basis: assumed
+    user_impact: 負荷中でも死活判定が遅れない。遅いと外形監視が誤報（遅延＝停止と誤認）する。
+  - metric: availability_synthetic_ratio
+    description: 外形監視（30 分間隔）の成功率。監視が成功した実行の割合
+    operator: ">="
+    target: 0.99
+    unit: ratio
+    statistic: rate
+    source: "monitoring/run-history（scripts/monitoring/run-monitors.mjs の JSONL）"
+    test_cases: [TC-077]
+    basis: assumed
+    user_impact: 利用者が使えなかった時間の割合。本番の無いリポジトリでは外形監視の実行成功率で代用する（perf の対象外、monitoring が参照）。
+# 対象外（理由付き）
+out_of_scope:
+  - item: 同時接続数 100 以上
+    reason: 1 人用・1 インスタンス 1 人。同時利用者は 1（複数タブでも 3 程度）。stress で上限を見るが SLO にはしない。
+  - item: 画面側の Core Web Vitals の SLO
+    reason: Lighthouse の performance / accessibility は観測値として記録するが、合否は TC-074 の表示完了で判定する。

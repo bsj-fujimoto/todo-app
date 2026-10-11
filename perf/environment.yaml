@@ -1,0 +1,24 @@
+# 機械可読の「本番との差異」と「データの性質」。scripts/perf/record.mjs が各 run の記録（perf-runs.json）に写す。
+# 人が読む説明（測定機の CPU・メモリ・OS・Docker 版、runner との差、外挿の限界）は perf/environment.md と perf/analysis.md。
+reference_production:
+  exists: false
+  assumption: "個人が自分で動かす小さな VM / 自宅サーバー（1 vCPU・1 GiB・SSD・docker compose・TLS 終端は別）を仮定。実在する本番は無い。"
+env_diff:
+  scale_ratio: 1.0 # backend の CPU 上限（1 vCPU）を想定本番に合わせた比。コアの速度差は含まない
+  mocks: [] # 外部サービスが無いので mock は無い（backend は SQLite のみに依存）
+  limits: >-
+    backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。
+    k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。
+    TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。
+  notes: >-
+    本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。
+    Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。
+    SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。
+    GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。
+    比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。
+data_profile:
+  volume: "1,000 件（DS-006）。capacity で 10,000 件まで"
+  vs_prod_ratio: 1.0 # 想定本番の通常件数（1,000 件）と同じ。実測の本番件数は無い
+  skew: "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない"
+  cache_state: "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）"
+  history_depth: "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
