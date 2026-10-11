@@ -17,6 +17,8 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "npm run test --workspaces --if-present",
+    "e2e": "npm run e2e --workspace e2e",
+    "e2e:compose": "npm run e2e:compose --workspace e2e",
     "test:scripts": "node --test \"scripts/test/*.test.mjs\"",
     "docs:check": "node scripts/ci/docs-check.mjs",
     "contract:lint": "redocly lint backend/openapi.yaml --config scripts/ci/redocly.yaml"

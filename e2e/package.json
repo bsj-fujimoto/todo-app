@@ -1,0 +1,16 @@
+{
+  "name": "@todo-app/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "E2E テスト（Playwright）。各テストが専用のスタック（backend + frontend 配信）を起動する",
+  "scripts": {
+    "e2e": "playwright test --project=chromium --project=firefox --project=webkit --project=chromium-mobile-360",
+    "e2e:compose": "playwright test --project=compose --workers=1",
+    "browsers": "playwright install chromium firefox webkit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.64.0"
+  }
+}
