@@ -213,7 +213,8 @@ jobs:
           GREP: ${{ needs.select.outputs.grep_e2e }}
         run: |
           if [ "$MODE" = "selected" ]; then
-            npx playwright test --project="$PROJECT" --retries=0 --grep "$GREP"
+            # 選択結果にこの project の対象（例: @mobile）が 1 件も無いことはあり得る。その場合は 0 件で成功とし、ci-summary に 0 件と残る
+            npx playwright test --project="$PROJECT" --retries=0 --grep "$GREP" --pass-with-no-tests
           else
             npx playwright test --project="$PROJECT" --retries=0
           fi
