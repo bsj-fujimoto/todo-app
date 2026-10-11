@@ -28,6 +28,12 @@ on:
       - ".github/workflows/release.yml"
       - "scripts/ci/release-evidence.mjs"
       - "scripts/ci/lib/release-notes.mjs"
+      - "scripts/ci/lib/release-redact.mjs"
+      - "scripts/ci/lib/release-check.mjs"
+      - "scripts/ci/lib/release-zip.mjs"
+      - "scripts/ci/check-release-evidence.mjs"
+      - "scripts/evidence/lib/redact*.mjs"
+      - "scripts/evidence/lib/sensitive.mjs"
       - "scripts/security/scan.sh"
       - "security/expected-published-scans.yaml"
       - "security/tools.env"
@@ -329,8 +335,22 @@ jobs:
           node scripts/ci/release-evidence.mjs --dir release-evidence --version "$VERSION" --sha "$TARGET_SHA" --repo "$REPO" \
             --run-url "$RUN_URL" --image "backend=$BACKEND_DIGEST" --image "frontend=$FRONTEND_DIGEST" $flag
           (cd release-evidence && zip -qr ../release-evidence.zip .)
+      # zip に入れる前に release-evidence.mjs が墨消し済み（scripts/evidence/lib/redact*.mjs を共有）。ここで zip の中身を、証跡の検査と同じ規則で再検査する。
+      # メール・氏名・メンション・秘密情報らしい値が 1 件でも残る、または manifest の redacted: true・sha256 が合わなければ失敗にして、公開（Release 作成）を止める。
+      - name: release-evidence.zip の個人情報・秘密情報の検査と manifest の整合（墨消し漏れがあれば公開を止める）
+        env:
+          REPO: ${{ github.repository }}
+        run: node scripts/ci/check-release-evidence.mjs --zip release-evidence.zip --repo "$REPO" --out reports/release-evidence-check.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
+        with:
+          name: release-evidence-check
+          path: reports/release-evidence-check.json
+          retention-days: 90
+          if-no-files-found: warn
+      # 検査に通らなかった zip は artifact にも残さない（success のときだけ保存する）
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: success()
         with:
           name: release-evidence
           path: |
