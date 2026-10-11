@@ -11,7 +11,13 @@ const impureCalls = [
 
 export default [
   {
-    ignores: ["**/node_modules/**", "**/dist/**", "**/coverage/**", "**/test-results/**", "**/playwright-report/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/coverage/**",
+      "**/test-results/**",
+      "**/playwright-report/**",
+    ],
   },
   js.configs.recommended,
   {
@@ -25,7 +31,10 @@ export default [
       "no-restricted-properties": ["error", ...impureCalls],
       "no-restricted-syntax": [
         "error",
-        { selector: "NewExpression[callee.name='Date'][arguments.length=0]", message: "現在時刻は clock として注入する" },
+        {
+          selector: "NewExpression[callee.name='Date'][arguments.length=0]",
+          message: "現在時刻は clock として注入する",
+        },
       ],
       eqeqeq: "error",
       "no-var": "error",
@@ -43,8 +52,14 @@ export default [
     rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
   },
   {
+    // scripts/<領域>/*.mjs は CLI の入口（composition root）。時刻・環境変数・標準出力をここで束ねる。
+    // ロジックは scripts/<領域>/lib/*.mjs に置き、そちらには本番コードと同じ規約を適用する（この override の対象外）。
+    files: ["scripts/*/*.mjs"],
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
+  },
+  {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）
-    files: ["**/test/**/*.js", "e2e/**/*.js"],
+    files: ["**/test/**/*.js", "e2e/**/*.js", "scripts/test/**/*.mjs"],
     rules: { "max-lines-per-function": "off", "max-lines": "off" },
   },
 ];
