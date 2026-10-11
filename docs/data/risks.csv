@@ -1,0 +1,17 @@
+id,text,impact,likelihood,detectability,priority,owner
+RISK-001,データ損失: 追加・完了切替・削除の結果が永続化されず、再読込・backend 再起動・コンテナ再作成で失われる（永続化漏れ、ボリューム未マウント、書込み未コミット）。,high,medium,high,high,バックエンド担当
+RISK-002,検証抜け・誤判定: 空白のみ・101 文字・改行が通る、または 100 文字ちょうど・絵文字入りの有効な入力が拒否される（UTF-16 長で数える、前後空白除去前に数える等）。,medium,high,medium,medium,フロントエンド担当
+RISK-003,保存失敗時の画面と保存の乖離: API が失敗しているのに画面だけ反映される（楽観更新）、失敗時に入力値が消える、画面は成功に見えるのに保存されていない。,high,medium,high,high,フロントエンド担当
+RISK-004,破損データの自動上書き: DATA_CORRUPT の状態で空の一覧に初期化して既存データを失う、起動時の初期化処理が破損ファイルを書き換える。,high,medium,high,high,バックエンド担当
+RISK-005,XSS・インジェクション: タイトルを HTML として解釈して表示しスクリプトや要素が実行・生成される（innerHTML への連結など）、または SQL 文として解釈される（文字列連結によるクエリ組み立て）。,high,medium,medium,medium,フロントエンド担当
+RISK-006,並び順の誤り: 作成日時の降順が崩れる、同時刻のタイブレーク（保存順の新しい方が先）が不定になる、完了切替で順序が動く。,medium,medium,high,medium,バックエンド担当
+RISK-007,モバイル・アクセシビリティ不備: 幅 360px で操作できない・横スクロールが出る、ラベルやアクセシブルネームが無い、キーボードで操作できない。,medium,medium,medium,medium,フロントエンド担当
+RISK-008,API 契約逸脱: ステータスコード・エラーコード・文言・スキーマ（未知フィールド拒否、id の UUID 検証）が openapi.yaml と食い違い、frontend が誤動作する。,medium,medium,medium,medium,バックエンド担当
+RISK-009,依存・コンテナの脆弱性: 依存パッケージやベースイメージの既知脆弱性を含んだまま配布する。,medium,low,medium,low,インフラ担当
+RISK-010,件数増加時の性能劣化: タスクが千件規模になると一覧表示・追加の応答が遅くなる（全件描画、インデックス無し）。,low,medium,low,low,バックエンド担当
+RISK-011,停止に気づけない: backend の停止・DB 異常に気づく手段（health、外形監視、エラーログ）が無い、または health が実態を反映しない。,medium,medium,high,medium,インフラ担当
+RISK-012,将来のスキーマ移行失敗: フェーズ2の期限項目追加などで既存データの移行に失敗し、データが読めなくなる。,medium,low,medium,low,バックエンド担当
+RISK-013,二重送信・並行操作: 連打や並行リクエストでタスクが重複・欠落する、同時操作で id が衝突する、削除済みの対象に操作して不整合になる。,medium,high,low,medium,バックエンド担当
+RISK-014,ブラウザ差異: Chromium / Firefox / WebKit（iOS Safari を含む）で表示・入力・キー操作の挙動が分かれる。,low,medium,medium,low,フロントエンド担当
+RISK-015,コンテナ起動・環境差: docker compose で起動できない、/api の中継設定漏れ、ボリューム設定の差で環境ごとに挙動が変わる。,medium,medium,low,low,インフラ担当
+RISK-016,認証なし前提の逸脱: 1 人用・ログイン不要の前提を超えてネットワークへ公開した環境では、第三者が全タスクを閲覧・変更・削除できる（認証・認可は仕様の対象外で、前提の範囲内では受容するリスク）。,medium,low,medium,low,プロダクトオーナー
