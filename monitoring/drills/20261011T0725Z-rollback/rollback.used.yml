@@ -1,0 +1,5 @@
+services:
+  backend:
+    image: todo-drill/backend:good
+  frontend:
+    image: todo-drill/frontend:good

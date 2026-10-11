@@ -29,11 +29,17 @@ export async function sendRequest(deps, ctx, req, signal) {
   };
 }
 
-const describeError = (e) => `通信エラー: ${e.name === "TimeoutError" ? "タイムアウト" : e.message}`;
+// fetch の失敗は "fetch failed" だけでは原因が分からないので cause（ECONNREFUSED など）を足す
+const describeError = (e) => {
+  if (e.name === "TimeoutError") return "通信エラー: タイムアウト";
+  const cause = e.cause && (e.cause.code || e.cause.message);
+  return `通信エラー: ${e.message}${cause ? `（${cause}）` : ""}`;
+};
 
 // http 監視: request を 1 回送り、assertions[].check を全部確かめる
 export async function runHttpAttempt(monitor, deps, ctx) {
   const signal = AbortSignal.timeout(monitor.timeout_sec * 1000);
+  const t0 = deps.now();
   try {
     const res = await sendRequest(deps, ctx, monitor.request, signal);
     const checks = monitor.assertions.map((a) => a.check).filter(Boolean);
@@ -46,7 +52,7 @@ export async function runHttpAttempt(monitor, deps, ctx) {
       json: res.json,
     };
   } catch (e) {
-    return { ok: false, failure: describeError(e), durationMs: monitor.timeout_sec * 1000, steps: [] };
+    return { ok: false, failure: describeError(e), durationMs: deps.now() - t0, steps: [] };
   }
 }
 

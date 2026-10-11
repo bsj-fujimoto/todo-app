@@ -128,6 +128,8 @@ async function executeAll(monitors, env, routes, out) {
       type: m.type,
       severity: severityOf(routes, m.monitor_id),
       journey_id: m.journey_id,
+      user_impact: m.user_impact,
+      slo_ref: m.slo_ref,
     };
     appendFileSync(join(out, "run-history.jsonl"), `${JSON.stringify(record)}\n`);
     const detail = record.failure_detail ? ` ${record.failure_detail}` : "";

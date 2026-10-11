@@ -1,0 +1,2 @@
+todo-mon-backend-1 Up 10 seconds (healthy)
+todo-mon-frontend-1 Up 19 seconds (healthy)

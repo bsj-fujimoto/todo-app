@@ -89,5 +89,6 @@ export function evaluateOne(entry, res, ctx) {
 }
 
 export function evaluateAll(entries, res, ctx) {
-  return entries.map((e) => evaluateOne(e, res, ctx)).filter((f) => f !== null);
+  // 同じ失敗（例: 本文が JSON でない）が何度も並ばないよう重複を除く
+  return [...new Set(entries.map((e) => evaluateOne(e, res, ctx)).filter((f) => f !== null))];
 }

@@ -1,0 +1,58 @@
+{
+  "run": {
+    "run_id": "20261011T072716",
+    "phase": "drill-recover",
+    "started_at": "2026-10-11T07:27:16.900Z",
+    "region": "local-docker",
+    "retry_delay_sec": 5,
+    "version": "1.0.0@552a854",
+    "mode": "fallback",
+    "expected_version": "",
+    "expected_commit": "552a854c1be89363354fd7bf6c56311cf5774c16"
+  },
+  "results": [
+    {
+      "monitor_id": "MON-002",
+      "at": "2026-10-11T07:27:16.979Z",
+      "result": "ok",
+      "duration_ms": 9,
+      "failure_detail": null,
+      "version": "1.0.0@552a854",
+      "attempts": 1,
+      "alert_suppressed": false,
+      "suppression_reason": null,
+      "run_id": "20261011T072716",
+      "phase": "drill-recover",
+      "mode": "fallback",
+      "region": "local-docker",
+      "name": "backend health とデプロイマーカー（GET /api/v1/health）",
+      "type": "http",
+      "severity": "sev1",
+      "journey_id": "J-05",
+      "user_impact": "backend 停止・DB 異常。保存と読み込みができず、画面は保存失敗の表示になる（sev1）。",
+      "slo_ref": "health_p95_ms"
+    },
+    {
+      "monitor_id": "MON-003",
+      "at": "2026-10-11T07:27:16.990Z",
+      "result": "ok",
+      "duration_ms": 33,
+      "failure_detail": null,
+      "version": "1.0.0@552a854",
+      "attempts": 1,
+      "alert_suppressed": false,
+      "suppression_reason": null,
+      "run_id": "20261011T072716",
+      "phase": "drill-recover",
+      "mode": "fallback",
+      "region": "local-docker",
+      "name": "API ジャーニー J-01 追加して一覧に残る（POST → GET → DELETE）",
+      "type": "api",
+      "severity": "sev2",
+      "journey_id": "J-01",
+      "user_impact": "追加したタスクが保存されない、または一覧に出ない。入力した内容が失われる（sev2）。",
+      "slo_ref": "api_create_p95_ms"
+    }
+  ],
+  "skipped": []
+}
