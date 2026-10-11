@@ -1,0 +1,107 @@
+# 負荷・性能試験（k6）と画面計測（Playwright / Lighthouse）。scripts/perf/run.sh を GitHub-hosted runner で実行する。
+#   起動: 手動（workflow_dispatch）、週次（schedule。GitHub の cron は遅延・欠落しうる）、release.yml からの workflow_call。
+#   判定: verdict.json の pass / fail（SLO）。baseline.json（同じ環境の区分の run）と比べ、退行（既定 +20% 超）があればジョブ失敗。
+#   runner は開発機と性能特性が違う（perf/environment.md）。環境の区分（env_class）が違う baseline とは比べない。
+name: perf
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "実行時間の区分（ci = 想定どおり: soak 10 分 / quick = 動作確認 / full = ci と同じ長さ。soak の長時間版は soak_duration_sec で指定）"
+        type: choice
+        options: [ci, quick, full]
+        default: ci
+      scenarios:
+        description: "実行するシナリオ（カンマ区切り）"
+        type: string
+        default: "load,stress,spike,soak,capacity,screen"
+      soak_duration_sec:
+        description: "soak の長さ（秒）。空なら profile の既定（10 分）。長時間版は 7200 など"
+        type: string
+        default: ""
+  schedule:
+    - cron: "17 3 * * 1" # 毎週月曜 03:17 UTC
+  workflow_call:
+    inputs:
+      profile:
+        type: string
+        default: ci
+      scenarios:
+        type: string
+        default: "load,stress,spike,soak,capacity,screen"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perf-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  perf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      PROFILE: ${{ inputs.profile || 'ci' }}
+      SCENARIOS: ${{ inputs.scenarios || 'load,stress,spike,soak,capacity,screen' }}
+      SOAK_DURATION_SEC: ${{ inputs.soak_duration_sec || '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: node
+      - name: "依存を入れる（yaml のみ）"
+        run: mise x -- npm ci
+      - name: "単体テスト（判定ロジック）"
+        run: mise x -- node --test "scripts/perf/test/*.test.mjs"
+      - name: "測定環境の記録（runner の CPU・メモリ・Docker）"
+        run: |
+          {
+            echo "## 測定環境（GitHub-hosted runner）"
+            echo '```'
+            echo "runner: ${RUNNER_NAME} / ${ImageOS} ${ImageVersion} / ${RUNNER_ARCH}"
+            echo "cpu: $(nproc) vCPU / $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)"
+            echo "memory: $(free -g | awk '/Mem:/ {print $2}') GiB"
+            docker version --format 'docker: {{.Server.Version}}'
+            echo '```'
+            echo "開発機との差は perf/environment.md を参照。"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: "性能試験を実行する（warm-up → 3 反復 → 判定 → 記録 → baseline 比較）"
+        id: run
+        run: scripts/perf/run.sh --profile "$PROFILE" --scenarios "$SCENARIOS" --run-id "gha-${GITHUB_RUN_ID}-${GITHUB_SHA::7}"
+      - name: "結果を要約に載せる"
+        if: always()
+        run: |
+          dir="perf/results/gha-${GITHUB_RUN_ID}-${GITHUB_SHA::7}"
+          {
+            echo "## 性能試験の結果"
+            if [ -f "$dir/verdict.json" ]; then
+              mise x -- node -e '
+                const v = JSON.parse(require("fs").readFileSync(process.argv[1] + "/verdict.json", "utf8"));
+                console.log("- 判定: **" + v.status + "**");
+                for (const [k, s] of Object.entries(v.scenarios)) console.log("  - " + k + ": " + s.status);
+                for (const r of v.reasons) console.log("  - fail: " + r);
+                for (const w of v.warnings) console.log("  - warn: " + w);
+              ' "$dir"
+            else
+              echo "- verdict.json が無い（実行が途中で失敗した）"
+            fi
+            if [ -f "$dir/compare.json" ]; then
+              mise x -- node -e '
+                const c = JSON.parse(require("fs").readFileSync(process.argv[1] + "/compare.json", "utf8"));
+                console.log("- baseline 比較: " + (c.baseline ? "基準 " + c.baseline + "、比較 " + c.compared + " 指標、退行 " + c.regressions.length + " 件" : c.note));
+                for (const r of c.regressions) console.log("  - " + r.key + ": " + r.baseline + " → " + r.current + "（" + r.change_pct + "%）");
+              ' "$dir"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: "結果を保存する（90 日）"
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: perf-results-${{ github.run_id }}
+          path: perf/results/gha-${{ github.run_id }}-*
+          retention-days: 90
+          if-no-files-found: warn

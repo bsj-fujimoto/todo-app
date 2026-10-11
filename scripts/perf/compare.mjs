@@ -31,12 +31,28 @@ async function updateBaseline(args, ctx) {
     commit_sha: current.commit_sha,
     run_id: current.run_id,
     measured_at: current.started_at,
+    env_class: current.env_class,
     environment: current.environment,
     metrics: current.metrics,
   };
   baseline.baselines.push(entry);
   await writeFile(baselinePath, `${JSON.stringify(baseline, null, 2)}\n`);
   console.log(`[compare] ${baselinePath} に ${entry.release} を追加（run ${current.run_id}）`);
+}
+
+// 同じ環境の区分（env_class）の基準だけを使う。区分が違う値は比べない。--release があればそのタグ
+function pickBaseline(baselines, envClass, release) {
+  const same = baselines.filter((b) => b.env_class === envClass);
+  return release ? same.find((b) => b.release === release) : same.at(-1);
+}
+
+async function noBaseline(runDir, current) {
+  const note = `この環境の区分（${current.env_class}）の基準が perf/baseline.json に無い。比較せず、退行は判定しない。`;
+  await writeFile(
+    join(runDir, "compare.json"),
+    `${JSON.stringify({ baseline: null, note, regressions: [] }, null, 1)}\n`,
+  );
+  console.log(`[compare] ${note} 今回の run を基準にするなら --update-baseline --release <タグ>`);
 }
 
 async function main() {
@@ -47,10 +63,8 @@ async function main() {
   const baseline = await read(baselinePath);
   const current = await read(join(runDir, "metrics.json"));
   if (args["update-baseline"]) return updateBaseline(args, { baselinePath, baseline, current });
-  const entry = args.release
-    ? baseline.baselines.find((b) => b.release === args.release)
-    : baseline.baselines.at(-1);
-  if (!entry) throw new Error("基準（perf/baseline.json の baselines）が無い");
+  const entry = pickBaseline(baseline.baselines, current.env_class, args.release);
+  if (!entry) return noBaseline(runDir, current);
   const result = compareAll(entry.metrics, current.metrics, cfg);
   await writeFile(
     join(runDir, "compare.json"),
