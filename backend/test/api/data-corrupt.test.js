@@ -8,7 +8,7 @@ import { corruptDbFile, insertInvalidRow, readRows, seedTasks, sha256File } from
 import { assertSpecError } from "../helpers/assertions.js";
 import { createHarness, errorLogs } from "../helpers/harness.js";
 
-const UNREGISTERED_ID = "00000000-0000-4000-8000-000000000000";
+const UNREGISTERED_ID = "3f2b8c1e-7a4d-4e6b-9c2a-5d1e8f0a7b36";
 const [MILK] = STANDARD_TASKS;
 
 function dataCorruptLogs(api) {
