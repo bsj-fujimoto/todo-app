@@ -59,24 +59,42 @@ npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不
 `--artifacts <gh run download の出力ディレクトリ>` で、取得済みの artifact から取り込める。リリース用の最終生成は、`v*.*.*` タグの run で `--run <id> --prune-other-versions --release <SHA>` を付けて行う
 （実施表に別の版の行を残さない。残っていると失敗する）。
 
-### リリースの run の取り込み（管理者が行う）
+### リリースの証跡の運用（タグ X → run → 取り込みコミット Y）
 
-`release.yml` は、リリース前層（`ci.yml` + `security.yml`）・証跡の検査（`evidence-check`）・公開を 1 つの run で行い、artifact（`ci-summary`・`ci-summary-*`・`security-findings`・`security-scan-*`・`release-evidence` など）を 90 日保存する。
-その run の結果を証跡（`docs/evidence/`・`docs/data/`）に取り込むのは、ワークフローではなく**人が行う**（ワークフローから main へ直接 commit しない）:
+**タグは必ず「テストした製品 commit X」に打つ。** 実施表・証跡は X の run から作り、あとで commit Y として main に入れる。したがって X の時点の `release.yml` は、X の実施表をまだ持てない。検査はこの前提で分けてある。
 
-```sh
-# リリース run の id は release.yml の run の URL（.../actions/runs/<id>）か、リリースノートの「ビルドした run」から分かる
-node scripts/evidence/fetch-run.mjs --run <release-run-id>                       # CI の成果物（JUnit・観察値・ci-summary・regression-selection）
-node scripts/evidence/fetch-run.mjs --kind security --run <release-run-id>       # security の SARIF・SBOM・scan-run・findings・gate
-node scripts/evidence/build-executions.mjs --run <release-run-id> --prune-other-versions --release <リリースの SHA>
-npm run evidence:build && npm run evidence:check
-node scripts/evidence/check-evidence.mjs --release <リリースの SHA> --strict      # release.yml の evidence-check と同じ検査
+| いつ・どこで                                                         | 何を検査するか                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| タグ X の `release.yml`（`evidence-check` ジョブ。`publish` の条件） | **構造だけ**（`check-evidence.mjs --structure-only`: ID 解決・manifest の sha256・パリティ・不具合表・証拠索引・秘密混入など）。版は固定しない                                                                                 |
+| Y 以降の `ci.yml`（docs-check の `check-evidence.mjs`）              | `docs/evidence/release.json` があれば、その `commit_sha`（= X）を `--release` に **`--strict`** で検査（実施表の全行の `commit_sha` が X で、版の混在が無い。成果物台帳が古いことも失敗）。無ければスキップと明示し、非 strict |
+
+`docs/evidence/release.json`（取り込み時に管理者が書く。ワークフローは書かない）:
+
+```json
+{
+  "release": "v1.0.0",
+  "tag": "v1.0.0",
+  "commit_sha": "<X: テストした製品 commit の 40 桁の SHA>",
+  "images": { "backend": "sha256:…", "frontend": "sha256:…" },
+  "run_id": 123456789,
+  "recorded_at": "2026-10-11T10:00:00Z"
+}
 ```
 
-- `release.yml` の `evidence-check` ジョブ（`--release "$TARGET_SHA" --strict`）は、**タグが指す commit に commit 済みの証跡**を検査する。したがって、実施表の `commit_sha` が、タグを打つ commit と一致していること（別の版の行が残っていないこと）が公開の条件になる。
-  証跡の取り込みを commit したあとの commit にタグを打つ場合、実施表の対象 SHA はその commit と一致しない点に注意（取り込む run の SHA を、タグを打つ commit の SHA にそろえる運用を決めておく）。
+形式（版・タグ・SHA・digest・run・日時）は `check-evidence.mjs` の `release-record` 検査が確かめる。手順（管理者が行う。ワークフローから main へ直接 commit しない）:
+
+```sh
+# 1. X にタグを打つと release.yml が走る。run の id は URL（.../actions/runs/<id>）かリリースノートの「ビルドした run」から分かる
+node scripts/evidence/fetch-run.mjs --run <run-id>                       # CI の成果物（JUnit・観察値・ci-summary・regression-selection）
+node scripts/evidence/fetch-run.mjs --kind security --run <run-id>       # security の SARIF・SBOM・scan-run・findings・gate
+node scripts/evidence/build-executions.mjs --run <run-id> --prune-other-versions --release <X>
+# 2. docs/evidence/release.json を書く（X・イメージ digest・run id）
+npm run evidence:build && npm run evidence:check   # release.json があるので、X で --strict の検査になる
+# 3. これを commit Y として main に入れる（PR）。Y 以降の CI が、X の実施表を strict で検査し続ける
+```
+
 - 新しい検出（`FND-NEW-xxxxxx`）が出たら、`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で `security/finding-ids.yaml` に番号を振って commit する。
-- CI（`ci.yml` の docs-check）は、PR のたびに `check-evidence.mjs`（`--strict` なし）と `npm run evidence:test` を回す。
+- CI の docs-check は、PR のたびに `check-evidence.mjs` と `npm run evidence:test` を回す。
 
 ### 再生成の冪等性
 
@@ -99,7 +117,7 @@ node scripts/evidence/check-evidence.mjs --release <リリースの SHA> --stric
 | `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                       |
 | `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                   |
 | `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                       |
-| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`                                                                                                                                                                        |
+| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                             |
 
 ## 4. 設計判断と制約
 
