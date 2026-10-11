@@ -59,11 +59,17 @@ describe("リリース証跡の墨消し", () => {
   it("氏名・メール・メンションを置き換え、URL・コミット SHA は残す", () => {
     const { dir, records } = build();
     const notes = readFileSync(join(dir, "RELEASE_NOTES.md"), "utf8");
-    assert.ok(!notes.includes("someone") && !notes.includes("example.com"));
-    assert.match(notes, /https:\/\/github\.com\/octo\/repo/);
-    const doc = readFileSync(join(dir, "security-scan-secrets/gitleaks/gitleaks.sarif"), "utf8");
-    assert.ok(!doc.includes("Some Person") && !doc.includes("example.com"));
-    assert.ok(doc.includes("0123456789abcdef"));
+    // 全体を比べる（メンション・メールは置換され、URL は残る）
+    assert.equal(
+      notes,
+      "# v1\n担当: [REDACTED:account] と [REDACTED:email]。https://github.com/octo/repo は URL なので残す\n",
+    );
+    const doc = JSON.parse(readFileSync(join(dir, "security-scan-secrets/gitleaks/gitleaks.sarif"), "utf8"));
+    assert.deepEqual(doc.runs[0].results[0].partialFingerprints, {
+      author: "[REDACTED:author]",
+      email: "[REDACTED:email]",
+      commitSha: "0123456789abcdef",
+    });
     assert.deepEqual(records.map((r) => r.path).sort(), [
       "RELEASE_NOTES.md",
       "security-scan-secrets/gitleaks/gitleaks.sarif",
@@ -116,7 +122,7 @@ describe("リリース証跡の検査", () => {
     const r = checkReleaseFiles({ files: readTree(dir), owners: ["octo"] });
     assert.ok(r.problems.some((p) => /email/.test(p)));
     assert.ok(r.problems.some((p) => /personal-key:author/.test(p)));
-    assert.ok(r.problems.every((p) => !p.includes("some.person@example.com") && !p.includes("Some Person")));
+    assert.equal(r.problems.filter((p) => /Some Person/.test(p)).length, 0, "値そのものは出さない");
   });
 
   it("manifest の不整合（sha256 の不一致・redacted なし・manifest に無いファイル）を検出する", () => {

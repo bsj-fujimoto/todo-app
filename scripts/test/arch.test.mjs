@@ -40,8 +40,11 @@ describe("import の抽出", () => {
       ["./a.js", "../b.js", "node:fs", "./side.js", "./e.js", "./f.js", "./g.js"].sort(),
     );
     assert.ok(!stripComments(text).includes("commented"));
-    // 文字列の中の // はコメントではない（URL を残す）。includes ではなく正規表現で確かめる
-    assert.match(stripComments(text), /const url = "http:\/\/example\.com";/);
+    // 文字列の中の // はコメントではない（その行は丸ごと残る）
+    const kept = stripComments(text)
+      .split("\n")
+      .filter((l) => l.startsWith("const url"));
+    assert.deepEqual(kept, ['const url = "http://example.com";']);
   });
 
   it("相対・外部・解決不能を分ける（拡張子の省略と index.js も解決する）", () => {
