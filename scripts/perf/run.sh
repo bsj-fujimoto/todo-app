@@ -62,8 +62,11 @@ OBSERVER_PID=""
 
 log() { printf '[perf %s] %s\n' "$(date -u +%H:%M:%SZ)" "$*"; }
 
+# COMPOSE_EXTRA: 実験用の上書き（例 perf/experiments/log-silent.yml）。通常の試験では使わない
 compose() {
-  docker compose -p "$PROJECT" -f "$COMPOSE_BASE" -f perf/compose.perf.yml "$@"
+  local files=(-f "$COMPOSE_BASE" -f perf/compose.perf.yml)
+  if [ -n "${COMPOSE_EXTRA:-}" ]; then files+=(-f "$COMPOSE_EXTRA"); fi
+  docker compose -p "$PROJECT" "${files[@]}" "$@"
 }
 
 cleanup() {

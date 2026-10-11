@@ -20,7 +20,7 @@ function profileLines(profile) {
     WARMUP_RPS: 5,
     LOAD_RPS: wl.arrival_rate.load_rps,
     LOAD_DURATION_SEC: env("LOAD_DURATION_SEC", pick(sc.load.duration_sec)),
-    STRESS_STAGES: sc.stress.stages_rps.join(","),
+    STRESS_STAGES: env("STRESS_STAGES", sc.stress.stages_rps.join(",")),
     STRESS_STAGE_SEC: env("STRESS_STAGE_SEC", pick(sc.stress.stage_duration_sec)),
     SPIKE_DURATION_SEC: env("SPIKE_DURATION_SEC", pick(sc.spike.duration_sec)),
     SOAK_DURATION_SEC: env("SOAK_DURATION_SEC", pick(sc.soak.duration_sec)),

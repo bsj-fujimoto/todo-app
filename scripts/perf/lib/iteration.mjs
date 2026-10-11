@@ -22,7 +22,7 @@ async function analyzeOne(iterDir, name, scenario) {
   const summary = JSON.parse(await readFile(join(iterDir, `${name}.summary.json`), "utf8"));
   const raw = await readK6Raw(join(iterDir, `${name}.raw.json.gz`));
   const env = summary.env || {};
-  const opts = { groupBy: GROUPS[scenario] || [] };
+  const opts = { groupBy: GROUPS[scenario] || [], timelinePhase: scenario === "spike" ? "recovery" : null };
   if (scenario === "load" || scenario === "soak" || scenario === "capacity") {
     opts.rate = env.RATE;
     opts.durationSec = env.DURATION_SEC || env.STEP_SEC;

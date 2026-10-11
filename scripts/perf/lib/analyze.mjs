@@ -1,6 +1,7 @@
 // k6 の生データ（collected）から、判定に使う統計量を出す。純関数。
 // 統計量: p95 を主（平均のみでは判定しない）。外れ値: warm-up 除外（そもそも別実行）＋ 上位 0.1% 除外（n ≥ 100 のとき）。
 import { percentileSorted, round, sortedCopy, trimTop } from "./stats.mjs";
+import { phaseTail, phaseTimeline } from "./timeline.mjs";
 
 export const ENDPOINTS = ["list", "create", "toggle", "delete"];
 
@@ -90,6 +91,14 @@ function groupsOf(c, tags) {
   return groups;
 }
 
+// フェーズ内の推移と末尾（末尾はフェーズの後半までを上限 30 秒。短い試行でもフェーズ全体にならないように）
+function timelineOf(c, phase) {
+  const tl = phaseTimeline(c, phase, 5);
+  if (!tl) return null;
+  const tailSec = Math.min(30, Math.floor((tl.end_ms - tl.start_ms) / 2000));
+  return { phase, ...tl, tail: phaseTail(c, phase, tailSec) };
+}
+
 export function analyzeSegment(c, opts = {}) {
   const window = windowOf(c);
   const out = {
@@ -103,5 +112,6 @@ export function analyzeSegment(c, opts = {}) {
   if (opts.rate && opts.durationSec) {
     out.throughput_ratio = round(c.iterations / (opts.rate * opts.durationSec), 4);
   }
+  if (opts.timelinePhase) out.phase_timeline = timelineOf(c, opts.timelinePhase);
   return out;
 }

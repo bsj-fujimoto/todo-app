@@ -18,8 +18,9 @@ function capacityMetrics(v) {
 
 function spikeMetrics(v) {
   return {
-    "spike.recovery_list_p95_ms": v.recovery.list_p95_ms.mean,
-    "spike.recovery_error_rate": v.recovery.error_rate.mean,
+    "spike.recovery_tail_list_p95_ms": v.recovery.list_p95_ms.mean,
+    "spike.recovery_tail_error_rate": v.recovery.error_rate.mean,
+    "spike.time_to_recover_sec": v.recovery.time_to_recover_sec,
     "spike.during_list_p95_ms": v.during_spike.list_p95_ms_mean,
   };
 }
