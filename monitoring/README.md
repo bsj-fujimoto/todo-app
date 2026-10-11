@@ -16,6 +16,7 @@ localhost に対して実行する**構成にしている（リリースがま�
 | `monitoring/fp-fn-log.md`               | 誤検知・見逃しの台帳と運用ルール                                                                                                                                                      |
 | `monitoring/alert-tests.md`             | 通知試験の記録                                                                                                                                                                        |
 | `monitoring/drills/`                    | 通知試験・runbook 訓練の生の記録（時刻・結果・ack 時間）                                                                                                                              |
+| `monitoring/history/`                   | 通常実行の run history（JSONL）・結果・デプロイマーカーの保存例（手元の実行）。GitHub Actions の実行履歴は artifact（90 日保持）                                                      |
 | `scripts/monitoring/run-monitors.mjs`   | 監視の実行（依存は `yaml` のみ）。retry・timeout は定義どおり。メンテナンス窓・抑制ルールを評価して誤報を抑える（抑制も記録）                                                         |
 | `scripts/monitoring/alert.mjs`          | 失敗 → incident Issue 作成（同じ monitor の open な Issue があればコメント追記）、回復 → コメントして close、未 ack のエスカレーション                                                |
 | `scripts/monitoring/marker.mjs`         | デプロイマーカー（health の version / commit と GitHub Release のタグ・公開時刻）                                                                                                     |
