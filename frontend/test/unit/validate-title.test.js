@@ -62,7 +62,7 @@ describe("validateTitle", () => {
     run("[TC-027]", [rejected("a\nb", "TITLE_MULTILINE"), rejected("a\r\nb", "TITLE_MULTILINE")]);
   });
 
-  describe("[TC-028] 空白の範囲は String.prototype.trim() と同じ（暫定。UNK-006）", () => {
+  describe("[TC-028] 空白の範囲は String.prototype.trim() と同じ（UNK-006）", () => {
     run("[TC-028]", [
       rejected("\u3000", "TITLE_REQUIRED"),
       accepted("\u00a0a\u00a0", "a"),

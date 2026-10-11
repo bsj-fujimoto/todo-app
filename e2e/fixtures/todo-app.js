@@ -36,7 +36,8 @@ export class TodoApp {
   }
 
   row(text) {
-    return this.page.locator("li.task").filter({ has: this.title(text) });
+    const title = this.page.locator(".task-title", { hasText: new RegExp(`^${escapeRegExp(text)}$`) });
+    return this.page.locator("li.task").filter({ has: title });
   }
 
   checkbox(text) {

@@ -128,7 +128,7 @@ describe("state", () => {
     );
   });
 
-  it("[TC-066] 404 は保存失敗の文言（暫定。UNK-003）。対象の行は残る", () => {
+  it("[TC-066] 404 は保存失敗の文言（UNK-003）。対象の行は残る", () => {
     const state = run(
       ready(task(1)),
       { type: "op-started", id: task(1).id },

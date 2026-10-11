@@ -1,6 +1,7 @@
 // 保存失敗・通信断・backend 停止: TC-045〜TC-049。障害注入は page.route（DS-012）と、実際の backend プロセス停止の両方。
 import { test, expect } from "../fixtures/stack.js";
 import { DS002, DS002_TITLES, STORAGE_FAILURE_RESPONSE } from "../fixtures/data.js";
+import { createGate } from "../fixtures/gate.js";
 import { MESSAGE } from "../fixtures/todo-app.js";
 
 /** 指定メソッドの /api/v1/tasks 系リクエストに 503 STORAGE_FAILURE を返し、呼ばれた回数を数える。 */
@@ -38,16 +39,30 @@ test.describe("画面から見た保存失敗（503 STORAGE_FAILURE を注入）
   );
 
   test(
-    "[TC-046] 完了切替の保存失敗は上部に文言を出し、チェックは元のまま",
+    "[TC-046] 完了切替の保存失敗は上部に文言を出し、チェックは通信中も失敗後も変化しない",
     { tag: ["@resilience"] },
     async ({ app, stack, page }) => {
       await stack.seed(DS002);
-      const hits = await injectStorageFailure(page, "PATCH");
+      // PATCH の応答を保留し、解放したあとに 503 を返す（通信中の表示を確かめるため）
+      const gate = createGate();
+      const hits = [];
+      await page.route("**/api/v1/tasks/*", async (route) => {
+        if (route.request().method() !== "PATCH") return route.fallback();
+        hits.push(route.request().url());
+        await gate.wait();
+        return route.fulfill(STORAGE_FAILURE_RESPONSE);
+      });
       await app.open();
 
       await app.checkbox("牛乳を買う").click();
+      await expect.poll(() => hits.length).toBe(1); // 送信中。ここまでの間に反転していれば見える
+      await expect(app.checkbox("牛乳を買う")).not.toBeChecked();
+      await app.expectStrikethrough("牛乳を買う", false);
+      await expect(app.row("牛乳を買う")).toHaveAttribute("aria-busy", "true");
 
+      gate.release();
       await expect(app.saveError).toHaveText(MESSAGE.storageFailure);
+      await expect(app.row("牛乳を買う")).toHaveAttribute("aria-busy", "false");
       await expect(app.checkbox("牛乳を買う")).not.toBeChecked();
       await app.expectStrikethrough("牛乳を買う", false);
       await app.expectTitles(DS002_TITLES);

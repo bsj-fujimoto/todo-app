@@ -1,6 +1,7 @@
 // 完了切替・削除（状態遷移表 docs/03-test-spec.md §8.2 の画面側）: TC-008（ST-02, ST-03）、TC-013（ST-06）、TC-014（ST-06, ST-07）。
 import { test, expect } from "../fixtures/stack.js";
 import { DS002, DS002_TITLES } from "../fixtures/data.js";
+import { createGate } from "../fixtures/gate.js";
 
 const ids = (tasks) => tasks.map((t) => t.id);
 
@@ -38,6 +39,47 @@ test(
     expect(afterOff).toEqual(before);
     expect(ids(afterOn)).toEqual(ids(before));
     expect(afterOn.map((t) => t.title)).toEqual(before.map((t) => t.title));
+  },
+);
+
+test(
+  "[TC-008] 通信中はチェック・取り消し線が元のままで、成功後にだけ切り替わる。連打は 1 回だけ、別の行の操作は妨げない",
+  { tag: ["@transition"] },
+  async ({ app, stack, page }) => {
+    await stack.seed(DS002);
+    const gate = createGate();
+    const held = [];
+    // 「仕様書をレビューする」の PATCH だけ応答を保留する
+    await page.route(`**/api/v1/tasks/${DS002[1].id}`, async (route) => {
+      held.push(route.request().postData());
+      await gate.wait();
+      return route.fallback();
+    });
+    await app.open();
+
+    await app.checkbox("仕様書をレビューする").click();
+    await expect.poll(() => held.length).toBe(1);
+    await expect(app.checkbox("仕様書をレビューする")).not.toBeChecked();
+    await app.expectStrikethrough("仕様書をレビューする", false);
+    await expect(app.row("仕様書をレビューする")).toHaveAttribute("aria-busy", "true");
+
+    // 別の行は通信中でも操作できる
+    await app.checkbox("牛乳を買う").click();
+    await expect(app.checkbox("牛乳を買う")).toBeChecked();
+    await app.expectStrikethrough("牛乳を買う", true);
+
+    // 通信中の同じ行を押し直しても、送るのは 1 回だけ（表示も変わらない）
+    await app.checkbox("仕様書をレビューする").click();
+    await expect(app.checkbox("仕様書をレビューする")).not.toBeChecked();
+    expect(held).toHaveLength(1);
+
+    gate.release();
+    await expect(app.checkbox("仕様書をレビューする")).toBeChecked();
+    await app.expectStrikethrough("仕様書をレビューする", true);
+    await app.expectTitles(DS002_TITLES);
+    await expect(app.row("仕様書をレビューする")).toHaveAttribute("aria-busy", "false");
+    expect(stack.calls("PATCH").map((c) => c.status)).toEqual([200, 200]);
+    expect((await stack.db()).map((t) => t.completed)).toEqual([true, true, true]);
   },
 );
 
