@@ -12,10 +12,15 @@ const MIME = {
 };
 
 export const SECURITY_HEADERS = {
-  "content-security-policy": "default-src 'self'",
+  "content-security-policy":
+    "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer",
   "x-frame-options": "DENY",
+  "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+  "cross-origin-opener-policy": "same-origin",
+  "cross-origin-resource-policy": "same-origin",
+  "cross-origin-embedder-policy": "require-corp",
 };
 
 const BAD_GATEWAY =

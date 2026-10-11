@@ -1,0 +1,107 @@
+# セキュリティ検出のトリアージ台帳（人が書く）。scripts/security/triage.mjs が検出に突き合わせ、security/findings.json の元にする。
+# 機械が決めるのは「重複（同じ勧告 × 同じ部品）・前回との差分・ゲート」だけで、真偽や文脈はここに書かれたものを写す。機械は作り話を足さない。
+#
+# 状態（status）: tp 真陽性（要是正）/ fp 誤検出 / na 該当しない（このアプリでは起こらない）/ dup 重複（手動）。
+#   accepted は accepted-risks.yaml に書く。fixed は「前回あったが今回無い」ことを機械が判定する。何も書かれていない検出は untriaged のまま残る。
+# 必須: すべての status に reason。tp には recommendation（修正方法）・owner（ロール）・due・reverify_condition も必須。
+# 任意（書けるものは書く。インパクトの判断材料になる）:
+#   reachability（到達可能性）/ exposure（公開範囲）/ asset_impact（資産影響）/ compensating_controls（補完統制）/ alternative（代替案）/ issue
+# 書式:
+#   - match:
+#       tool: trivy
+#       rule_id: CVE-2026-0000
+#       component: some-package     # 任意。location は glob（行番号は無視）
+#     status: fp
+#     reason: 誤検出の根拠
+#     reachability: 到達不能（このコードパスを使わない）
+#     exposure: 内部のみ
+#     asset_impact: なし
+#     compensating_controls: 入力は frontend の検証と backend の検証で二重に弾く
+#     decided_by: セキュリティ担当
+#     decided_at: 2026-10-11
+# 現時点で人の判断が必要な検出は、実行結果（security-findings の findings.json）を見て追記する。
+version: 1
+entries:
+  - match:
+      tool: owasp-zap
+      rule_id: "10049-3"
+    status: tp
+    reason: API の応答（/api/v1/tasks・/api/v1/health）に Cache-Control が無く、共有キャッシュ・ブラウザに保存されうる。タスク一覧は更新が即時に見えるべきデータで、古い一覧が出ると誤表示になる。重大度は info（機密データは含まない）。
+    reachability: 到達可能（認証の無い公開 API。誰でも GET できる）
+    exposure: frontend の公開ポート（8080）経由。社外公開の想定は無い（ローカル・社内の検証用）
+    asset_impact: 低（タスクの一覧は個人用で機密ではない。影響は古いデータの表示）
+    compensating_controls: 静的ファイルは expires -1 で毎回再検証させている。API の応答はブラウザの既定ではヒューリスティックキャッシュに入りにくい
+    recommendation: backend の応答に Cache-Control no-store を付ける（backend/src/http か app.js の onSend フック）。OpenAPI の契約には影響しない（ヘッダの追加のみ）
+    alternative: frontend の nginx で /api/ の location に proxy_hide_header と add_header を足す（ただし location で add_header を書くとセキュリティヘッダの継承が切れるので、全ヘッダを書き直す必要がある）
+    owner: バックエンド担当
+    due: 2026-12-31
+    reverify_condition: backend に Cache-Control を付けたあと security.yml の ZAP 走査で 10049 が消えること
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "100000-*"
+    status: na
+    reason: ZAP の探索リクエスト（存在しない URL・不正な入力・誤ったメソッド）に対し、サーバーが仕様どおり 4xx で拒否したことの記録（info）。異常ではなく、期待する防御の挙動。
+    reachability: 該当しない（脆弱性ではない）
+    exposure: 該当しない
+    asset_impact: なし
+    compensating_controls: 入力検証（TC-010〜012・TC-030〜036）と 404 の応答（TC-011）がテストで固定されている
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "100001"
+    status: na
+    reason: 存在しないパス（ZAP の SSRF 探索の /computeMetadata/ や /latest/ など）に対し、/api 以外は nginx の既定の HTML 404 を返すため「予期しない Content-Type」と判定された（low）。/api 以外は静的ファイルの配信だけで、攻撃面にならない。
+    reachability: 該当しない（404 の本文は固定の HTML で、入力を反映しない）
+    exposure: frontend の公開ポート（8080）
+    asset_impact: なし
+    compensating_controls: nginx は server_tokens off。404 は入力を反映しない。API のエラーは JSON（openapi.yaml の Error スキーマ）
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "10109"
+    status: na
+    reason: ZAP が画面を「モダンな Web アプリ」と判定しただけの情報（info）。脆弱性ではなく、AJAX スパイダーを使う目安の通知。
+    reachability: 該当しない
+    exposure: 該当しない
+    asset_impact: なし
+    compensating_controls: 該当しない
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: compose-check
+      rule_id: COMPOSE-006
+    status: na
+    reason: docker-compose.yml の frontend は 8080 を全インターフェースで公開する。これはローカル・社内の検証用の構成で、利用者が自分の端末で http://localhost:8080 を開くための意図した公開。外部公開の本番環境は無い（SECURITY.md）。公開先を絞りたい場合は FRONTEND_PORT の代わりに 127.0.0.1:8080:8080 とする。
+    reachability: 到達可能（意図したもの）
+    exposure: 検証用の端末・社内ネットワーク
+    asset_impact: 低（個人用の ToDo。認証・機密データなし）
+    compensating_controls: 非 root・cap_drop ALL・セキュリティヘッダ・入力検証。backend のポートはホストへ公開しない
+    reverify_condition: 本番環境に出すとき（その時点で、公開範囲・認証・TLS を設計する）
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "10049-1"
+    status: na
+    reason: 「保存されない内容（Non-Storable Content）」の記録（info）。POST・PATCH・DELETE の応答などが共有キャッシュに保存されないという、望ましい状態の通知で、脆弱性ではない。
+    reachability: 該当しない
+    exposure: 該当しない
+    asset_impact: なし
+    compensating_controls: 該当しない
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11
+  - match:
+      tool: owasp-zap
+      rule_id: "10049-2"
+    status: na
+    reason: 「保存はできるが再利用されない内容」（info）。対象は静的ファイルと存在しないパスの 404 で、機密を含まず、expires -1 で毎回再検証させている。
+    reachability: 該当しない（機密データを含まない）
+    exposure: frontend の公開ポート（8080）
+    asset_impact: なし
+    compensating_controls: 静的ファイルは expires -1 で毎回再検証
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-11

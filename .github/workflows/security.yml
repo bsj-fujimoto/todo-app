@@ -1,0 +1,413 @@
+name: Security
+
+# PR・main への push・週次（月曜）・手動・他ワークフロー（release.yml）からの再利用で動く。
+# マージの可否は集約ジョブ `security-result` だけを Ruleset の required check にして決める（skipped は成功扱いにしない）。
+# どの検査も出力を機械可読（SARIF / JSON / CycloneDX）で artifact に 90 日保存し、検査ごとに scan-run.json
+# （対象リポジトリ・branch・commit・イメージ digest・実行日時・ツール名と版・コマンド・設定ファイル）を残す。
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 19 * * 1"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      create_issues:
+        description: "medium の検出を Issue にする（release.yml からは false）"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # 対象 SHA を明示する。pull_request では merge commit ではなく PR の head を検査し、記録する。
+  TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SECURITY_RESULTS: security-results
+
+jobs:
+  # ---- ワークフロー統制の自動検査 + 方針ファイルの検査 -----------------------------------------
+  governance:
+    name: governance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: actionlint（ワークフローの構文・式・シェルの静的検査）
+        run: bash scripts/security/scan.sh actionlint
+      - name: ワークフロー統制（W1〜W10）と方針ファイルの期限・形式
+        run: bash scripts/security/scan.sh workflows
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-governance
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- SAST（CodeQL。javascript-typescript、security-extended）---------------------------------
+  sast:
+    name: sast
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # Code Scanning への SARIF アップロード
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: ジョブ開始時刻（scan-run 用）
+        run: echo "SCAN_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          config-file: ./security/codeql-config.yml
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: /language:javascript-typescript
+          output: sarif-results
+          # フォークの PR は書き込み権限が無く Code Scanning に上げられない。SARIF は artifact に残す。
+          upload: ${{ github.event.pull_request.head.repo.fork && 'never' || 'always' }}
+      - name: SARIF を保存し、scan-run.json を残す
+        run: |
+          mkdir -p security-results/codeql
+          cp sarif-results/*.sarif security-results/codeql/
+          node scripts/security/scan-run.mjs --scan codeql --kind sast --tool CodeQL \
+            --command "github/codeql-action/init + analyze（languages=javascript-typescript, build-mode=none, queries=security-extended）" \
+            --config security/codeql-config.yml --started "$SCAN_STARTED_AT" --exit-code 0 --ok-codes 0 \
+            --coverage-language javascript-typescript --coverage-path "リポジトリ全体（security/codeql-config.yml の paths-ignore を除く）" \
+            --exclusion "security/codeql-config.yml の paths-ignore（node_modules・dist・coverage・test-results・playwright-report・security-results）" \
+            --threshold "high 以上の未解決は triage.mjs で失敗（Code Scanning のアラートも同じ SARIF）" \
+            --out-dir security-results/codeql
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-sast
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- Secret（gitleaks。履歴全体）------------------------------------------------------------
+  secrets:
+    name: secrets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: gitleaks（git 履歴全体。設定は security/gitleaks.toml）
+        run: bash scripts/security/scan.sh gitleaks
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-secrets
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- SCA / SBOM（npm audit 2 本・osv-scanner・CycloneDX）------------------------------------
+  sca:
+    name: sca
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: npm audit（--omit=dev と全体）
+        run: bash scripts/security/scan.sh npm-audit
+      - name: osv-scanner（直接・推移依存）
+        run: bash scripts/security/scan.sh osv
+      - name: CycloneDX SBOM（npm sbom。実行時依存 / 全体）
+        run: bash scripts/security/scan.sh sbom
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-sca
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- Container / IaC（trivy fs + 両イメージ、hadolint、compose の設定誤り）-------------------
+  container-iac:
+    name: container-iac
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # trivy / hadolint の SARIF を Code Scanning に上げる
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: trivy の脆弱性 DB のキャッシュ
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+      - name: trivy fs（vuln, misconfig, secret。Dockerfile・workflow 以外の設定も含む）
+        run: bash scripts/security/scan.sh trivy-fs
+      - name: hadolint（Dockerfile）
+        run: bash scripts/security/scan.sh hadolint
+      - name: compose の設定誤り
+        run: bash scripts/security/scan.sh compose-check
+      - name: イメージをビルドする（backend / frontend）
+        run: |
+          docker build -f backend/Dockerfile --build-arg COMMIT_SHA="$TARGET_SHA" -t todo-app-backend:ci .
+          docker build -f frontend/Dockerfile -t todo-app-frontend:ci .
+      - name: trivy image（backend。イメージ SBOM も出す）
+        run: bash scripts/security/scan.sh trivy-image backend todo-app-backend:ci
+      - name: trivy image（frontend。イメージ SBOM も出す）
+        run: bash scripts/security/scan.sh trivy-image frontend todo-app-frontend:ci
+      - name: Code Scanning に SARIF を上げる（trivy fs）
+        if: github.event.pull_request.head.repo.fork != true
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: security-results/trivy-fs/trivy-fs.sarif
+          category: trivy-fs
+      - name: Code Scanning に SARIF を上げる（hadolint）
+        if: github.event.pull_request.head.repo.fork != true
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: security-results/hadolint/hadolint.sarif
+          category: hadolint
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-container-iac
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- License（security/license-policy.yaml）-----------------------------------------------
+  license:
+    name: license
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: ライセンス方針の評価（許可リスト外は違反。違反があれば失敗）
+        run: bash scripts/security/scan.sh license
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-license
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- DAST（OWASP ZAP baseline + API 走査。runner 上の compose スタックに対して）------------------
+  dast:
+    name: dast
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: ZAP（zap-baseline.py と zap-api-scan.py。しきい値・除外は security/zap-rules.tsv）
+        env:
+          COMMIT_SHA: ${{ env.TARGET_SHA }}
+        run: bash scripts/security/scan.sh zap
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-dast
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- Dependency review（PR のみ。high 以上で失敗、ライセンスは security/license-policy.yaml と同じ）----
+  dependency-review:
+    name: dependency-review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime, development
+          # security/license-policy.yaml の allow と同じ（check-policy が一致を検査する）
+          allow-licenses: MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, Python-2.0, CC0-1.0, BlueOak-1.0.0, Unlicense
+          # license-policy.yaml の exceptions と同じ（E2E の開発依存。期限は license-policy.yaml 側で管理。check-policy が一致を検査する）
+          allow-dependencies-licenses: pkg:npm/%40axe-core/playwright, pkg:npm/axe-core
+          retry-on-snapshot-warnings: true
+
+  # ---- OpenSSF Scorecard（週次のみ。情報提供で、ゲートには含めない）------------------------------
+  scorecard:
+    name: scorecard
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      security-events: write # SARIF を Code Scanning に上げる
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: ジョブ開始時刻（scan-run 用）
+        run: echo "SCAN_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: false # 公開（OIDC）をしないので id-token は要らない
+      - name: SARIF を保存し、scan-run.json を残す
+        run: |
+          mkdir -p security-results/scorecard
+          cp results.sarif security-results/scorecard/scorecard.sarif
+          node scripts/security/scan-run.mjs --scan scorecard --kind config --tool scorecard --informational \
+            --command "ossf/scorecard-action（results_format=sarif, publish_results=false）" \
+            --started "$SCAN_STARTED_AT" --exit-code 0 --ok-codes 0 --coverage-path "リポジトリの設定・運用（GitHub API）" \
+            --note "情報提供（リポジトリ運用の成熟度）。コードの脆弱性ではないのでゲートには含めない" --out-dir security-results/scorecard
+      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: security-results/scorecard/scorecard.sarif
+          category: scorecard
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-scorecard
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- トリアージ（重複排除・台帳の適用・前回差分・ゲート）-----------------------------------------
+  triage:
+    name: triage
+    if: always()
+    needs: [governance, sast, secrets, sca, container-iac, license, dast]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read # 前回（main の直近成功 run）の findings.json を取得する
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: security-scan-*
+          path: security-results
+          merge-multiple: true
+      - name: 前回の findings.json（main の直近の成功 run）を取得する。無ければ「前回なし」として扱う
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p previous
+          id="$(gh run list --repo "$REPO" --workflow security.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty' || true)"
+          if [ -n "$id" ]; then
+            gh run download "$id" --repo "$REPO" --name security-findings --dir previous || echo "前回の artifact を取得できなかった（前回なし扱い）"
+          else
+            echo "main の成功 run がまだ無い（前回なし扱い）"
+          fi
+      - name: トリアージ（security/triage.yaml・accepted-risks.yaml を適用。critical/high の未解決は失敗）
+        run: node scripts/security/triage.mjs --results security-results --out security-findings --previous previous/findings.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-findings
+          path: security-findings
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- medium の検出を Issue にする（PR では作らない）----------------------------------------
+  file-security-issues:
+    name: file-security-issues
+    if: always() && github.event_name != 'pull_request' && inputs.create_issues != false && needs.triage.result != 'skipped'
+    needs: [triage]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: security-findings
+          path: security-findings
+      - name: medium の未解決を Issue にする（ラベル security。同じ指紋の open Issue があれば作らない）
+        run: node scripts/security/file-security-issues.mjs --findings security-findings/findings.json
+
+  # ---- ゲート（Ruleset の required check はこれ）--------------------------------------------
+  security-result:
+    name: security-result
+    if: always()
+    needs: [governance, sast, secrets, sca, container-iac, license, dast, dependency-review, scorecard, triage]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: ゲート判定（success 以外は失敗。skipped は、そのイベントでは動かないと宣言されたジョブだけ許す）
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          EVENT: ${{ github.event_name }}
+        run: node scripts/security/gate-needs.mjs

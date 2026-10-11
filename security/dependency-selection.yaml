@@ -1,0 +1,203 @@
+# 直接依存の選定記録（なぜこれを選び、何を検討し、保守状況がどうか）。docs ではなく、依存の変更と同じ PR で更新する台帳。
+# 保守状況は 2026-10-11 に npm レジストリ（npm view）・GitHub API（archived / pushed_at）・GitHub Advisory Database で実際に調べた値。
+# 規則:
+#   - 直接依存（各 package.json の dependencies / devDependencies）を追加・更新・削除したら、ここも更新する。
+#   - last_checked から 180 日を過ぎると CI（check-policy）が失敗する。見直し時に保守状況を調べ直して日付を更新する。
+#   - archived・非推奨・12 か月以上の無更新・重大な勧告が繰り返されているものは、handling に「扱い」と「再検討の条件」を書く。
+# 新しい版・脆弱性は Dependabot（週次）と security.yml（npm audit・osv-scanner・trivy・dependency-review）が検出する。
+version: 1
+reviewed_by: セキュリティ担当
+dependencies:
+  - name: fastify
+    version: 5.12.5
+    workspace: backend
+    kind: runtime
+    reason: スキーマ（JSON Schema）による入力検証と応答のシリアライズ、構造化ログ（pino）、プラグイン機構を標準で持ち、contract-first（openapi.yaml）の API を薄く実装できる。HTTP の挙動（ステータス・エラー応答）を自分で決めやすい。
+    alternatives:
+      - express（広く使われるが、非同期エラーの扱い・検証・ログを自前で足す必要がある）
+      - node:http のみ（依存ゼロだが、ルーティング・本文のパース・上限・エラー整形をすべて自作になり、検証抜けのリスクが増える）
+      - hono / koa（軽量だが、このリポジトリで必要な検証・ログ・テスト用の inject を fastify が標準で満たす）
+    maintenance: 最新 5.12.5（2026-09-16 公開）、リポジトリの最終 push は 2026-10-10、star 約 37k、archived ではない、MIT。2026-09 に複数の勧告（high を含む）が公開され短期間に修正されており、活発に保守されている反面、検証まわりの勧告が続いている。
+    handling: 継続利用。固定した版（5.12.5）は勧告の影響範囲に入らない（GitHub Advisory Database で確認）。Dependabot を週次にして追従し、検証系の勧告は security.yml が検出する。再検討の条件は、修正が 90 日以上止まる・メンテナ体制が変わる。
+    last_checked: 2026-10-11
+  - name: node:sqlite（Node.js 組み込み）
+    version: Node 24
+    workspace: backend
+    kind: runtime
+    reason: 保存先は SQLite だが、ネイティブ拡張をビルドするパッケージを入れると、インストール時スクリプト・イメージのビルド環境・サプライチェーンの面が増える。Node 24 の組み込みモジュールなら依存が増えず、Dockerfile も npm ci --ignore-scripts のまま済む。
+    alternatives:
+      - better-sqlite3（成熟していて高速だが、ネイティブビルドと install スクリプトが要る）
+      - sqlite3（同上。非同期 API でコールバックが多い）
+      - 別の DB サーバー（1 人用のアプリには過剰。compose の構成も増える）
+    maintenance: Node.js 本体の一部（Node 24 は LTS）。保守は Node.js プロジェクトに従う。API は release candidate 段階の可能性があるため、Node の更新時にテスト（backend/test/api/persistence ほか）で挙動を確かめる。
+    handling: 継続利用。再検討の条件は、API の互換性が崩れる・性能要件（TC-073）を満たせなくなる。
+    last_checked: 2026-10-11
+  - name: ajv
+    version: 8.20.0
+    workspace: backend
+    kind: test
+    reason: 契約テスト（TC-037・TC-075）が openapi.yaml のスキーマで応答を検証するのに使う。JSON Schema のバリデータとして事実上の標準で、$ref の解決とフォーマット検証が揃っている。
+    alternatives:
+      - zod（TypeScript 向けでスキーマを別に書く必要があり、openapi.yaml が正本でなくなる）
+      - 応答を手書きの assert で検証（契約と実装のずれを検出できない）
+      - schemathesis 等のプロパティテスト（Python / Docker が増える。契約チェックは手元で足りる）
+    maintenance: 最新 8.20.0（2026-04-24 公開）、リポジトリの最終 push は 2026-09-06、star 約 15k、archived ではない。過去の勧告は ReDoS（$data オプション。2026-02）と 2022 年の prototype pollution で、$data オプションは使っていない。
+    handling: 継続利用（テスト専用の devDependency で、Docker イメージには入らない）。
+    last_checked: 2026-10-11
+  - name: ajv-formats
+    version: 3.0.1
+    workspace: backend
+    kind: test
+    reason: ajv に date-time・uuid などのフォーマット検証を足す公式の拡張。openapi.yaml の format（uuid・date-time）を契約テストで検証するのに必要。
+    alternatives:
+      - フォーマットを ajv の formats オプションに自前で定義する（uuid と date-time の 2 つだけなので可能）
+      - フォーマット検証をしない（契約の format が検証されなくなる）
+    maintenance: 最新 3.0.1（2024-03-30 公開）で、2026-10-11 時点で約 2 年半更新が無い。リポジトリの最終 push は 2024-08-18、archived ではない、MIT。ajv 本体と同じ organization（ajv-validator）の公式拡張で、現行の ajv 8 系と組み合わせて動作し、勧告は無い。
+    handling: 長期未更新だが継続利用と決めた。根拠は、テスト専用で本番に入らない・公式拡張・勧告なし・自前定義への置換が小さい（約 10 行）こと。再検討の条件は、勧告が出る・ajv の major 更新で非互換になる・さらに 12 か月更新が無い。そのときは ajv の formats オプションに uuid / date-time を自前定義して外す。
+    last_checked: 2026-10-11
+  - name: yaml
+    version: 2.9.1
+    workspace: backend
+    kind: test
+    reason: 契約テストが openapi.yaml を読むために使う。YAML 1.2 準拠で、アンカー・複数行文字列を正しく扱える。ルートの devDependency にも同じ版を入れて、GitHub Actions のワークフロー検査（check-workflows）が使う。
+    alternatives:
+      - js-yaml（広く使われるが YAML 1.1 準拠で、GitHub Actions の `on:` キーが真偽値 true として読まれてしまう）
+      - scripts/ci/lib/yaml-lite.mjs（自作の台帳向けサブセット。ワークフローのような一般の YAML は読めない）
+    maintenance: 最新 2.9.1（2026-09-11 公開）、リポジトリの最終 push は 2026-09-23、star 約 1.7k、archived ではない、ISC。メンテナは実質 1 人だが頻繁にリリースされている。
+    handling: 継続利用（開発依存のみ）。再検討の条件は、更新が 12 か月止まる。
+    last_checked: 2026-10-11
+  - name: happy-dom
+    version: 20.14.6
+    workspace: frontend
+    kind: test
+    reason: frontend の単体テスト（一覧描画 TC-062 ほか）が DOM を必要とする。ブラウザを起動せずに高速に DOM を作れる。
+    alternatives:
+      - jsdom（より完全だが重く、依存が多い）
+      - linkedom（軽量だが、イベント・フォーカスなど一部の挙動の再現が弱い）
+      - ブラウザ（Playwright）だけで検証（単体テストのフィードバックが遅くなる）
+    maintenance: 最新 20.14.6（2026-10-08 公開）、リポジトリの最終 push は 2026-10-08、star 約 4.7k、archived ではない、MIT。過去に critical を含む勧告が複数ある（2024-11 の script タグによるサーバー側コード実行、2025-10 の VM コンテキスト脱出による RCE、2026-03 の high 2 件など）。現行 20.14.6 は勧告の影響範囲に入らない。
+    handling: 継続利用。勧告の多くは「信頼できないコードを実行する」使い方で問題になるもので、本プロジェクトは自分たちのコードの描画テストだけに使い、外部の入力・ページを読み込まない（テスト専用で本番に入らない）。再検討の条件は、新しい critical 勧告が出て修正が遅い・jsdom に置き換える方が安全になる。
+    last_checked: 2026-10-11
+  - name: "@playwright/test"
+    version: 1.64.0
+    workspace: e2e
+    kind: test
+    reason: 複数ブラウザ（chromium / firefox / webkit）・モバイル幅・trace / video / screenshot・並列実行・JUnit / HTML レポートを 1 つで賄える。retries=0 の運用と、テストごとの隔離（専用スタック）に向いている。
+    alternatives:
+      - Cypress（WebKit 対応が限定的で、複数ブラウザの並列実行が有料機能に寄る）
+      - Selenium / WebDriver（待機・レポート・trace を自前で組む必要がある）
+      - Vitest browser mode（まだ E2E の運用機能が揃っていない）
+    maintenance: 最新 1.64.0（2026-10-07 公開）、リポジトリの最終 push は 2026-10-10、star 約 97k、archived ではない、Apache-2.0、Microsoft が保守。
+    handling: 継続利用。Playwright のブラウザは CI でキャッシュし、版は package-lock.json で固定。
+    last_checked: 2026-10-11
+  - name: "@axe-core/playwright"
+    version: 4.13.0
+    workspace: e2e
+    kind: test
+    reason: アクセシビリティの自動検査（TC-067〜069）に axe-core を Playwright から呼ぶ公式アダプタ。画面のラベル・名前・コントラスト等を機械的に検査できる。
+    alternatives:
+      - pa11y（別ブラウザプロセスと設定が増える）
+      - Lighthouse CI（性能・SEO も含み重い。a11y のルールは axe ベース）
+      - 手動確認のみ（TC-071 で補うが、毎回の回帰にならない）
+    maintenance: 最新 4.13.0（2026-08-11 公開）、リポジトリの最終 push は 2026-10-09、star 約 700、archived ではない、MPL-2.0（Deque）。
+    handling: 継続利用。MPL-2.0 はファイル単位のコピーレフトで、未改変のまま開発依存として使い配布しないため、security/license-policy.yaml に期限付き（2027-04-11）の例外として記録済み。
+    last_checked: 2026-10-11
+  - name: eslint
+    version: 10.12.0
+    workspace: root
+    kind: tooling
+    reason: 複雑度・関数の長さ・引数の数・純粋さ（Date.now などの直接呼び出しの禁止）の規約をルールとして有効にし、CI で止めるのに必要な標準の linter。ルール名（complexity・max-lines-per-function・max-params・no-restricted-properties）がそのまま規約文書に対応する。
+    alternatives:
+      - Biome（lint と整形を 1 つにまとめられるが、複雑度・引数・禁止プロパティの規約を同じ粒度で表現できない）
+      - oxlint（高速だが、規約に必要なルールの一部が未対応）
+      - TypeScript の strict だけ（コードは JS で、これらの規約は型検査の対象外）
+    maintenance: 最新 10.12.0（2026-10-02 公開）、リポジトリの最終 push は 2026-10-10、star 約 28k、archived ではない、MIT。
+    handling: 継続利用。
+    last_checked: 2026-10-11
+  - name: "@eslint/js"
+    version: 10.0.1
+    workspace: root
+    kind: tooling
+    reason: ESLint の推奨ルール集（js.configs.recommended）。eslint.config.js の土台。
+    alternatives:
+      - 推奨ルール無しで規約のルールだけを列挙する（未使用変数などの基本的な誤りを見逃す）
+    maintenance: 最新 10.0.1（2026-02-06 公開、2026-07 に更新）。eslint 本体と同じリポジトリ・同じ体制で保守され、最終 push は 2026-10-10。MIT。
+    handling: 継続利用（eslint と同時に更新する）。
+    last_checked: 2026-10-11
+  - name: globals
+    version: 17.13.0
+    workspace: root
+    kind: tooling
+    reason: node / browser のグローバル変数の一覧を ESLint に渡す（no-undef を正しく効かせる）。
+    alternatives:
+      - eslint.config.js に globals を手書きする（更新漏れ・誤りが出る）
+    maintenance: 最新 17.13.0（2026-10-01 公開）、リポジトリの最終 push は 2026-10-01、star 約 600、archived ではない、MIT（sindresorhus）。
+    handling: 継続利用。
+    last_checked: 2026-10-11
+  - name: prettier
+    version: 3.9.10
+    workspace: root
+    kind: tooling
+    reason: 整形の議論をなくし、差分を意味のある変更だけにする。format:check を CI で止める。
+    alternatives:
+      - dprint（高速だが、Markdown / YAML / JSON まで 1 つでそろえるなら prettier の方が実績がある）
+      - Biome の formatter（JS 中心で Markdown / YAML は対象外）
+    maintenance: 最新 3.9.10（2026-10-10 公開）、リポジトリの最終 push は 2026-10-10、star 約 52k、archived ではない、MIT。
+    handling: 継続利用。
+    last_checked: 2026-10-11
+  - name: "@redocly/cli"
+    version: 2.62.1
+    workspace: root
+    kind: tooling
+    reason: OpenAPI（backend/openapi.yaml）の lint（構造・参照・推奨ルール）を CI の contract ジョブで行う。ルールの有効・無効を設定ファイルに理由付きで書ける。
+    alternatives:
+      - Spectral（Stoplight。ルールは柔軟だが、OpenAPI 3.1 の組み込みルールの網羅は Redocly の方が広い）
+      - vacuum（Go 製の単体バイナリ。npm 依存を増やさないが、設定とルールの資産が少ない）
+      - openapi-generator validate（Java が必要）
+    maintenance: 最新 2.62.1（2026-10-09 公開）、リポジトリの最終 push は 2026-10-09、star 約 1.5k、archived ではない、MIT（Redocly が保守）。依存が多い（インストールで約 140 パッケージ）。
+    handling: 継続利用。依存の多さは SBOM・osv-scanner・trivy が監視する。再検討の条件は、依存に未修正の high 以上が残る状態が続く場合（Spectral か vacuum に置き換える）。
+    last_checked: 2026-10-11
+  - name: npm sbom（npm 組み込み）
+    version: npm 11
+    workspace: root
+    kind: tooling
+    reason: SBOM を CycloneDX（JSON）で、workspaces を含めて、実行時依存のみ・全体の 2 本で出す。npm 組み込みなので依存パッケージが 1 つも増えない。検査ツール自身が供給網リスクを増やさないことを優先した。
+    alternatives:
+      - "@cyclonedx/cyclonedx-npm（CycloneDX 公式。仕様版を 1.6 に指定できるが、推移依存が約 100 パッケージ増え、その中の libxmljs2 → nan（LicenseRef-scancode-dco-1.1）や normalize-package-data（JSON ライセンス）がライセンス方針に違反した。いったん採用して、PR の dependency-review で気づいて外した）"
+      - trivy / syft で SBOM を出す（コンテナ向けには trivy を併用している）
+    maintenance: npm 本体の機能（npm は Node.js に同梱）。CycloneDX は 1.5。
+    handling: 継続利用。再検討の条件は、仕様版 1.6 以上が必要になった場合（そのときは依存の増え方とライセンスを評価して選ぶ）。
+    last_checked: 2026-10-11
+  - name: scripts/security/lib/licenses.mjs（自作のライセンス評価）
+    version: リポジトリ内
+    workspace: root
+    kind: tooling
+    reason: package-lock.json と node_modules/*/package.json の license を読み、SPDX 式（OR / AND / 括弧 / WITH）を許可リストで評価する。外部ツール（license-checker 系）は推移依存が増え、その依存自身がライセンス方針に違反（GPL-2.0-only を含む spdx-satisfies、DCO を含む nan など）・Scorecard の警告（spdx-license-ids ほか）になったため、依存ゼロで自作した。
+    alternatives:
+      - license-checker-rseidelsohn（保守されているフォークだが、推移依存の spdx-satisfies・nan・normalize-package-data が方針違反）
+      - trivy の license スキャナ（コンテナ・ファイル向け。許可リスト方針・期限付き例外・SPDX 式の評価は自前になる）
+    maintenance: このリポジトリで保守する（単体テストは scripts/test/security-lib.test.mjs と license-inventory.test.mjs）。
+    handling: 継続。再検討の条件は、評価の抜け（SPDX 式の新しい書き方）が見つかったとき。
+    last_checked: 2026-10-11
+  - name: node:24-alpine（Docker ベースイメージ。backend）
+    version: 24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1
+    workspace: backend
+    kind: base-image
+    reason: Node.js 公式イメージ。alpine で小さく、攻撃面が小さい。tag + digest で固定する。
+    alternatives:
+      - node:24-slim（Debian 系。glibc 互換が必要なネイティブ拡張を使うなら選ぶが、本アプリは使わない）
+      - distroless（さらに小さいが、HEALTHCHECK やデバッグの手段が限られる）
+    maintenance: Docker Official Images（Node.js チームが保守）。Node 24 は LTS。ベースイメージの更新は Dependabot（docker）が週次で提案し、trivy image が脆弱性を検査する。
+    handling: 継続利用。
+    last_checked: 2026-10-11
+  - name: nginxinc/nginx-unprivileged:stable-alpine（Docker ベースイメージ。frontend）
+    version: stable-alpine@sha256:15c994d10d6d78658721c3bcafff14cb281fba2a4bdf9d5ba92c416a472516e3
+    workspace: frontend
+    kind: base-image
+    reason: 非 root（8080）で動く nginx の公式（nginx 社）イメージ。静的配信と /api の中継だけをする。tag + digest で固定する。
+    alternatives:
+      - nginx:stable-alpine（root で動く。非 root 化の設定が増える）
+      - caddy / busybox httpd（設定の実績が少ない・機能が足りない）
+    maintenance: nginx 社が保守する公式の派生イメージ。更新は Dependabot（docker）と trivy image で追う。
+    handling: 継続利用。
+    last_checked: 2026-10-11
