@@ -21,6 +21,10 @@ on:
         description: "リリースイメージを使わず main の HEAD をビルドして監視する"
         type: boolean
         default: false
+      meta_drill:
+        description: "実行基盤の失敗の通知試験: synthetic ジョブを監視の結果が出る前に意図的に失敗させ、meta-alert（[sev3][MON-META]、drill ラベル）が起票・close することを確かめる"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ concurrency:
 env:
   OUT: monitoring/out
   DRILL: ${{ inputs.drill && 'true' || 'false' }}
+  META_DRILL: ${{ inputs.meta_drill && 'true' || 'false' }}
 
 jobs:
   synthetic:
@@ -47,6 +52,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: "（通知試験）実行基盤の失敗を注入する"
+        if: env.META_DRILL == 'true'
+        run: |
+          echo "::error::meta_drill: 監視の結果が出る前に意図的に失敗させる（meta-alert の通知試験）"
+          exit 1
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           install_args: node
@@ -201,11 +211,17 @@ jobs:
         with:
           install_args: node
       - run: mise x -- npm ci
-      - name: "実行基盤の失敗を incident にする（[sev3][MON-META]）"
+      - name: "実行基盤の失敗を incident にする（[sev3][MON-META]）。meta_drill のときは drill ラベルで起票し、すぐ close する"
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          mise x -- node scripts/monitoring/alert.mjs --meta fail --out monitoring/out \
+          drill=""
+          if [ "$META_DRILL" = "true" ]; then drill="--drill"; fi
+          mise x -- node scripts/monitoring/alert.mjs --meta fail $drill --out monitoring/out \
             --detail "synthetic ジョブが監視の結果を出す前に失敗した（実行基盤の失敗。失敗したステップは run を参照: $url）" \
             --run-url "$url"
+          if [ "$META_DRILL" = "true" ]; then
+            sleep 20 # 作成直後の Issue が一覧に載るのを待つ
+            mise x -- node scripts/monitoring/alert.mjs --meta ok --drill --out monitoring/out --run-url "$url"
+          fi
