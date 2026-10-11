@@ -1,0 +1,8 @@
+# release.yml が公開した digest（dry-run は OCI アーカイブ）に対して実行すべき検査。triage.mjs --expected で使う。
+# security.yml の :ci イメージの検査（expected-scans.yaml の trivy-image-*）とは別に、公開物そのものを検査したことの記録。
+version: 1
+scans:
+  - name: trivy-published-backend
+    kind: container
+  - name: trivy-published-frontend
+    kind: container

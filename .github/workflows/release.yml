@@ -7,6 +7,8 @@ name: Release
 # dry-run（公開しない）: workflow_dispatch で publish=false（既定）、またはこのワークフロー・Dockerfile を変えた PR。
 #   dry-run は、イメージを OCI アーカイブにビルドする（SBOM・provenance つき）ところまで。push・署名・Release 作成はしない。
 #   PR の dry-run は ci.yml / security.yml を呼ばない（PR では別に動いているため）。
+#   公開した digest（dry-run は OCI アーカイブ）には、security.yml の :ci イメージとは別に trivy（脆弱性 + 設定）をかけ、digest 入りの scan-run.json・SARIF を
+#   release-evidence/published-scans/ に残す（release-evidence.zip と artifact release-published-scans に入る）。
 # タグの push・リリースの作成はリポジトリの管理者が行う（このワークフローの作者は行わない）。
 on:
   push:
@@ -26,6 +28,9 @@ on:
       - ".github/workflows/release.yml"
       - "scripts/ci/release-evidence.mjs"
       - "scripts/ci/lib/release-notes.mjs"
+      - "scripts/security/scan.sh"
+      - "security/expected-published-scans.yaml"
+      - "security/tools.env"
       - "backend/Dockerfile"
       - "frontend/Dockerfile"
 
@@ -253,6 +258,44 @@ jobs:
           docker buildx imagetools inspect "$FRONTEND_REF" --format '{{ json .SBOM }}' > release-evidence/attestations/sbom-frontend.json
           docker buildx imagetools inspect "$BACKEND_REF" --format '{{ json .Provenance }}' > release-evidence/attestations/provenance-backend.json
           docker buildx imagetools inspect "$FRONTEND_REF" --format '{{ json .Provenance }}' > release-evidence/attestations/provenance-frontend.json
+
+      # -- 公開した digest の検査（security.yml が検査するのは :ci のローカルビルド。公開物そのものをここで検査する）----------------
+      # 公開するとき: GHCR の <image>@<digest> を pull して trivy（脆弱性 + 設定）。dry-run: ビルドした OCI アーカイブ（公開前）を検査する。
+      # 検査したイメージの digest は scan-run.json の target.image_digest に残り、SARIF にも追記される。critical / high の未解決は失敗にする
+      # （失敗すると GitHub Release は作らない。台帳は security/triage.yaml・accepted-risks.yaml）。
+      - name: trivy の脆弱性 DB のキャッシュ
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+      - name: 公開した digest を trivy で検査する（backend / frontend。脆弱性 + 設定）
+        env:
+          SECURITY_RESULTS: release-evidence/published-scans
+          BACKEND_DIGEST: ${{ steps.digests.outputs.backend }}
+          FRONTEND_DIGEST: ${{ steps.digests.outputs.frontend }}
+        run: |
+          if [ "$PUBLISH" = "true" ]; then
+            bash scripts/security/scan.sh trivy-published backend "$IMAGE_BACKEND@$BACKEND_DIGEST" "$BACKEND_DIGEST"
+            bash scripts/security/scan.sh trivy-published frontend "$IMAGE_FRONTEND@$FRONTEND_DIGEST" "$FRONTEND_DIGEST"
+          else
+            kind="OCI アーカイブの index digest（dry-run。公開していない）"
+            bash scripts/security/scan.sh trivy-published backend "$RUNNER_TEMP/backend.oci.tar" "$BACKEND_DIGEST" "$kind"
+            bash scripts/security/scan.sh trivy-published frontend "$RUNNER_TEMP/frontend.oci.tar" "$FRONTEND_DIGEST" "$kind"
+          fi
+      - name: 公開した digest の検査結果をトリアージする（critical / high の未解決は失敗。台帳を適用）
+        run: |
+          node scripts/security/triage.mjs --results release-evidence/published-scans \
+            --out release-evidence/published-scans-findings --expected security/expected-published-scans.yaml
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: release-published-scans
+          path: |
+            release-evidence/published-scans
+            release-evidence/published-scans-findings
+          retention-days: 90
+          if-no-files-found: warn
 
       # -- 証跡（release-evidence.zip）---------------------------------------------------------------
       - name: CI・セキュリティの結果を集める（この run の artifact）

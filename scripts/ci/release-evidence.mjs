@@ -25,6 +25,24 @@ function gateSummary() {
   return { result: f.gate.result, total: f.findings.length, by_severity: by || "検出なし" };
 }
 
+// 公開した digest に対する trivy の検査（release.yml が published-scans/ に書く）と、その triage の結果
+function publishedScans() {
+  const base = join(dir, "published-scans");
+  if (!existsSync(base)) return null;
+  const scans = readdirSync(base, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => read(`published-scans/${e.name}/scan-run.json`))
+    .filter(Boolean)
+    .map((r) => ({
+      scan: r.scan,
+      digest: r.target?.image_digest ?? null,
+      status: r.status,
+      findings: r.finding_count_sarif,
+    }));
+  const f = read("published-scans-findings/findings.json");
+  return { scans, gate: f ? f.gate : null };
+}
+
 const walk = (d) =>
   readdirSync(d, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)],
@@ -46,6 +64,7 @@ const notes = renderNotes({
   rows,
   summary: read("ci-summary/ci-summary.json"),
   gate: gateSummary(),
+  published: publishedScans(),
   publish,
 });
 writeFileSync(join(dir, "RELEASE_NOTES.md"), notes);

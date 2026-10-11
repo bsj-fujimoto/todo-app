@@ -44,14 +44,38 @@ const table = (header, rows) => [
   ...rows.map((r) => `| ${r.join(" | ")} |`),
 ];
 
-export function renderNotes({ version, sha, repo, runUrl, rows, summary, gate, publish }) {
-  const layers = Object.entries(summary?.layers ?? {}).map(([l, c]) => [
-    l,
-    c.total,
-    c.passed,
-    c.failed,
-    c.skipped,
-  ]);
+/** 公開した digest に対する trivy の検査（scan-run.json の要約）と、その triage のゲート結果。 */
+export function publishedScanLines(published) {
+  if (!published?.scans?.length) return ["- 公開した digest の検査: 記録が無い"];
+  const rows = published.scans.map((s) => [s.scan, `\`${s.digest ?? "?"}\``, s.status, s.findings ?? "?"]);
+  return [
+    ...table(["検査", "検査した digest", "実行", "SARIF の結果"], rows),
+    "",
+    published.gate
+      ? `- ゲート **${published.gate.result}**（critical / high の未解決は失敗）。詳細は release-evidence.zip の published-scans-findings/findings.json`
+      : "- ゲート: findings.json が無い",
+  ];
+}
+
+const layerRows = (summary) =>
+  Object.entries(summary?.layers ?? {}).map(([l, c]) => [l, c.total, c.passed, c.failed, c.skipped]);
+
+const gateLine = (gate) =>
+  gate
+    ? `- セキュリティ: ゲート **${gate.result}**、検出 ${gate.total} 件（${gate.by_severity}）。詳細は release-evidence.zip の security-findings/findings.json`
+    : "- セキュリティ: findings.json が無い";
+
+const publishedSection = (published, publish) => [
+  "## 公開したイメージの検査（レジストリの digest に対する trivy。脆弱性 + 設定）",
+  ...(publish
+    ? []
+    : ["dry-run: 公開前の OCI アーカイブ（ビルド結果）に対する検査。公開されるイメージの digest ではない。"]),
+  ...publishedScanLines(published),
+  "",
+];
+
+export function renderNotes({ version, sha, repo, runUrl, rows, summary, gate, published, publish }) {
+  const layers = layerRows(summary);
   const images = rows.map((r) => [r.name, `\`${r.ref}\``, r.tags.map((t) => `\`${t}\``).join(" ")]);
   const lines = [
     `# ${version}${publish ? "" : "（dry-run: 公開していない）"}`,
@@ -71,12 +95,11 @@ export function renderNotes({ version, sha, repo, runUrl, rows, summary, gate, p
     "## リリース前の検査結果（対象 commit）",
     ...(layers.length ? table(["層", "合計", "成功", "失敗", "スキップ"], layers) : ["- ci-summary が無い"]),
     "",
-    gate
-      ? `- セキュリティ: ゲート **${gate.result}**、検出 ${gate.total} 件（${gate.by_severity}）。詳細は release-evidence.zip の security-findings/findings.json`
-      : "- セキュリティ: findings.json が無い",
+    gateLine(gate),
     "",
+    ...publishedSection(published, publish),
     "## 証跡（release-evidence.zip）",
-    "ci-summary.json・セキュリティの SARIF / SBOM / scan-run.json・性能（k6）の結果があればそれ・manifest.json（全ファイルの sha256）・deploy-marker.json を含む。",
+    "ci-summary.json・セキュリティの SARIF / SBOM / scan-run.json・公開した digest の検査（published-scans/）・性能（k6）の結果があればそれ・manifest.json（全ファイルの sha256）・deploy-marker.json を含む。",
   ];
   return `${lines.join("\n")}\n`;
 }
