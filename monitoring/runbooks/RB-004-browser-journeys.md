@@ -26,7 +26,7 @@
 直前のリリースが原因なら、前のリリースのイメージ（digest 固定）へ戻す。手順の全体と注意は RB-002 の「rollback」と同じ。要点:
 
 1. 1 つ前のリリースタグの frontend / backend の digest を `docker buildx imagetools inspect ghcr.io/bsj-fujimoto/todo-app-frontend:vPREV --format '{{json .Manifest.Digest}}'` で引く。
-2. `rollback.yml` に `image: …@sha256:…` を書き、`docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`。
+2. `rollback.yml` に `image: …@sha256:…` を書き、`COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）。
 3. ブラウザジャーニーを手元で再実行: `npm ci --prefix e2e/synthetic`、`npx --prefix e2e/synthetic playwright install chromium`、`BASE_URL=http://localhost:8080 npx --prefix e2e/synthetic playwright test -c e2e/synthetic/playwright.synthetic.config.js`（`mise x -- …` 経由）。
 4. Issue に戻した digest を記録し、`defect` を起票する。合成データが残っていれば（`synthetic-` で始まるタイトル）UI または API で削除する。
 
@@ -38,4 +38,8 @@
 
 ## 訓練記録
 
-（ドリル実施後に追記）
+| 日時（UTC）      | 訓練                                                                                                                                                                           | 結果                    | 記録                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | -------------------------------------------- |
+| 2026-10-11 07:29 | frontend 停止時に MON-007 が失敗し、失敗詳細（`page.goto: net::ERR_CONNECTION_REFUSED`）が出ることを確認。復旧後に回復（`afterEach` の後始末で合成データが残らないことも確認） | 一部（一次対応 1 のみ） | `monitoring/drills/20261011T0729Z-frontend/` |
+
+- 未訓練: locator の変更（DOM・文言の変更）による失敗の切り分けと修正、screenshot / trace の読み方。

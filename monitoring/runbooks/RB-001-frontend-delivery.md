@@ -25,7 +25,7 @@
 直前のリリースが原因なら、前のリリースのイメージ（digest 固定）へ戻す。手順の全体と注意は RB-002 の「rollback」と同じ。要点:
 
 1. 1 つ前のリリースタグの frontend / backend の digest を `docker buildx imagetools inspect ghcr.io/bsj-fujimoto/todo-app-frontend:vPREV --format '{{json .Manifest.Digest}}'` で引く。
-2. `rollback.yml`（`image: …@sha256:…` を frontend / backend に指定）を作り、`docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`。
+2. `rollback.yml`（`image: …@sha256:…` を frontend / backend に指定）を作り、`COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）。
 3. `curl -sI localhost:8080/` と health の version を確認し、`node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out monitoring/out` で全監視が成功することを確認する。
 4. Issue に戻した digest を記録し、`defect` を起票する。
 
@@ -36,4 +36,8 @@
 
 ## 訓練記録
 
-（ドリル実施後に追記）
+| 日時（UTC）      | 訓練                                                                                                                      | 結果 | 所要                     | 記録                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | -------------------------------------------- |
+| 2026-10-11 07:29 | frontend 停止 → MON-001 が失敗（`fetch failed（ECONNREFUSED）`）→ 一次対応（`docker compose up -d frontend`）→ 監視の回復 | pass | 検知から復旧まで約 13 秒 | `monitoring/drills/20261011T0729Z-frontend/` |
+
+- 未訓練: CSP ヘッダ欠落・本文違いの切り分け、rollback（RB-002 の訓練で機構は検証済み）。
