@@ -1,0 +1,11 @@
+# 監視対象のイメージ（GHCR）。scripts/monitoring/resolve-target.mjs が最新リリースのタグから digest を引く。
+# 名前は release.yml（D1 が管理）の push 先と一致させること。一致しなければフォールバックする（その旨を summary に出す）。
+repository: bsj-fujimoto/todo-app
+registry: ghcr.io
+images:
+  backend: ghcr.io/bsj-fujimoto/todo-app-backend
+  frontend: ghcr.io/bsj-fujimoto/todo-app-frontend
+fallback:
+  description: >-
+    リリースが無い、またはリリースのイメージを GHCR から引けないときは、main の HEAD を docker compose up --build で起動して監視する。
+    この場合の結果は「リリース済みイメージの監視」ではなく「HEAD のビルドの監視」であり、summary に明記する。

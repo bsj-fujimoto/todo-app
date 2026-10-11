@@ -1,0 +1,67 @@
+# アラート経路（severity・通知先・on-call・acknowledgement・エスカレーション）。scripts/monitoring/alert.mjs が読む。
+# 本リポジトリは個人用アプリで、通知先は GitHub Issue（ラベル incident）。メール・Slack・電話などの外部通知は持たない。
+version: 1
+oncall:
+  # on-call は個人ではなくロール名で定義する（担当者が変わっても経路が変わらない）。
+  role: maintainer
+  description: リポジトリのメンテナ（.github/CODEOWNERS の既定の所有者 `*`）。Issue の assignee は CODEOWNERS から実行時に解決する。
+  resolve_from: .github/CODEOWNERS
+  hours: "best-effort（個人プロジェクト。24 時間 365 日の対応は約束しない。ack の目標だけを持つ）"
+  rotation: "なし（メンテナ 1 名）。複数人になったら role を team ハンドルに変える。"
+severities:
+  sev1:
+    meaning: 画面または backend が使えない（全利用者に影響）。frontend 配信不能、health が非 200 / db=error。
+    ack_target_hours: 24
+    reminder_after_hours: 12
+  sev2:
+    meaning: 主要な操作（追加・完了切替・削除・入力検証）が壊れている。画面は開くが使えない機能がある。
+    ack_target_hours: 24
+    reminder_after_hours: 24
+  sev3:
+    meaning: 性能劣化（応答時間のしきい値超過のみ）、証明書・DNS の期限警告（将来、本番を持つとき）。機能は動く。
+    ack_target_hours: 72
+    reminder_after_hours: 72
+routes:
+  - route_id: RT-SEV1
+    severity: sev1
+    monitor_ids: [MON-001, MON-002]
+    channel: "github-issue:incident"
+    oncall_ref: "role:maintainer"
+    ack_policy: >-
+      Issue にコメントする、または assignee（メンテナ）が Issue を確認した記録（assignee 設定の確認・ラベル ack の付与）を ack とする。
+      目標は検知から 24 時間以内。
+    escalation: &escalation
+      - after_hours: 12
+        action: "Issue にリマインドのコメントを追記し、ラベル escalated を付ける"
+      - after_hours: 24
+        action: "ack が無ければラベル ack-overdue を付ける。メンテナ以外の連絡先は無いため、これ以上の経路はない（単一メンテナの残存リスク。perf/ monitoring/README.md に記載）"
+  - route_id: RT-SEV2
+    severity: sev2
+    monitor_ids: [MON-003, MON-004, MON-005, MON-006, MON-007, MON-008, MON-009, MON-010]
+    channel: "github-issue:incident"
+    oncall_ref: "role:maintainer"
+    ack_policy: 同上。目標は検知から 24 時間以内。
+    escalation: *escalation
+  - route_id: RT-SEV3
+    severity: sev3
+    monitor_ids: [MON-011, MON-012] # 無効（enabled: false）。本番を持ったときに使う経路
+    channel: "github-issue:incident"
+    oncall_ref: "role:maintainer"
+    ack_policy: 同上。目標は検知から 72 時間以内。
+    escalation:
+      - after_hours: 72
+        action: "Issue にリマインドのコメントを追記し、ラベル escalated を付ける"
+notification:
+  type: github-issue
+  repository: bsj-fujimoto/todo-app
+  labels: [incident]
+  drill_labels: [incident, drill] # 通知試験。自動で close する
+  title_format: "[{severity}][{monitor_id}] {name} が失敗"
+  assignee: "{oncall}" # CODEOWNERS の既定の所有者
+  dedup: >-
+    同じ monitor_id の open な incident Issue（drill 以外）があれば新規作成せずコメントを追記する。
+    回復（次の実行で成功）したら回復のコメントを書いて close する。
+  delivery_note: >-
+    GitHub が assignee へ通知（メール・Web）を送る。通知が人に届いたかは自動では観測できない。観測できるのは
+    「Issue が作成された」「assignee が設定された」までで、alert-tests.md の記録もそこまでを到達として扱う。
+  required_permissions: "issues: write（alert ジョブだけ。他のジョブは contents: read）"
