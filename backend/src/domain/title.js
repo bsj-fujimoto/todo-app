@@ -1,4 +1,4 @@
-// タイトル検証（純粋関数）。仕様書 §04、openapi.yaml の TitleInvalid。
+// タイトル検証（純粋関数）。仕様書 §04、openapi.yaml の TitleInvalid。 （選択実行の確認用の一時変更。マージしない）
 // 検証順: 必須 → 長さ → 改行（1 回の検証で返すエラーは 1 つだけ）。
 import { ERROR_DEFS } from "../errors.js";
 
