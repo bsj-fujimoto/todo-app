@@ -322,17 +322,17 @@ high / medium / low。**ケースに紐づくリスクの priority の最大値*
 | api | `backend/test/api/security.test.js` | TC-059, TC-060 | 直接 API・不正入力 |
 | api | `backend/test/api/concurrency.test.js` | TC-064, TC-065 | Promise.all による並行リクエスト |
 | api | `backend/test/api/performance.test.js` | TC-073 | DS-006（1,000 件）。しきい値は docs/07-performance.md の SLO で更新 |
-| e2e | `e2e/tests/main-flow.spec.ts` | TC-001, TC-041, TC-070 | ブラウザ互換のケース（互換）は Playwright の projects（chromium / firefox / webkit）で実行する |
-| e2e | `e2e/tests/add-task.spec.ts` | TC-002〜TC-007, TC-016〜TC-020 | ペアワイズのケースは表（§8.1）の行をパラメータ化する |
-| e2e | `e2e/tests/toggle-delete.spec.ts` | TC-008, TC-013〜TC-014 | 状態遷移表 §8.2 の画面側 |
-| e2e | `e2e/tests/order.spec.ts` | TC-040 | DS-004（同時刻）を seedTasks() で投入する |
-| e2e | `e2e/tests/save-failure.spec.ts` | TC-045〜TC-049 | DS-012（障害注入）と backend プロセスの停止・再起動 |
-| e2e | `e2e/tests/screen-states.spec.ts` | TC-055〜TC-058 | 画面状態の期待動作（§9） |
-| e2e | `e2e/tests/security.spec.ts` | TC-061 | dialog イベントの監視を含む |
-| e2e | `e2e/tests/concurrency.spec.ts` | TC-063, TC-066 | 暫定期待値を含む（未決 UNK-003・004） |
-| e2e | `e2e/tests/a11y-responsive.spec.ts` | TC-067〜TC-069 | @axe-core/playwright を使用 |
-| e2e | `e2e/tests/performance.spec.ts` | TC-074 | DS-006（1,000 件） |
-| e2e | `e2e/compose/stack.spec.ts` | TC-043〜TC-044, TC-076〜TC-077 | Playwright の project 'compose'（workers=1）。専用プロジェクト名で docker compose を操作する |
+| e2e | `e2e/tests/main-flow.spec.js` | TC-001, TC-041, TC-070 | ブラウザ互換のケース（互換）は Playwright の projects（chromium / firefox / webkit）で実行する（`@cross-browser` を付けた TC-001・TC-056・TC-070 を 3 ブラウザで実行） |
+| e2e | `e2e/tests/add-task.spec.js` | TC-002〜TC-007, TC-016〜TC-020 | ペアワイズのケースは表（§8.1）の行をパラメータ化する |
+| e2e | `e2e/tests/toggle-delete.spec.js` | TC-008, TC-013〜TC-014 | 状態遷移表 §8.2 の画面側 |
+| e2e | `e2e/tests/order.spec.js` | TC-040 | DS-004（同時刻）を seedTasks() で投入する |
+| e2e | `e2e/tests/save-failure.spec.js` | TC-045〜TC-049 | DS-012（障害注入）と backend プロセスの停止・再起動 |
+| e2e | `e2e/tests/screen-states.spec.js` | TC-055〜TC-058 | 画面状態の期待動作（§9） |
+| e2e | `e2e/tests/security.spec.js` | TC-061 | dialog イベントの監視を含む |
+| e2e | `e2e/tests/concurrency.spec.js` | TC-063, TC-066 | 暫定期待値を含む（未決 UNK-003・004） |
+| e2e | `e2e/tests/a11y-responsive.spec.js` | TC-067〜TC-069 | @axe-core/playwright を使用。TC-067 は project `chromium-mobile-360`（360x640・タッチ） |
+| e2e | `e2e/tests/performance.spec.js` | TC-074 | DS-006（1,000 件） |
+| e2e | `e2e/compose/stack.spec.js` | TC-043〜TC-044, TC-076〜TC-077 | Playwright の project 'compose'（workers=1）。専用プロジェクト名で docker compose を操作する |
 | manual | 手動（実施記録は成果物 09 に残す） | TC-071, TC-072 | 実機。manual_reason に自動化しない理由を記録 |
 
 ### 13.4 タグ
