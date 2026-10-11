@@ -169,23 +169,31 @@ export function deleteTask(id, extra) {
 const pool = [];
 let toggled = false;
 
+function createIntoPool(extra) {
+  const t = createTask(`性能確認-${exec.vu.idInTest}-${exec.scenario.iterationInTest}`, extra);
+  if (t) pool.push(t.id);
+}
+
+function toggleFromPool(extra) {
+  toggled = !toggled;
+  toggleTask(pool[pool.length - 1], toggled, extra);
+}
+
+function deleteFromPool(extra) {
+  // 削除の対象が無いときは、作ってすぐ削除する（件数を増やさない）。単に create に置き換えると追加が多くなり、
+  // 追加=削除のはずの比率（balanced）でも件数が増え続け、「時間による劣化」と「件数による劣化」を分けられない
+  if (pool.length === 0) createIntoPool(extra);
+  const id = pool.pop();
+  if (id !== undefined) deleteTask(id, extra);
+}
+
 export function runOp(mixName, minListCount, extra) {
-  const vu = exec.vu.idInTest;
-  const iter = exec.scenario.iterationInTest;
   let op = pickOp(mixName);
-  if ((op === "toggle" || op === "delete") && pool.length === 0) op = "create";
-  if (op === "list") {
-    listTasks(minListCount, extra);
-  } else if (op === "create") {
-    const t = createTask(`性能確認-${vu}-${iter}`, extra);
-    if (t) pool.push(t.id);
-  } else if (op === "toggle") {
-    toggled = !toggled;
-    toggleTask(pool[pool.length - 1], toggled, extra);
-  } else {
-    const id = pool.pop();
-    deleteTask(id, extra);
-  }
+  if (op === "toggle" && pool.length === 0) op = "create";
+  if (op === "list") listTasks(minListCount, extra);
+  else if (op === "create") createIntoPool(extra);
+  else if (op === "toggle") toggleFromPool(extra);
+  else deleteFromPool(extra);
   return op;
 }
 
