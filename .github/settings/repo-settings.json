@@ -1,0 +1,64 @@
+{
+  "_comment": "リポジトリ設定のコード管理。scripts/ci/apply-settings.sh が gh api で冪等に適用する（--dry-run で差分だけ表示）。_ で始まるキーは説明で、適用しない。",
+  "repository": {
+    "delete_branch_on_merge": true,
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "allow_auto_merge": false,
+    "allow_update_branch": true,
+    "squash_merge_commit_title": "PR_TITLE",
+    "squash_merge_commit_message": "PR_BODY",
+    "has_issues": true,
+    "has_wiki": false,
+    "has_projects": false
+  },
+  "security_and_analysis": {
+    "secret_scanning": { "status": "enabled" },
+    "secret_scanning_push_protection": { "status": "enabled" },
+    "secret_scanning_non_provider_patterns": { "status": "enabled" },
+    "secret_scanning_validity_checks": { "status": "enabled" },
+    "dependabot_security_updates": { "status": "enabled" }
+  },
+  "vulnerability_alerts": true,
+  "private_vulnerability_reporting": true,
+  "code_scanning": {
+    "_comment": "Code Scanning は高度な設定（security.yml の CodeQL がワークフローから SARIF をアップロード）。簡易設定（default setup）と併用できないので not-configured にする。",
+    "default_setup_state": "not-configured"
+  },
+  "actions": {
+    "permissions": {
+      "enabled": true,
+      "allowed_actions": "selected",
+      "sha_pinning_required": true
+    },
+    "selected_actions": {
+      "github_owned_allowed": true,
+      "verified_allowed": false,
+      "patterns_allowed": [
+        "docker/setup-buildx-action@*",
+        "docker/build-push-action@*",
+        "docker/login-action@*",
+        "sigstore/cosign-installer@*",
+        "ossf/scorecard-action@*"
+      ]
+    },
+    "workflow_permissions": {
+      "default_workflow_permissions": "read",
+      "can_approve_pull_request_reviews": false
+    },
+    "fork_pr_contributor_approval": {
+      "approval_policy": "all_external_contributors"
+    }
+  },
+  "labels": [
+    { "name": "dependencies", "color": "0366d6", "description": "依存の更新（Dependabot）" },
+    { "name": "npm", "color": "cb3837", "description": "npm の依存" },
+    { "name": "github-actions", "color": "000000", "description": "GitHub Actions の更新" },
+    { "name": "docker", "color": "0db7ed", "description": "Docker / compose の更新" },
+    { "name": "security", "color": "b60205", "description": "セキュリティ検査の検出" },
+    { "name": "flaky", "color": "fbca04", "description": "不安定なテスト（同一 SHA で pass/fail 混在）" },
+    { "name": "defect", "color": "d73a4a", "description": "不具合（テスト・運用で発見）" },
+    { "name": "incident", "color": "b60205", "description": "障害・外形監視アラート" }
+  ]
+}

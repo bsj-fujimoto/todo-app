@@ -6,6 +6,7 @@ version: 1
 # ワークフロー直下は常に読み取りだけ。write 権限を持ってよいジョブだけを、権限の種類まで限定して列挙する。
 # キーは "<ワークフロー名>#<ジョブ ID>"。
 write_permissions:
+  # 開始時のコメントは省略: 理由は各行の右に書く
   "security.yml#sast": [security-events] # CodeQL の SARIF を Code Scanning にアップロードする
   "security.yml#scorecard": [security-events] # Scorecard の SARIF を Code Scanning にアップロードする
   "security.yml#container-iac": [security-events] # trivy / hadolint の SARIF を Code Scanning にアップロードする
