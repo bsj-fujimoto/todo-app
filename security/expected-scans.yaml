@@ -1,0 +1,30 @@
+# security.yml が実行すべき検査の一覧。triage.mjs は、ここにある検査の実行記録（scan-run.json）が無い・失敗・スキップのとき失敗にする。
+# 「走っていない検査」を成功に見せないための台帳。検査を足す・外すときはここも更新する（外す理由は PR に書く）。
+version: 1
+scans:
+  - name: codeql
+    kind: sast
+  - name: gitleaks
+    kind: secret
+  - name: npm-audit-prod
+    kind: sca
+  - name: npm-audit-all
+    kind: sca
+  - name: osv-scanner
+    kind: sca
+  - name: sbom
+    kind: sca
+  - name: trivy-fs
+    kind: sca
+  - name: trivy-image-backend
+    kind: container
+  - name: trivy-image-frontend
+    kind: container
+  - name: hadolint
+    kind: container
+  - name: compose-check
+    kind: config
+  - name: license
+    kind: license
+  - name: zap
+    kind: dast

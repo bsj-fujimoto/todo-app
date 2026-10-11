@@ -1,0 +1,5 @@
+# OWASP ZAP のルール別しきい値。zap-baseline.py / zap-api-scan.py の -c に渡す（タブ区切り: ルール ID <TAB> 動作 <TAB> コメント）。
+#   動作: IGNORE（検出から外す）/ WARN（警告。重要度は ZAP のまま）/ FAIL（少なくとも high 扱い。未解決ならゲートで失敗）
+#   記載の無いルールは WARN と同じ。IGNORE のコメントは「理由; owner=役割; expires=YYYY-MM-DD」の形で必ず書く
+#   （check-policy が検査する。期限が切れると CI が失敗する）。ZAP のルール一覧: https://www.zaproxy.org/docs/alerts/
+# 現時点で除外しているルールは無い。実際の検出を見て、除外・しきい値の変更をここに理由つきで足す。

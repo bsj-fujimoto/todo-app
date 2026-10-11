@@ -1,0 +1,45 @@
+# 依存ライブラリのライセンス方針。scripts/security/license-check.mjs が評価し、違反があれば CI（security.yml の license ジョブ）が失敗する。
+# 方針: 許可リストに無いライセンスはすべて違反（deny by default）。SPDX 式は OR ならどれか 1 つ、AND ならすべてが許可されていること。
+# このリポジトリは社内向けのサンプルアプリで、配布（再頒布）はしない。それでも、後からコピーレフトが混入して配布時に義務が生じるのを防ぐ。
+version: 1
+owner: セキュリティ担当
+reviewed_at: 2026-10-11
+
+# 許可（permissive。表示義務のみ、またはなし）
+allow:
+  - MIT
+  - MIT-0
+  - ISC
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - 0BSD
+  - Python-2.0
+  - CC0-1.0
+  - BlueOak-1.0.0
+  - Unlicense
+
+# 禁止（強いコピーレフト・ネットワーク条項・利用制限）。これらは例外でも原則認めない。
+deny_patterns:
+  - "GPL-*"
+  - "AGPL-*"
+  - "LGPL-*"
+  - "SSPL-*"
+  - "BUSL-*"
+  - "EUPL-*"
+  - "CC-BY-NC*"
+  - "CC-BY-SA*"
+  - "Commons-Clause"
+
+# 例外（個別に認めたもの）。理由と期限が必須。期限が切れると再び違反になる。
+# 書式:
+#   - package: name@1.2.3
+#     reason: 何のために・なぜ許容できるか
+#     expires_at: 2026-12-31
+exceptions:
+  - package: spdx-exceptions@2.5.0
+    reason: SPDX の例外一覧データ（CC-BY-3.0。帰属表示のみ要求するデータ用ライセンス）。開発依存（@cyclonedx/cyclonedx-npm・license-checker-rseidelsohn の推移依存）で、実行時依存・配布物（イメージ）には含まれない（npm ls --omit=dev に出ない）。
+    expires_at: 2027-04-11
+  - package: spdx-ranges@2.1.1
+    reason: SPDX のライセンス範囲データ（MIT AND CC-BY-3.0）。上と同じ経路の開発依存で、実行時依存・配布物には含まれない。
+    expires_at: 2027-04-11

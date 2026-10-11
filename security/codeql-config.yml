@@ -1,0 +1,13 @@
+# CodeQL の設定（security.yml の sast ジョブが config-file として使う）。
+# 言語: javascript-typescript / クエリ: security-extended（security-and-quality より絞り、セキュリティ観点のルールを広めに）。
+name: todo-app CodeQL
+queries:
+  - uses: security-extended
+# 走査しないパス（生成物・依存・テスト成果物）。アプリのコード（backend/src・frontend/src）とテスト・スクリプトは走査する。
+paths-ignore:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/coverage/**"
+  - "**/test-results/**"
+  - "**/playwright-report/**"
+  - "security-results/**"

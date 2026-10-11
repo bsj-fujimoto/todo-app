@@ -1,0 +1,24 @@
+# セキュリティ検出のトリアージ台帳（人が書く）。scripts/security/triage.mjs が検出に突き合わせ、security/findings.json の元にする。
+# 機械が決めるのは「重複（同じ勧告 × 同じ部品）・前回との差分・ゲート」だけで、真偽や文脈はここに書かれたものを写す。機械は作り話を足さない。
+#
+# 状態（status）: tp 真陽性（要是正）/ fp 誤検出 / na 該当しない（このアプリでは起こらない）/ dup 重複（手動）。
+#   accepted は accepted-risks.yaml に書く。fixed は「前回あったが今回無い」ことを機械が判定する。何も書かれていない検出は untriaged のまま残る。
+# 必須: すべての status に reason。tp には recommendation（修正方法）・owner（ロール）・due・reverify_condition も必須。
+# 任意（書けるものは書く。インパクトの判断材料になる）:
+#   reachability（到達可能性）/ exposure（公開範囲）/ asset_impact（資産影響）/ compensating_controls（補完統制）/ alternative（代替案）/ issue
+# 書式:
+#   - match:
+#       tool: trivy
+#       rule_id: CVE-2026-0000
+#       component: some-package     # 任意。location は glob（行番号は無視）
+#     status: fp
+#     reason: 誤検出の根拠
+#     reachability: 到達不能（このコードパスを使わない）
+#     exposure: 内部のみ
+#     asset_impact: なし
+#     compensating_controls: 入力は frontend の検証と backend の検証で二重に弾く
+#     decided_by: セキュリティ担当
+#     decided_at: 2026-10-11
+# 現時点で人の判断が必要な検出は、実行結果（security-findings の findings.json）を見て追記する。
+version: 1
+entries: []

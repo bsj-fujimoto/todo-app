@@ -1,0 +1,24 @@
+# 期限付きで受容しているリスク。受容 = 「いまは直さない」と決めて期限を切ること。放置の言い換えではない。
+# 規則（security/README.md）:
+#   - critical は受容できない（直す）。high は 30 日以内、medium は 90 日以内の期限。期限が切れると未解決に戻り、ゲートで失敗する。
+#   - 受容には理由・owner（ロール）・受容日・期限・再検査条件が要る。medium は追跡 Issue を issue に書く。
+#   - 直したら、この台帳から外す（triage.mjs が「どの検出にも当たらない」と注意を出す）。
+# 書式:
+#   - id: AR-001
+#     match:                      # 検出への当て方（tool / scan / rule_id / component / location / category。指定した項目がすべて一致）
+#       tool: trivy
+#       rule_id: CVE-2026-0000
+#       component: some-package
+#     reason: なぜ今は直さないか（到達可能性・補完統制を含めて）
+#     owner: バックエンド担当
+#     accepted_at: 2026-10-11
+#     expires_at: 2026-11-10
+#     reverify_condition: 修正版が出たとき / 期限の 7 日前
+#     issue: "#12"
+#     reachability: 到達不能（理由）
+#     exposure: 内部のみ / 外部公開
+#     asset_impact: 低 / 中 / 高（理由）
+#     compensating_controls: 補完統制
+# 現時点の受容はない（未解決の medium が出たら、ここに期限付きで書くか、直す）。
+version: 1
+entries: []
