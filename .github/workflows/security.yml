@@ -12,6 +12,11 @@ on:
     - cron: "0 19 * * 1"
   workflow_dispatch:
   workflow_call:
+    inputs:
+      create_issues:
+        description: "medium の検出を Issue にする（release.yml からは false）"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -362,7 +367,7 @@ jobs:
   # ---- medium の検出を Issue にする（PR では作らない）----------------------------------------
   file-security-issues:
     name: file-security-issues
-    if: always() && github.event_name != 'pull_request' && needs.triage.result != 'skipped'
+    if: always() && github.event_name != 'pull_request' && inputs.create_issues != false && needs.triage.result != 'skipped'
     needs: [triage]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
