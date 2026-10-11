@@ -105,7 +105,8 @@ run_k6() {
   local out_opts=()
   if [ "$name" != "warmup" ] && [ "$name" != "seed" ]; then out_opts=(--out "json=/out/$name.raw.json.gz"); fi
   local rc=0
-  docker run --rm --name "$K6_NAME" --network "$NETWORK" \
+  # --user: 出力ディレクトリの所有者（ホストの uid）で書く。Linux ランナーでは k6 イメージの既定ユーザー（uid 12345）が書けない
+  docker run --rm --name "$K6_NAME" --network "$NETWORK" --user "$(id -u):$(id -g)" \
     -v "$PWD/perf/k6:/scripts:ro" -v "$dir:/out" "${envs[@]}" \
     "$K6_IMAGE" run --quiet ${out_opts[@]+"${out_opts[@]}"} "/scripts/$script" >"$dir/$name.k6.log" 2>&1 || rc=$?
   echo "$rc" >"$dir/$name.exit"

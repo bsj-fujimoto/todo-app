@@ -47,7 +47,7 @@ function pickBaseline(baselines, envClass, release) {
 }
 
 async function noBaseline(runDir, current) {
-  const note = `この環境の区分（${current.env_class}）の基準が perf/baseline.json に無い。比較せず、退行は判定しない。`;
+  const note = `この環境の区分（${current.env_class}）の基準が perf/baseline.json に無い。比較せず、退行は判定しない（失敗にしない）。この環境の基準を作るには、この run の結果（artifact）を取得し、「node scripts/perf/compare.mjs --run-dir <結果のディレクトリ> --update-baseline --release <名前>」で perf/baseline.json に追記して PR にする。`;
   await writeFile(
     join(runDir, "compare.json"),
     `${JSON.stringify({ baseline: null, note, regressions: [] }, null, 1)}\n`,

@@ -1,6 +1,10 @@
 // 外形監視（synthetic）のブラウザジャーニー。monitoring/monitors.yaml の MON-007〜010 に対応する（タイトルの [MON-xxx] で grep される）。
 // 方針: 認証なし・合成データのみ（個人情報なし）。ジャーニーが作ったタスクは UI で削除し、afterEach で API からも必ず削除する。
 // これは E2E テスト（e2e/ の他のファイル）とは別物で、本番相当の環境に対して定期実行する「監視」。
+//
+// 操作の取り方（ラベル・ロール・アクセシブルネーム）は e2e/fixtures/todo-app.js の TodoApp と揃えている。
+// そのまま import しないのは、e2e の @playwright/test と別のコピーが読み込まれて test() の登録が壊れるため（e2e/synthetic は独立した package）。
+// 製品の画面の振る舞いが変わったら（例: PR #12「チェックは API 成功後にだけ反転する」）、この定義も見直す（monitoring/README.md の運用規則）。
 import { expect, test } from "@playwright/test";
 
 const RUN_ID = process.env.SYNTHETIC_RUN_ID || String(Date.now());
@@ -9,6 +13,18 @@ const created = [];
 
 const title = (monitorId) => `${PREFIX}-${monitorId}`;
 const row = (page, text) => page.getByRole("listitem").filter({ hasText: text });
+// チェックボックス: アクセシブルネームは「「<タイトル>」を完了にする」（e2e の TodoApp.checkbox と同じ）
+const checkboxOf = (page, text) =>
+  page.getByRole("checkbox", { name: `「${text}」を完了にする`, exact: true });
+
+// チェックの切替は「API 成功後にだけ反転する」（通信中は反転せず aria-busy）。check() / uncheck() はクリック直後に状態変化を
+// 検証して失敗するので、click() のあと、期待する状態になるまで自動で待つ（行の aria-busy の解除も待つ）。
+async function setChecked(page, text, checked) {
+  await checkboxOf(page, text).click();
+  if (checked) await expect(checkboxOf(page, text)).toBeChecked();
+  else await expect(checkboxOf(page, text)).not.toBeChecked();
+  await expect(row(page, text)).toHaveAttribute("aria-busy", "false");
+}
 
 async function openApp(page) {
   const res = await page.goto("/");
@@ -50,13 +66,10 @@ test("[MON-008] J-02 チェックすると完了になり、再読込しても�
   const text = title("MON-008");
   await openApp(page);
   await addTask(page, text);
-  const checkbox = row(page, text).getByRole("checkbox");
-  await checkbox.check();
-  await expect(checkbox).toBeChecked();
+  await setChecked(page, text, true);
   await page.reload();
-  await expect(row(page, text).getByRole("checkbox")).toBeChecked();
-  await row(page, text).getByRole("checkbox").uncheck();
-  await expect(row(page, text).getByRole("checkbox")).not.toBeChecked();
+  await expect(checkboxOf(page, text)).toBeChecked();
+  await setChecked(page, text, false);
   await row(page, text).getByRole("button", { name: /削除/ }).click();
   await expect(row(page, text)).toHaveCount(0);
 });
