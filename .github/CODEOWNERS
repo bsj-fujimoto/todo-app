@@ -1,0 +1,5 @@
+# 既定の所有者（プロダクトオーナー兼メンテナ）。Ruleset で code owner review を要求する。
+*                       @bsj-fujimoto
+/docs/                  @bsj-fujimoto
+/backend/openapi.yaml   @bsj-fujimoto
+/.github/               @bsj-fujimoto
