@@ -1,0 +1,27 @@
+name: setup-node-npm
+description: Node.js（mise.toml と同じ版）を入れて npm ci する。ジョブの開始時刻と対象 SHA を記録する。
+
+inputs:
+  install:
+    description: npm ci を実行するか（依存ゼロのスクリプトだけのジョブは false）
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: ジョブ開始時刻と対象 SHA を記録する
+      shell: bash
+      run: |
+        echo "CI_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+        {
+          echo "- 対象 SHA: \`${TARGET_SHA:-$GITHUB_SHA}\`（イベント: ${GITHUB_EVENT_NAME}、run ${GITHUB_RUN_ID} / attempt ${GITHUB_RUN_ATTEMPT}）"
+        } >> "$GITHUB_STEP_SUMMARY"
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: "24"
+        cache: npm
+    - name: npm ci
+      if: inputs.install == 'true'
+      shell: bash
+      run: npm ci --no-audit --no-fund

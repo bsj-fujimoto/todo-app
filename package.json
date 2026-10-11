@@ -16,10 +16,14 @@
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "test:scripts": "node --test \"scripts/test/*.test.mjs\"",
+    "docs:check": "node scripts/ci/docs-check.mjs",
+    "contract:lint": "redocly lint backend/openapi.yaml --config scripts/ci/redocly.yaml"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@redocly/cli": "2.62.1",
     "eslint": "10.12.0",
     "globals": "17.13.0",
     "prettier": "3.9.10"
