@@ -6,7 +6,7 @@ import { parseCsvObjects } from "./csv.mjs";
 import { exists, isFile, readText, walkFiles } from "./repo-fs.mjs";
 import { parseYaml } from "./yaml-lite.mjs";
 
-const ID_PREFIXES = "REQ|RISK|VIEW|TC|UNK|DS|EXEC|DEF|ACT|FND";
+const ID_PREFIXES = "REQ|RISK|VIEW|TC|UNK|DS|EXEC|DEF|ACT|FND|EV";
 const ID_RE = new RegExp(`\\b(?:${ID_PREFIXES})-\\d+\\b`, "g");
 const ID_ONLY = new RegExp(`^(?:${ID_PREFIXES})-\\d+$`);
 const TEST_ID_RE = /\[(TC-\d{3})\]/g;
@@ -38,7 +38,7 @@ const rowRefs = (t, r) =>
 const collectRefs = (tables) => tables.flatMap((t) => t.rows.flatMap((r) => rowRefs(t, r)));
 
 export function checkIdReferences(root) {
-  const title = "docs/data の ID 参照が解決する（REQ/RISK/VIEW/TC/UNK/DS/EXEC/DEF/ACT/FND）";
+  const title = "docs/data の ID 参照が解決する（REQ/RISK/VIEW/TC/UNK/DS/EXEC/DEF/ACT/FND/EV）";
   const result = resultFor("id-references", title);
   const files = walkFiles(root, "docs/data", (p) => p.endsWith(".csv"));
   if (files.length === 0) return result("skipped", ["docs/data/*.csv が無い"]);

@@ -10,6 +10,7 @@ import { isFile, readText } from "../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../ci/lib/yaml-lite.mjs";
 import { collectScans } from "./lib/collect.mjs";
 import { buildDocument } from "./lib/document.mjs";
+import { loadFindingIds } from "./lib/finding-ids.mjs";
 import { loadEntries } from "./lib/ledger.mjs";
 import { renderSummary } from "./lib/triage.mjs";
 
@@ -33,6 +34,7 @@ const doc = buildDocument({
     today: now.toISOString().slice(0, 10),
   },
   previous,
+  findingIds: loadFindingIds(root),
   expected,
   today: now.toISOString().slice(0, 10),
   nowIso: now.toISOString(),

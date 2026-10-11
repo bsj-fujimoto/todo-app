@@ -27,8 +27,15 @@ export const FINDING_COLUMNS = [
 
 const text = (value) => (value === null || value === undefined ? "" : String(value));
 
-/** findings.json（triage の出力）→ 表の行。finding_id は F-001 → FND-001 に写す（元の ID は source_finding_id に残す）。 */
+/** findings.json（triage の出力）→ 表の行。finding_id は triage が fingerprint から決めた安定 ID（FND-nnn。台帳 security/finding-ids.yaml）。旧形式 F-001 は FND-001 に写す。 */
 export function findingRows(doc) {
+  const unregistered = (doc?.findings ?? []).filter((f) => !toFndId(f.finding_id));
+  if (unregistered.length) {
+    throw new Error(
+      `安定 ID（FND-nnn）が未登録の検出が ${unregistered.length} 件ある（${unregistered.map((f) => f.finding_id).join(", ")}）。` +
+        "node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write で security/finding-ids.yaml に振って commit してから、triage を再実行する",
+    );
+  }
   return (doc?.findings ?? []).map((f) => ({
     finding_id: toFndId(f.finding_id),
     source_finding_id: f.finding_id,

@@ -61,12 +61,39 @@ jobs:
       actions: read # triage が前回の findings.json を取得する
       issues: write # security.yml の file-security-issues が要求する（create_issues=false なので動かない）
 
+  # ---- 証跡の検査（リリースの版の証跡が、実際の結果と一致し、改変されていないこと）---------------------
+  # 実施表・不具合表・証拠索引・manifest の整合を、リリースの SHA を渡して厳格に検査する（別の版の行が残っていれば失敗。台帳が古くても失敗）。
+  # 証跡の取り込み（fetch-run.mjs）と commit はリポジトリの管理者が事前に行う（scripts/evidence/README.md）。ワークフローは main へ commit しない。
+  evidence-check:
+    name: evidence-check
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0 # 成果物台帳（artifacts.yaml）の履歴を、コミット履歴と突き合わせる
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: 証跡一式の検査（--release で版を固定し、--strict で台帳の古さも失敗にする）
+        run: node scripts/evidence/check-evidence.mjs --out reports/evidence-check-report.json --release "$TARGET_SHA" --strict
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: evidence-check-report
+          path: reports
+          retention-days: 90
+          if-no-files-found: error
+
   # ---- 公開（ビルド・push・provenance・署名・SBOM・Release）---------------------------------------
   publish:
     name: publish
-    needs: [ci, security]
-    # dry-run の PR では ci / security が skipped になる。リリースでは両方 success でなければ公開しない（失敗・skipped を成功扱いにしない）
-    if: ${{ !cancelled() && needs.ci.result != 'failure' && needs.security.result != 'failure' && (github.event_name == 'pull_request' || (needs.ci.result == 'success' && needs.security.result == 'success')) }}
+    needs: [ci, security, evidence-check]
+    # dry-run の PR では ci / security / evidence-check が skipped になる。リリースでは全部 success でなければ公開しない（失敗・skipped を成功扱いにしない）
+    if: ${{ !cancelled() && needs.ci.result != 'failure' && needs.security.result != 'failure' && needs.evidence-check.result != 'failure' && (github.event_name == 'pull_request' || (needs.ci.result == 'success' && needs.security.result == 'success' && needs.evidence-check.result == 'success')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:

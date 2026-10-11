@@ -1,5 +1,5 @@
 // セキュリティ検査の finding_id（security.yml の triage は F-001 形式）と、証跡台帳の FND-001 形式の対応。純粋関数。
-// 注意: triage の finding_id は検出の並び順で振られる（検出が増減すると番号が変わる）。安定した識別は fingerprint。
+// triage の finding_id は、fingerprint から決まる安定 ID（FND-nnn。台帳 security/finding-ids.yaml）。旧形式（F-001、検出の並び順）も写せる。
 
 /** F-007 / FND-007 → 7（形式が違えば null）。 */
 export const findingNumber = (id) => {
