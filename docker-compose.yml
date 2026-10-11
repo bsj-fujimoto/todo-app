@@ -17,6 +17,9 @@ services:
       COMMIT_SHA: ${COMMIT_SHA:-unknown}
     volumes:
       - todo-data:/data
+    # 権限を最小にする（compose-check COMPOSE-007）。Node の HTTP サーバーに追加の capability は要らない。
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
     healthcheck:
       test:
         [
@@ -37,6 +40,9 @@ services:
       dockerfile: frontend/Dockerfile
     ports:
       - "${FRONTEND_PORT:-8080}:8080"
+    # 非 root で 8080 を待ち受ける nginx に capability は要らない
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
     depends_on:
       backend:
         condition: service_healthy

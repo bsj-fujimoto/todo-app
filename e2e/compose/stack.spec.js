@@ -125,10 +125,15 @@ test.describe("docker compose（本物の nginx・コンテナ・ボリューム
       // 本物の nginx の挙動: セキュリティヘッダ・gzip・/healthz・非 root
       const page1 = await request.get(`${compose.url}/`);
       expect(page1.headers()).toMatchObject({
-        "content-security-policy": "default-src 'self'",
+        "content-security-policy":
+          "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
         "x-content-type-options": "nosniff",
         "referrer-policy": "no-referrer",
         "x-frame-options": "DENY",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "cross-origin-embedder-policy": "require-corp",
       });
       const css = await request.get(`${compose.url}/styles.css`, { headers: { "accept-encoding": "gzip" } });
       expect(css.headers()["content-encoding"]).toBe("gzip");
