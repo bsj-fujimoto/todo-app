@@ -15,7 +15,11 @@ export const KINDS = {
     file: /(\.sarif|\.cdx\.json|(^|\/)sbom[^/]*\.json|(^|\/)scan-run\.json|(^|\/)findings\.json|(^|\/)gate\.json|(^|\/)triage-summary\.md)$/,
   },
   perf: { dir: "perf", artifact: /^perf/, file: /\.(json|jsonl|md)$/ },
-  monitoring: { dir: "monitoring", artifact: /^(monitoring|synthetic)/, file: /\.(json|jsonl|md)$/ },
+  monitoring: {
+    dir: "monitoring",
+    artifact: /^(monitoring|synthetic|alert-test)/,
+    file: /\.(json|jsonl|md)$/,
+  },
   github: { dir: "github", artifact: /.*/, file: /\.json$/ },
 };
 
