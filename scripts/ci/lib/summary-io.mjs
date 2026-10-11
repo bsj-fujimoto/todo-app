@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export function listJsonFiles(dir) {
@@ -14,4 +14,14 @@ export function readSummaries(files) {
   return files
     .map((f) => JSON.parse(readFileSync(f, "utf8")))
     .filter((s) => s && s.schema_version === 1 && s.layers && s.test_cases);
+}
+
+/** `name=path`（coverage-summary.mjs の出力）→ { name: {lines, branches, functions} }。無いものは理由を残す。 */
+export function readCoverageSpecs(specs) {
+  const out = {};
+  for (const spec of specs) {
+    const [name, path] = [spec.slice(0, spec.indexOf("=")), spec.slice(spec.indexOf("=") + 1)];
+    out[name] = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")).total : { error: `${path} が無い` };
+  }
+  return out;
 }

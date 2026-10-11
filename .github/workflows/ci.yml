@@ -93,33 +93,23 @@ jobs:
           ref: ${{ env.TARGET_SHA }}
           persist-credentials: false
       - uses: ./.github/actions/setup-node-npm
-      - name: backend（unit + api。JUnit は backend/test-results、カバレッジは backend/coverage）
+      - name: backend（unit + api。JUnit・標準出力・カバレッジ表は backend/test-results）
         env:
-          MODE: ${{ needs.select.outputs.mode }}
+          MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
           NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
-        run: |
-          if [ "$MODE" = "selected" ]; then
-            npm run test -w backend -- --test-name-pattern="$NAME_PATTERN"
-          else
-            npm run test -w backend
-          fi
+        run: bash scripts/ci/run-node-tests.sh backend "$MODE" "$NAME_PATTERN"
       - name: frontend（unit。JUnit は frontend/test-results）
         env:
-          MODE: ${{ needs.select.outputs.mode }}
+          MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
           NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
-        run: |
-          if [ "$MODE" = "selected" ]; then
-            npm run test -w frontend -- --test-name-pattern="$NAME_PATTERN"
-          else
-            npm run test -w frontend
-          fi
+        run: bash scripts/ci/run-node-tests.sh frontend "$MODE" "$NAME_PATTERN"
       - name: 結果を ci-summary にまとめる
         if: always()
         run: |
           node scripts/ci/summarize-junit.mjs --title "unit / api" --out ci-summary-unit-api.json \
             --layer api=backend/test-results --layer unit=frontend/test-results \
-            --artifact backend-coverage=backend/coverage --artifact backend-junit=backend/test-results \
-            --artifact frontend-junit=frontend/test-results
+            --coverage backend=backend/test-results/coverage-summary.json \
+            --artifact backend-test-results=backend/test-results --artifact frontend-test-results=frontend/test-results
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -133,9 +123,7 @@ jobs:
           name: junit-coverage-unit-api
           path: |
             backend/test-results
-            backend/coverage
             frontend/test-results
-            frontend/coverage
           retention-days: 90
           if-no-files-found: error
 
@@ -158,13 +146,28 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PUSH_BEFORE: ${{ github.event.before }}
         run: bash scripts/ci/oasdiff-breaking.sh
-      - name: 契約適合の検査（実装が openapi.yaml に従っているか）
+      - name: 契約適合の検査（実装が openapi.yaml に従っているか。JUnit は backend/test-results/contract.xml）
+        if: always()
         run: npm run contract:check -w backend
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "contract" --out ci-summary-contract.json \
+            --layer contract=backend/test-results/contract.xml --artifact contract-report=contract-report
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-contract
+          path: ci-summary-contract.json
+          retention-days: 90
+          if-no-files-found: error
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: contract-report
-          path: contract-report
+          path: |
+            contract-report
+            backend/test-results/contract.xml
           retention-days: 90
           if-no-files-found: warn
 

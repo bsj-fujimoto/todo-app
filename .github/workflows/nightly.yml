@@ -90,8 +90,8 @@ jobs:
         run: |
           fail=0
           for i in $(seq 1 "$REPEAT"); do
-            npm run test -w backend || fail=1
-            npm run test -w frontend || fail=1
+            bash scripts/ci/run-node-tests.sh backend full || fail=1
+            bash scripts/ci/run-node-tests.sh frontend full || fail=1
             mkdir -p "results/backend/run-$i" "results/frontend/run-$i"
             cp -R backend/test-results/. "results/backend/run-$i/"
             cp -R frontend/test-results/. "results/frontend/run-$i/"

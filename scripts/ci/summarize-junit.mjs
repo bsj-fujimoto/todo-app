@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // JUnit XML 群 → ci-summary.json（と $GITHUB_STEP_SUMMARY の表）。依存ゼロ。
 //   層ごと : node scripts/ci/summarize-junit.mjs --layer unit=backend/test-results --out ci-summary-unit.json
+//   カバレッジを載せる: --coverage backend=backend/test-results/coverage-summary.json（coverage-summary.mjs の出力）
 //   集約   : node scripts/ci/summarize-junit.mjs --merge <summaries のディレクトリ> --out ci-summary.json --job lint=success
 // composition root: 時刻・環境変数・ファイルをここで束ねる（純粋なロジックは lib/ に置く）。
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
@@ -8,7 +9,7 @@ import { dirname } from "node:path";
 import { asList, parseArgs } from "./lib/args.mjs";
 import { describeArtifact } from "./lib/artifacts.mjs";
 import { readJunitFiles } from "./lib/junit.mjs";
-import { listJsonFiles, readSummaries } from "./lib/summary-io.mjs";
+import { listJsonFiles, readCoverageSpecs, readSummaries } from "./lib/summary-io.mjs";
 import { buildSummary, mergeSummaries, renderMarkdown } from "./lib/summary.mjs";
 
 const args = parseArgs(process.argv.slice(2), { flags: ["strict"] });
@@ -34,7 +35,8 @@ function build() {
     return mergeSummaries({ env: process.env, nowIso, summaries, jobResults });
   }
   const artifacts = asList(args.artifact).map(describeArtifact);
-  return buildSummary({ env: process.env, nowIso, layerSpecs: layerSpecs(), artifacts });
+  const summary = buildSummary({ env: process.env, nowIso, layerSpecs: layerSpecs(), artifacts });
+  return { ...summary, coverage: readCoverageSpecs(asList(args.coverage)) };
 }
 
 const summary = build();

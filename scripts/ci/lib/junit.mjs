@@ -28,6 +28,10 @@ export function tcIdsOf(name) {
   return [...new Set([...String(name).matchAll(TC_ID)].map((m) => m[1]))];
 }
 
+// node:test（プロセス分離）は、テストファイル 1 つにつき「ファイル名の testcase」を親として出す。
+// 成功したものは中身のテストと二重になるので数えない。失敗したもの（起動失敗・構文エラーなど）は失敗として残す。
+const isFileEntry = (c) => c.classname === "test" && /\.test\.[cm]?[jt]s$/.test(c.name);
+
 const toCase = (a, body, source) => ({
   name: a.name || "",
   classname: a.classname || "",
@@ -40,7 +44,8 @@ const toCase = (a, body, source) => ({
 /** 1 つの JUnit XML 文字列 → テストケース配列（入れ子の testsuite を平らにする）。 */
 export function parseJunit(xml, source = "") {
   const re = /<testcase\b([^>]*?)(?:\/>|>([\s\S]*?)<\/testcase>)/g;
-  return [...xml.matchAll(re)].map((m) => toCase(attrs(m[1]), m[2] || "", source));
+  const cases = [...xml.matchAll(re)].map((m) => toCase(attrs(m[1]), m[2] || "", source));
+  return cases.filter((c) => !(isFileEntry(c) && c.status === "passed"));
 }
 
 export function listXmlFiles(path) {
@@ -58,6 +63,7 @@ export function readJunitFiles(paths) {
 /** テストケースの所属レイヤー。パスで分かればそれを使い、分からなければ呼び出し側の既定値。 */
 export function layerOf(tc, fallback) {
   const hay = `${tc.file} ${tc.classname} ${tc.source}`.replaceAll("\\", "/");
+  if (/(^|\/)contract\.xml$/.test(tc.source.replaceAll("\\", "/"))) return "contract";
   if (/\/compose\/|stack\.spec/.test(hay)) return "compose";
   if (/\/test\/api\//.test(hay)) return "api";
   if (/\/test\/unit\//.test(hay)) return "unit";

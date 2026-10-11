@@ -1,7 +1,7 @@
 // ci-summary.json の組み立て（純粋関数。時刻・環境変数・ファイル読込は呼び出し側から注入する）。
 import { countBy, layerOf, tcIdsOf } from "./junit.mjs";
 
-export const LAYERS = ["unit", "api", "e2e", "compose"];
+export const LAYERS = ["unit", "api", "contract", "e2e", "compose"];
 const emptyCounts = () => ({
   total: 0,
   passed: 0,
@@ -107,6 +107,7 @@ export function mergeSummaries({ env, nowIso, summaries, jobResults = {} }) {
     ...runInfo(env, nowIso),
     layers,
     test_cases: testCases,
+    coverage: Object.assign({}, ...summaries.map((s) => s.coverage ?? {})),
     jobs: jobResults,
     gate: Object.values(jobResults).every((r) => r === "success") ? "pass" : "fail",
     junit_files: summaries.flatMap((s) => s.junit_files ?? []).sort(),
@@ -134,6 +135,11 @@ export function renderMarkdown(summary, title = "CI サマリ") {
     `TC-ID 付きの結果: ${Object.keys(summary.test_cases).length} 件（失敗 ${failed.length} 件）`,
   ];
   if (failed.length) lines.push("", `失敗した TC: ${failed.map(([id]) => id).join(", ")}`);
+  const cov = Object.entries(summary.coverage ?? {}).map(
+    ([n, c]) =>
+      `${n}: ${c.error ?? `lines ${c.lines}% / branches ${c.branches}% / functions ${c.functions}%`}`,
+  );
+  if (cov.length) lines.push("", `カバレッジ: ${cov.join(" ; ")}`);
   if (summary.jobs) {
     const jobRows = Object.entries(summary.jobs).map(([j, r]) => `| ${j} | ${r} |`);
     lines.push("", "| ジョブ | 結果 |", "|---|---|", ...jobRows);
