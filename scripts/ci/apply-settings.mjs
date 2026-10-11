@@ -2,12 +2,16 @@
 // .github/settings/ のリポジトリ設定・Ruleset を gh api で適用する（冪等）。
 //   node scripts/ci/apply-settings.mjs --dry-run     # 何も変更せず、現在の設定との差分だけを表示する（まずこれ）
 //   node scripts/ci/apply-settings.mjs               # 差分のある項目だけを適用する
+//   node scripts/ci/apply-settings.mjs --skip-rulesets   # Ruleset 以外だけ適用（Ruleset は最後に --only-rulesets で）
 // 要: gh（リポジトリの管理者権限の認証）。通常は scripts/ci/apply-settings.sh から呼ぶ。
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { formatDiff, labelDiff, rulesetDiff, subsetDiff } from "./lib/settings.mjs";
 
 const dryRun = process.argv.includes("--dry-run");
+// Ruleset は main への直接マージを止めるので、最後に別の手順で適用できるようにする（--skip-rulesets / --only-rulesets）
+const skipRulesets = process.argv.includes("--skip-rulesets");
+const onlyRulesets = process.argv.includes("--only-rulesets");
 const dir = new URL("../../.github/settings/", import.meta.url);
 const read = (name) => JSON.parse(readFileSync(new URL(name, dir), "utf8"));
 const desired = read("repo-settings.json");
@@ -148,7 +152,8 @@ function rulesets() {
 
 let pending = 0;
 out(`対象: ${repo}（${dryRun ? "dry-run: 変更しない" : "適用する"}）`);
-for (const t of [...repoTasks(), ...actionTasks(), vulnerabilityAlerts(), labels(), ...rulesets()]) {
+const settingTasks = () => [...repoTasks(), ...actionTasks(), vulnerabilityAlerts(), labels()];
+for (const t of [...(onlyRulesets ? [] : settingTasks()), ...(skipRulesets ? [] : rulesets())]) {
   if (t.diffs.length === 0) {
     out(`= ${t.title}: 変更なし`);
     continue;
