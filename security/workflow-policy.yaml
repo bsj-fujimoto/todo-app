@@ -1,0 +1,20 @@
+# GitHub Actions の統制ポリシーの「許可リスト」。scripts/security/check-workflows.mjs が読み、逸脱すると CI が失敗する。
+# 原則（W1〜W10）は check-workflows.mjs の冒頭を参照。ここには「例外として許す」ものだけを理由つきで書く。
+# 追加するときはレビューで理由を確認する（CODEOWNERS により .github/ と security/ は必ずレビュー対象）。
+version: 1
+
+# ワークフロー直下は常に読み取りだけ。write 権限を持ってよいジョブだけを、権限の種類まで限定して列挙する。
+# キーは "<ワークフロー名>#<ジョブ ID>"。
+write_permissions:
+  # 開始時のコメントは省略: 理由は各行の右に書く
+  "security.yml#sast": [security-events] # CodeQL の SARIF を Code Scanning にアップロードする
+  "security.yml#scorecard": [security-events] # Scorecard の SARIF を Code Scanning にアップロードする
+  "security.yml#container-iac": [security-events] # trivy / hadolint の SARIF を Code Scanning にアップロードする
+  "security.yml#file-security-issues": [issues] # medium の検出を Issue にする（schedule / main push のみ）
+  "nightly.yml#file-issues": [issues] # flaky を Issue にする
+  "release.yml#security": [security-events, issues] # security.yml を呼ぶ（create_issues=false なので issues は使わないが、呼ばれる側が要求するので許す）
+  "release.yml#publish": [contents, packages, attestations] # GHCR への push・GitHub Release・provenance の attest（id-token は下）
+
+# OIDC（id-token: write）を使ってよいジョブ。署名（cosign keyless）と provenance の発行に必要な最小のジョブだけ。
+id_token_write_jobs:
+  - "release.yml#publish"

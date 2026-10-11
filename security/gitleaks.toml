@@ -1,0 +1,13 @@
+# gitleaks の設定。scripts/security/scan.sh gitleaks が `--config security/gitleaks.toml` で使う（git 履歴全体を走査）。
+# 既定の検出ルール（gitleaks 8.x の組み込み）をすべて使い、そのうえで「誤検出を除く理由が書けるもの」だけを allowlist に入れる。
+# allowlist の追加はレビュー対象（CODEOWNERS）。理由と、見直す条件を必ず書く。
+title = "todo-app gitleaks"
+
+[extend]
+useDefault = true
+
+# （現時点で除外しているものは無い。実際に誤検出が出たら、下の形で理由つきで追加する）
+# [[allowlists]]
+# description = "なぜ誤検出か。いつ見直すか"
+# paths = ['''path/to/file''']
+# regexes = ['''正規表現''']

@@ -1,0 +1,42 @@
+# 期限付きで受容しているリスク。受容 = 「いまは直さない」と決めて期限を切ること。放置の言い換えではない。
+# 規則（security/README.md）:
+#   - critical は受容できない（直す）。high は 30 日以内、medium は 90 日以内の期限。期限が切れると未解決に戻り、ゲートで失敗する。
+#   - 受容には理由・owner（ロール）・受容日・期限・再検査条件が要る。medium は追跡 Issue を issue に書く。
+#   - 直したら、この台帳から外す（triage.mjs が「どの検出にも当たらない」と注意を出す）。
+# 書式:
+#   - id: AR-001
+#     match:                      # 検出への当て方（tool / scan / rule_id / component / location / category。指定した項目がすべて一致）
+#       tool: trivy
+#       rule_id: CVE-2026-0000
+#       component: some-package
+#     reason: なぜ今は直さないか（到達可能性・補完統制を含めて）
+#     owner: バックエンド担当
+#     accepted_at: 2026-10-11
+#     expires_at: 2026-11-10
+#     reverify_condition: 修正版が出たとき / 期限の 7 日前
+#     issue: "#12"
+#     reachability: 到達不能（理由）
+#     exposure: 内部のみ / 外部公開
+#     asset_impact: 低 / 中 / 高（理由）
+#     compensating_controls: 補完統制
+# 現時点の受容はない（未解決の medium が出たら、ここに期限付きで書くか、直す）。
+version: 1
+entries:
+  - id: AR-001
+    match:
+      tool: trivy
+      rule_id: CVE-2026-85091
+      component: zlib
+    reason: >-
+      ベースイメージ（alpine）の zlib 1.3.2-r0 に、gz_vacate() のヒープ溢れ（CVE-2026-85091、medium）がある。修正版は 1.3.2-r1 だが、固定している
+      ベースイメージの digest（2026-10-11 時点の最新）にはまだ入っていない。backend・frontend の両イメージが対象。
+      影響するのは zlib の gz* ファイル API（gzwrite / gzprintf）で、nginx（deflate を直接使う）も Node（zlib の deflate ストリーム）も使わないため、到達できない。
+    owner: セキュリティ担当
+    accepted_at: 2026-10-11
+    expires_at: 2027-01-09
+    reverify_condition: Dependabot（docker）がベースイメージを更新したとき / trivy image で zlib 1.3.2-r1 以上になったとき / 期限の 7 日前
+    issue: "#22"
+    reachability: なし（gz* API を使うコードパスが無い）
+    exposure: backend は compose の内部ネットワークのみ、frontend は 8080 を公開（静的ファイルと /api の中継だけ）
+    asset_impact: 低（到達できないので、悪用されても影響する資産は無い）
+    compensating_controls: 非 root（uid 101 / 1000）・cap_drop ALL・no-new-privileges・外部から圧縮ファイルを受け取らない・npm を実行イメージから除去済み

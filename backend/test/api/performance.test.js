@@ -7,8 +7,11 @@ import { bulkTasks } from "../../test-support/datasets.js";
 import { readRows, seedTasks } from "../../test-support/db.js";
 import { createHarness, errorLogs, observe } from "../helpers/harness.js";
 
-const LIST_P95_MS = 500; // 暫定しきい値（一覧 20 回）
-const CREATE_P95_MS = 300; // 暫定しきい値（追加 10 回）
+// 負荷が変わる共有ランナー（GitHub Actions）では、同じコードでも追加 p95 が 452ms になり、暫定値 300ms を超えて不安定だった（#25）。
+// CI では 3 倍の余裕を持たせる。本当の性能の判定は perf 層（k6・SLO）で行い、ここは「桁が違う劣化」を見つける目的。
+const SLACK = process.env.CI ? 3 : 1;
+const LIST_P95_MS = 500 * SLACK; // 暫定しきい値（一覧 20 回）
+const CREATE_P95_MS = 300 * SLACK; // 暫定しきい値（追加 10 回）
 
 function percentile95(samples) {
   const sorted = [...samples].sort((a, b) => a - b);
