@@ -97,10 +97,12 @@ function safeJson(res) {
   }
 }
 
-function tagged(endpoint, expected, extra) {
+// 本文のある要求（POST / PATCH）だけ Content-Type: application/json を付ける。
+// 本文の無い GET / DELETE に付けると Fastify が 400（空の JSON 本文）を返す。実際のブラウザも付けない。
+function tagged(endpoint, expected, extra, hasBody) {
   return {
     tags: { endpoint, ...(extra || {}) },
-    headers: JSON_HEADERS,
+    headers: hasBody ? JSON_HEADERS : {},
     responseCallback: http.expectedStatuses(expected),
   };
 }
@@ -124,7 +126,7 @@ export function listTasks(minCount, extra) {
 }
 
 export function createTask(title, extra) {
-  const res = http.post(`${API}/tasks`, JSON.stringify({ title }), tagged("create", 201, extra));
+  const res = http.post(`${API}/tasks`, JSON.stringify({ title }), tagged("create", 201, extra, true));
   const task = safeJson(res);
   check(
     res,
@@ -139,7 +141,11 @@ export function createTask(title, extra) {
 }
 
 export function toggleTask(id, completed, extra) {
-  const res = http.patch(`${API}/tasks/${id}`, JSON.stringify({ completed }), tagged("toggle", 200, extra));
+  const res = http.patch(
+    `${API}/tasks/${id}`,
+    JSON.stringify({ completed }),
+    tagged("toggle", 200, extra, true),
+  );
   const task = safeJson(res);
   check(
     res,

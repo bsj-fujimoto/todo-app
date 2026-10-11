@@ -9,7 +9,7 @@ import lighthouse from "lighthouse";
 
 const BASE_URL = process.env.BASE_URL || "http://frontend:8080";
 const EXPECTED_ROWS = parseInt(process.env.EXPECTED_ROWS || "1000", 10);
-const ROW_SELECTOR = process.env.ROW_SELECTOR || "li";
+const ROW_SELECTOR = process.env.ROW_SELECTOR || "li.task";
 const REPS = parseInt(process.env.REPS || "10", 10);
 const LH_RUNS = parseInt(process.env.LH_RUNS || "3", 10);
 const OUT_DIR = process.env.OUT_DIR || "/out";
