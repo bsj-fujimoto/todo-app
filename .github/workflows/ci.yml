@@ -106,6 +106,7 @@ jobs:
           node scripts/ci/summarize-junit.mjs --title "unit / api" --out ci-summary-unit-api.json \
             --layer api=backend/test-results --layer unit=frontend/test-results \
             --coverage backend=backend/test-results/coverage-summary.json \
+            --coverage frontend=frontend/test-results/coverage-summary.json \
             --artifact backend-test-results=backend/test-results --artifact frontend-test-results=frontend/test-results
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
