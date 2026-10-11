@@ -1,0 +1,191 @@
+openapi: 3.1.0
+info:
+  title: todo-app API
+  version: 1.0.0
+  description: |
+    個人用 ToDo アプリの backend API。frontend が唯一の consumer。
+    正本は本ファイル（契約先行）。実装との差分は CI の contract チェックで検出する。
+    互換性方針: `/api/v1` 配下は後方互換を保つ。フィールド追加は非破壊、削除・型変更・必須化は破壊的変更として v2 を切る。
+servers:
+  - url: http://localhost:8080
+    description: docker compose（frontend の nginx が /api を backend へ中継）
+tags:
+  - name: tasks
+  - name: health
+paths:
+  /api/v1/tasks:
+    get:
+      tags: [tasks]
+      operationId: listTasks
+      summary: タスク一覧（作成日時の降順。同時刻は保存順の新しいものが先）
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TaskList" }
+        "500": { $ref: "#/components/responses/DataCorrupt" }
+    post:
+      tags: [tasks]
+      operationId: createTask
+      summary: タスクを追加する（未完了で作成）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateTaskRequest" }
+      responses:
+        "201":
+          description: 作成した（Location は付けない）
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "422": { $ref: "#/components/responses/TitleInvalid" }
+        "500": { $ref: "#/components/responses/DataCorrupt" }
+        "503": { $ref: "#/components/responses/StorageFailure" }
+  /api/v1/tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    patch:
+      tags: [tasks]
+      operationId: updateTaskCompleted
+      summary: 完了状態を切り替える（title / createdAt は変更できない）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateTaskRequest" }
+      responses:
+        "200":
+          description: 更新後のタスク
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/DataCorrupt" }
+        "503": { $ref: "#/components/responses/StorageFailure" }
+    delete:
+      tags: [tasks]
+      operationId: deleteTask
+      summary: タスクを即時削除する（確認・取り消しなし）
+      responses:
+        "204": { description: 削除した }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/DataCorrupt" }
+        "503": { $ref: "#/components/responses/StorageFailure" }
+  /api/v1/health:
+    get:
+      tags: [health]
+      operationId: getHealth
+      summary: 死活・準備状態と、動いている版（デプロイマーカー）
+      responses:
+        "200":
+          description: 稼働中でデータストアに接続できる
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+        "503":
+          description: データストアに接続できない
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+components:
+  schemas:
+    Task:
+      type: object
+      additionalProperties: false
+      required: [id, title, completed, createdAt]
+      properties:
+        id: { type: string, format: uuid, description: backend が UUID v4 で採番。変更不可 }
+        title:
+          type: string
+          minLength: 1
+          description: 前後の空白を除去済み。1〜100 文字（Unicode コードポイント）。改行不可
+        completed: { type: boolean, description: 初期値 false }
+        createdAt: { type: string, format: date-time, description: 作成日時（UTC の ISO 8601）。変更不可 }
+    TaskList:
+      type: object
+      additionalProperties: false
+      required: [tasks]
+      properties:
+        tasks:
+          type: array
+          items: { $ref: "#/components/schemas/Task" }
+    CreateTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, description: 検証前の生の入力。サーバーが前後の空白を除去して検証する }
+    UpdateTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [completed]
+      properties:
+        completed: { type: boolean }
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, version, commit, db]
+      properties:
+        status: { type: string, enum: [ok, degraded] }
+        version: { type: string, description: アプリ版（package.json の version） }
+        commit: { type: string, description: ビルド時の commit SHA。不明なら "unknown" }
+        db: { type: string, enum: [ok, error] }
+    Error:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - TITLE_REQUIRED
+                - TITLE_TOO_LONG
+                - TITLE_MULTILINE
+                - INVALID_REQUEST
+                - TASK_NOT_FOUND
+                - STORAGE_FAILURE
+                - DATA_CORRUPT
+            message: { type: string, description: 利用者向けの日本語文言（仕様書の文言と一致） }
+  responses:
+    TitleInvalid:
+      description: >-
+        タイトルが規則に違反。検証順は 必須 → 長さ → 改行。
+        TITLE_REQUIRED「タスク名を入力してください」/ TITLE_TOO_LONG「タスク名は100文字以内で入力してください」/
+        TITLE_MULTILINE「タスク名は1行で入力してください」
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    InvalidRequest:
+      description: 本文の形式不正（欠落・型違い・未知のフィールド）、または id が UUID でない
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: 指定した id のタスクが無い（TASK_NOT_FOUND）
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    StorageFailure:
+      description: 保存に失敗（書込み不可・容量不足など）。操作は反映されない。「保存できませんでした。もう一度お試しください」
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    DataCorrupt:
+      description: >-
+        保存データが壊れている。以降の読み書きを止め、自動で上書きしない。「保存データを読み込めませんでした」
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
