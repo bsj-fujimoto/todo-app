@@ -63,7 +63,7 @@ export default [
   },
   {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）
-    files: ["**/test/**/*.js", "e2e/**/*.js", "scripts/test/**/*.mjs"],
+    files: ["**/test/**/*.js", "e2e/**/*.js", "scripts/test/**/*.mjs", "scripts/*/test/**/*.mjs"],
     rules: { "max-lines-per-function": "off", "max-lines": "off" },
   },
 ];

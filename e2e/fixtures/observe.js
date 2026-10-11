@@ -41,7 +41,10 @@ function readScreen(limits) {
     save_error: message("#save-error"),
     input_error: message("#input-error"),
     list_message: message("#list-message"),
-    focus: focused ? clipText(focused.id || focused.getAttribute("aria-label") || focused.tagName) : null,
+    focus:
+      focused && focused !== document.body
+        ? clipText(focused.id || focused.getAttribute("aria-label") || focused.tagName)
+        : null,
   };
 }
 

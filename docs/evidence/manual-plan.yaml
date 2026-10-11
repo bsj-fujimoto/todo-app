@@ -1,0 +1,16 @@
+# 手動ケース（automation_layer=manual）の実施計画。実施表（docs/data/executions.csv）の not_run 行の元になる。
+# 実際に実施したら、ここではなく実施記録（観察した値・端末の版・証拠）を実施表へ pass / fail で追記し、このエントリを外す。
+# 規則: 実施していないものを pass にしない。理由は事実だけを書く。owner は役割名（人名を書かない）。
+# retest_due は実施予定日で、現時点では暫定（リリース判定の日程が決まったら更新する。確認先: プロダクトオーナー）。
+version: 1
+cases:
+  TC-071:
+    environment: 実機（macOS の VoiceOver + Safari、Windows の NVDA + Firefox）
+    reason: スクリーンリーダーが何をどの順で読み上げるかは実機での聞き取りでしか判定できず（cases.csv の manual_reason）、自動回帰の対象外。実機での実施記録が現時点で無い
+    owner: QA 担当
+    retest_due: 2026-10-31
+  TC-072:
+    environment: 実機（iPhone の Safari、日本語のソフトウェアキーボード）
+    reason: ソフトウェアキーボード表示時のレイアウトと日本語 IME の変換確定は実機の WebKit でしか再現できず（cases.csv の manual_reason）、自動回帰の対象外。実機での実施記録が現時点で無い
+    owner: QA 担当
+    retest_due: 2026-10-31

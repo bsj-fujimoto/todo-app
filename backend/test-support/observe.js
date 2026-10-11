@@ -27,9 +27,14 @@ export const observationsDir = (component) =>
 
 const TC_ID = /\[(TC-\d{3})\]/g;
 
-/** 文字数（コードポイント）で切り、切ったら元の長さを残す。 */
+const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+
+/**
+ * 文字数（コードポイント）で切り、切ったら元の長さを残す。UUID は {uuid} に伏せる
+ * （採番された識別子は証拠として意味が無く、0 が並ぶ UUID は電話番号の検査（qc-analyzer・check-evidence）に誤検出されるため）。
+ */
 export function clip(value, max) {
-  const chars = [...String(value ?? "")];
+  const chars = [...String(value ?? "").replace(UUID, "{uuid}")];
   return chars.length > max ? `${chars.slice(0, max).join("")}…(${chars.length}文字)` : chars.join("");
 }
 

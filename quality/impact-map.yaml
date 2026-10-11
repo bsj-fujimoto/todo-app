@@ -552,6 +552,12 @@ entries:
     full: true
     case_ids: []
     excluded_risk: "なし（CI・選択ロジックの変更は全件実行にフォールバックする）"
+  - id: evidence-tooling
+    feature: 証跡・実施表・台帳の生成と検査の道具（scripts/evidence）
+    paths:
+      - "scripts/evidence/**"
+    case_ids: []
+    excluded_risk: "アプリの振る舞い（証跡の生成・検査の道具でアプリは変わらない。smoke のみ実行）"
   - id: security-governance
     feature: セキュリティ検査・依存更新・リポジトリ統制の設定
     paths:
