@@ -67,7 +67,7 @@ ID の対応: `REQ` 要求 → `RISK` リスク → `VIEW` 観点 → `TC` ケ�
 
 - 分類: **public**（このリポジトリは public。ここの内容は誰でも読める）。利用者データ・実在の個人情報は含まない（テストデータは合成データのみ。`docs/data/datasets.csv`）。
 - **人の氏名・メールアドレス・アカウント名・秘密情報らしい値は、証跡に残さない。** 取り込み時（`fetch-run.mjs`・`build-defects.mjs`）に**墨消し**する（`scripts/evidence/lib/redact.mjs`）。
-  - 対象: 個人情報のキー（`author`・`committer`・`email` など。gitleaks の SARIF の `partialFingerprints`、CycloneDX の author）の値、メールアドレス形式、「氏名 <メール>」の氏名、`Co-Authored-By` などの氏名、アカウントのメンション（`@name`）、リポジトリのオーナー名（URL・`owner/repo` の形以外で書かれたもの）、トークン・`password=` などの代入・秘密鍵の形式。`[REDACTED:author]`・`[REDACTED:email]`・`[REDACTED:account]`・`[REDACTED:secret]` に置き換える。
+  - 対象: 個人情報のキー（`author`・`committer`・`email` など。gitleaks の SARIF の `partialFingerprints`、CycloneDX の author）の値、メールアドレス形式、「氏名 <メール>」の氏名、`Co-Authored-By` などの氏名、アカウントのメンション（`@` に続くアカウント名）、リポジトリのオーナー名（URL・`owner/repo` の形以外で書かれたもの）、トークン・`password=` などの代入・秘密鍵の形式。`[REDACTED:author]`・`[REDACTED:email]`・`[REDACTED:account]`・`[REDACTED:secret]` に置き換える。
   - 決定的（同じ入力は同じ出力）。置き換えが無いファイルは、バイト単位でそのまま。URL に含まれるオーナー名（`github.com/<owner>/…`・`ghcr.io/<owner>/…`）と npm のスコープ（`@fastify/…`）は技術的な参照なので残す。
   - 記録: 墨消ししたファイルは `SOURCE.json` の `redactions` に、理由・規則ごとの件数・**元ファイルの sha256**・**墨消し後の sha256** を残す。`manifest.json` と証拠索引の sha256 は墨消し後のファイルで、manifest の項目に `original_sha256` と `redacted: true` が付く（元との対応が追える）。元の取得物は CI の artifact（90 日）にだけある。
 - 検査: `scripts/evidence/check-evidence.mjs` が、`docs/data/` と `docs/evidence/` の全テキストに、トークン形式（AWS・GitHub・Slack・JWT・秘密鍵・`password=` などの代入）・メール・メンション・オーナー名・電話番号・カード番号の正規表現と、JSON の個人情報のキー（墨消し済みでない `author`・`email` など）を当てる。**許可リストの例外は作らない**（見つかったら、取り込み時の墨消しで取り除く）。セキュリティ側の gitleaks（履歴全体）と併用する。
