@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-020",
+  "entries": [
+    {
+      "title": "[TC-020] 同じタイトルを 2 回追加すると別 ID の 2 件になる",
+      "test_case_ids": [
+        "TC-020"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:36.646Z",
+      "finished_at": "2026-10-11T09:30:37.266Z",
+      "duration_ms": 602,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 2,
+        "rows": [
+          {
+            "text": "会議",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "会議",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "title-input"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"会議\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"会議\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:37.103Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"会議\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"会議\",\"completed\":false,\"createdAt\":\"2026-10-11T09:30:37.164Z\"}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

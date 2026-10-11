@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-012",
+  "entries": [
+    {
+      "title": "[TC-012] id が UUID の形式でなければ 404 ではなく 400 INVALID_REQUEST",
+      "test_case_ids": [
+        "TC-012"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:14.431Z",
+      "finished_at": "2026-10-11T09:30:14.443Z",
+      "duration_ms": 12,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/abc",
+          "status": 400,
+          "request": "{\"completed\":true}",
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/123",
+          "status": 400,
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa…(214文字)",
+          "status": 400,
+          "response": "{\"error\":{\"code\":\"INVALID_REQUEST\",\"message\":\"リクエストの形式が正しくありません\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

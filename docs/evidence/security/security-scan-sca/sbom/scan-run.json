@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "scan": "sbom",
+  "check_kind": "sca",
+  "tool": {
+    "name": "npm-sbom",
+    "version": "11.19.0",
+    "image": null
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:03:05Z",
+  "finished_at": "2026-10-11T09:03:06.198Z",
+  "command": "npm sbom --sbom-format cyclonedx --package-lock-only [--omit dev]",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0
+  ],
+  "config_ref": "package-lock.json",
+  "rules_ref": null,
+  "exclusions": [],
+  "thresholds": null,
+  "coverage": {
+    "languages": [],
+    "paths": [
+      "package-lock.json（直接・推移依存の全体 / 実行時依存のみの 2 本）"
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/sbom",
+  "output_files": [
+    {
+      "path": "security-results/sbom/sbom-runtime.cdx.json",
+      "bytes": 41513,
+      "sha256": "d5d96b979dc77accfb95ca9c3bcdad5d72e9abd4bb77e6b0711ab1a9d7e4daf4"
+    },
+    {
+      "path": "security-results/sbom/sbom.cdx.json",
+      "bytes": 135421,
+      "sha256": "c9b7116a0f9ed97f49755a674667796f925c08737cc9cdc5a7db9d5e5d5eb7a6"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": null
+}

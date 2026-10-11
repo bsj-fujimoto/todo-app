@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "scan": "workflow-governance",
+  "check_kind": "config",
+  "tool": {
+    "name": "check-workflows",
+    "version": "1.0.0",
+    "image": null
+  },
+  "status": "ok",
+  "skipped_reason": null,
+  "target": {
+    "repository": "https://github.com/bsj-fujimoto/todo-app",
+    "branch": "main",
+    "commit_sha": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+    "image_digest": null,
+    "image_digest_kind": null,
+    "images": []
+  },
+  "started_at": "2026-10-11T09:02:58Z",
+  "finished_at": "2026-10-11T09:02:58.738Z",
+  "command": "node scripts/security/check-workflows.mjs; node scripts/security/check-policy.mjs",
+  "exit_code": 0,
+  "accepted_exit_codes": [
+    0,
+    1
+  ],
+  "config_ref": null,
+  "rules_ref": "security/workflow-policy.yaml",
+  "exclusions": [],
+  "thresholds": null,
+  "coverage": {
+    "languages": [],
+    "paths": [
+      ".github/workflows/*.yml, .github/actions/*/action.yml, security/*（方針ファイル）"
+    ],
+    "urls": [],
+    "images": []
+  },
+  "authenticated": null,
+  "workflow_ref": "bsj-fujimoto/todo-app/.github/workflows/security.yml@refs/heads/main",
+  "run_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38126925868",
+  "output_location": "security-results/workflow-governance",
+  "output_files": [
+    {
+      "path": "security-results/workflow-governance/policy-check.txt",
+      "bytes": 61,
+      "sha256": "8fcbe691f7b53d21400d69abfb4b45ef0f6f70eb76cc684f8dfaf54e93fb0baa"
+    },
+    {
+      "path": "security-results/workflow-governance/workflow-check-report.json",
+      "bytes": 570,
+      "sha256": "1b3aa11fff6fc4823e38e5a72d602c81088c5bed5158e8d06dafaaaab73794b6"
+    }
+  ],
+  "finding_count_sarif": 0,
+  "informational": false,
+  "note": "逸脱があれば失敗（ゲートとは別に、このジョブ自体が落ちる）"
+}

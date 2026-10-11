@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-062",
+  "entries": [
+    {
+      "title": "[TC-062] <img src=x onerror=alert(1)> はテキストとして表示され、要素にならない",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.132Z",
+      "finished_at": "2026-10-11T09:30:15.138Z",
+      "duration_ms": 6,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "描画",
+          "value": "title=\"<img src=x onerror=alert(1)>\" → 子要素 0 個、img/script/svg 0 個、textContent 一致=true"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-062] <script>alert(1)</script> はテキストとして表示され、要素にならない",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.140Z",
+      "finished_at": "2026-10-11T09:30:15.141Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "描画",
+          "value": "title=\"<script>alert(1)</script>\" → 子要素 0 個、img/script/svg 0 個、textContent 一致=true"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-062] &lt;b&gt; はテキストとして表示され、要素にならない",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.142Z",
+      "finished_at": "2026-10-11T09:30:15.143Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "描画",
+          "value": "title=\"&lt;b&gt;\" → 子要素 0 個、img/script/svg 0 個、textContent 一致=true"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-062] \"><svg onload=alert(1)> はテキストとして表示され、要素にならない",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.144Z",
+      "finished_at": "2026-10-11T09:30:15.145Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "描画",
+          "value": "title=\"\\\"><svg onload=alert(1)>\" → 子要素 0 個、img/script/svg 0 個、textContent 一致=true"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-062] '); DROP TABLE tasks;-- はテキストとして表示され、要素にならない",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.146Z",
+      "finished_at": "2026-10-11T09:30:15.146Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "描画",
+          "value": "title=\"'); DROP TABLE tasks;--\" → 子要素 0 個、img/script/svg 0 個、textContent 一致=true"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-062] ソースに innerHTML 等の HTML 解釈 API の使用が 0 件",
+      "test_case_ids": [
+        "TC-062"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.147Z",
+      "finished_at": "2026-10-11T09:30:15.148Z",
+      "duration_ms": 1,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "走査",
+          "value": "src の 7 ファイル（api-client.js, app.js, main.js, messages.js, state.js, validation.js, view.js）で HTML 解釈 API の使用 0 件"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

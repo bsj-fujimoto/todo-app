@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-059",
+  "entries": [
+    {
+      "title": "[TC-059] 認証なしで全操作でき（401/403・WWW-Authenticate・Set-Cookie なし）、画面を経由しない不正入力は backend が断る",
+      "test_case_ids": [
+        "TC-059"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:13.465Z",
+      "finished_at": "2026-10-11T09:30:13.681Z",
+      "duration_ms": 216,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":true,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_TOO_LONG\",\"message\":\"タスク名は100文字以内で入力してください\"}}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

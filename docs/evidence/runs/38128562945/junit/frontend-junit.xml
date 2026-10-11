@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite name="createApiClient" time="0.013566" disabled="0" errors="0" tests="14" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.115Z" hostname="runnervmmprz5">
+		<testcase name="listTasks: GET /api/v1/tasks の tasks を返す" time="0.005087" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="listTasks: tasks が配列でない 200 は INVALID_RESPONSE" time="0.001193" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="createTask: POST に {title} を JSON で送り、201 の本文を返す" time="0.000670" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="updateTask: PATCH /api/v1/tasks/{id} に {completed} を送る（id はエンコードする）" time="0.001006" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="deleteTask: 204 は成功（本文なし）" time="0.000201" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="baseUrl を前置できる" time="0.000358" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="422 TITLE_TOO_LONG のエラー本文からコードを取り出す" time="0.000347" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="400 INVALID_REQUEST のエラー本文からコードを取り出す" time="0.000658" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="404 TASK_NOT_FOUND のエラー本文からコードを取り出す" time="0.000845" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="500 DATA_CORRUPT のエラー本文からコードを取り出す" time="0.000229" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="503 STORAGE_FAILURE のエラー本文からコードを取り出す" time="0.000210" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="JSON でない応答（nginx の 502 など）は UNKNOWN" time="0.000279" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="本文が壊れた 2xx は INVALID_RESPONSE" time="0.000402" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+		<testcase name="通信失敗（fetch が例外）は status 0 の NETWORK_ERROR。例外は投げない" time="0.000207" classname="createApiClient" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/api-client.test.js"/>
+	</testsuite>
+	<testsuite name="app" time="0.263772" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.065Z" hostname="runnervmmprz5">
+		<testsuite name="起動" time="0.073094" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.114Z" hostname="runnervmmprz5">
+			<testcase name="[TC-057] 取得前は「読み込み中…」を出し、「タスクはありません」を出さない。操作は無効" time="0.043993" classname="app.起動" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-056] 0 件は「タスクはありません」。エラー領域は空" time="0.006450" classname="app.起動" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-058] 取得失敗は 0 件と誤認させず、保存失敗の文言と再読み込みボタンを出す。再読み込みで回復する" time="0.009540" classname="app.起動" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-055] DATA_CORRUPT は文言を出し、入力・追加を無効化し、「タスクはありません」を出さない。POST も送らない" time="0.011704" classname="app.起動" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+		</testsuite>
+		<testsuite name="追加" time="0.075808" disabled="0" errors="0" tests="7" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.143Z" hostname="runnervmmprz5">
+			<testcase name="[TC-003] 成功すると先頭に増え、入力欄は空になり、フォーカスは入力欄に戻る" time="0.014256" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-016] 空欄はクライアント側で検証し、POST を送らず入力欄の直下にエラーを出す" time="0.013066" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-017] 101 文字は長さのエラー、入力すると消える" time="0.005740" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-045] 保存失敗は上部に文言を出し、入力値を保持し、一覧は変えない" time="0.011218" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="サーバーの 422 も入力欄の直下に出す（入力値は保持）" time="0.009956" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-061] 送信中に打った次の入力は、先の追加の成功で消さない（Issue #6 の回帰）" time="0.009960" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-063] 送信中は追加ボタンを無効化し、連打しても POST は 1 回だけ" time="0.010710" classname="app.追加" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+		</testsuite>
+		<testsuite name="完了切替・削除" time="0.104747" disabled="0" errors="0" tests="10" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.217Z" hostname="runnervmmprz5">
+			<testcase name="[TC-008] 完了切替は成功後に取り消し線（done）と状態を反映し、並びは変わらない" time="0.019768" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-046] 完了切替の失敗は上部に文言を出し、チェックは通信中も失敗後も変化しない" time="0.010493" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-013] 削除は成功後に行が消える。確認は挟まない" time="0.008045" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-047] 削除の失敗は上部に文言を出し、行は残る" time="0.013116" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-014] 最後の 1 件を削除すると「タスクはありません」" time="0.016456" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="削除でフォーカス中の行が消えたら、近い行のチェックボックスへフォーカスを移す" time="0.006420" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="最後の行を削除したときはフォーカスを一覧のメッセージへ移す" time="0.006095" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-008] 通信中の行の連打は 1 回だけ送り、別の行の操作は妨げない" time="0.008601" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-063] 通信中の行への重複操作は無視する" time="0.008334" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+			<testcase name="[TC-066] 他で削除済み（404）の行を操作すると保存失敗の文言（UNK-003）。行は残る" time="0.005656" classname="app.完了切替・削除" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+		</testsuite>
+		<testsuite name="並び替えの反映（行を作り直さない）" time="0.009555" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.319Z" hostname="runnervmmprz5">
+			<testcase name="追加で既存の行要素は再利用される" time="0.009372" classname="app.並び替えの反映（行を作り直さない）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/app.test.js"/>
+		</testsuite>
+	</testsuite>
+	<testsuite name="renderTask" time="0.029820" disabled="0" errors="0" tests="9" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.345Z" hostname="runnervmmprz5">
+		<testcase name="[TC-062] &lt;img src=x onerror=alert(1)> はテキストとして表示され、要素にならない" time="0.007804" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-062] &lt;script>alert(1)&lt;/script> はテキストとして表示され、要素にならない" time="0.001673" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-062] &amp;lt;b&amp;gt; はテキストとして表示され、要素にならない" time="0.002177" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-062] &amp;quot;>&lt;svg onload=alert(1)> はテキストとして表示され、要素にならない" time="0.001531" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-062] '); DROP TABLE tasks;-- はテキストとして表示され、要素にならない" time="0.001336" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-062] ソースに innerHTML 等の HTML 解釈 API の使用が 0 件" time="0.001354" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-069] チェックボックスと削除ボタンのアクセシブルネームにタイトルが含まれる" time="0.001062" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="完了タスクは done クラスとチェック状態を持つ" time="0.000752" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+		<testcase name="[TC-008] 通信中の行も、チェック・取り消し線は状態のまま（aria-busy だけが付く）" time="0.000729" classname="renderTask" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/render-task.test.js"/>
+	</testsuite>
+	<testsuite name="state" time="0.009220" disabled="0" errors="0" tests="16" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.450Z" hostname="runnervmmprz5">
+		<testcase name="初期は loading で、一覧は空・エラーなし。操作できない" time="0.001715" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-056] 取得成功 0 件は ready（空状態）で操作できる" time="0.000938" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-058] 取得失敗は load-error。0 件の ready にはならず、保存失敗の文言を出す" time="0.000725" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-055] 取得で DATA_CORRUPT は corrupt。操作を止め、一覧は持たない" time="0.000498" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="再読み込みを始めると loading に戻り、上部エラーを消す" time="0.000260" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="追加成功は先頭に足す（新しいものが先）" time="0.000448" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-063] 送信中は submitting。成功・失敗のどちらでも解除される" time="0.000535" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-045] 保存失敗は上部エラー。一覧は変わらない" time="0.000385" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="サーバーの 422 は入力欄の直下のエラー（上部には出さない）" time="0.000204" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="次の操作を始めると上部エラーが消え、入力編集で入力エラーが消える" time="0.000205" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-008] 完了切替は対象だけ置き換え、並びは変えない" time="0.000599" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-013] 削除は対象だけ消す" time="0.000405" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="[TC-066] 404 は保存失敗の文言（UNK-003）。対象の行は残る" time="0.000423" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="操作中に DATA_CORRUPT が返ったら corrupt へ移り操作を止める" time="0.000145" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="未知のアクションは状態を変えない" time="0.000206" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+		<testcase name="classifyFailure" time="0.000279" classname="state" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/state.test.js"/>
+	</testsuite>
+	<testsuite name="validateTitle" time="0.025734" disabled="0" errors="0" tests="10" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.512Z" hostname="runnervmmprz5">
+		<testsuite name="[TC-021] 0 文字・空白のみは必須エラー" time="0.005204" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.530Z" hostname="runnervmmprz5">
+			<testcase name="[TC-021] &amp;quot;&amp;quot;" time="0.002675" classname="validateTitle.[TC-021] 0 文字・空白のみは必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-021] &amp;quot;   &amp;quot;" time="0.000861" classname="validateTitle.[TC-021] 0 文字・空白のみは必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-021] &amp;quot;\t&amp;quot;" time="0.000750" classname="validateTitle.[TC-021] 0 文字・空白のみは必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-022] 下限（1 文字・2 文字）は受け付ける" time="0.002078" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.533Z" hostname="runnervmmprz5">
+			<testcase name="[TC-022] &amp;quot;a&amp;quot;" time="0.000513" classname="validateTitle.[TC-022] 下限（1 文字・2 文字）は受け付ける" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-022] &amp;quot;あ&amp;quot;" time="0.000624" classname="validateTitle.[TC-022] 下限（1 文字・2 文字）は受け付ける" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-022] &amp;quot;ab&amp;quot;" time="0.000763" classname="validateTitle.[TC-022] 下限（1 文字・2 文字）は受け付ける" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-023] 上限の手前（99・100）は受け付ける" time="0.001104" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.534Z" hostname="runnervmmprz5">
+			<testcase name="[TC-023] &amp;quot;aaaaaaaaaaaa…(99cp)&amp;quot;" time="0.000471" classname="validateTitle.[TC-023] 上限の手前（99・100）は受け付ける" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-023] &amp;quot;aaaaaaaaaaaa…(100cp)&amp;quot;" time="0.000494" classname="validateTitle.[TC-023] 上限の手前（99・100）は受け付ける" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-024] 上限超過（101・102）は長さエラー" time="0.001518" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.534Z" hostname="runnervmmprz5">
+			<testcase name="[TC-024] &amp;quot;aaaaaaaaaaaa…(101cp)&amp;quot;" time="0.000497" classname="validateTitle.[TC-024] 上限超過（101・102）は長さエラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-024] &amp;quot;aaaaaaaaaaaa…(102cp)&amp;quot;" time="0.000885" classname="validateTitle.[TC-024] 上限超過（101・102）は長さエラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-025] コードポイントで数える（サロゲートペア・結合文字）" time="0.005937" disabled="0" errors="0" tests="5" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.531Z" hostname="runnervmmprz5">
+			<testcase name="[TC-025] &amp;quot;😀😀😀😀😀😀…(100cp)&amp;quot;" time="0.001046" classname="validateTitle.[TC-025] コードポイントで数える（サロゲートペア・結合文字）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-025] &amp;quot;😀😀😀😀😀😀…(101cp)&amp;quot;" time="0.002262" classname="validateTitle.[TC-025] コードポイントで数える（サロゲートペア・結合文字）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-025] &amp;quot;éééééé…(100cp)&amp;quot;" time="0.000701" classname="validateTitle.[TC-025] コードポイントで数える（サロゲートペア・結合文字）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-025] &amp;quot;éééééé…(102cp)&amp;quot;" time="0.000804" classname="validateTitle.[TC-025] コードポイントで数える（サロゲートペア・結合文字）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-025] 😀×100 は UTF-16 長 200 だがコードポイントは 100" time="0.000848" classname="validateTitle.[TC-025] コードポイントで数える（サロゲートペア・結合文字）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-026] 前後の空白を除去してから長さを判定する" time="0.003546" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.533Z" hostname="runnervmmprz5">
+			<testcase name="[TC-026] &amp;quot;  買い物  &amp;quot;" time="0.001709" classname="validateTitle.[TC-026] 前後の空白を除去してから長さを判定する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-026] &amp;quot; aaaaaaaaaaa…(102cp)&amp;quot;" time="0.000505" classname="validateTitle.[TC-026] 前後の空白を除去してから長さを判定する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-026] &amp;quot;  aaaaaaaaaa…(105cp)&amp;quot;" time="0.000575" classname="validateTitle.[TC-026] 前後の空白を除去してから長さを判定する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-027] 改行を含むと改行エラー" time="0.001011" disabled="0" errors="0" tests="2" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.535Z" hostname="runnervmmprz5">
+			<testcase name="[TC-027] &amp;quot;a\nb&amp;quot;" time="0.000425" classname="validateTitle.[TC-027] 改行を含むと改行エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-027] &amp;quot;a\r\nb&amp;quot;" time="0.000401" classname="validateTitle.[TC-027] 改行を含むと改行エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-028] 空白の範囲は String.prototype.trim() と同じ（UNK-006）" time="0.001663" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.535Z" hostname="runnervmmprz5">
+			<testcase name="[TC-028] &amp;quot;　&amp;quot;" time="0.000415" classname="validateTitle.[TC-028] 空白の範囲は String.prototype.trim() と同じ（UNK-006）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-028] &amp;quot; a &amp;quot;" time="0.000504" classname="validateTitle.[TC-028] 空白の範囲は String.prototype.trim() と同じ（UNK-006）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-028] &amp;quot;\na\n&amp;quot;" time="0.000575" classname="validateTitle.[TC-028] 空白の範囲は String.prototype.trim() と同じ（UNK-006）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="[TC-029] 検証順は 必須 → 長さ → 改行（UNK-001）" time="0.001739" disabled="0" errors="0" tests="3" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.535Z" hostname="runnervmmprz5">
+			<testcase name="[TC-029] &amp;quot;   \n  &amp;quot;" time="0.000461" classname="validateTitle.[TC-029] 検証順は 必須 → 長さ → 改行（UNK-001）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(111cp)&amp;quot;" time="0.000477" classname="validateTitle.[TC-029] 検証順は 必須 → 長さ → 改行（UNK-001）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="[TC-029] &amp;quot;a\nb&amp;quot;" time="0.000625" classname="validateTitle.[TC-029] 検証順は 必須 → 長さ → 改行（UNK-001）" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+		<testsuite name="入力が文字列でない場合は必須エラー" time="0.000962" disabled="0" errors="0" tests="4" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.536Z" hostname="runnervmmprz5">
+			<testcase name="undefined" time="0.000357" classname="validateTitle.入力が文字列でない場合は必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="null" time="0.000146" classname="validateTitle.入力が文字列でない場合は必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="123" time="0.000132" classname="validateTitle.入力が文字列でない場合は必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+			<testcase name="{}" time="0.000132" classname="validateTitle.入力が文字列でない場合は必須エラー" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		</testsuite>
+	</testsuite>
+	<testsuite name="messages" time="0.001702" disabled="0" errors="0" tests="1" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.536Z" hostname="runnervmmprz5">
+		<testcase name="[TC-021] [TC-024] [TC-027] エラー文言は仕様書と完全一致" time="0.001621" classname="messages" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+	</testsuite>
+	<testsuite name="frontend と backend の検証関数が一致する" time="0.034947" disabled="0" errors="0" tests="25" failures="0" skipped="0" timestamp="2026-10-11T09:30:15.503Z" hostname="runnervmmprz5">
+		<testcase name="[TC-029] &amp;quot;&amp;quot;" time="0.000984" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot; &amp;quot;" time="0.000595" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;   &amp;quot;" time="0.001984" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;\t&amp;quot;" time="0.000783" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;　&amp;quot;" time="0.001388" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot; a &amp;quot;" time="0.000760" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;\na\n&amp;quot;" time="0.007264" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;   \n  &amp;quot;" time="0.001222" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;a\nb&amp;quot;" time="0.000897" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;a\r\nb&amp;quot;" time="0.000882" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;a&amp;quot;" time="0.000829" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;あ&amp;quot;" time="0.001385" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;  買い物  &amp;quot;" time="0.000883" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(99cp)&amp;quot;" time="0.000778" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(100cp)&amp;quot;" time="0.000777" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(101cp)&amp;quot;" time="0.001044" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot; aaaaaaaaaaa…(102cp)&amp;quot;" time="0.001431" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;  aaaaaaaaaa…(105cp)&amp;quot;" time="0.000742" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(111cp)&amp;quot;" time="0.000794" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;😀😀😀😀😀😀…(100cp)&amp;quot;" time="0.000780" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;😀😀😀😀😀😀…(101cp)&amp;quot;" time="0.000789" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;éééééé…(100cp)&amp;quot;" time="0.001040" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;éééééé…(102cp)&amp;quot;" time="0.000906" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;&lt;img src=x o…(28cp)&amp;quot;" time="0.000931" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+		<testcase name="[TC-029] &amp;quot;aaaaaaaaaaaa…(100000cp)&amp;quot;" time="0.003818" classname="frontend と backend の検証関数が一致する" file="/home/runner/work/todo-app/todo-app/frontend/test/unit/validate-title.test.js"/>
+	</testsuite>
+	<!-- tests 117 -->
+	<!-- suites 21 -->
+	<!-- pass 117 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 694.472418 -->
+</testsuites>

@@ -1,0 +1,44 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [],
+          "version": "0.75.0"
+        }
+      },
+      "results": [],
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///repo/security-results/trivy-fs/trivy-fs.json/"
+        }
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
+          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+          "branch": "main"
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "startTimeUtc": "2026-10-11T09:02:57Z",
+          "endTimeUtc": "2026-10-11T09:03:06.107Z",
+          "commandLine": "docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy fs --scanners vuln,misconfig,secret --include-dev-deps --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --skip-dirs node_modules,.cache,security-results,.git --exit-code 0 --no-progress --format json --output security-results/trivy-fs/trivy-fs.json ."
+        }
+      ],
+      "properties": {
+        "scan": "trivy-fs",
+        "image_digest": null,
+        "config_ref": null
+      }
+    }
+  ]
+}

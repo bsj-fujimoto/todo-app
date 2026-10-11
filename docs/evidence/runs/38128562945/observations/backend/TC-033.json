@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-033",
+  "entries": [
+    {
+      "title": "[TC-033] 改行を含むと 422 TITLE_MULTILINE で、一覧は空のまま",
+      "test_case_ids": [
+        "TC-033"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.765Z",
+      "finished_at": "2026-10-11T09:30:10.781Z",
+      "duration_ms": 16,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"a\\nb\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_MULTILINE\",\"message\":\"タスク名は1行で入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"a\\r\\nb\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_MULTILINE\",\"message\":\"タスク名は1行で入力してください\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

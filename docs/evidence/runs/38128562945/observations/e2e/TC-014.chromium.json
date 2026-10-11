@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-014",
+  "entries": [
+    {
+      "title": "[TC-014] 全件を削除すると「タスクはありません」になり、再読込後も同じ [ST-06, ST-07]",
+      "test_case_ids": [
+        "TC-014"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:46.693Z",
+      "finished_at": "2026-10-11T09:30:49.474Z",
+      "duration_ms": 2775,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "タスクはありません",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

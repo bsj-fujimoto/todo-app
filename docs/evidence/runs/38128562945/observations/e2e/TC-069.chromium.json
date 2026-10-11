@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-069",
+  "entries": [
+    {
+      "title": "[TC-069] 入力欄にラベル、各行の操作にタイトルを含む名前があり、axe-core の重大な違反がない",
+      "test_case_ids": [
+        "TC-069"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:31.026Z",
+      "finished_at": "2026-10-11T09:30:32.625Z",
+      "duration_ms": 1389,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 4,
+        "rows": [
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"牛乳を買う\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:03.000Z\"},{\"id\":\"{uuid}\",\"title…(377文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-069] エラー表示中・保存失敗表示中も axe-core の違反がない",
+      "test_case_ids": [
+        "TC-069"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:32.243Z",
+      "finished_at": "2026-10-11T09:30:33.690Z",
+      "duration_ms": 1433,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "資料を印刷する",
+        "input_disabled": false,
+        "save_error": "保存できませんでした。もう一度お試しください",
+        "input_error": "",
+        "list_message": "タスクはありません",
+        "focus": null
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

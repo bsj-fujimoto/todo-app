@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-031",
+  "entries": [
+    {
+      "title": "[TC-031] 101 文字以上（巨大な 10 万文字を含む）は 422 TITLE_TOO_LONG で、backend は落ちず一覧も変わらない",
+      "test_case_ids": [
+        "TC-031"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.843Z",
+      "finished_at": "2026-10-11T09:30:10.858Z",
+      "duration_ms": 15,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_TOO_LONG\",\"message\":\"タスク名は100文字以内で入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "{\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"}",
+          "response": "{\"error\":{\"code\":\"TITLE_TOO_LONG\",\"message\":\"タスク名は100文字以内で入力してください\"}}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 422,
+          "request": "(100012 バイト)",
+          "response": "{\"error\":{\"code\":\"TITLE_TOO_LONG\",\"message\":\"タスク名は100文字以内で入力してください\"}}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

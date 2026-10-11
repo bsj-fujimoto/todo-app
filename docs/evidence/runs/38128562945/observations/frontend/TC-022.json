@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-022",
+  "entries": [
+    {
+      "title": "[TC-022] \"a\"",
+      "test_case_ids": [
+        "TC-022"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.255Z",
+      "finished_at": "2026-10-11T09:30:15.255Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"a\"",
+          "result": "合格 title=\"a\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-022] \"あ\"",
+      "test_case_ids": [
+        "TC-022"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.255Z",
+      "finished_at": "2026-10-11T09:30:15.255Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"あ\"",
+          "result": "合格 title=\"あ\""
+        }
+      ],
+      "table_omitted": 0
+    },
+    {
+      "title": "[TC-022] \"ab\"",
+      "test_case_ids": [
+        "TC-022"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.256Z",
+      "finished_at": "2026-10-11T09:30:15.256Z",
+      "duration_ms": 0,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"ab\"",
+          "result": "合格 title=\"ab\""
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

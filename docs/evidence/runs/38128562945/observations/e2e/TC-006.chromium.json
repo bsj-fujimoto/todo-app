@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-006",
+  "entries": [
+    {
+      "title": "[TC-006] ペアワイズ PW-05 Enter キー / 360px / 既存 3 件",
+      "test_case_ids": [
+        "TC-006"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "chromium",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:34.539Z",
+      "finished_at": "2026-10-11T09:30:35.235Z",
+      "duration_ms": 688,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "chromium",
+        "browser": "chromium 156.0.8078.4",
+        "viewport": {
+          "width": 360,
+          "height": 640
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 4,
+        "rows": [
+          {
+            "text": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀…(100文字)",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "打ち合わせの準備をする",
+            "checked": true,
+            "busy": false
+          },
+          {
+            "text": "仕様書をレビューする",
+            "checked": false,
+            "busy": false
+          },
+          {
+            "text": "牛乳を買う",
+            "checked": false,
+            "busy": false
+          }
+        ],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "",
+        "focus": "title-input"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"打ち合わせの準備をする\",\"completed\":true,\"createdAt\":\"2026-10-01T09:00:02.000Z\"},{\"id\":\"{uuid}\",\"…(288文字)"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀…(183文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

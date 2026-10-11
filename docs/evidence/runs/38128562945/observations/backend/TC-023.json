@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-023",
+  "entries": [
+    {
+      "title": "[TC-023] 上限ちょうど前の 99 文字と、ちょうどの 100 文字は合格する",
+      "test_case_ids": [
+        "TC-023"
+      ],
+      "layer": "unit",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:14.121Z",
+      "finished_at": "2026-10-11T09:30:14.124Z",
+      "duration_ms": 3,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [
+        {
+          "input": "\"aaaaaaaaaaaa\"…(99コードポイント)",
+          "result": "合格 title=\"aaaaaaaaaaaa\"…(99コードポイント)"
+        },
+        {
+          "input": "\"aaaaaaaaaaaa\"…(100コードポイント)",
+          "result": "合格 title=\"aaaaaaaaaaaa\"…(100コードポイント)"
+        }
+      ],
+      "table_omitted": 0
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="94.93509900000001">
+<testsuite name="../compose/stack.spec.js" timestamp="2026-10-11T09:30:09.141Z" hostname="compose" tests="4" failures="0" skipped="0" time="93.563" errors="0">
+<testcase name="docker compose（本物の nginx・コンテナ・ボリューム） › [TC-076] docker compose up --build で起動し、frontend 経由で画面と API が動く" classname="../compose/stack.spec.js" time="22.365">
+<properties>
+<property name="observed" value="一覧 1 行、エラー表示なし、API 2 件">
+</property>
+</properties>
+</testcase>
+<testcase name="docker compose（本物の nginx・コンテナ・ボリューム） › [TC-043] backend の再起動・スタック全体の再起動の後も、タスクが保持される" classname="../compose/stack.spec.js" time="19.429">
+<properties>
+<property name="observed" value="backend 再起動後の health 200 まで(ms): 511">
+</property>
+<property name="observed" value="一覧 2 行、エラー表示なし、API 6 件">
+</property>
+</properties>
+</testcase>
+<testcase name="docker compose（本物の nginx・コンテナ・ボリューム） › [TC-044] down ではボリュームが残りタスクが保持され、down -v で失われる" classname="../compose/stack.spec.js" time="35.892">
+<properties>
+<property name="observed" value="一覧 0 行、エラー表示なし、API 4 件">
+</property>
+</properties>
+</testcase>
+<testcase name="docker compose（本物の nginx・コンテナ・ボリューム） › [TC-077] backend を止めると外形監視（health）が 502/504 で検知でき、画面は保存失敗を示し、起動後 30 秒以内に回復する" classname="../compose/stack.spec.js" time="15.877">
+<properties>
+<property name="observed" value="backend 停止中の health: 504">
+</property>
+<property name="observed" value="start backend から health 200 まで(ms): 508">
+</property>
+<property name="observed" value="一覧 0 行、保存できませんでした。もう一度お試しください、API 2 件">
+</property>
+</properties>
+</testcase>
+</testsuite>
+</testsuites>

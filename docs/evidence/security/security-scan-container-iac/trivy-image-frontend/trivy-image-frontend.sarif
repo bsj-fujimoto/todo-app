@@ -1,0 +1,101 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2026-85091",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "zlib versions 1.3.1.2 through 1.3.2 contain a heap buffer overflow vul ..."
+              },
+              "fullDescription": {
+                "text": "zlib versions 1.3.1.2 through 1.3.2 contain a heap buffer overflow vulnerability in the gz_vacate() function when processing non-blocking gzwrite() operations with stale external buffer pointers. Attackers can trigger the overflow by calling gzprintf() or gzvprintf() after a write stall, causing an unchecked memmove() to write beyond the internal input buffer boundary."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-85091",
+              "help": {
+                "text": "Vulnerability CVE-2026-85091\nSeverity: MEDIUM\nPackage: zlib\nFixed Version: 1.3.2-r1\nLink: [CVE-2026-85091](https://avd.aquasec.com/nvd/cve-2026-85091)\nzlib versions 1.3.1.2 through 1.3.2 contain a heap buffer overflow vulnerability in the gz_vacate() function when processing non-blocking gzwrite() operations with stale external buffer pointers. Attackers can trigger the overflow by calling gzprintf() or gzvprintf() after a write stall, causing an unchecked memmove() to write beyond the internal input buffer boundary.",
+                "markdown": "**Vulnerability CVE-2026-85091**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|zlib|1.3.2-r1|[CVE-2026-85091](https://avd.aquasec.com/nvd/cve-2026-85091)|\n\nzlib versions 1.3.1.2 through 1.3.2 contain a heap buffer overflow vulnerability in the gz_vacate() function when processing non-blocking gzwrite() operations with stale external buffer pointers. Attackers can trigger the overflow by calling gzprintf() or gzvprintf() after a write stall, causing an unchecked memmove() to write beyond the internal input buffer boundary."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            }
+          ],
+          "version": "0.75.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2026-85091",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Package: zlib\nInstalled Version: 1.3.2-r0\nVulnerability CVE-2026-85091\nSeverity: MEDIUM\nFixed Version: 1.3.2-r1\nLink: [CVE-2026-85091](https://avd.aquasec.com/nvd/cve-2026-85091)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "security-results/trivy-image-frontend/frontend-image.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "security-results/trivy-image-frontend/frontend-image.tar: zlib@1.3.2-r0"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "imageID": "sha256:a5df48d7fc192fd25a67e7ecd179d275fcc66150a388501efe55c9a6a9c9a186",
+        "imageName": "security-results/trivy-image-frontend/frontend-image.tar",
+        "repoDigests": null,
+        "repoTags": [
+          "todo-app-frontend:ci"
+        ],
+        "scan": "trivy-image-frontend",
+        "image_digest": "sha256:a5df48d7fc192fd25a67e7ecd179d275fcc66150a388501efe55c9a6a9c9a186",
+        "config_ref": null
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
+          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+          "branch": "main"
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "startTimeUtc": "2026-10-11T09:03:25Z",
+          "endTimeUtc": "2026-10-11T09:03:26.991Z",
+          "commandLine": "docker save todo-app-frontend:ci; docker run ghcr.io/aquasecurity/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa trivy image --input <tar> --format json → convert sarif|cyclonedx"
+        }
+      ]
+    }
+  ]
+}

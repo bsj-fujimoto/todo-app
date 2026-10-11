@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-064",
+  "entries": [
+    {
+      "title": "[TC-064] 20 件の同時追加がすべて 201 で、id は互いに異なり、欠落・重複なく保存順どおりに並ぶ",
+      "test_case_ids": [
+        "TC-064"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.230Z",
+      "finished_at": "2026-10-11T09:30:10.813Z",
+      "duration_ms": 583,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-01\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-01\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-02\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-02\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:01.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-03\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-03\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:01.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-04\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-04\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:02.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-05\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-05\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:02.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-06\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-06\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:03.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-07\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-07\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:03.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-08\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-08\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:04.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-09\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-09\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:04.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-10\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-10\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:05.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-11\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-11\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:05.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-12\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-12\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:06.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-13\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-13\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:06.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-14\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-14\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:07.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-15\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-15\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:07.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-16\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-16\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:08.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-17\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-17\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:08.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-18\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-18\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:09.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-19\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-19\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:09.000Z\"}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"並行-20\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"並行-20\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:10.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "(2391 バイト)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "同時追加",
+          "value": "201 が 20 件、id の種類 20、DB 20 行、createdAt の種類 11"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

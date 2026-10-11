@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-047",
+  "entries": [
+    {
+      "title": "[TC-047] 削除の失敗は上部に文言を出し、行は残る",
+      "test_case_ids": [
+        "TC-047"
+      ],
+      "layer": "unit",
+      "component": "frontend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:15.247Z",
+      "finished_at": "2026-10-11T09:30:15.259Z",
+      "duration_ms": 12,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [],
+      "api_calls_omitted": 0,
+      "notes": [
+        {
+          "label": "画面",
+          "value": "一覧 3 行 [タスク3(未), タスク2(済), タスク1(未)]、入力欄=なし、入力エラー=なし、保存エラー=\"保存できませんでした。もう一度お試しください\"、一覧メッセージ=なし、追加ボタン=有効"
+        },
+        {
+          "label": "API 呼び出し",
+          "value": "list() → delete(\"{uuid}\")"
+        }
+      ],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

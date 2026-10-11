@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "OWASP ZAP",
+          "semanticVersion": "2.17.0",
+          "informationUri": "https://www.zaproxy.org/",
+          "rules": [
+            {
+              "id": "100001",
+              "name": "Unexpected Content-Type was returned",
+              "shortDescription": {
+                "text": "Unexpected Content-Type was returned"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/100001/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe--1"
+                ],
+                "security-severity": "3"
+              }
+            },
+            {
+              "id": "100000-1",
+              "name": "A Client Error response code was returned by the server",
+              "shortDescription": {
+                "text": "A Client Error response code was returned by the server"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/100000/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe-388"
+                ],
+                "security-severity": "0"
+              }
+            },
+            {
+              "id": "10049-1",
+              "name": "Non-Storable Content",
+              "shortDescription": {
+                "text": "Non-Storable Content"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/10049/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe-524"
+                ],
+                "security-severity": "0"
+              }
+            },
+            {
+              "id": "10049-3",
+              "name": "Storable and Cacheable Content",
+              "shortDescription": {
+                "text": "Storable and Cacheable Content"
+              },
+              "helpUri": "https://www.zaproxy.org/docs/alerts/10049/",
+              "properties": {
+                "tags": [
+                  "dast",
+                  "cwe-524"
+                ],
+                "security-severity": "0"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "100001",
+          "level": "note",
+          "message": {
+            "text": "Unexpected Content-Type was returned（Low (High)）。影響する URL 11 件: DELETE http://localhost:8080/computeMetadata/v1/, DELETE http://localhost:8080/latest/meta-data/, DELETE http://localhost:8080/metadata/instance, DELETE http://localhost:8080/metadata/v1, DELETE http://localhost:8080/opc/v1/instance/"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "3",
+            "instances": 11,
+            "cweid": "-1",
+            "confidence": "3"
+          }
+        },
+        {
+          "ruleId": "100000-1",
+          "level": "none",
+          "message": {
+            "text": "A Client Error response code was returned by the server（Informational (High)）。影響する URL 20 件: DELETE http://localhost:8080/api/v1/tasks/%7Bid%7D, DELETE http://localhost:8080/api/v1/tasks/%7Bid%7D/, DELETE http://localhost:8080/computeMetadata/v1/, DELETE http://localhost:8080/latest/meta-data/, DELETE http://localhost:8080/metadata/instance"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 20,
+            "cweid": "388",
+            "confidence": "3"
+          }
+        },
+        {
+          "ruleId": "10049-1",
+          "level": "none",
+          "message": {
+            "text": "Non-Storable Content（Informational (Medium)）。影響する URL 3 件: DELETE http://localhost:8080/api/v1/tasks/%7Bid%7D, PATCH http://localhost:8080/api/v1/tasks/%7Bid%7D, POST http://localhost:8080/api/v1/tasks"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 3,
+            "cweid": "524",
+            "confidence": "2"
+          }
+        },
+        {
+          "ruleId": "10049-3",
+          "level": "none",
+          "message": {
+            "text": "Storable and Cacheable Content（Informational (Medium)）。影響する URL 2 件: GET http://localhost:8080/api/v1/health, GET http://localhost:8080/api/v1/tasks"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "http://localhost:8080"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "security-severity": "0",
+            "instances": 2,
+            "cweid": "524",
+            "confidence": "2"
+          }
+        }
+      ],
+      "properties": {
+        "source": "security-results/zap/zap-api.json",
+        "rules_ref": "security/zap-rules.tsv",
+        "scan": "zap",
+        "image_digest": null,
+        "config_ref": "security/zap-rules.tsv"
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/bsj-fujimoto/todo-app",
+          "revisionId": "55bfe120455ef4f8892075e8b0b4a5ab6463c111",
+          "branch": "main"
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "startTimeUtc": "2026-10-11T09:02:48Z",
+          "endTimeUtc": "2026-10-11T09:04:19.394Z",
+          "commandLine": "docker run ghcr.io/zaproxy/zaproxy:2.17.0@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2 zap-baseline.py -t http://localhost:8080 -c zap-rules.tsv; zap-api-scan.py -t openapi.yaml -f openapi -O http://localhost:8080 -c zap-rules.tsv (exit 2 / 2)"
+        }
+      ]
+    }
+  ]
+}

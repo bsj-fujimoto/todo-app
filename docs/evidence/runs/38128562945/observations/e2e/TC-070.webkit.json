@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-070",
+  "entries": [
+    {
+      "title": "[TC-070] 3 ブラウザで同じ結果になる（追加→完了→再読込→削除）",
+      "test_case_ids": [
+        "TC-070"
+      ],
+      "layer": "e2e",
+      "component": "e2e",
+      "project": "webkit",
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:31:08.821Z",
+      "finished_at": "2026-10-11T09:31:11.979Z",
+      "duration_ms": 2555,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0",
+        "project": "webkit",
+        "browser": "webkit 27.2",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "locale": "ja-JP"
+      },
+      "screen": {
+        "row_count": 0,
+        "rows": [],
+        "rows_omitted": 0,
+        "input_value": "",
+        "input_disabled": false,
+        "save_error": "",
+        "input_error": "",
+        "list_message": "タスクはありません",
+        "focus": "list-message"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[]}"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"資料を印刷する\"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":false,\"createdAt\":\"2026-10-11T09:31:11.071Z\"}"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 200,
+          "request": "{\"completed\":true}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":true,\"createdAt\":\"2026-10-11T09:31:11.071Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"資料を印刷する\",\"completed\":true,\"createdAt\":\"2026-10-11T09:31:11.071Z\"}]}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/tasks/{uuid}",
+          "status": 204
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

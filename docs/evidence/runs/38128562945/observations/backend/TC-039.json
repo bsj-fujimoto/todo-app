@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-039",
+  "entries": [
+    {
+      "title": "[TC-039] 同時刻のタスクは保存順の新しいものが先で、繰り返しても再起動しても同じ",
+      "test_case_ids": [
+        "TC-039"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:11.366Z",
+      "finished_at": "2026-10-11T09:30:11.432Z",
+      "duration_ms": 66,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"同時刻-C\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"},{\"id\":\"{uuid}\",\"title…(278文字)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"同時刻-C\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"},{\"id\":\"{uuid}\",\"title…(278文字)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"同時刻-C\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"},{\"id\":\"{uuid}\",\"title…(278文字)"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"同時刻-C\",\"completed\":false,\"createdAt\":\"2026-10-01T09:00:00.000Z\"},{\"id\":\"{uuid}\",\"title…(278文字)"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}

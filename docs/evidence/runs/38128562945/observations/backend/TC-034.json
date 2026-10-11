@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "test_case_id": "TC-034",
+  "entries": [
+    {
+      "title": "[TC-034] 前後の空白は除去されて保存される（応答・一覧・title 列のすべて）",
+      "test_case_ids": [
+        "TC-034"
+      ],
+      "layer": "api",
+      "component": "backend",
+      "project": null,
+      "outcome": "passed",
+      "started_at": "2026-10-11T09:30:10.782Z",
+      "finished_at": "2026-10-11T09:30:10.797Z",
+      "duration_ms": 15,
+      "run": {
+        "commit_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+        "run_id": "38128562945",
+        "run_attempt": "1",
+        "repository": "bsj-fujimoto/todo-app",
+        "workflow": "CI",
+        "event": "pull_request"
+      },
+      "environment": {
+        "os": "Linux 6.17.0-1022-azure x64",
+        "node": "v24.21.0"
+      },
+      "api_calls": [
+        {
+          "method": "POST",
+          "path": "/api/v1/tasks",
+          "status": 201,
+          "request": "{\"title\":\"  買い物  \"}",
+          "response": "{\"id\":\"{uuid}\",\"title\":\"買い物\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tasks",
+          "status": 200,
+          "response": "{\"tasks\":[{\"id\":\"{uuid}\",\"title\":\"買い物\",\"completed\":false,\"createdAt\":\"2026-10-05T10:00:00.000Z\"}]}"
+        }
+      ],
+      "api_calls_omitted": 0,
+      "notes": [],
+      "table": [],
+      "table_omitted": 0
+    }
+  ]
+}
