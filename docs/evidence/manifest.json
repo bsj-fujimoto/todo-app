@@ -1,27 +1,29 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-11T16:03:50.121Z",
+  "generated_at": "2026-10-11T16:19:18.098Z",
   "root": "docs/evidence",
   "algorithm": "sha256",
   "count": 277,
   "files": [
     {
       "path": "github/SOURCE.json",
-      "sha256": "87a8d8492d75c24ad4f9719e0cfbc883b595dc93e39ecd895f27acdce3a969bd",
-      "size": 334,
-      "captured_at": "2026-10-11T15:59:41.669Z",
+      "sha256": "ec583d78b922ad1781a434aac3d61e3ab84bd2dd4408e1711448457fab457b57",
+      "size": 1110,
+      "captured_at": "2026-10-11T16:19:01.094Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/issues?q=is%3Aissue+label%3Adefect%2Cflaky",
       "version": "pre-1.0.0",
-      "head_sha": "bb069a55aabf3c68bfd289288fe8d2a403a6d6f6"
+      "head_sha": "49c40cc8f358c768191bc39b087ec834e1151c07"
     },
     {
       "path": "github/defect-issues.json",
-      "sha256": "47e8e10a5853ab6ba31bee62c9a63edcf32491442040a1cbea62299ccf48e714",
-      "size": 51626,
-      "captured_at": "2026-10-11T15:59:41.669Z",
+      "sha256": "8be408137b5fe81f3322edf1cd8a3855ea3eb39db04a12dff67dc9d8144f83e6",
+      "size": 54449,
+      "captured_at": "2026-10-11T16:19:01.094Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/issues?q=is%3Aissue+label%3Adefect%2Cflaky",
       "version": "pre-1.0.0",
-      "head_sha": "bb069a55aabf3c68bfd289288fe8d2a403a6d6f6"
+      "head_sha": "49c40cc8f358c768191bc39b087ec834e1151c07",
+      "redacted": true,
+      "original_sha256": "643680bd669e37ebb4f6a72700e83456f5ca854330d1fcde05e74322e7073d08"
     },
     {
       "path": "runs/38128562945/SOURCE.json",
@@ -2203,9 +2205,9 @@
     },
     {
       "path": "security/SOURCE.json",
-      "sha256": "9ac07e68081306b296e791a1a4c8abc144305d699341061252d6a0db251ec906",
-      "size": 1225,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "sha256": "c64eaf82132ec0184cccce1288dfee50883f1d3ce5002204e0b7c38894032195",
+      "size": 4146,
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2214,7 +2216,7 @@
       "path": "security/security-findings/findings.json",
       "sha256": "10486106fb0cfae54f252b04bb5876ee76208a1fabc76ae99150c54a33b01e00",
       "size": 33097,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2223,7 +2225,7 @@
       "path": "security/security-findings/gate.json",
       "sha256": "939e6adcabeb5b1a972910d000bf8e6c0a2018b1b5695b1c29c1581382775ede",
       "size": 747,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2232,7 +2234,7 @@
       "path": "security/security-findings/triage-summary.md",
       "sha256": "ac7f9922822b53a70d4c341fce557ce30ad7a2355ce99b30e0671dd6d9585e21",
       "size": 726,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2241,7 +2243,7 @@
       "path": "security/security-scan-container-iac/compose-check/compose-check.sarif",
       "sha256": "fd4eaacb8a35a7523d37fb11f203dfb465c7414f211bb97b49d837d2e7207364",
       "size": 2318,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2250,7 +2252,7 @@
       "path": "security/security-scan-container-iac/compose-check/scan-run.json",
       "sha256": "49f2c4db8e124d9b39ed79c19e5f3bbd8db06ca83d1ce97988627679e00d54ba",
       "size": 1449,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2259,7 +2261,7 @@
       "path": "security/security-scan-container-iac/hadolint/hadolint.sarif",
       "sha256": "d50da3f0a5f678d5f9c812fd1e00ea6196f1c47f02fa08d8549b4206a0005091",
       "size": 1350,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2268,7 +2270,7 @@
       "path": "security/security-scan-container-iac/hadolint/scan-run.json",
       "sha256": "beb221ea068f346e483f443512cf1037cb3b0a9d1bd0a55a11f47930246a7bbf",
       "size": 1722,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2277,7 +2279,7 @@
       "path": "security/security-scan-container-iac/trivy-fs/scan-run.json",
       "sha256": "9da3e806d65576f241cc1d0017d32d6cff8d0f84cb53d085377671af19eb170e",
       "size": 2125,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2286,25 +2288,27 @@
       "path": "security/security-scan-container-iac/trivy-fs/trivy-fs.sarif",
       "sha256": "7ab56ac83241b90191bbc827c54e3ce720006ec95123e267edb4e250c5ec37b5",
       "size": 1568,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
       "path": "security/security-scan-container-iac/trivy-image-backend/sbom-image-backend.cdx.json",
-      "sha256": "69575f7e5fa025780b714cf9df89e866ad616b8fb3fa00fbc3bd6484099edb41",
-      "size": 90739,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "sha256": "17daf1c085a920b528adebf5ee0943b90946923a7d174fbaab0871edd7b4b4ae",
+      "size": 90683,
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
-      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "redacted": true,
+      "original_sha256": "69575f7e5fa025780b714cf9df89e866ad616b8fb3fa00fbc3bd6484099edb41"
     },
     {
       "path": "security/security-scan-container-iac/trivy-image-backend/scan-run.json",
       "sha256": "f0a7c3a38cc029554451da0192677a734acd5c93d739f43cb118e3ba343a8fe3",
       "size": 2330,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2313,25 +2317,27 @@
       "path": "security/security-scan-container-iac/trivy-image-backend/trivy-image-backend.sarif",
       "sha256": "38e814eda2cb337d859f352b1e68c4d29999447c97385c31893e5b6bb67726c5",
       "size": 4956,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
       "path": "security/security-scan-container-iac/trivy-image-frontend/sbom-image-frontend.cdx.json",
-      "sha256": "ecbbd563188f82abd57df6e5630cebba57982be91917db680ed34f5e18f30951",
-      "size": 38061,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "sha256": "4604a0713d23b37d66234b9f73e27fe7ae08d404475b8e8d307f30fc82061085",
+      "size": 37985,
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
-      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "redacted": true,
+      "original_sha256": "ecbbd563188f82abd57df6e5630cebba57982be91917db680ed34f5e18f30951"
     },
     {
       "path": "security/security-scan-container-iac/trivy-image-frontend/scan-run.json",
       "sha256": "3ea6b2bea1cb68e1c9420f1805b0772bc39bdb03c68098d2776c5af448ae9950",
       "size": 2341,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2340,7 +2346,7 @@
       "path": "security/security-scan-container-iac/trivy-image-frontend/trivy-image-frontend.sarif",
       "sha256": "d9971f6566a4b9df6f79ed0beff63d3601a5536bc16c6adfed82d2a31e96b92f",
       "size": 4965,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2349,7 +2355,7 @@
       "path": "security/security-scan-dast/zap/scan-run.json",
       "sha256": "fe72807719a2bade0c656274e4155d12166a1287e6b600bfaf5384e2ffbb998a",
       "size": 4264,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2358,7 +2364,7 @@
       "path": "security/security-scan-dast/zap/zap-api.sarif",
       "sha256": "a38693a4030b8da82aeafe71805036faaa1434cd17934017075d44304faa24f8",
       "size": 6432,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2367,7 +2373,7 @@
       "path": "security/security-scan-dast/zap/zap-baseline.sarif",
       "sha256": "d675edf896d1a0f96d15b5bb6bcfb1283d15bb578384114245db9bfbfd6ec3f7",
       "size": 4889,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2376,7 +2382,7 @@
       "path": "security/security-scan-governance/actionlint/scan-run.json",
       "sha256": "ace370bde780a817d9e4a0634735817ff5a9d1bc71236c97a7ebd119d6c16a3c",
       "size": 1575,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2385,7 +2391,7 @@
       "path": "security/security-scan-governance/workflow-governance/scan-run.json",
       "sha256": "8d6ed30525e2a76241aac8eae80b29ae63c4d31351ad891f2bcc4b699c3a1169",
       "size": 1833,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2394,25 +2400,27 @@
       "path": "security/security-scan-license/license/scan-run.json",
       "sha256": "edffc9d80b7e63d705a82aa45952a2da467cd6f60f337dd8bbdf4f5a4dff2abe",
       "size": 1824,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
       "path": "security/security-scan-sast/codeql/javascript.sarif",
-      "sha256": "8b0deb3157158532cc2fa6ed521465d61f2b43ecb8ddcce5d241882f9ff445ce",
-      "size": 1341450,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "sha256": "0dcfc35655d753722ae75b9662f28c840b1cdd85f1027589bd12e4742fc18f82",
+      "size": 1341368,
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
-      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "redacted": true,
+      "original_sha256": "8b0deb3157158532cc2fa6ed521465d61f2b43ecb8ddcce5d241882f9ff445ce"
     },
     {
       "path": "security/security-scan-sast/codeql/scan-run.json",
       "sha256": "644cf0284f354d1d344a658e3b1816acc16e3c2c6077da87e1565e9eef9168aa",
       "size": 1796,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2421,7 +2429,7 @@
       "path": "security/security-scan-sca/npm-audit-all/scan-run.json",
       "sha256": "149e2310389585b7cab7a528b25da62a3853fe49b714f9755dbe9ce9a826139e",
       "size": 1446,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2430,7 +2438,7 @@
       "path": "security/security-scan-sca/npm-audit-prod/scan-run.json",
       "sha256": "904fbc9382b5d477aebbec00b2d76708ed7bdc18ab63016131868ab0d045ddec",
       "size": 1491,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2439,7 +2447,7 @@
       "path": "security/security-scan-sca/osv-scanner/osv-scanner.sarif",
       "sha256": "0fb4a09f8d21578e223231eb857ceedebe5e63b538e948848676292db97b5349",
       "size": 1847,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2448,7 +2456,7 @@
       "path": "security/security-scan-sca/osv-scanner/scan-run.json",
       "sha256": "d4c2849d824577a8a8255bdfaa9076cd25dc03678d11a5ea7694d143265efd70",
       "size": 1871,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2457,7 +2465,7 @@
       "path": "security/security-scan-sca/sbom/sbom-runtime.cdx.json",
       "sha256": "fa9a6a3b460f77b742e283067702f6738b72fce8d8f9388bbc3651d07dc42410",
       "size": 41513,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2466,7 +2474,7 @@
       "path": "security/security-scan-sca/sbom/sbom.cdx.json",
       "sha256": "0439db775ddeb28cc3d994eaf81a631988ab767472b93b83be071b4060f8872b",
       "size": 135421,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
@@ -2475,25 +2483,27 @@
       "path": "security/security-scan-sca/sbom/scan-run.json",
       "sha256": "2bd4595a7f942e973244d68712f048888b70bf366e4c7415986cced0440953d4",
       "size": 1640,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
       "path": "security/security-scan-secrets/gitleaks/gitleaks.sarif",
-      "sha256": "2d5198ba318ce0f5f3109b594e6ad63539a66f825b2a7e234ca4703d8324e302",
-      "size": 71861,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "sha256": "48334e737eaa0a81479eee7073926dc98fcb842d98c20ebb0d50c0ba7669bec3",
+      "size": 71827,
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
-      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+      "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "redacted": true,
+      "original_sha256": "2d5198ba318ce0f5f3109b594e6ad63539a66f825b2a7e234ca4703d8324e302"
     },
     {
       "path": "security/security-scan-secrets/gitleaks/scan-run.json",
       "sha256": "40492511c0f6964d6ecd1c9acedb90a59b44d15622cc6051fe7f2beb032a97e4",
       "size": 2090,
-      "captured_at": "2026-10-11T15:52:00.881Z",
+      "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "pre-1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"

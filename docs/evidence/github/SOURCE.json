@@ -1,9 +1,25 @@
 {
   "schema_version": 1,
   "kind": "github",
-  "captured_at": "2026-10-11T15:59:41.669Z",
+  "captured_at": "2026-10-11T16:19:01.094Z",
   "source_url": "https://github.com/bsj-fujimoto/todo-app/issues?q=is%3Aissue+label%3Adefect%2Cflaky",
-  "head_sha": "bb069a55aabf3c68bfd289288fe8d2a403a6d6f6",
+  "head_sha": "49c40cc8f358c768191bc39b087ec834e1151c07",
   "version": "pre-1.0.0",
-  "collected_by": "scripts/evidence/build-defects.mjs"
+  "collected_by": "scripts/evidence/build-defects.mjs",
+  "redactions": [
+    {
+      "path": "defect-issues.json",
+      "reason": "人の氏名・メールアドレス・アカウント名・秘密情報らしい値を証跡に残さない方針（docs/evidence/README.md）",
+      "rules": [
+        {
+          "rule": "mention",
+          "count": 1
+        }
+      ],
+      "count": 1,
+      "original_sha256": "643680bd669e37ebb4f6a72700e83456f5ca854330d1fcde05e74322e7073d08",
+      "redacted_sha256": "8be408137b5fe81f3322edf1cd8a3855ea3eb39db04a12dff67dc9d8144f83e6"
+    }
+  ],
+  "redaction_note": "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル。元の取得物は GitHub Actions の artifact（90 日）にだけある（original_sha256 で対応が追える）"
 }

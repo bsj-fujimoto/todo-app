@@ -520,7 +520,7 @@
       "bom-ref": "pkg:apk/alpine/alpine-baselayout-data@3.7.2-r1?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "alpine-baselayout-data",
       "version": "3.7.2-r1",
@@ -565,7 +565,7 @@
       "bom-ref": "pkg:apk/alpine/alpine-baselayout@3.7.2-r1?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "alpine-baselayout",
       "version": "3.7.2-r1",
@@ -610,7 +610,7 @@
       "bom-ref": "pkg:apk/alpine/alpine-keys@2.6-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "alpine-keys",
       "version": "2.6-r0",
@@ -655,7 +655,7 @@
       "bom-ref": "pkg:apk/alpine/alpine-release@3.24.2-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "alpine-release",
       "version": "3.24.2-r0",
@@ -700,7 +700,7 @@
       "bom-ref": "pkg:apk/alpine/apk-tools@3.0.8-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "apk-tools",
       "version": "3.0.8-r0",
@@ -745,7 +745,7 @@
       "bom-ref": "pkg:apk/alpine/busybox-binsh@1.37.0-r31?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Sören Tempel <soeren+alpine@soeren-tempel.net>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "busybox-binsh",
       "version": "1.37.0-r31",
@@ -790,7 +790,7 @@
       "bom-ref": "pkg:apk/alpine/busybox@1.37.0-r31?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Sören Tempel <soeren+alpine@soeren-tempel.net>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "busybox",
       "version": "1.37.0-r31",
@@ -835,7 +835,7 @@
       "bom-ref": "pkg:apk/alpine/ca-certificates-bundle@20260909-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "ca-certificates-bundle",
       "version": "20260909-r0",
@@ -885,7 +885,7 @@
       "bom-ref": "pkg:apk/alpine/libapk@3.0.8-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "libapk",
       "version": "3.0.8-r0",
@@ -930,7 +930,7 @@
       "bom-ref": "pkg:apk/alpine/libcrypto3@3.5.8-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "libcrypto3",
       "version": "3.5.8-r0",
@@ -975,7 +975,7 @@
       "bom-ref": "pkg:apk/alpine/libgcc@15.2.0-r5?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Ariadne Conill <ariadne@dereferenced.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "libgcc",
       "version": "15.2.0-r5",
@@ -1025,7 +1025,7 @@
       "bom-ref": "pkg:apk/alpine/libssl3@3.5.8-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "libssl3",
       "version": "3.5.8-r0",
@@ -1070,7 +1070,7 @@
       "bom-ref": "pkg:apk/alpine/libstdc%2B%2B@15.2.0-r5?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Ariadne Conill <ariadne@dereferenced.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "libstdc++",
       "version": "15.2.0-r5",
@@ -1120,7 +1120,7 @@
       "bom-ref": "pkg:apk/alpine/musl-utils@1.2.6-r2?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "musl-utils",
       "version": "1.2.6-r2",
@@ -1175,7 +1175,7 @@
       "bom-ref": "pkg:apk/alpine/musl@1.2.6-r2?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "musl",
       "version": "1.2.6-r2",
@@ -1220,7 +1220,7 @@
       "bom-ref": "pkg:apk/alpine/scanelf@1.3.9-r1?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "scanelf",
       "version": "1.3.9-r1",
@@ -1265,7 +1265,7 @@
       "bom-ref": "pkg:apk/alpine/ssl_client@1.37.0-r31?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Sören Tempel <soeren+alpine@soeren-tempel.net>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "ssl_client",
       "version": "1.37.0-r31",
@@ -1310,7 +1310,7 @@
       "bom-ref": "pkg:apk/alpine/zlib@1.3.2-r0?arch=x86_64&distro=3.24.2",
       "type": "library",
       "supplier": {
-        "name": "Natanael Copa <ncopa@alpinelinux.org>"
+        "name": "[REDACTED:author] <[REDACTED:email]>"
       },
       "name": "zlib",
       "version": "1.3.2-r0",
