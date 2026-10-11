@@ -390,19 +390,23 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:b800097"
+    version: "git:1659e84"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-11T18:46:39+09:00"
+    updated_at: "2026-10-12T01:04:50+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T01:04:50+09:00"
+        by: maintainer
+        change: "fix(evidence): 取り込んだ gitleaks の SARIF の author・noreply アドレスを、簡易検査の許可リストに理由つきで載せる"
+        commit: "1659e84"
       - at: "2026-10-11T18:46:39+09:00"
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: e3cd9dade86098adeece069afd09849e01ee460d8365131365cfbe8cc42b47c7
+    source_sha256: "458819bf953499503037a65738ba45391bddb956fe02bfd1719c26518a21824b"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
