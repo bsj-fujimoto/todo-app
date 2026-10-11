@@ -53,6 +53,10 @@ export const ALLOWED = [
   // CodeQL の SARIF のルール説明（help）に出る例示。example.com の例示アドレス（予約済みドメイン）と、
   // 「password = req.body.password」のような脆弱なコードの説明用サンプル。どちらも実在の個人・秘密情報ではない。
   [/codeql\/javascript\.sarif$/, ["email", "assignment"]],
+  // gitleaks の SARIF は、検出した commit の author・メール・メッセージを partialFingerprints に記録する。GitHub の noreply アドレスと
+  // Co-Authored-By の noreply で、公開の Git 履歴にある情報。原本の sha256 を保つため伏字にしない。誤検出の allowlist（security/gitleaks.toml）を入れたので、
+  // 次回以降の取り込みでは、この種の検出（と commit の記録）は SARIF に出ない。
+  [/gitleaks\/gitleaks\.sarif$/, ["email"]],
 ];
 
 /** files: [{ path, text }]。戻り値: { hits: 失敗にする検出, qcCompat: qc の正規表現にだけ当たる値のファイルごとの件数 }。 */
