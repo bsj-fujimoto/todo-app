@@ -5,7 +5,7 @@ import { steppingClock } from "../../test-support/clock.js";
 import { STANDARD_TASKS } from "../../test-support/datasets.js";
 import { readRows, seedTasks } from "../../test-support/db.js";
 import { assertError, titlesOf } from "../helpers/assertions.js";
-import { createHarness, errorLogs } from "../helpers/harness.js";
+import { createHarness, errorLogs, observe } from "../helpers/harness.js";
 
 const [MILK, SPEC, PREP] = STANDARD_TASKS;
 
@@ -43,6 +43,10 @@ describe("並行リクエスト", () => {
     assert.ok(new Set(keys).size < 20, "同時刻のタスクが含まれている（この検証の前提）");
     assert.equal(rows.length, 20);
     assert.equal(new Set(rows.map((row) => row.id)).size, 20);
+    observe(
+      "同時追加",
+      `201 が ${responses.filter((res) => res.status === 201).length} 件、id の種類 ${new Set(responses.map((res) => res.body.id)).size}、DB ${rows.length} 行、createdAt の種類 ${new Set(keys).size}`,
+    );
     assert.deepEqual(errorLogs(api.logs()), []);
   });
 
@@ -60,6 +64,10 @@ describe("並行リクエスト", () => {
     assert.equal(notFound.length, 9);
     for (const res of notFound) assertError(res, 404, "TASK_NOT_FOUND");
     assert.equal(responses.filter((res) => res.status >= 500).length, 0);
+    observe(
+      "同時削除の応答",
+      `204 が ${responses.filter((res) => res.status === 204).length} 件、404 が ${notFound.length} 件、5xx が ${responses.filter((res) => res.status >= 500).length} 件`,
+    );
     assert.deepEqual(titlesOf(await api.get("/api/v1/tasks")), [PREP.title, MILK.title]);
     const rows = readRows(dbPath);
     assert.equal(rows.length, 2);

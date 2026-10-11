@@ -5,7 +5,7 @@ import { afterEach, describe, it } from "node:test";
 import { steppingClock } from "../../test-support/clock.js";
 import { bulkTasks } from "../../test-support/datasets.js";
 import { readRows, seedTasks } from "../../test-support/db.js";
-import { createHarness, errorLogs } from "../helpers/harness.js";
+import { createHarness, errorLogs, observe } from "../helpers/harness.js";
 
 const LIST_P95_MS = 500; // 暫定しきい値（一覧 20 回）
 const CREATE_P95_MS = 300; // 暫定しきい値（追加 10 回）
@@ -54,6 +54,12 @@ describe("性能（DS-006: 1,000 件）", () => {
     assert.equal(list.body.tasks[0].title, "性能確認");
     assert.equal(readRows(dbPath).length, 1010);
     assert.deepEqual(errorLogs(api.logs()), []);
+    observe("一覧 p95", `${percentile95(listTimes).toFixed(1)}ms（20 回、しきい値 ${LIST_P95_MS}ms）`);
+    observe("追加 p95", `${percentile95(createTimes).toFixed(1)}ms（10 回、しきい値 ${CREATE_P95_MS}ms）`);
+    observe(
+      "件数",
+      `追加後の一覧 ${list.body.tasks.length} 件、先頭 ${list.body.tasks[0].title}、DB ${readRows(dbPath).length} 行`,
+    );
     assert.ok(percentile95(listTimes) <= LIST_P95_MS, `一覧 p95=${percentile95(listTimes).toFixed(1)}ms`);
     assert.ok(
       percentile95(createTimes) <= CREATE_P95_MS,

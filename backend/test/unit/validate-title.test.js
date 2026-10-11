@@ -2,23 +2,29 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { validateTitle } from "../../src/domain/title.js";
+import { observeValidation } from "../helpers/unit-observer.js";
 
 const REQUIRED = { code: "TITLE_REQUIRED", message: "タスク名を入力してください" };
 const TOO_LONG = { code: "TITLE_TOO_LONG", message: "タスク名は100文字以内で入力してください" };
 const MULTILINE = { code: "TITLE_MULTILINE", message: "タスク名は1行で入力してください" };
 
 function assertAccepted(input, expectedTitle) {
-  assert.deepEqual(validateTitle(input), { ok: true, title: expectedTitle });
+  const result = validateTitle(input);
+  observeValidation(input, result);
+  assert.deepEqual(result, { ok: true, title: expectedTitle });
 }
 
 function assertRejected(input, expected) {
-  assert.deepEqual(validateTitle(input), { ok: false, ...expected });
+  const result = validateTitle(input);
+  observeValidation(input, result);
+  assert.deepEqual(result, { ok: false, ...expected });
 }
 
 describe("validateTitle", () => {
   it("[TC-021] 0 文字・空白のみは TITLE_REQUIRED（保存用の title は返らない）", () => {
     for (const input of ["", "   ", "\t"]) {
       const result = validateTitle(input);
+      observeValidation(input, result);
       assert.equal(result.ok, false, JSON.stringify(input));
       assert.equal(result.code, REQUIRED.code, JSON.stringify(input));
       assert.equal(result.message, REQUIRED.message, JSON.stringify(input));

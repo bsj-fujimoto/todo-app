@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { countCodePoints, validateTitle } from "../../src/validation.js";
 import { MESSAGES } from "../../src/messages.js";
 import { validateTitle as validateTitleOnBackend } from "../../../backend/src/domain/title.js";
+import { observe, observePair, observeValidation } from "./observer.js";
 
 const a = (n) => "a".repeat(n);
 const accepted = (input, title) => ({ input, expected: { ok: true, title } });
@@ -12,7 +13,11 @@ const rejected = (input, code) => ({ input, expected: { ok: false, code } });
 function run(label, rows) {
   for (const { input, expected } of rows) {
     const name = `${label} ${JSON.stringify(input.length > 30 ? `${input.slice(0, 12)}…(${[...input].length}cp)` : input)}`;
-    it(name, () => assert.deepEqual(validateTitle(input), expected));
+    it(name, () => {
+      const result = validateTitle(input);
+      observeValidation(input, result);
+      assert.deepEqual(result, expected);
+    });
   }
 }
 
@@ -45,6 +50,10 @@ describe("validateTitle", () => {
       rejected("e\u0301".repeat(51), "TITLE_TOO_LONG"),
     ]);
     it("[TC-025] 😀×100 は UTF-16 長 200 だがコードポイントは 100", () => {
+      observe(
+        "😀×100",
+        `UTF-16 長 ${"😀".repeat(100).length}、コードポイント ${countCodePoints("😀".repeat(100))}`,
+      );
       assert.equal("😀".repeat(100).length, 200);
       assert.equal(countCodePoints("😀".repeat(100)), 100);
     });
@@ -88,6 +97,11 @@ describe("validateTitle", () => {
 
 describe("messages", () => {
   it("[TC-021] [TC-024] [TC-027] エラー文言は仕様書と完全一致", () => {
+    observe("文言", {
+      TITLE_REQUIRED: MESSAGES.TITLE_REQUIRED,
+      TITLE_TOO_LONG: MESSAGES.TITLE_TOO_LONG,
+      TITLE_MULTILINE: MESSAGES.TITLE_MULTILINE,
+    });
     assert.equal(MESSAGES.TITLE_REQUIRED, "タスク名を入力してください");
     assert.equal(MESSAGES.TITLE_TOO_LONG, "タスク名は100文字以内で入力してください");
     assert.equal(MESSAGES.TITLE_MULTILINE, "タスク名は1行で入力してください");
@@ -129,6 +143,7 @@ describe("frontend と backend の検証関数が一致する", () => {
     it(`[TC-029] ${JSON.stringify(input.length > 24 ? `${input.slice(0, 12)}…(${[...input].length}cp)` : input)}`, () => {
       const front = validateTitle(input);
       const back = validateTitleOnBackend(input);
+      observePair(input, front, back);
       assert.equal(front.ok, back.ok);
       if (front.ok) assert.equal(front.title, back.title);
       else assert.equal(front.code, back.code);
