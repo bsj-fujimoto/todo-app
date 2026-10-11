@@ -100,7 +100,7 @@ GitHub Actions の action は Dependabot（github-actions）が SHA 固定のま
 
 | 検出                                                                                              | 件数                       | 処理                                                                                                                           |
 | ------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| backend イメージに同梱された npm の依存（brace-expansion・undici・tar・ip-address など）の勧告    | high 9 / medium 12 / low 1 | **修正**: 実行イメージから npm・corepack・yarn を取り除いた（`backend/Dockerfile`）。fixed                                     |
+| backend イメージに同梱された npm の依存（brace-expansion・undici・tar・ip-address など）の勧告    | high 8 / medium 12 / low 1 | **修正**: 実行イメージから npm・corepack・yarn を取り除いた（`backend/Dockerfile`）。fixed                                     |
 | frontend イメージの libtiff（CVE-2026-4775）                                                      | high 1                     | **修正**: nginx-unprivileged の slim 版に変更（libgd・libtiff を含まない）。fixed                                              |
 | frontend/Dockerfile に USER が無い（trivy DS-0002）                                               | high 1                     | **修正**: `USER 101` を明示。fixed                                                                                             |
 | CodeQL js/file-system-race（`scripts/ci/lib/artifacts.mjs`・`scripts/security/lib/scan-run.mjs`） | high 2                     | **修正**: stat → read をやめ、1 回の操作で判定する。fixed                                                                      |

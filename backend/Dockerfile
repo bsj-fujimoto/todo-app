@@ -26,7 +26,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY backend/package.json backend/
 COPY backend/src backend/src
 # 実行時に npm・corepack・yarn は使わない。ベースイメージに同梱された npm の依存（brace-expansion・undici・tar など）に
-# 勧告が出ても本アプリの攻撃面にならないよう、実行イメージから取り除く（trivy image が検出した high 10 件・medium 12 件が消える）。
+# 勧告が出ても本アプリの攻撃面にならないよう、実行イメージから取り除く（trivy image が検出した high 8 件・medium 12 件・low 1 件が消える）。
 # /data は非 root（node ユーザー）が書ける。VOLUME の前に作って所有者を合わせる（名前付きボリュームに引き継がれる）
 RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-* \
  && mkdir -p /data && chown node:node /data
