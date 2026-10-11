@@ -1,6 +1,6 @@
 // frontend unit テストの観察（実際に見た画面・状態・入力→結果）。import するだけで各テストの終了時に書き出される。
-import { observeEachTest } from "../../../backend/test-support/observe-node-test.js";
-import { describeText, describeValidation } from "../../../backend/test-support/observe.js";
+import { observeEachTest } from "./observe-node-test.js";
+import { describeText, describeValidation } from "./observe.js";
 
 export const observations = observeEachTest({ layer: "unit", component: "frontend" });
 /** 入力と、検証関数が実際に返した結果を 1 行残す。 */

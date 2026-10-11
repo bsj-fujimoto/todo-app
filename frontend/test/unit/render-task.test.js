@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { createDocument, TASK } from "./dom.js";
 import { renderTask, updateTask } from "../../src/view.js";
-import { observe } from "./observer.js";
+import { observe } from "../../../backend/test-support/observe-frontend.js";
 
 const SRC = new URL("../../src/", import.meta.url);
 const EVIL = [

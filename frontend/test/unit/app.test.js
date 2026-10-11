@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { createApp } from "../../src/app.js";
 import { createView } from "../../src/view.js";
 import { createDocument, task } from "./dom.js";
-import { observeScreenAtEnd } from "./observer.js";
+import { observeScreenAtEnd } from "../../../backend/test-support/observe-frontend.js";
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const ok = (data) => ({ ok: true, data });

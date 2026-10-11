@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { countCodePoints, validateTitle } from "../../src/validation.js";
 import { MESSAGES } from "../../src/messages.js";
 import { validateTitle as validateTitleOnBackend } from "../../../backend/src/domain/title.js";
-import { observe, observePair, observeValidation } from "./observer.js";
+import { observe, observePair, observeValidation } from "../../../backend/test-support/observe-frontend.js";
 
 const a = (n) => "a".repeat(n);
 const accepted = (input, title) => ({ input, expected: { ok: true, title } });

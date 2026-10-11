@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { classifyFailure, controlsEnabled, initialState, reduce } from "../../src/state.js";
 import { task } from "./dom.js";
-import { observeState } from "./observer.js";
+import { observeState } from "../../../backend/test-support/observe-frontend.js";
 
 // 前提の準備（ready）は観察しない。テストが検証する遷移の結果（run）だけを、実際に得た状態として残す。
 const run = (state, ...actions) => {
