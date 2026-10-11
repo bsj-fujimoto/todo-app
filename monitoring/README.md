@@ -108,8 +108,9 @@ GitHub Actions では `synthetic.yml`（30 分ごと / 手動）が同じ手順�
 
 1. `monitoring/monitors.yaml` などを PR で変更（CODEOWNERS のレビュー必須。`.github/` と同様に `monitoring/` も所有者のレビュー対象にする）。
 2. `node scripts/monitoring/check-config.mjs` と単体テストが通ること（`synthetic.yml` の最初のステップでも実行される）。
-3. 誤検知・見逃しに起因する変更は `monitoring/fp-fn-log.md` に PR 番号とともに記録する。
-4. 戻す必要があるときは `git revert`（履歴を書き換えない）。RB-005 の rollback を参照。
+3. **製品の振る舞い（画面・API・文言・操作の順序）を変える PR は、外形監視の期待（`monitors.yaml` の assertions / steps、`e2e/synthetic/journey.spec.js`）が変わらないかを同じ PR で確かめる**（PR テンプレートの確認項目）。変わるなら同じ PR で監視を直す。直し忘れると、製品は正しいのに監視が失敗する誤検知になる（初回の Actions 実行で #12 の変更により MON-008 が誤検知した。`fp-fn-log.md`、#36）。ブラウザジャーニーの操作の取り方は `e2e/fixtures/todo-app.js`（E2E）と揃える。
+4. 誤検知・見逃しに起因する変更は `monitoring/fp-fn-log.md` に PR 番号とともに記録する。
+5. 戻す必要があるときは `git revert`（履歴を書き換えない）。RB-005 の rollback を参照。
 
 ## インシデント → 改善への還流
 
