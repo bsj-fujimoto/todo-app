@@ -49,7 +49,7 @@ describe("release-notes", () => {
     });
     assert.match(notes, /対象 commit: \[`f{40}`\]/);
     assert.ok(notes.includes(digest("a")));
-    assert.ok(notes.includes("https://example.test/run/1"));
+    assert.match(notes, /ビルドした run: https:\/\/example\.test\/run\/1/);
     assert.match(notes, /\| unit \| 3 \| 3 \| 0 \| 0 \|/);
     assert.match(notes, /ゲート \*\*pass\*\*/);
     assert.ok(!notes.includes("dry-run"));
