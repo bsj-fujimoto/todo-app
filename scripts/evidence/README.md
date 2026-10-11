@@ -130,6 +130,7 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
   台帳に無い新しい検出は仮 ID（`FND-NEW-xxxxxx`）で出て、`build-findings.mjs` が失敗する。`node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write` で番号を振って commit してから取り込み直す
   （旧形式の `F-001` の findings.json も `FND-001` に写せる）。
 - `artifacts.yaml` の履歴・更新日時は**コミット済み**の内容から作る。文書を更新したら、コミット後に `build-artifacts.mjs` を再実行する（古ければ `check-evidence.mjs` が警告、`--strict-artifacts` で失敗）。
+- 検出したのがテストケースでない不具合（CodeQL・外形監視など）は、Issue の「関連ケース」に「ケース: 該当なし。…」と、検出した手段・ケースが無い事実・新規ケースの案を書く。`case_ids` は空になり、`check-evidence` は警告、追跡表には「関連ケースがない」の行（gaps）で残る。ケースがあるのに書かない場合は指摘して失敗する。
 - `build-defects.mjs` の `release` は、起票日以前で最新の `v*` タグ（無ければ `pre-1.0.0`）。`source` は検出工程が production なら production、それ以外は test。
 - 正規表現による秘密情報・個人情報の検査は**不在を証明しない**（`docs/evidence/README.md`）。
 - 取り込むのは小さな実行成果物だけ。失敗時の trace・video・HTML レポートは持ち込まない。
