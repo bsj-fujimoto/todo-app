@@ -40,7 +40,8 @@
         "docker/build-push-action@*",
         "docker/login-action@*",
         "sigstore/cosign-installer@*",
-        "ossf/scorecard-action@*"
+        "ossf/scorecard-action@*",
+        "jdx/mise-action@*"
       ]
     },
     "workflow_permissions": {
