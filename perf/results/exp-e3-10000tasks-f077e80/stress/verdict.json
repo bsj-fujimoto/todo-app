@@ -1,0 +1,81 @@
+{
+ "scenario": "stress",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "max_sustained_rps": 20,
+ "first_violation_rps": 50,
+ "first_violation_per_iteration": [
+  {
+   "iteration": 1,
+   "rps": 50,
+   "reasons": [
+    "list p95 15786.818ms > 500ms",
+    "create p95 15724.8ms > 300ms",
+    "toggle p95 15711.348ms > 300ms",
+    "delete p95 15789.899ms > 300ms",
+    "エラー率 0.0379 ≥ 0.01",
+    "達成 42.8 req/s < 目標 50 req/s の 95%"
+   ]
+  }
+ ],
+ "stages_rps": [
+  20,
+  50,
+  100,
+  150
+ ],
+ "series": {
+  "first_violation_rps": [
+   50
+  ],
+  "list_p95_ms@20rps": [
+   47.592
+  ],
+  "list_p95_ms@50rps": [
+   15786.818
+  ],
+  "list_p95_ms@100rps": [
+   19750.565
+  ],
+  "list_p95_ms@150rps": [
+   17566.26
+  ]
+ },
+ "note": "stress は SLO の合否を判定しない。限界点（SLO・エラー・取りこぼしのいずれかを最初に割る到着率）を求める。",
+ "iterations": 1,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "first_violation_rps": {
+   "n": 1,
+   "mean": 50,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@20rps": {
+   "n": 1,
+   "mean": 47.592,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@50rps": {
+   "n": 1,
+   "mean": 15786.818,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@100rps": {
+   "n": 1,
+   "mean": 19750.565,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@150rps": {
+   "n": 1,
+   "mean": 17566.26,
+   "sd": null,
+   "ci95": null
+  }
+ },
+ "variance_stats_text": "first_violation_rps: n=1 mean=50 sd=null ci95=-; list_p95_ms@20rps: n=1 mean=47.592 sd=null ci95=-; list_p95_ms@50rps: n=1 mean=15786.818 sd=null ci95=-; list_p95_ms@100rps: n=1 mean=19750.565 sd=null ci95=-; list_p95_ms@150rps: n=1 mean=17566.26 sd=null ci95=-"
+}

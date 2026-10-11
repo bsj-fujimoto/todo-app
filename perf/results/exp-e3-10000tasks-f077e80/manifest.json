@@ -1,0 +1,125 @@
+{
+  "run_dir": "perf/results/exp-e3-10000tasks-f077e80",
+  "files": [
+    {
+      "path": "metrics.json",
+      "bytes": 338,
+      "sha256": "53d1d0791c7418249509f48f309543ac7c9ab04dd78191f2dcefe1b0fd4bc2e8",
+      "committed": true
+    },
+    {
+      "path": "perf-runs.json",
+      "bytes": 4372,
+      "sha256": "24ed106d5f5b5066a6a977f3c1b2aef46e750b6f73778f23cbc35998e1890b30",
+      "committed": true
+    },
+    {
+      "path": "run.json",
+      "bytes": 3246,
+      "sha256": "5793a8b3e27bfc8efd18dec64a418d95abf1b9763453a9647d3ef84672e53f75",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/analysis.json",
+      "bytes": 9641,
+      "sha256": "6e049d952d4ac89c8fb04b7abb9fa32db7c9ee15179b71ef0412e77ae20d92f6",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/backend.log",
+      "bytes": 49866,
+      "sha256": "6bbacabbdf701027ba1df374f622b3a8e47a9d98665f4b1082f9d67b4c49ecd2",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/main.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/main.k6.log",
+      "bytes": 218,
+      "sha256": "4304d6c0147459c0aa520973d04e070fc519f612a1ceb358cebe11a1fe61eb52",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/main.raw.json.gz",
+      "bytes": 2624069,
+      "sha256": "42efb49cdd18c45eea429aeef094caed32c09c2a1c164c99898fd2451ee8eb46",
+      "committed": false
+    },
+    {
+      "path": "stress/iter-1/main.summary.json",
+      "bytes": 6653,
+      "sha256": "32be28bb9d087ccd48936dc8817b150ff441437e6c1b78f8295c8e6f30609208",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/measure-end.txt",
+      "bytes": 21,
+      "sha256": "974203670ab1913df9946ad0ec87faf250e64107c14dc9219304b9db5e217568",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/measure-start.txt",
+      "bytes": 21,
+      "sha256": "958d98ca316a257b9a9efb395fcfc39e4c54ce3d3c3c062fafdb822999c401aa",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/observe.jsonl",
+      "bytes": 164134,
+      "sha256": "7fccae7f06e4b412f37cc49f7911c3c63e1c0ea1d038e66de65a491ded7d5d2e",
+      "committed": false
+    },
+    {
+      "path": "stress/iter-1/seed.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/seed.k6.log",
+      "bytes": 23,
+      "sha256": "aa34f753fb2b14787f45d63c7c9962416f95928e3846c6cea93d799979b9f89f",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/warmup.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/warmup.k6.log",
+      "bytes": 53,
+      "sha256": "b5f8dca15c7adf7c2ede1b6c1d9cc72fc574a1c9b6d5133023ad50cefa52b15d",
+      "committed": true
+    },
+    {
+      "path": "stress/iter-1/warmup.summary.json",
+      "bytes": 6283,
+      "sha256": "04a238cd10f3fe9b8ab1c0fc948ee97e726bbc3a8338ebe0a750fdeeca560f09",
+      "committed": true
+    },
+    {
+      "path": "stress/stage-resources.json",
+      "bytes": 2578,
+      "sha256": "1f0cea5c6c011cc7e0576e26385b3e267d8abbb5ba5eb821bf29c19743e65588",
+      "committed": true
+    },
+    {
+      "path": "stress/verdict.json",
+      "bytes": 1714,
+      "sha256": "a10c65a3261270467c4d598ad75c398d7c6193daa8c250ae271daabc33dbe6b2",
+      "committed": true
+    },
+    {
+      "path": "verdict.json",
+      "bytes": 1025,
+      "sha256": "f743b82520180120435b46ea88d8b4a4c96e6902e5cfb5b35f612c9ec7a813c1",
+      "committed": true
+    }
+  ]
+}

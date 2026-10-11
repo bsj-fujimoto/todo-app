@@ -1,0 +1,17 @@
+{
+  "run_id": "load-compare-20261011T115828Z-191a25b",
+  "commit_sha": "191a25b25b22dc16707e71757c3ae55759d349fc",
+  "started_at": "2026-10-11T11:58:43.392Z",
+  "env_class": "local:darwin-arm64",
+  "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+  "metrics": {
+    "load.api_list_p95_ms": 9.851333,
+    "load.api_list_p99_ms": 10.692,
+    "load.api_create_p95_ms": 11.095,
+    "load.api_update_p95_ms": 11.439333,
+    "load.api_delete_p95_ms": 8.635667,
+    "load.error_rate": 0,
+    "load.throughput_rps": 1.0002,
+    "load.health_p95_ms": 13.337333
+  }
+}

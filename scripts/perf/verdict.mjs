@@ -41,8 +41,11 @@ function judge(scenario, ctx, iterations) {
   if (scenario === "load") return verdictLoad(slo, iterations);
   if (scenario === "stress") {
     const s = wl.scenarios.stress;
-    const stageSec = iterations[0].segments.main.env.STAGE_SEC || s.stage_duration_sec.full;
-    return verdictStress(slo, iterations, s.stages_rps, stageSec);
+    const env = iterations[0].segments.main.env;
+    const stageSec = env.STAGE_SEC || s.stage_duration_sec.full;
+    // 実際に走らせた段（k6 の env STAGES）を使う。実験で段を変えたときに workload.yaml の段とずれないように
+    const stages = env.STAGES ? String(env.STAGES).split(",").map(Number) : s.stages_rps;
+    return verdictStress(slo, iterations, stages, stageSec);
   }
   if (scenario === "spike") return verdictSpike(slo, iterations);
   if (scenario === "soak") return verdictSoak(slo, iterations);
