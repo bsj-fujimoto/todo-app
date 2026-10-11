@@ -1,0 +1,13 @@
+{
+  "name": "@todo-app/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ToDo アプリの画面（ビルド工程なしの ES modules。nginx で静的配信）",
+  "scripts": {
+    "test": "mkdir -p test-results && node --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.js --test-coverage-exclude=src/main.js --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=test-results/junit.xml test/unit/*.test.js"
+  },
+  "devDependencies": {
+    "happy-dom": "20.14.6"
+  }
+}
