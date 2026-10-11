@@ -15,13 +15,29 @@ export function parseSections(body) {
   return new Map([...sections].map(([k, lines]) => [k, lines.join("\n").trim()]));
 }
 
+const COMMENT_OPEN = "<!--";
+const COMMENT_CLOSE = "-->";
+
+/**
+ * HTML コメント（<!-- … -->）を取り除く。出力は HTML として使わず、コメントを捨てるだけだが、
+ * 取り除いた結果に開始記号が残らないよう、残らなくなるまで繰り返す（閉じていないコメントは末尾まで捨てる）。
+ */
+export function stripHtmlComments(text) {
+  let current = String(text ?? "");
+  while (current.includes(COMMENT_OPEN)) {
+    const start = current.indexOf(COMMENT_OPEN);
+    const end = current.indexOf(COMMENT_CLOSE, start + COMMENT_OPEN.length);
+    current =
+      end < 0 ? current.slice(0, start) : current.slice(0, start) + current.slice(end + COMMENT_CLOSE.length);
+  }
+  return current;
+}
+
 /** "- キー: 値" の箇条書き。値が次の行に続くとき（箇条書きでない行）は連結する。HTML コメントは捨てる。 */
 export function parseBullets(text) {
   const out = new Map();
   let key = null;
-  for (const raw of String(text ?? "")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .split(/\r?\n/)) {
+  for (const raw of stripHtmlComments(text).split(/\r?\n/)) {
     const m = /^-\s+([^:：]+)[:：]\s*(.*)$/.exec(raw);
     if (m) {
       key = m[1].trim();
@@ -34,8 +50,7 @@ export function parseBullets(text) {
 
 /** 手順・箇条書き・段落を 1 行にまとめる（番号・記号は残す。コメントは捨てる）。 */
 export function oneLine(text) {
-  return String(text ?? "")
-    .replace(/<!--[\s\S]*?-->/g, "")
+  return stripHtmlComments(text)
     .split(/\r?\n/)
     .map((l) => l.trim().replace(/^[-*]\s+/, ""))
     .filter(Boolean)

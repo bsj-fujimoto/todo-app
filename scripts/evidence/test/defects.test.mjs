@@ -11,7 +11,7 @@ import {
   selectIssues,
   statusOf,
 } from "../lib/defects.mjs";
-import { oneLine, parseBullets, parseSections } from "../lib/issue-body.mjs";
+import { oneLine, parseBullets, parseSections, stripHtmlComments } from "../lib/issue-body.mjs";
 import { buildSnapshot, fixPrNumbers, sameContent } from "../lib/github-snapshot.mjs";
 
 const BODY = `## 識別
@@ -85,6 +85,13 @@ describe("Issue 本文のパース", () => {
     );
     assert.equal(parseBullets(sections.get("識別")).get("重大度"), "major");
     assert.equal(oneLine(sections.get("影響")), "入力が残る。");
+  });
+
+  it("HTML コメントは、入れ子にして開始記号を残そうとしても残さず取り除く（閉じていないものは末尾まで）", () => {
+    assert.equal(stripHtmlComments("a<!-- b -->c"), "ac");
+    assert.equal(stripHtmlComments("a<!<!-- x -->-- y -->b"), "ab");
+    assert.equal(stripHtmlComments("a<!-- 閉じていない"), "a");
+    assert.equal(stripHtmlComments("コメントなし"), "コメントなし");
   });
 
   it("語彙を統一する（括弧書き・複数語・manual など）", () => {

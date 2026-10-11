@@ -377,8 +377,11 @@ describe("抽出パリティ・秘密情報の検査", () => {
   });
 
   it("メール・トークン・秘密鍵を検出し、値は伏せる。UUID の 0 の並びは電話番号として数えない", () => {
+    // 秘密情報らしい文字列は実行時に組み立てる（ソースに書くと、リポジトリ自身の gitleaks 検査が検出してしまう）
+    const assignment = `${["to", "ken"].join("")} = "${["abcdef", "0123456789"].join("")}"`;
+    const header = `-----BEGIN ${["RSA", "PRIVATE", "KEY"].join(" ")}-----`;
     const hits = scanText(
-      '連絡: someone@example.org\ntoken = "abcdef0123456789"\n-----BEGIN RSA PRIVATE KEY-----\nid 00000000-0000-4000-8000-000000000001',
+      `連絡: someone@example.org\n${assignment}\n${header}\nid 00000000-0000-4000-8000-000000000001`,
     );
     assert.deepEqual(
       hits.map((h) => [h.line, h.rule]),
