@@ -169,9 +169,14 @@ export function deleteTask(id, extra) {
 const pool = [];
 let toggled = false;
 
-function createIntoPool(extra) {
+// balanced（追加=削除）では、プールを POOL_CAP 件までに保つ。決定的な操作表と VU の割り当ての組み合わせで、
+// 追加ばかり受け持つ VU が生じ、削除が追い付かず件数が増え続けたため（soak の「時間劣化」に件数増加が混ざった）
+const POOL_CAP = 2;
+
+function createIntoPool(extra, balanced) {
   const t = createTask(`性能確認-${exec.vu.idInTest}-${exec.scenario.iterationInTest}`, extra);
   if (t) pool.push(t.id);
+  while (balanced && pool.length > POOL_CAP) deleteTask(pool.shift(), extra);
 }
 
 function toggleFromPool(extra) {
@@ -179,10 +184,10 @@ function toggleFromPool(extra) {
   toggleTask(pool[pool.length - 1], toggled, extra);
 }
 
-function deleteFromPool(extra) {
+function deleteFromPool(extra, balanced) {
   // 削除の対象が無いときは、作ってすぐ削除する（件数を増やさない）。単に create に置き換えると追加が多くなり、
   // 追加=削除のはずの比率（balanced）でも件数が増え続け、「時間による劣化」と「件数による劣化」を分けられない
-  if (pool.length === 0) createIntoPool(extra);
+  if (pool.length === 0) createIntoPool(extra, balanced);
   const id = pool.pop();
   if (id !== undefined) deleteTask(id, extra);
 }
@@ -191,9 +196,9 @@ export function runOp(mixName, minListCount, extra) {
   let op = pickOp(mixName);
   if (op === "toggle" && pool.length === 0) op = "create";
   if (op === "list") listTasks(minListCount, extra);
-  else if (op === "create") createIntoPool(extra);
+  else if (op === "create") createIntoPool(extra, mixName === "balanced");
   else if (op === "toggle") toggleFromPool(extra);
-  else deleteFromPool(extra);
+  else deleteFromPool(extra, mixName === "balanced");
   return op;
 }
 
