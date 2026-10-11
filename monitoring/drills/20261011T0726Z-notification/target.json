@@ -1,0 +1,12 @@
+{
+  "mode": "fallback",
+  "reason": "--force-fallback の指定",
+  "release_tag": null,
+  "release_published_at": null,
+  "images": {},
+  "expected_version": "",
+  "expected_commit": "552a854c1be89363354fd7bf6c56311cf5774c16",
+  "compose_files": [
+    "docker-compose.yml"
+  ]
+}

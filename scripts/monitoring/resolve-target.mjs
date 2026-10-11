@@ -98,7 +98,10 @@ async function main() {
   target.compose_files = files;
   writeFileSync(join(out, "target.json"), `${JSON.stringify(target, null, 2)}\n`);
   if (process.env.GITHUB_OUTPUT)
-    appendFileSync(process.env.GITHUB_OUTPUT, `mode=${target.mode}\ncompose_files=${files.join(" ")}\n`);
+    appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `mode=${target.mode}\ncompose_files=${files.join(" ")}\nexpected_commit=${target.expected_commit}\n`,
+    );
   console.log(`[target] mode=${target.mode} ${target.reason}`);
 }
 
