@@ -25,6 +25,8 @@ function buildArgs(layer) {
   // カバレッジの対象は本番コード（src/）。しきい値は全層を流す `all` のときだけ強制する
   if (layer !== "contract") args.push("--experimental-test-coverage", "--test-coverage-include=src/**/*.js");
   if (layer === "all") args.push(`--test-coverage-lines=${COVERAGE_LINE_THRESHOLD}`);
+  // 並列度の調整（安定性の検証用）: TEST_CONCURRENCY=1 で直列、未指定は node の既定
+  if (process.env.TEST_CONCURRENCY) args.push(`--test-concurrency=${process.env.TEST_CONCURRENCY}`);
   return [...args, ...LAYERS[layer]];
 }
 
