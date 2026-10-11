@@ -58,6 +58,10 @@ updates:
       time: "03:00"
       timezone: Asia/Tokyo
     open-pull-requests-limit: 5
+    # Node は LTS の 24 系に固定する（mise.toml と一致）。偶数 major（LTS）だけ追従し、奇数 major（25 など）は提案しない。
+    ignore:
+      - dependency-name: "node"
+        versions: [">=25.0.0 <26.0.0", ">=27.0.0 <28.0.0"]
     groups:
       docker-base-images:
         patterns: ["*"]
