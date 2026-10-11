@@ -9,12 +9,17 @@
 #   sbom                              CycloneDX SBOM（実行時依存・全体）
 #   trivy-fs                          trivy fs（vuln,misconfig,secret）
 #   trivy-image <backend|frontend> <image-ref>   ビルド済みイメージ（docker save → trivy --input）+ イメージ SBOM
+#   trivy-published <backend|frontend> <ref|oci.tar> <digest> [digest-kind]
+#                                     release.yml が公開した digest（dry-run は OCI アーカイブ）に対する trivy（vuln + misconfig）。
+#                                     検査したイメージの digest を scan-run.json の target.image_digest に残す
 #   hadolint                          Dockerfile の lint
 #   compose-check                     docker compose 構成の設定誤り
 #   license                           ライセンス方針の評価（違反があれば非 0）
 #   zap                               OWASP ZAP baseline + API 走査（compose を起動して実行）
 #   actionlint                        ワークフローの静的検査（違反があれば非 0）
 #   workflows                         ワークフロー統制 W1〜W10 と方針ファイルの検査（違反があれば非 0）
+#   maintainability                   保守性（ESLint: 複雑度・大きさ・引数・ネスト・純粋性）の SARIF・閾値の記録（違反があれば非 0）
+#   arch                              レイヤー依存・循環の検査（security/architecture.yaml。違反があれば非 0）
 # 環境変数: SECURITY_RESULTS（既定 security-results）、TRIVY_CACHE_DIR（既定 .cache/trivy）、
 #           ZAP_TARGET（既定 http://localhost:8080）、ZAP_NETWORK（既定 host。Docker Desktop の macOS では bridge + host.docker.internal を使う）
 # 検出があっても検査自体は成功（exit 0）。ゲートは scripts/security/triage.mjs が担う。ツールが動かなかったときだけ失敗する。
@@ -127,6 +132,32 @@ scan_trivy_image() {
     --coverage-image "$ref" --threshold "high 以上は triage.mjs で失敗"
 }
 
+# 公開した digest の検査（release.yml）: :ci のローカルビルドではなく、GHCR に push した digest（dry-run は OCI アーカイブ）そのものを検査する。
+# 引数: <backend|frontend> <image-ref（pull する）または OCI アーカイブ（*.tar）> <digest> [digest の種類の説明]
+scan_trivy_published() {
+  local which="${1:?backend|frontend}" src="${2:?image-ref か OCI アーカイブ}" digest="${3:?digest}" kind="${4:-レジストリ digest（push した manifest の digest）}"
+  local name="trivy-published-$which" out started code input cleanup
+  out="$OUT_BASE/$name"; mkdir -p "$out"; started="$(now)"
+  case "$src" in
+    *.tar)
+      # buildx の OCI アーカイブは tar のままだと trivy が読めない（OCI image layout のディレクトリにして渡す）
+      input="$out/.oci-layout"; rm -rf "$input"; mkdir -p "$input"; tar -xf "$src" -C "$input"; cleanup="$input" ;;
+    *)
+      docker pull "$src" > /dev/null || return 1
+      input="$out/.image.tar"; docker save -o "$input" "$src" || return 1; cleanup="$input" ;;
+  esac
+  dk -e TRIVY_CACHE_DIR=/cache -e TRIVY_SKIP_VERSION_CHECK=true -v "$TRIVY_CACHE:/cache" "$TRIVY_IMAGE" image --input "$input" \
+    --scanners vuln,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --exit-code 0 --no-progress --format json --output "$out/$name.json"; code=$?
+  if [ "$code" -eq 0 ]; then
+    dk -e TRIVY_CACHE_DIR=/cache -e TRIVY_SKIP_VERSION_CHECK=true -v "$TRIVY_CACHE:/cache" "$TRIVY_IMAGE" convert --format sarif --output "$out/$name.sarif" "$out/$name.json"; code=$?
+  fi
+  rm -rf "$cleanup"
+  record "$name" container trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" \
+    "(docker pull + docker save | tar -x OCI アーカイブ) → docker run $TRIVY_IMAGE trivy image --input <入力> --scanners vuln,misconfig --format json → convert sarif" \
+    --image-digest "$digest" --image-digest-kind "$kind" --coverage-image "$src" \
+    --threshold "high 以上は triage.mjs で失敗（release.yml が published-scans を triage する）"
+}
+
 scan_hadolint() {
   local out="$OUT_BASE/hadolint" started code files
   mkdir -p "$out"; started="$(now)"
@@ -180,6 +211,33 @@ scan_workflows() {
   [ "$code1" -eq 0 ] && [ "$code2" -eq 0 ]
 }
 
+# 保守性: lint ジョブ（ci.yml）と同じ eslint.config.js の、複雑度・大きさ・引数・ネスト・純粋性のルールだけを SARIF に残し、閾値・除外・対象 commit を scan-run.json に記録する。
+scan_maintainability() {
+  local out="$OUT_BASE/maintainability" started code
+  mkdir -p "$out"; started="$(now)"
+  node scripts/security/eslint-maintainability.mjs --out-dir "$out"; code=$?
+  record maintainability maintainability eslint "$(node node_modules/eslint/bin/eslint.js --version | tr -d v)" "" eslint.config.js "$code" 0 "$started" \
+    "node scripts/security/eslint-maintainability.mjs（eslint . --format json → 保守性ルールだけを SARIF に変換。閾値は eslint --print-config backend/src/app.js から読む）" \
+    --rule-class complexity --rule-class size --rule-class params --rule-class purity --thresholds-json "$out/thresholds.json" \
+    --coverage-path "リポジトリ全体の JavaScript（backend・frontend・e2e・perf・scripts・monitoring）" \
+    --exclusion "eslint.config.js の ignores（node_modules・dist・coverage・test-results・playwright-report・.cache・security-results・security-findings・reports）" \
+    --exclusion "テストファイル（test/・e2e/・scripts/test/）は max-lines-per-function・max-lines を適用しない（複雑度・引数・ネスト・純粋性は適用）" \
+    --exclusion "scripts/*/*.mjs の入口・composition root（main.js）・k6・外形監視は純粋性のルール（no-restricted-*）を適用しない（eslint.config.js の override。ロジックは lib/ に置き、lib/ には適用）" \
+    --threshold "保守性ルールの違反が 1 件でもあれば失敗（triage の対象ではなく、この検査自体の失敗。ci.yml の lint と同じ基準）"
+  return "$code"
+}
+
+# アーキテクチャ: security/architecture.yaml の宣言（レイヤーの依存の向き・許可する外部依存）と import 文を突き合わせる。arch.json を残す。
+scan_arch() {
+  local out="$OUT_BASE/architecture" started code
+  mkdir -p "$out"; started="$(now)"
+  node scripts/security/check-arch.mjs --out "$out/arch.json"; code=$?
+  record architecture architecture check-arch.mjs 1.0.0 "" security/architecture.yaml "$code" 0 "$started" \
+    "node scripts/security/check-arch.mjs（import 文からファイル間の依存を取り、レイヤーの向き・許可外の外部依存・未分類のファイル・循環を検査）" --rules security/architecture.yaml \
+    --coverage-path "backend/src, frontend/src" --threshold "違反・循環は 0 件（1 件でも失敗）"
+  return "$code"
+}
+
 # ZAP: 公式イメージで baseline（受動）と API 走査（openapi.yaml）を実行する。認証の無いアプリなので認証なしの走査（authenticated=false）。
 scan_zap() {
   local out="$OUT_BASE/zap" started code=0 target="${ZAP_TARGET:-http://localhost:8080}" net="${ZAP_NETWORK:-host}"
@@ -217,11 +275,14 @@ case "$cmd" in
   sbom) scan_sbom ;;
   trivy-fs) scan_trivy_fs ;;
   trivy-image) scan_trivy_image "$@" ;;
+  trivy-published) scan_trivy_published "$@" ;;
   hadolint) scan_hadolint ;;
   compose-check) scan_compose_check ;;
   license) scan_license ;;
   zap) scan_zap ;;
   actionlint) scan_actionlint ;;
   workflows) scan_workflows ;;
-  *) sed -n '2,22p' "${BASH_SOURCE[0]}"; exit 2 ;;
+  maintainability) scan_maintainability ;;
+  arch) scan_arch ;;
+  *) sed -n '2,27p' "${BASH_SOURCE[0]}"; exit 2 ;;
 esac

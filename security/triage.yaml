@@ -105,3 +105,16 @@ entries:
     compensating_controls: 静的ファイルは expires -1 で毎回再検証
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+  - match:
+      tool: gitleaks
+      rule_id: sourcegraph-access-token
+      location: "docs/**"
+    status: fp
+    reason: FND-012。sourcegraph-access-token は「キーワード（sourcegraph / sgp_）を含むファイルの中の 40 桁の 16 進」に当たる。docs/evidence（取り込んだ証跡）と docs/data（生成した表）は commit の SHA（40 桁の 16 進）を必ず含み、gitleaks 自身の検出ルール名（検出の記録そのもの）も含むので、キーワードと SHA が同じファイルに入って自己参照的に当たる。トークンではない（PR #42 で確認）。同じ範囲は security/gitleaks.toml の allowlist（targetRules を sourcegraph-access-token に限定、paths は docs/evidence と docs/data）で除外しており、他のルールは docs/ 以下にも適用したまま。
+    reachability: 該当しない（秘密情報ではなく、commit の SHA と検出ルール名）
+    exposure: 該当しない（証跡は公開リポジトリの docs/ にあるが、含まれるのは SHA だけ）
+    asset_impact: なし
+    compensating_controls: security/gitleaks.toml の allowlist は理由つきで、ルールとパスを限定している。他のルール（aws・github トークンなど）は docs/ にも適用している
+    reverify_condition: gitleaks のルールが変わったとき、または証跡の形式（docs/evidence・docs/data）が変わったとき
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-12

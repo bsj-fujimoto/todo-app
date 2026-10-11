@@ -1,6 +1,7 @@
 // セキュリティの方針ファイル（台帳）の形式・期限の検査。検出が無くても、台帳が腐っていれば落とす。
 import { isFile, readText } from "../../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
+import { manifestPolicyProblems } from "./manifest-policy.mjs";
 import { loadFindingIds, validateFindingIds } from "./finding-ids.mjs";
 import { loadEntries, validateAccepted, validateTriage } from "./ledger.mjs";
 import { parseRules, validateRules } from "./zap.mjs";
@@ -76,7 +77,7 @@ function selectionProblems(root, today) {
   });
 }
 
-export function checkPolicy(root, today) {
+export function checkPolicy(root, today, files = null) {
   const zap = isFile(root, "security/zap-rules.tsv")
     ? validateRules(parseRules(readText(root, "security/zap-rules.tsv")), today)
     : ["security/zap-rules.tsv が無い"];
@@ -88,5 +89,6 @@ export function checkPolicy(root, today) {
     ...licenseProblems(root, today),
     ...mirrorProblems(root),
     ...selectionProblems(root, today),
+    ...manifestPolicyProblems(root, files),
   ];
 }

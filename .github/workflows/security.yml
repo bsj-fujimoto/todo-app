@@ -228,6 +228,30 @@ jobs:
           retention-days: 90
           if-no-files-found: error
 
+  # ---- 保守性（ESLint の複雑度・大きさ・引数・純粋性）とアーキテクチャ（レイヤー依存・循環）-------------
+  # どちらも違反があればこのジョブが失敗する（triage の検出には入れない）。SARIF / arch.json と scan-run.json を証跡として 90 日残す。
+  maintainability:
+    name: maintainability
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: 保守性（ESLint。閾値は eslint.config.js。違反があれば失敗）
+        run: bash scripts/security/scan.sh maintainability
+      - name: アーキテクチャ（security/architecture.yaml。レイヤーの向き・許可外の依存・循環があれば失敗）
+        run: bash scripts/security/scan.sh arch
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-scan-maintainability
+          path: security-results
+          retention-days: 90
+          if-no-files-found: error
+
   # ---- DAST（OWASP ZAP baseline + API 走査。runner 上の compose スタックに対して）------------------
   dast:
     name: dast
@@ -322,12 +346,13 @@ jobs:
   triage:
     name: triage
     if: always()
-    needs: [governance, sast, secrets, sca, container-iac, license, dast]
+    needs: [governance, sast, secrets, sca, container-iac, license, maintainability, dast]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
       actions: read # 前回（main の直近成功 run）の findings.json を取得する
+      security-events: read # Code Scanning のアラートと台帳のずれの検査（read のみ）
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -356,6 +381,11 @@ jobs:
           fi
       - name: トリアージ（security/triage.yaml・accepted-risks.yaml を適用。critical/high の未解決は失敗）
         run: node scripts/security/triage.mjs --results security-results --out security-findings --previous previous/findings.json
+      - name: Code Scanning のアラートと台帳（accepted-risks.yaml）のずれの検査（GitHub 側の dismissed と AR-ID の突き合わせ）
+        if: github.event.pull_request.head.repo.fork != true
+        env:
+          REPO: ${{ github.repository }}
+        run: node scripts/security/check-code-scanning.mjs --repo "$REPO" --out security-findings/code-scanning-check.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -367,7 +397,9 @@ jobs:
   # ---- medium の検出を Issue にする（PR では作らない）----------------------------------------
   file-security-issues:
     name: file-security-issues
-    if: always() && github.event_name != 'pull_request' && inputs.create_issues != false && needs.triage.result != 'skipped'
+    # inputs.create_issues は workflow_call のときだけ値を持つ。push・schedule では空文字で、`'' != false` は両辺を数値 0 に変換して偽になる（main push で常に skipped だった原因）。
+    # format() で文字列にして比べる（workflow_call で false を渡したときだけ 'false'）。
+    if: always() && github.event_name != 'pull_request' && format('{0}', inputs.create_issues) != 'false' && needs.triage.result != 'skipped'
     needs: [triage]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -388,14 +420,20 @@ jobs:
         with:
           name: security-findings
           path: security-findings
-      - name: medium の未解決を Issue にする（ラベル security。同じ指紋の open Issue があれば作らない）
-        run: node scripts/security/file-security-issues.mjs --findings security-findings/findings.json
+      - name: medium の未解決を Issue にする（ラベル security。同じ指紋の open Issue があれば新規には作らず、定期実行のときは経過をコメントする）
+        env:
+          EVENT: ${{ github.event_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          flag=""
+          if [ "$EVENT" = "schedule" ]; then flag="--comment-existing"; fi
+          node scripts/security/file-security-issues.mjs --findings security-findings/findings.json --run-url "$RUN_URL" $flag
 
   # ---- ゲート（Ruleset の required check はこれ）--------------------------------------------
   security-result:
     name: security-result
     if: always()
-    needs: [governance, sast, secrets, sca, container-iac, license, dast, dependency-review, scorecard, triage]
+    needs: [governance, sast, secrets, sca, container-iac, license, maintainability, dast, dependency-review, scorecard, triage]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
