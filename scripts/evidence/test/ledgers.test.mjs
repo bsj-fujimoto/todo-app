@@ -435,7 +435,11 @@ describe("抽出パリティ・秘密情報の検査", () => {
     ]);
     assert.deepEqual(none, []);
     assert.equal(qcCompat.get("docs/data/x.csv"), 1);
-    assert.deepEqual(scanFiles([{ path: "a/sbom.cdx.json", text: "maintainer@alpinelinux.org" }]).hits, []);
+    // 許可リストの例外は無い。SBOM のメンテナのメールも、墨消ししない限り検出する
+    assert.deepEqual(
+      scanFiles([{ path: "a/sbom.cdx.json", text: "maintainer@alpinelinux.org" }]).hits.map((h) => h.rule),
+      ["email"],
+    );
   });
 });
 

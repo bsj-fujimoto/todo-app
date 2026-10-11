@@ -148,7 +148,7 @@ export function artifactsResult({ stale, strictArtifacts, message }) {
 
 export function sensitive(bundle) {
   const report = createReport();
-  const { hits, qcCompat } = scanFiles(bundle.textFiles);
+  const { hits, qcCompat } = scanFiles(bundle.textFiles, { owners: bundle.owners ?? [] });
   for (const h of hits) report.error(`${h.kind}（${h.rule}）らしい値: ${h.path}:${h.line} ${h.sample}`);
   for (const [path, n] of qcCompat) {
     report.warn(

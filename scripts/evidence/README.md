@@ -132,6 +132,7 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 - `artifacts.yaml` の履歴・更新日時は**コミット済み**の内容から作る。文書を更新したら、コミット後に `build-artifacts.mjs` を再実行する（古ければ `check-evidence.mjs` が警告、`--strict-artifacts` で失敗）。
 - 検出したのがテストケースでない不具合（CodeQL・外形監視など）は、Issue の「関連ケース」に「ケース: 該当なし。…」と、検出した手段・ケースが無い事実・新規ケースの案を書く。`case_ids` は空になり、`check-evidence` は警告、追跡表には「関連ケースがない」の行（gaps）で残る。ケースがあるのに書かない場合は指摘して失敗する。
 - `build-defects.mjs` の `release` は、起票日以前で最新の `v*` タグ（無ければ `pre-1.0.0`）。`source` は検出工程が production なら production、それ以外は test。
+- **墨消し**: `fetch-run.mjs`（と、Issue のスナップショットを作る `build-defects.mjs`）は、取り込んだテキスト（JSON・SARIF・jsonl・md・xml…）から、人の氏名・メール・アカウント名・秘密情報らしい値を決定的に `[REDACTED:…]` へ置き換える（`lib/redact.mjs`）。記録は `SOURCE.json` の `redactions`（理由・規則ごとの件数・元ファイルと墨消し後の sha256）。manifest の項目には `original_sha256`・`redacted: true`。`check-evidence` の簡易検査は**許可リストの例外なし**で、墨消し漏れ（メール・メンション・オーナー名・墨消し済みでない author / email キー）を失敗にする。取り込み済みの証跡を墨消しし直すときは、同じ `fetch-run.mjs --run <id>` を再実行する。
 - 正規表現による秘密情報・個人情報の検査は**不在を証明しない**（`docs/evidence/README.md`）。
 - 取り込むのは小さな実行成果物だけ。失敗時の trace・video・HTML レポートは持ち込まない。
 

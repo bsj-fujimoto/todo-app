@@ -8,6 +8,15 @@ import { listManagedFiles, sourceOf } from "./evidence-files.mjs";
 
 export const MANIFEST_FILE = "manifest.json";
 
+/** 取り込み時に墨消ししたファイルなら、その記録（SOURCE.json の redactions。path は SOURCE.json のあるディレクトリからの相対）。 */
+function redactionOf(source, rel) {
+  const inner = rel
+    .split("/")
+    .slice(rel.startsWith("runs/") ? 2 : 1)
+    .join("/");
+  return (source.redactions ?? []).find((r) => r.path === inner) ?? null;
+}
+
 /** 1 ファイルの項目。取得元（SOURCE.json）が無いファイルは作れない（取得元不明の証跡を管理対象にしない）。 */
 export function entryFor(evidenceDir, rel) {
   const source = sourceOf(evidenceDir, rel);
@@ -22,8 +31,12 @@ export function entryFor(evidenceDir, rel) {
     source: source.source_url,
     version: source.version,
     head_sha: source.head_sha,
+    ...redactedFrom(redactionOf(source, rel)),
   };
 }
+
+/** 墨消しした項目は、元ファイルの sha256 を持つ（manifest の sha256 は墨消し後。元との対応が追える）。 */
+const redactedFrom = (r) => (r ? { redacted: true, original_sha256: r.original_sha256 } : {});
 
 export function buildManifestFiles(evidenceDir) {
   return listManagedFiles(evidenceDir).map((rel) => entryFor(evidenceDir, rel));

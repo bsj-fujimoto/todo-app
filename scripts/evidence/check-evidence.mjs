@@ -44,6 +44,15 @@ function walk(dir, prefix = "") {
   );
 }
 
+/** リポジトリのオーナー名（不具合のスナップショットの repository。無ければ GITHUB_REPOSITORY）。人名・アカウント名として書かれたものの検査に使う。 */
+function ownersOfRepository() {
+  const file = join(root, EVIDENCE_DIR, "github/defect-issues.json");
+  const repo = existsSync(file)
+    ? JSON.parse(readFileSync(file, "utf8")).repository
+    : process.env.GITHUB_REPOSITORY;
+  return [String(repo ?? "").split("/")[0]].filter(Boolean);
+}
+
 function loadBundle() {
   const tables = {};
   for (const f of walk(join(root, DATA_DIR)).filter((x) => x.endsWith(".csv"))) {
@@ -60,7 +69,7 @@ function loadBundle() {
     ...walk(join(root, EVIDENCE_DIR)).map((f) => `${EVIDENCE_DIR}/${f}`),
   ].filter((p) => TEXT_EXT.test(p) && statSync(join(root, p)).size <= MAX_SCAN_BYTES);
   const textFiles = scanned.map((p) => ({ path: toPosix(p), text: readFileSync(join(root, p), "utf8") }));
-  return { tables, docs, textFiles };
+  return { tables, docs, textFiles, owners: ownersOfRepository() };
 }
 
 /** git が管理するファイルの一覧（追跡中 + 未追跡で除外されていないもの）。git が使えなければ null。 */

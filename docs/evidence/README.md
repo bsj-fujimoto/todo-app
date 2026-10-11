@@ -66,14 +66,23 @@ ID の対応: `REQ` 要求 → `RISK` リスク → `VIEW` 観点 → `TC` ケ�
 ## データ分類・アクセス・秘密情報
 
 - 分類: **public**（このリポジトリは public。ここの内容は誰でも読める）。利用者データ・実在の個人情報は含まない（テストデータは合成データのみ。`docs/data/datasets.csv`）。
-- 例外として、取り込んだ gitleaks の SARIF（2026-10-11 の run）には、検出に当たった commit の author 名・GitHub の noreply アドレス・コミットメッセージが記録されている（公開の Git 履歴にある情報。原本の sha256 を保つため伏字にしない。allowlist 後の取り込みでは出ない）。SBOM（`*.cdx.json`）には第三者パッケージ（alpine・nginx・npm）が公開しているメンテナのメールアドレスが含まれる。公開メタデータで、原本の sha256 を保つため伏字にしない。
-- **internal**（社内限り）に当たるものは、このリポジトリには置かない。置く必要が出たら、別の非公開の保管先と、この README の分類を決めてから。
-- 検査: `scripts/evidence/check-evidence.mjs` が、`docs/data/` と `docs/evidence/` の全テキストに、トークン形式（AWS・GitHub・Slack・JWT・秘密鍵・`password=` などの代入）とメール・電話番号・カード番号の正規表現を当てる。セキュリティ側の gitleaks（履歴全体）と併用する。
+- **人の氏名・メールアドレス・アカウント名・秘密情報らしい値は、証跡に残さない。** 取り込み時（`fetch-run.mjs`・`build-defects.mjs`）に**墨消し**する（`scripts/evidence/lib/redact.mjs`）。
+  - 対象: 個人情報のキー（`author`・`committer`・`email` など。gitleaks の SARIF の `partialFingerprints`、CycloneDX の author）の値、メールアドレス形式、「氏名 <メール>」の氏名、`Co-Authored-By` などの氏名、アカウントのメンション（`@name`）、リポジトリのオーナー名（URL・`owner/repo` の形以外で書かれたもの）、トークン・`password=` などの代入・秘密鍵の形式。`[REDACTED:author]`・`[REDACTED:email]`・`[REDACTED:account]`・`[REDACTED:secret]` に置き換える。
+  - 決定的（同じ入力は同じ出力）。置き換えが無いファイルは、バイト単位でそのまま。URL に含まれるオーナー名（`github.com/<owner>/…`・`ghcr.io/<owner>/…`）と npm のスコープ（`@fastify/…`）は技術的な参照なので残す。
+  - 記録: 墨消ししたファイルは `SOURCE.json` の `redactions` に、理由・規則ごとの件数・**元ファイルの sha256**・**墨消し後の sha256** を残す。`manifest.json` と証拠索引の sha256 は墨消し後のファイルで、manifest の項目に `original_sha256` と `redacted: true` が付く（元との対応が追える）。元の取得物は CI の artifact（90 日）にだけある。
+- 検査: `scripts/evidence/check-evidence.mjs` が、`docs/data/` と `docs/evidence/` の全テキストに、トークン形式（AWS・GitHub・Slack・JWT・秘密鍵・`password=` などの代入）・メール・メンション・オーナー名・電話番号・カード番号の正規表現と、JSON の個人情報のキー（墨消し済みでない `author`・`email` など）を当てる。**許可リストの例外は作らない**（見つかったら、取り込み時の墨消しで取り除く）。セキュリティ側の gitleaks（履歴全体）と併用する。
 - **正規表現は不在を証明しない。** 検出が 0 件でも、秘密情報・個人情報が無いとは言えない。最終確認は人が行う（観察値は短いので目視できる大きさにしてある）。
-  誤検出（CodeQL のルール説明のサンプル、SBOM のメンテナ宛先）は `scripts/evidence/lib/sensitive.mjs` の許可リストに、理由つきで書く。
+- **internal**（社内限り）に当たるものは、このリポジトリには置かない。置く必要が出たら、別の非公開の保管先と、この README の分類を決めてから。
+
+### gitleaks の allowlist（`security/gitleaks.toml`）
+
+- 対象・理由: `sourcegraph-access-token`（キーワード `sourcegraph`・`sgp_` を含むファイルの中の 40 桁の 16 進に当たるルール）を、`docs/evidence/` と `docs/data/` からだけ除く（`targetRules` 指定。ほかのルールは `docs/` 以下にも適用したまま）。証跡・生成表は commit の SHA（40 桁の 16 進）を必ず含み、gitleaks 自身の検出の記録（キーワード `sourcegraph`）も含むので、自己参照的に当たる（FND-012）。トークンではない。
+- 確認: gitleaks 8.30.1（ピン留めの image）の dir モードを `docs/` に当てて 0 件（2026-10-12）。アクションは ACT-010。
+- 見直す条件: gitleaks のルールが変わったとき、または証跡の形式が変わったとき（`security/gitleaks.toml` の description にも書いてある）。
 
 ## 既知の制約
 
+- **Git 履歴には墨消し前のファイルが残る。** この方針の前に取り込んだ gitleaks の SARIF（run 38152472087 の取り込みコミット）には、検出に当たった commit の author 名と GitHub の noreply アドレスが入っており、force push は禁止なので、履歴からは消せない。公開リポジトリのコミットの author は元々公開情報で、この SARIF が新たに暴露したものではない。以降の証跡には入れない（現在のファイルは墨消し済みで、manifest・証拠索引は墨消し後の sha256）。
 - 観察値は、テストが実際に見た値（画面の行・チェック状態・エラー文言・通信の method path → status・計測値・入力→結果の表）。**テストが見ていないことは書かれない**（例: 色・位置・フォーカス順の見た目は、そのテストが検査していなければ観察値に無い）。
 - 手動ケース（TC-071・TC-072）は、実施していないので `not_run`。実施の記録（端末の版・観察・証拠）が付くまで `pass` にしない。
 - 失敗した run の trace・video は、CI の artifact（90 日）にだけある。必要なら取り込み時に `fetch-run.mjs` を拡張して持ち込む（容量との相談）。
