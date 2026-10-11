@@ -17,6 +17,9 @@ import { runApiAttempt, runHttpAttempt } from "../lib/exec-http.mjs";
 import { runWithRetries } from "../lib/retry.mjs";
 import { validateNamed } from "../lib/schema.mjs";
 import { evaluateSuppression } from "../lib/suppress.mjs";
+import { buildDrillRecord } from "../lib/drill-record.mjs";
+import { buildMarker } from "../marker.mjs";
+import { fallbackTarget, releaseTarget, renderComposeOverride } from "../lib/target.mjs";
 import { interpolate, jsonPath } from "../lib/vars.mjs";
 
 const openapi = parse(readFileSync("backend/openapi.yaml", "utf8"));
@@ -291,5 +294,85 @@ describe("config-check（設定の整合）", () => {
     assert.match(problems, /通知経路/);
     assert.match(problems, /J-05/);
     assert.match(problems, /切り分け/);
+  });
+});
+
+describe("デプロイマーカー", () => {
+  const health = { version: "1.0.0", commit_sha: "abc", status: "ok" };
+  const release = { release_tag: "v1.0.0", release_published_at: "2026-10-11T00:00:00Z", release_url: "u" };
+  it("health の版が最新リリースのタグと一致するかを記録する", () => {
+    assert.equal(buildMarker("2026-10-11T01:00:00Z", health, release, null).matches_latest_release, true);
+    assert.equal(
+      buildMarker("2026-10-11T01:00:00Z", { ...health, version: "0.9.0" }, release, null)
+        .matches_latest_release,
+      false,
+    );
+  });
+  it("前回のマーカーから版が変わったときだけ version_changed_at を付ける（無ければ付けない）", () => {
+    const prev = { version: "1.0.0", commit_sha: "abc", version_changed_at: null };
+    assert.equal(buildMarker("t1", health, release, prev).version_changed_at, null);
+    assert.equal(buildMarker("t1", { ...health, commit_sha: "def" }, release, prev).version_changed_at, "t1");
+    assert.equal(
+      buildMarker("t1", health, release, null).version_changed_at,
+      null,
+      "runner では前回が無いので付かない",
+    );
+  });
+});
+
+describe("監視対象の決定", () => {
+  it("リリースがあれば digest 固定の上書きを作り、期待する版は v を除いたタグ", () => {
+    const t = releaseTarget({
+      release: { tag_name: "v1.2.3", published_at: "p" },
+      images: { backend: "r/b@sha256:aa" },
+      commit: "c",
+    });
+    assert.equal(t.mode, "release");
+    assert.equal(t.expected_version, "1.2.3");
+    assert.match(renderComposeOverride(t.images), /image: r\/b@sha256:aa/);
+  });
+  it("リリースが無ければフォールバックし、理由を残す", () => {
+    const t = fallbackTarget({ reason: "リリースが無い", commit: "c" });
+    assert.equal(t.mode, "fallback");
+    assert.equal(t.reason, "リリースが無い");
+    assert.deepEqual(t.images, {});
+  });
+});
+
+describe("通知試験の記録", () => {
+  const state = {
+    test_id: "drill-x",
+    detected_at: "2026-10-11T00:00:00.000Z",
+    issues: [
+      {
+        monitor_id: "MON-002",
+        issue: { number: 1, url: "u" },
+        notified_at: "2026-10-11T00:00:20Z",
+        assignee_verified: true,
+        labels_ok: true,
+        ack_method: "m",
+        ack_at: "t",
+        ack_seconds: 5,
+      },
+    ],
+  };
+  it("Issue 作成・assignee・回復・close がそろえば pass", () => {
+    const r = buildDrillRecord(state, {
+      recovered_at: "2026-10-11T00:01:00.000Z",
+      closed: [{ number: 1, state: "CLOSED" }],
+      repo: "o/r",
+    });
+    assert.equal(r.result, "pass");
+    assert.equal(r.notify_latency_sec, 20);
+    assert.equal(r.time_to_recover_sec, 60);
+  });
+  it("close されていなければ fail", () => {
+    const r = buildDrillRecord(state, {
+      recovered_at: "2026-10-11T00:01:00.000Z",
+      closed: [{ number: 1, state: "OPEN" }],
+      repo: "o/r",
+    });
+    assert.equal(r.result, "fail");
+    assert.equal(r.checks.issue_closed, false);
   });
 });
