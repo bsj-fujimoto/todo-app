@@ -60,7 +60,7 @@ describe("リリース証跡の墨消し", () => {
     const { dir, records } = build();
     const notes = readFileSync(join(dir, "RELEASE_NOTES.md"), "utf8");
     assert.ok(!notes.includes("someone") && !notes.includes("example.com"));
-    assert.ok(notes.includes("https://github.com/octo/repo"));
+    assert.match(notes, /https:\/\/github\.com\/octo\/repo/);
     const doc = readFileSync(join(dir, "security-scan-secrets/gitleaks/gitleaks.sarif"), "utf8");
     assert.ok(!doc.includes("Some Person") && !doc.includes("example.com"));
     assert.ok(doc.includes("0123456789abcdef"));
