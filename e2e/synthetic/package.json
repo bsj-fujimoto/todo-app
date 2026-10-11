@@ -1,0 +1,10 @@
+{
+  "name": "todo-app-synthetic",
+  "version": "1.0.0",
+  "private": true,
+  "description": "外形監視のブラウザジャーニー（Playwright）。e2e workspace とは独立（npm ci --prefix e2e/synthetic）",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "1.64.0"
+  }
+}

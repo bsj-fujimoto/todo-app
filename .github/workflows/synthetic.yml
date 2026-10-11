@@ -1,0 +1,180 @@
+# 外形監視（synthetic）。監視定義は monitoring/monitors.yaml（正本）。実行は scripts/monitoring/run-monitors.mjs。
+#   対象: 最新の GHCR リリースイメージ（digest 固定で pull）を compose 起動して localhost に対して実行する。
+#         リリースが無い・引けないときは docker compose up --build（main の HEAD）にフォールバックし、run の summary に明記する。
+#   起動: 30 分ごと（schedule）と手動（workflow_dispatch）。GitHub の cron は遅延・欠落しうるため、実際の間隔は 30 分より長くなりうる
+#         （60 日リポジトリに活動が無いと schedule は無効化される。RB-005 参照）。
+#   通知: 失敗は alert ジョブ（issues: write はこのジョブだけ）が incident Issue にする。回復したらコメントして close。
+#   通知試験: drill=true で backend コンテナを意図的に止め、アラート経路（Issue 作成・assignee・回復・close）を実際に通す。
+#   制約: runner 内の localhost は HTTP のみ。DNS・TLS の実証明書は検証できない（monitoring/README.md、MON-011/012 は enabled: false）。
+name: synthetic
+
+on:
+  schedule:
+    - cron: "7,37 * * * *" # 30 分ごと（遅延しうる）
+  workflow_dispatch:
+    inputs:
+      drill:
+        description: "通知試験: backend を意図的に停止してアラート経路を通す（drill ラベルの Issue。自動で close）"
+        type: boolean
+        default: false
+      force_fallback:
+        description: "リリースイメージを使わず main の HEAD をビルドして監視する"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic
+  cancel-in-progress: false
+
+env:
+  OUT: monitoring/out
+  DRILL: ${{ inputs.drill && 'true' || 'false' }}
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read # GHCR のリリースイメージを pull する
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: node
+      - name: "依存を入れる（監視スクリプトは yaml のみ。ブラウザジャーニーは e2e/synthetic の Playwright）"
+        run: |
+          mise x -- npm ci
+          mise x -- npm ci --prefix e2e/synthetic
+          mise x -- npx --prefix e2e/synthetic playwright install --with-deps chromium
+      - name: "設定の整合性と単体テスト"
+        run: |
+          mise x -- node scripts/monitoring/check-config.mjs
+          mise x -- node --test "scripts/monitoring/test/*.test.mjs"
+      - name: "GHCR にログインする"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: "監視対象を決める（最新リリースのイメージ / フォールバック）"
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE_FALLBACK: ${{ inputs.force_fallback && 'true' || 'false' }}
+        run: |
+          flag=""
+          if [ "$FORCE_FALLBACK" = "true" ]; then flag="--force-fallback"; fi
+          mise x -- node scripts/monitoring/resolve-target.mjs --out "$OUT" $flag
+          {
+            echo "## 監視対象"
+            mise x -- node -e '
+              const t = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+              console.log("- モード: **" + (t.mode === "release" ? "リリース済みイメージ（digest 固定）" : "フォールバック（main の HEAD を docker compose up --build）") + "**");
+              console.log("- 理由: " + t.reason);
+              for (const [s, ref] of Object.entries(t.images)) console.log("- " + s + ": `" + ref + "`");
+            ' "$OUT/target.json"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: "起動する（リリースイメージ。ビルドしない）"
+        if: steps.target.outputs.mode == 'release'
+        run: docker compose -f docker-compose.yml -f "$OUT/compose.release.yml" up -d --no-build --pull always --wait
+      - name: "起動する（フォールバック: main の HEAD をビルド）"
+        if: steps.target.outputs.mode != 'release'
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: docker compose up -d --build --wait
+      - name: "デプロイマーカーを記録する（health の version / commit と最新リリース）"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: mise x -- node scripts/monitoring/marker.mjs --base-url http://localhost:8080 --out "$OUT"
+      - name: "外形監視を実行する"
+        if: env.DRILL != 'true'
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: mise x -- node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out "$OUT" --target "$OUT/target.json"
+      - name: "通知試験（1/3）backend を停止して障害を注入する"
+        if: env.DRILL == 'true'
+        run: |
+          docker compose stop backend
+          mise x -- node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out "$OUT/drill-fail" --phase drill-fail --only MON-002,MON-003 --retry-delay-sec 2 --target "$OUT/target.json"
+      - name: "通知試験（2/3）backend を復旧する"
+        if: env.DRILL == 'true'
+        run: |
+          docker compose start backend
+          for _ in $(seq 1 60); do
+            if curl -fsS http://localhost:8080/api/v1/health >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+      - name: "通知試験（3/3）復旧を監視で確認する"
+        if: env.DRILL == 'true'
+        run: mise x -- node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out "$OUT/drill-recover" --phase drill-recover --only MON-002,MON-003 --target "$OUT/target.json"
+      - name: "失敗時に compose のログを残す"
+        if: failure()
+        run: |
+          mkdir -p "$OUT"
+          docker compose ps > "$OUT/compose-ps.txt" 2>&1 || true
+          docker compose logs --no-color --tail 300 > "$OUT/compose-logs.txt" 2>&1 || true
+      - name: "結果を保存する（実行履歴・マーカー・失敗時の screenshot / trace。90 日）"
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: monitoring-results-${{ github.run_id }}
+          path: monitoring/out
+          retention-days: 90
+          if-no-files-found: warn
+
+  alert:
+    needs: synthetic
+    if: always() && needs.synthetic.result != 'skipped'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write # incident Issue の作成・コメント・close・ラベル。このジョブだけ
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: node
+      - run: mise x -- npm ci
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: monitoring-results-${{ github.run_id }}
+          path: monitoring/out
+      - name: "アラート（失敗 → Issue、回復 → コメントして close、未 ack のエスカレーション）"
+        if: env.DRILL != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f "$OUT/results.json" ]; then
+            echo "::warning::results.json が無い（監視の実行自体が失敗した。RB-005 を参照）"
+            exit 0
+          fi
+          mise x -- node scripts/monitoring/alert.mjs --results "$OUT/results.json" --out "$OUT" --escalate --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: "通知試験のアラート（失敗フェーズ → 回復フェーズ。Issue は drill ラベル付き）"
+        if: env.DRILL == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          mise x -- node scripts/monitoring/alert.mjs --results "$OUT/drill-fail/results.json" --out "$OUT" --drill --drill-phase fail --run-url "$url"
+          mise x -- node scripts/monitoring/alert.mjs --results "$OUT/drill-recover/results.json" --out "$OUT" --drill --drill-phase recover --run-url "$url"
+          cat "$OUT/alert-test.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: "通知試験の記録を保存する（monitoring/alert-tests.md に転記する）"
+        if: always() && env.DRILL == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: alert-test-${{ github.run_id }}
+          path: |
+            monitoring/out/alert-test.json
+            monitoring/out/alert-test.md
+            monitoring/out/alert-tests.jsonl
+            monitoring/out/alert-history.jsonl
+            monitoring/out/drill-state.json
+          retention-days: 90
+          if-no-files-found: warn
