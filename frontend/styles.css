@@ -1,0 +1,231 @@
+/* モバイルファースト（幅 360px 以上で横スクロールなし）。配色は WCAG AA（通常文字 4.5:1、UI 部品 3:1）を満たす。 */
+:root {
+  --ink: #182a38;
+  --muted: #4f5f6c;
+  --accent: #087f8c;
+  --accent-ink: #ffffff;
+  --line: #c9d5dc;
+  --control-border: #70838f;
+  --bg: #f3f6f8;
+  --surface: #ffffff;
+  --danger-ink: #8c1d18;
+  --danger-bg: #fdecea;
+  --focus: #0b57d0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Yu Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  margin: 8px 0 16px;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* フォーカスは常に見える */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* 画面上部のエラー（保存失敗・保存データ破損） */
+.top-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.banner {
+  width: 100%;
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border-left: 4px solid var(--danger-ink);
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.banner:not(:empty) {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+}
+
+/* 入力欄・エラー・追加ボタン。DOM 順は 入力欄 → エラー → ボタン、見た目は 入力欄＋ボタン / その下にエラー */
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "input button"
+    "error error";
+  gap: 8px;
+  align-items: start;
+}
+
+#title-input {
+  grid-area: input;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+#title-input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+#title-input[aria-invalid="true"] {
+  border-color: var(--danger-ink);
+  border-width: 2px;
+}
+
+#add-button {
+  grid-area: button;
+}
+
+.field-error {
+  grid-area: error;
+  margin: 0;
+  color: var(--danger-ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 18px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button.secondary {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--control-border);
+}
+
+.list-message {
+  margin: 24px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.tasks {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.task:last-child {
+  border-bottom: 0;
+}
+
+.task.busy {
+  opacity: 0.7;
+}
+
+.task-check {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.task-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere; /* 空白のない 100 文字でも折り返す */
+}
+
+.task.done .task-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.task .delete {
+  flex: none;
+  padding: 6px 12px;
+  color: var(--muted);
+  background: transparent;
+  border-color: var(--control-border);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+@media (min-width: 640px) {
+  .app {
+    padding: 32px 24px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
