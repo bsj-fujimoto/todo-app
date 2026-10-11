@@ -1,0 +1,413 @@
+name: CI
+
+# PR・main への push・手動・他ワークフロー（release.yml）からの再利用で動く。
+# マージの可否は集約ジョブ `ci-result` だけを Ruleset の required check にして決める（skipped は成功扱いにしない）。
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+# 最小権限。必要なジョブだけが個別に昇格する（現状、昇格が必要なジョブは無い）。
+permissions:
+  contents: read
+
+# PR は新しい push で古い run を止める。main は止めない（全 push の結果を残す）。
+# group に github.workflow を使わない（workflow_call では呼び出し元の名前になり、release.yml と衝突するため）。
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # 対象 SHA を明示する。pull_request では merge commit ではなく PR の head をテストし、記録する。
+  TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CI: "true"
+
+jobs:
+  # ---- 回帰テストの選択（PR 層は変更影響で選ぶ。それ以外は全件） -----------------------------
+  select:
+    name: select
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      mode: ${{ steps.sel.outputs.mode }}
+      grep_e2e: ${{ steps.sel.outputs.grep_e2e }}
+      name_pattern: ${{ steps.sel.outputs.name_pattern }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: 変更影響で実行するケースを選ぶ
+        id: sel
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT" = "pull_request" ]; then
+            node scripts/regression/select.mjs --base "$BASE_SHA" --head "$TARGET_SHA" \
+              --out regression-selection.json --github-output
+          else
+            node scripts/regression/select.mjs --mode full --reason "$EVENT は全件回帰（選択しない）" \
+              --out regression-selection.json --github-output
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: regression-selection
+          path: regression-selection.json
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- 静的検査 ----------------------------------------------------------------------------
+  lint:
+    name: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: eslint（複雑度・関数長・引数・純粋さの規約。違反は失敗）
+        run: npm run lint
+      - name: prettier
+        run: npm run format:check
+      - name: CI・回帰運用の道具のテスト
+        run: npm run test:scripts
+
+  # ---- unit / api（backend + frontend）-----------------------------------------------------
+  unit-api:
+    name: unit-api
+    needs: [select]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: backend（unit + api。JUnit・標準出力・カバレッジ表は backend/test-results）
+        env:
+          MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
+          NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
+        run: bash scripts/ci/run-node-tests.sh backend "$MODE" "$NAME_PATTERN"
+      - name: frontend（unit。JUnit は frontend/test-results。小さく速いので選択せず常に全件）
+        run: bash scripts/ci/run-node-tests.sh frontend full
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "unit / api" --out ci-summary-unit-api.json \
+            --layer api=backend/test-results --layer unit=frontend/test-results \
+            --coverage backend=backend/test-results/coverage-summary.json \
+            --coverage frontend=frontend/test-results/coverage-summary.json \
+            --artifact backend-test-results=backend/test-results --artifact frontend-test-results=frontend/test-results
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-unit-api
+          path: ci-summary-unit-api.json
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: junit-coverage-unit-api
+          path: |
+            backend/test-results
+            frontend/test-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- API 契約 ----------------------------------------------------------------------------
+  contract:
+    name: contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: redocly lint（設定と、外したルールの理由は scripts/ci/redocly.yaml）
+        run: npm run contract:lint
+      - name: 破壊的変更の検出（oasdiff。base の openapi.yaml と比較し、ERR があれば失敗）
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: bash scripts/ci/oasdiff-breaking.sh
+      - name: 契約適合の検査（実装が openapi.yaml に従っているか。JUnit は backend/test-results/contract.xml）
+        if: always()
+        run: npm run contract:check -w backend
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "contract" --out ci-summary-contract.json \
+            --layer contract=backend/test-results/contract.xml --artifact contract-report=contract-report
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-contract
+          path: ci-summary-contract.json
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: contract-report
+          path: |
+            contract-report
+            backend/test-results/contract.xml
+          retention-days: 90
+          if-no-files-found: warn
+
+  # ---- E2E（4 project × 全ブラウザ。retry は使わない）-------------------------------------
+  e2e:
+    name: e2e (${{ matrix.project }})
+    needs: [select]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { project: chromium, browser: chromium }
+          - { project: firefox, browser: firefox }
+          - { project: webkit, browser: webkit }
+          - { project: chromium-mobile-360, browser: chromium }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: Playwright ブラウザのキャッシュ
+        id: pw-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+      - name: Playwright ブラウザを入れる（キャッシュがあればブラウザ本体は再取得しない）
+        env:
+          BROWSER: ${{ matrix.browser }}
+          CACHE_HIT: ${{ steps.pw-cache.outputs.cache-hit }}
+        run: |
+          if [ "$CACHE_HIT" = "true" ]; then
+            npm exec -w e2e -- playwright install-deps "$BROWSER"
+          else
+            npm exec -w e2e -- playwright install --with-deps "$BROWSER"
+          fi
+      - name: E2E（--retries=0 を明示。選択実行のときは --grep で絞る）
+        working-directory: e2e
+        env:
+          PROJECT: ${{ matrix.project }}
+          MODE: ${{ needs.select.outputs.mode }}
+          GREP: ${{ needs.select.outputs.grep_e2e }}
+        run: |
+          if [ "$MODE" = "selected" ]; then
+            # 選択結果にこの project の対象（例: @mobile）が 1 件も無いことはあり得る。その場合は 0 件で成功とし、ci-summary に 0 件と残る
+            npx playwright test --project="$PROJECT" --retries=0 --grep "$GREP" --pass-with-no-tests
+          else
+            npx playwright test --project="$PROJECT" --retries=0
+          fi
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "e2e ($PROJECT)" --out "ci-summary-e2e-$PROJECT.json" \
+            --layer e2e=e2e/test-results --artifact e2e-results=e2e/test-results
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-e2e-${{ matrix.project }}
+          path: ci-summary-e2e-${{ matrix.project }}.json
+          retention-days: 90
+          if-no-files-found: error
+      # 成否に関わらず保存する（JUnit・HTML レポート。失敗時は trace・video・screenshot が入る）
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: e2e-evidence-${{ matrix.project }}
+          path: |
+            e2e/test-results
+            e2e/playwright-report
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- docker compose の結合（起動・永続化・停止検知）-------------------------------------
+  compose:
+    name: compose
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: Playwright ブラウザのキャッシュ
+        id: pw-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
+      - name: Playwright（chromium）を入れる
+        env:
+          CACHE_HIT: ${{ steps.pw-cache.outputs.cache-hit }}
+        run: |
+          if [ "$CACHE_HIT" = "true" ]; then
+            npm exec -w e2e -- playwright install-deps chromium
+          else
+            npm exec -w e2e -- playwright install --with-deps chromium
+          fi
+      - name: compose 結合テスト（@compose。workers=1）
+        run: npm run e2e:compose
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "compose" --out ci-summary-compose.json \
+            --layer compose=e2e/test-results --artifact e2e-results=e2e/test-results
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-compose
+          path: ci-summary-compose.json
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: e2e-evidence-compose
+          path: |
+            e2e/test-results
+            e2e/playwright-report
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- コンテナイメージのビルド（push はしない）---------------------------------------------
+  images:
+    name: images
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: backend イメージをビルドする
+        id: backend
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: false
+          build-args: COMMIT_SHA=${{ env.TARGET_SHA }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      - name: frontend イメージをビルドする
+        id: frontend
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+      - name: ビルド結果（イメージ ID）を記録する
+        if: always()
+        env:
+          BACKEND_META: ${{ steps.backend.outputs.metadata }}
+          FRONTEND_META: ${{ steps.frontend.outputs.metadata }}
+        run: |
+          mkdir -p images-build
+          printf '%s\n' "$BACKEND_META" > images-build/backend-metadata.json
+          printf '%s\n' "$FRONTEND_META" > images-build/frontend-metadata.json
+          echo "- ビルド対象 SHA: \`$TARGET_SHA\`（backend / frontend とも push しない）" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: images-build
+          path: images-build
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- docs / 回帰運用の整合（依存ゼロのスクリプトだけなので npm ci 不要）---------------------
+  docs-check:
+    name: docs-check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - name: ID 参照・manifest の sha256・TC-ID とテスト・Markdown のリンク
+        run: node scripts/ci/docs-check.mjs --out reports/docs-check-report.json
+      - name: 変更影響マップが追跡ファイルと合っている
+        run: node scripts/regression/impact-check.mjs --out reports/impact-check-report.json
+      - name: 回帰スイート台帳が cases.csv から生成した結果と一致する
+        run: node scripts/regression/build-suite.mjs --check
+      - name: flaky 隔離台帳の形式・期限
+        run: node scripts/regression/flaky-report.mjs --validate-ledger
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: docs-check-reports
+          path: reports
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- ゲート（Ruleset の required check はこれ 1 つ）----------------------------------------
+  ci-result:
+    name: ci-result
+    if: always()
+    needs: [select, lint, unit-api, contract, e2e, compose, images, docs-check]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+        with:
+          install: "false"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        if: always()
+        with:
+          pattern: ci-summary-*
+          path: summaries
+          merge-multiple: true
+      - name: 層別の結果を ci-summary.json に集約する
+        if: always()
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          mkdir -p summaries
+          node scripts/ci/summarize-junit.mjs --title "CI 全体" --merge summaries --out ci-summary.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary
+          path: ci-summary.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: ゲート判定（success 以外は失敗。skipped・cancelled も成功扱いにしない）
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_JSON" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS_JSON" | jq -e 'to_entries | all(.value.result == "success")' > /dev/null

@@ -1,0 +1,16 @@
+# OpenAPI（backend/openapi.yaml）の lint 設定。CI の contract ジョブが `redocly lint --config scripts/ci/redocly.yaml` で使う。
+# recommended をベースに、このアプリの事情で外すルールだけを理由付きで明示する（黙って無効にしない）。
+extends:
+  - recommended
+
+rules:
+  # 認証・認可の仕組みを持たない 1 人用アプリ（docs の REQ-015 / spec §認可）。全操作が許可されるので security scheme は定義しない。
+  # 認証を導入するときはこの行を消して、securitySchemes を契約に足す。
+  security-defined: off
+  # 契約の servers は docker compose の公開口（http://localhost:8080）を指す。外部公開の本番環境は無い。
+  no-server-example.com: off
+  # GET /tasks と GET /health には、クライアント起因の 4xx が存在しない（入力が無い）。
+  operation-4xx-response: off
+  # 次の 2 つは契約の読みやすさの指摘。違反を放置しないよう warn で表示し続ける（失敗にはしない）。
+  info-license: warn
+  tag-description: warn

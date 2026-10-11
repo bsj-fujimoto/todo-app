@@ -1,0 +1,38 @@
+# 重要ユーザージャーニー（回帰で常時守る経路）と、それを守るテストケース。
+# quality/regression-suite.csv の journey_id 列はここから生成する（scripts/regression/build-suite.mjs）。
+# 判定: 各ジャーニーに「自動化済みで PR / 日次 / 全件回帰のいずれかで動くケース」が 1 つ以上あること。
+#   smoke に入っているケース（TC-001）は PR のたびに動く。それ以外は変更影響に当たった PR・main push・日次・週次・リリース前で動く。
+# 失敗時の対応: 失敗した層の run を起点に、該当ジャーニーの owner が一次対応する（SLA は quality/README.md）。
+version: 1
+journeys:
+  - id: J-01
+    name: タスクを追加して再読込しても残る
+    why: データ損失（RISK-001）が最大のリスク。追加した結果が永続化されていなければ、この製品の価値が無い。
+    owner: バックエンド担当
+    on_failure: main へのマージを止める（ci-result）。原因が保存層なら RISK-001 の defect Issue を起票し、修正 PR に回帰ケースを足す。
+    case_ids: [TC-001, TC-041, TC-042, TC-043, TC-044]
+  - id: J-02
+    name: 完了を切り替えると表示と保存データの両方に反映される
+    why: 完了管理が本来の用途。画面だけ変わって保存されない・保存だけ変わって画面に出ない、を防ぐ。
+    owner: フロントエンド担当
+    on_failure: main へのマージを止める。状態遷移表（docs/03-test-spec.md §8.2）と照合して defect Issue を起票する。
+    case_ids: [TC-008, TC-009, TC-041, TC-046]
+  - id: J-03
+    name: タスクを削除すると一覧と保存データから消え、他のタスクは変わらない
+    why: 削除は取り消せない操作で、別の行を消す・消えない不具合はデータ損失・誤表示に直結する。
+    owner: バックエンド担当
+    on_failure: main へのマージを止める。削除対象の取り違えは high として扱う。
+    case_ids: [TC-011, TC-013, TC-014, TC-015, TC-047, TC-065]
+  - id: J-04
+    name: 不正入力が弾かれ、保存データが変わらない
+    why: 検証抜け（RISK-002）で不正なタイトルが保存されると、後から取り除けない。画面と API の両方で同じ規則を守る。
+    owner: フロントエンド担当
+    on_failure: main へのマージを止める。検証規則の差は openapi.yaml の TitleInvalid を正として直す。
+    case_ids:
+      [TC-010, TC-012, TC-016, TC-017, TC-021, TC-024, TC-027, TC-029, TC-031, TC-032, TC-033, TC-035, TC-036]
+  - id: J-05
+    name: 保存に失敗しても・保存データが壊れていても、データを守る
+    why: 失敗を成功と誤認させない・壊れたデータの上に書き込まない（RISK-003 / RISK-004）。
+    owner: バックエンド担当
+    on_failure: main へのマージを止める。リリース前層でも必ず実行し、失敗したらリリースしない。
+    case_ids: [TC-045, TC-046, TC-047, TC-048, TC-049, TC-050, TC-051, TC-052, TC-053, TC-054, TC-055, TC-058]

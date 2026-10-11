@@ -17,6 +17,10 @@ export default [
       "**/coverage/**",
       "**/test-results/**",
       "**/playwright-report/**",
+      "**/.cache/**",
+      "**/security-results/**",
+      "**/security-findings/**",
+      "**/reports/**",
     ],
   },
   js.configs.recommended,
@@ -52,8 +56,14 @@ export default [
     rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
   },
   {
+    // scripts/<領域>/*.mjs は CLI の入口（composition root）。時刻・環境変数・標準出力をここで束ねる。
+    // ロジックは scripts/<領域>/lib/*.mjs に置き、そちらには本番コードと同じ規約を適用する（この override の対象外）。
+    files: ["scripts/*/*.mjs"],
+    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
+  },
+  {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）
-    files: ["**/test/**/*.js", "e2e/**/*.js"],
+    files: ["**/test/**/*.js", "e2e/**/*.js", "scripts/test/**/*.mjs"],
     rules: { "max-lines-per-function": "off", "max-lines": "off" },
   },
 ];
