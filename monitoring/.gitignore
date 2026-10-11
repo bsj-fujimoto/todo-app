@@ -1,2 +1,5 @@
 # 手元の実行出力（run-monitors.mjs の既定の出力先）。コミットする記録は monitoring/drills/ と monitoring/history/ に置く
 out/
+# ブラウザ監視の失敗時の screenshot / trace（巨大）はコミットしない。Actions の artifact（90 日）に残る
+drills/**/playwright/
+history/**/playwright/

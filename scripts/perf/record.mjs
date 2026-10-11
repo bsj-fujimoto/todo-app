@@ -4,7 +4,7 @@
 //   manifest.json  : 結果ディレクトリの全ファイルの sha256。巨大な生ログ（*.raw.json.gz・observe.jsonl）はコミットせず、ここで追跡する
 // 使い方: node scripts/perf/record.mjs --run-dir perf/results/<run_id>
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { parse } from "yaml";
 import { parseArgs, requireArg } from "../lib/cli.mjs";
@@ -26,12 +26,15 @@ function manifest(runDir) {
   const files = walk(runDir)
     .filter((f) => !f.endsWith("manifest.json"))
     .sort()
-    .map((f) => ({
-      path: relative(runDir, f),
-      bytes: statSync(f).size,
-      sha256: createHash("sha256").update(readFileSync(f)).digest("hex"),
-      committed: !UNCOMMITTED.some((re) => re.test(f)),
-    }));
+    .map((f) => {
+      const data = readFileSync(f); // 1 回だけ読む（stat と read の間にファイルが変わる競合を避ける）
+      return {
+        path: relative(runDir, f),
+        bytes: data.length,
+        sha256: createHash("sha256").update(data).digest("hex"),
+        committed: !UNCOMMITTED.some((re) => re.test(f)),
+      };
+    });
   return { run_dir: runDir, files };
 }
 

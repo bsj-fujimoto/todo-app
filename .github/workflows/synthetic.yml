@@ -69,15 +69,7 @@ jobs:
           flag=""
           if [ "$FORCE_FALLBACK" = "true" ]; then flag="--force-fallback"; fi
           mise x -- node scripts/monitoring/resolve-target.mjs --out "$OUT" $flag
-          {
-            echo "## 監視対象"
-            mise x -- node -e '
-              const t = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
-              console.log("- モード: **" + (t.mode === "release" ? "リリース済みイメージ（digest 固定）" : "フォールバック（main の HEAD を docker compose up --build）") + "**");
-              console.log("- 理由: " + t.reason);
-              for (const [s, ref] of Object.entries(t.images)) console.log("- " + s + ": `" + ref + "`");
-            ' "$OUT/target.json"
-          } >> "$GITHUB_STEP_SUMMARY"
+          mise x -- node scripts/monitoring/target-summary.mjs "$OUT/target.json" >> "$GITHUB_STEP_SUMMARY"
       - name: "起動する（リリースイメージ。ビルドしない）"
         if: steps.target.outputs.mode == 'release'
         run: docker compose -f docker-compose.yml -f "$OUT/compose.release.yml" up -d --no-build --pull always --wait

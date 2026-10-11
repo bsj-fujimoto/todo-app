@@ -3,6 +3,7 @@ const ICON = { ok: "OK", fail: "FAIL", skipped: "SKIP" };
 
 const cell = (s) =>
   String(s ?? "")
+    .replace(/\\/g, "\\\\")
     .replace(/\|/g, "\\|")
     .replace(/\n/g, " ");
 
@@ -45,5 +46,16 @@ export function renderSummary(run, records, skipped) {
   lines.push(
     `成功 ${ok} / ${records.length}、失敗 ${fails.length}（うち通知抑制 ${suppressed}）、無効 ${skipped.length}`,
   );
+  return `${lines.join("\n")}\n`;
+}
+
+// 監視対象の決定（resolve-target の target.json）の要約
+export function renderTargetSummary(t) {
+  const mode =
+    t.mode === "release"
+      ? "リリース済みイメージ（digest 固定）"
+      : "フォールバック（main の HEAD を docker compose up --build）";
+  const lines = ["## 監視対象", "", `- モード: **${mode}**`, `- 理由: ${t.reason}`];
+  for (const [service, ref] of Object.entries(t.images)) lines.push(`- ${service}: \`${ref}\``);
   return `${lines.join("\n")}\n`;
 }

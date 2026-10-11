@@ -6,4 +6,8 @@ ENV PLAYWRIGHT_VERSION=1.64.0 LIGHTHOUSE_VERSION=13.5.0
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY measure.mjs ./
+# 非 root（uid 1001 = Playwright イメージの pwuser）で実行する。結果は /out（run.sh が書込み可にする）へ書く
+USER 1001
+# 一度きり実行のジョブ用イメージ（常駐しない）ので HEALTHCHECK は不要
+HEALTHCHECK NONE
 ENTRYPOINT ["node", "measure.mjs"]

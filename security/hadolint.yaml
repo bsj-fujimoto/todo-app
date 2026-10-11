@@ -1,9 +1,11 @@
 # hadolint（Dockerfile の lint）の設定。scripts/security/scan.sh hadolint が `--config security/hadolint.yaml` で使う。
 # 除外（ignored）は理由と見直し条件を必ず書く。現時点で除外しているルールは無い。
 failure-threshold: warning
-# ベースイメージを取ってよいレジストリ（DL3026）。Docker Hub の公式イメージだけを使う。
+# ベースイメージを取ってよいレジストリ（DL3026）。Docker Hub の公式イメージと、画面計測（perf/screen/Dockerfile）が使う
+# Microsoft の Playwright 公式イメージ（mcr.microsoft.com。digest 固定）。
 trustedRegistries:
   - docker.io
+  - mcr.microsoft.com
 ignored: []
 # ignored の書き方:
 #   - DL3018   # apk add のバージョン固定: 理由…（見直し: ベースイメージ更新時）

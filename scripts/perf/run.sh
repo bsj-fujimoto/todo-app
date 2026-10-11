@@ -177,6 +177,7 @@ run_screen() {
     seed "$dir" "$tasks"
     local out="$dir/tmp-$tasks"
     mkdir -p "$out"
+    chmod a+rwx "$out" # 画面計測のコンテナは非 root（pwuser）で、このディレクトリへ書く
     docker run --rm --network "$NETWORK" -v "$out:/out" -e "BASE_URL=http://frontend:8080" \
       -e "EXPECTED_ROWS=$tasks" -e "ROW_SELECTOR=${ROW_SELECTOR:-li.task}" -e "OUT_DIR=/out" "$SCREEN_IMAGE"
     if [ "$tasks" = "$NORMAL_TASKS" ]; then
