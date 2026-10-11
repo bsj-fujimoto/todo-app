@@ -1,0 +1,22 @@
+# ビルドコンテキスト（リポジトリルート）から、イメージに不要なものを除く。
+# Dockerfile は必要なファイルだけを COPY するが、コンテキストの転送量とキャッシュの無効化を減らす。
+**/node_modules
+.git
+.github
+.claude
+.env
+**/.DS_Store
+**/*.log
+**/coverage
+**/test-results
+**/playwright-report
+**/dist
+
+# ドキュメント・仕様・テスト（イメージに含めない）
+docs
+spec
+e2e
+backend/test
+backend/test-support
+backend/scripts
+backend/data
