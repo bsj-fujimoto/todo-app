@@ -1,0 +1,14 @@
+# 性能退行の閾値（scripts/perf/compare.mjs が読む）。baseline.json の最新エントリと同じ指標名で比べる。
+# 悪化率 = (現在 - 基準) / 基準。大きいほど良い指標（throughput・限界点・容量）は符号を反転する。
+regression_threshold_pct: 20 # これを超えて悪化したら退行（compare.mjs が終了コード 1）
+# ノイズ除け: 悪化率が閾値を超えても、絶対差がこの値未満なら退行としない（数 ms の差を「+25%」と騒がないため）
+min_abs_delta:
+  ms: 5 # レイテンシ（_ms を含む指標）
+  ratio: 0.001 # エラー率
+  other: 0
+# 指標ごとの上書き（キーは <シナリオ>.<指標名>）。無ければ上の既定値
+metrics: {}
+# 基準の更新ルール: release ごとに perf.yml を実行し、結果の metrics を
+#   node scripts/perf/compare.mjs --run-dir perf/results/<run_id> --update-baseline --release <タグ>
+# で baseline.json に追記し、PR（CODEOWNERS のレビュー）で差分を確認してからマージする。
+# 閾値の見直しは偽陽性（fp-fn-log に相当する perf/analysis.md の記録）が続いたときに行う。
