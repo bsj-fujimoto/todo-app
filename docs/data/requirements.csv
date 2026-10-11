@@ -1,0 +1,35 @@
+id,text,kind,validation_rules,state_machines,source_ref
+REQ-001,F-02 一覧表示: 全タスクを作成日時の降順で表示する。,business_rule,,,spec/todo-phase1-spec.html#F-02
+REQ-002,F-02 同時刻（createdAt が同一）の場合は、保存順の新しいものを先に表示する。,business_rule,,,spec/todo-phase1-spec.html#F-02
+REQ-003,F-03 完了タスクのタイトルは取り消し線で表示する。,functional,,,spec/todo-phase1-spec.html#F-03
+REQ-004,追加・完了切替・削除のたびに backend の API（/api/v1/tasks）を呼び、成功を確認してから画面へ反映する。,functional,,,spec/todo-phase1-spec.html#04
+REQ-005,表示位置: 入力エラーは入力欄の直下、保存エラーは画面上部に表示する。,functional,,,spec/todo-phase1-spec.html#02
+REQ-006,永続化: 追加・完了切替・削除の結果は、ページ再読込後も、backend コンテナを再起動した後も保持される（AC-06）。,functional,,,spec/todo-phase1-spec.html#AC-06
+REQ-007,データの保持は compose のボリューム（todo-data）に依存し、ボリュームを削除するとタスクは失われる。,constraint,,,spec/todo-phase1-spec.html#07
+REQ-008,幅 360px 以上のスマートフォン画面と PC 画面で、入力・チェック・削除を操作できる。,nonfunctional,,,spec/todo-phase1-spec.html#07
+REQ-009,入力欄にラベルを付け、チェックボックス・削除ボタンには対象タスクが分かる名前を付ける。,nonfunctional,,,spec/todo-phase1-spec.html#07
+REQ-010,すべての操作（入力・追加・チェック・削除）をキーボードで行える。,nonfunctional,,,spec/todo-phase1-spec.html#07
+REQ-011,タイトルはテキストとして表示し、HTML として解釈しない。,nonfunctional,,,spec/todo-phase1-spec.html#07
+REQ-012,構成: frontend（静的 HTML/ES modules、nginx 配信、/api を backend へ中継）と backend（Node.js 24 + Fastify、node:sqlite）を分離し、docker compose で一式を起動する。,constraint,,,docs/adr/0001-frontend-backend-split.md
+REQ-013,API 契約: /api/v1 配下は backend/openapi.yaml に従う（ステータス 201/204/400/404/422/500/503、エラーコード、additionalProperties=false による未知フィールド拒否、id の UUID 検証、Task スキーマ）。,constraint,,,backend/openapi.yaml
+REQ-014,"死活確認: GET /api/v1/health は status・version・commit・db を返す。データストアに接続できない場合は 503（status=degraded, db=error）。",functional,,,backend/openapi.yaml#getHealth
+REQ-015,対象外の明記: タイトル編集、期限、優先度、検索・絞り込み、通知、ユーザー管理、認証・認可（ログイン不要・1 インスタンス = 1 人用）は扱わない。,constraint,,,spec/todo-phase1-spec.html#01
+REQ-016,複数タブ・複数端末の同時編集（競合解決）は対象外とする。,constraint,,,spec/todo-phase1-spec.html#07
+REQ-017,画面仕様: 画面はタスク一覧の 1 画面のみ。上部にタイトル入力欄（プレースホルダ「タスクを入力（100文字まで）」）と追加ボタン、下部にタスク一覧（チェックボックス・タイトル・削除ボタン）を配置する。,functional,,,spec/todo-phase1-spec.html#02
+REQ-018,F-01 タスク追加: タイトルを入力し、「追加」ボタンまたは入力欄での Enter 押下で未完了タスクを作成する。成功後は入力欄を空にする（AC-01）。,crud,,タスク:未存在→未完了（追加）,spec/todo-phase1-spec.html#F-01
+REQ-019,F-02 完了切替の後も一覧の並び順を変えない（AC-04）。,business_rule,,未完了⇄完了（並び順は不変）,spec/todo-phase1-spec.html#F-02
+REQ-020,F-02 タスクが 0 件の場合は「タスクはありません」と表示する。,functional,,画面状態:0件,spec/todo-phase1-spec.html#F-02
+REQ-021,F-03 完了切替: チェックボックスでタスクの未完了と完了を相互に切り替える（AC-04）。,state,,未完了⇄完了,spec/todo-phase1-spec.html#F-03
+REQ-022,F-04 タスク削除: 各行の「削除」で対象タスクを即時削除する。確認画面・取り消し機能は設けない。最後の 1 件を削除したら空状態の文言を表示する（AC-05）。,crud,,タスク:存在→削除済み（不可逆）,spec/todo-phase1-spec.html#F-04
+REQ-023,保存失敗（API のエラー応答・通信失敗）時は操作を反映せず、「保存できませんでした。もう一度お試しください」と表示する。追加時の入力値は保持する（AC-07）。,business_rule,,画面状態:保存エラー（操作は未反映）,spec/todo-phase1-spec.html#04
+REQ-024,初回起動時で保存データがない場合は空の一覧を表示する。,functional,,画面状態:初期（0件）,spec/todo-phase1-spec.html#04
+REQ-025,保存データが壊れている場合（backend が読み込めず DATA_CORRUPT を返す場合）は操作を停止し、「保存データを読み込めませんでした」と表示する。自動で上書きしない（AC-07）。,business_rule,,画面状態:データ破損（操作停止）,spec/todo-phase1-spec.html#04
+REQ-026,データ項目 completed: 真偽値。初期値は false。,validation,boolean;初期値false,completed:false（作成時）→true⇄false,spec/todo-phase1-spec.html#05
+REQ-027,入力検証（必須）: 空欄・空白のみの場合は「タスク名を入力してください」と表示し、追加しない（AC-02）。,validation,必須;空欄不可;空白のみ不可,,spec/todo-phase1-spec.html#04
+REQ-028,入力検証（長さ）: 100 文字を超える場合は「タスク名は100文字以内で入力してください」と表示し、追加しない。文字数は Unicode コードポイント単位で数え、100 文字ちょうどは追加できる（AC-02）。,validation,最大100コードポイント;コードポイント単位;100文字ちょうどは可;101以上は不可,,spec/todo-phase1-spec.html#04
+REQ-029,入力検証（改行）: 改行を含む場合は「タスク名は1行で入力してください」と表示し、追加しない（AC-02）。,validation,改行不可,,spec/todo-phase1-spec.html#04
+REQ-030,データ項目 title: 前後の空白を除去した後で 1〜100 文字を判定し、除去後の値を保存する。,validation,前後空白を除去;除去後に1〜100コードポイント,,spec/todo-phase1-spec.html#05
+REQ-031,複数の検証違反が重なる場合の検証順は 必須 → 長さ → 改行 とする（API 契約 TitleInvalid の規定。仕様書本文には明記なし）。,validation,検証順:必須→長さ→改行,,backend/openapi.yaml#TitleInvalid
+REQ-032,同名タスクは許可し、同じタイトルを 2 回追加すると別 ID の 2 件になる（AC-03）。,business_rule,同名許可;タイトルの一意制約なし,,spec/todo-phase1-spec.html#05
+REQ-033,データ項目 id: 一意な文字列。backend が UUID v4 で採番し、変更不可。,validation,UUID v4;一意;変更不可,,spec/todo-phase1-spec.html#05
+REQ-034,データ項目 createdAt: 作成日時を UTC の ISO 8601 形式で保存する。変更不可。,validation,UTC ISO 8601;変更不可,,spec/todo-phase1-spec.html#05
