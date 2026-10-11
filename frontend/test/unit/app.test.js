@@ -332,7 +332,7 @@ describe("app", () => {
       assert.equal(slow.calls.filter((c) => c[0] === "delete").length, 1);
     });
 
-    it("[TC-066] 他で削除済み（404）の行を操作すると保存失敗の文言（暫定）。行は残る", async () => {
+    it("[TC-066] 他で削除済み（404）の行を操作すると保存失敗の文言（UNK-003）。行は残る", async () => {
       const gone = setup(three, { updateTask: async () => ng("TASK_NOT_FOUND", 404) });
       await gone.app.start();
       gone.toggle(2, true);

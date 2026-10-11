@@ -75,35 +75,36 @@ test(
   },
 );
 
-test(
-  "[TC-057] 一覧の取得が終わるまで「タスクはありません」を出さず、取得後に一覧を表示する",
-  { tag: ["@pending"] },
-  async ({ app, stack, page }) => {
-    await stack.seed(DS002);
-    const list = await holdListResponse(page);
+test("[TC-057] 一覧の取得が終わるまで「読み込み中…」を出し、「タスクはありません」は出さず、取得後に一覧を表示する", async ({
+  app,
+  stack,
+  page,
+}) => {
+  await stack.seed(DS002);
+  const list = await holdListResponse(page);
 
-    await page.goto("/");
-    await expect.poll(list.hits).toBe(1); // 取得を開始している（応答は保留中）
+  await page.goto("/");
+  await expect.poll(list.hits).toBe(1); // 取得を開始している（応答は保留中）
 
-    // 取得前: 0 件と誤認させない。読み込み中の表示の有無は未決（UNK-005）。観察結果を記録する
-    await expect(app.emptyMessage).toHaveCount(0);
-    await expect(app.rows).toHaveCount(0);
-    test.info().annotations.push({
-      type: "観察（UNK-005）",
-      description: `取得中の表示: 「${await app.listMessage.textContent()}」`,
-    });
+  // 取得前（UNK-005 で確定）: 0 件と誤認させず、「読み込み中…」を出し、入力・追加は無効
+  await expect(app.emptyMessage).toHaveCount(0);
+  await expect(app.rows).toHaveCount(0);
+  await expect(page.getByRole("status")).toHaveText("読み込み中…");
+  await expect(app.input).toBeDisabled();
+  await expect(app.addButton).toBeDisabled();
 
-    list.release();
-    await app.expectTitles(DS002_TITLES);
-    await expect(app.emptyMessage).toHaveCount(0);
-    expect(stack.calls("GET").map((c) => c.status)).toEqual([200]);
-    expect(await stack.db()).toEqual(DS002);
-  },
-);
+  list.release();
+  await app.expectTitles(DS002_TITLES);
+  await expect(page.getByRole("status")).toHaveCount(0); // 読み込み中の表示は消える（空の status は非表示）
+  await expect(app.input).toBeEnabled();
+  await expect(app.emptyMessage).toHaveCount(0);
+  expect(stack.calls("GET").map((c) => c.status)).toEqual([200]);
+  expect(await stack.db()).toEqual(DS002);
+});
 
 test(
   "[TC-058] 一覧の取得に失敗したときは 0 件と誤認させず、エラーを表示し、再読込で回復する",
-  { tag: ["@pending", "@resilience"] },
+  { tag: ["@resilience"] },
   async ({ app, stack, page }) => {
     await stack.seed(DS002);
     await page.route("**/api/v1/tasks", (route) => route.abort("connectionfailed"));
@@ -113,6 +114,9 @@ test(
     await expect(app.saveError).toHaveText(MESSAGE.storageFailure);
     await expect(app.emptyMessage).toHaveCount(0);
     await expect(app.rows).toHaveCount(0);
+    await expect(app.input).toBeDisabled();
+    await expect(app.addButton).toBeDisabled();
+    await expect(page.getByRole("button", { name: "再読み込み" })).toBeVisible();
 
     await page.unroute("**/api/v1/tasks");
     await page.reload();
@@ -124,8 +128,8 @@ test(
 );
 
 test(
-  "[TC-058] 取得失敗のあと「再読み込み」ボタンで一覧が表示される（暫定期待値の補足）",
-  { tag: ["@pending", "@resilience"] },
+  "[TC-058] 取得失敗のあと「再読み込み」ボタンで一覧が表示され、入力・追加が有効になる",
+  { tag: ["@resilience"] },
   async ({ app, stack, page }) => {
     await stack.seed(DS002);
     await page.route("**/api/v1/tasks", (route) => route.abort("connectionfailed"));
