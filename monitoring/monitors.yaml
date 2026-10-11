@@ -109,7 +109,11 @@ monitors:
     assertions:
       - { kind: status, value: "POST 201 / GET 200", check: { status: 201 } }
       - { kind: schema, value: "Task / TaskList（openapi.yaml）に適合", check: { schema: Task } }
-      - { kind: content, value: "追加したタスクが一覧に含まれる（永続化）", check: { array_contains: task } }
+      - {
+          kind: content,
+          value: "追加したタスクが一覧に含まれる（永続化）",
+          check: { array_contains: { path: "$.tasks", key: id, value: "${task_id}" } },
+        }
       - {
           kind: latency,
           value: "追加 300ms 以内（perf/slo.yaml api_create_p95_ms）",
