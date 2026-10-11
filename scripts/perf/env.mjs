@@ -97,6 +97,14 @@ async function k6Info() {
   };
 }
 
+// 比較してよい環境の区分。baseline は同じ区分の run とだけ比べる（環境が違う値は比べない）
+function envClass() {
+  if (process.env.GITHUB_ACTIONS) {
+    return `github-hosted:${process.env.ImageOS || "unknown"}:${process.env.RUNNER_ARCH || "unknown"}`;
+  }
+  return `local:${os.platform()}-${os.arch()}`;
+}
+
 async function collect(args) {
   const project = args.project || "todo-perf";
   const dirty = await sh("git", [
@@ -112,6 +120,7 @@ async function collect(args) {
     run_id: requireArg(args, "run-id"),
     started_at: new Date().toISOString(),
     profile: args.profile || "full",
+    env_class: envClass(),
     commit_sha: await sh("git", ["rev-parse", "HEAD"]),
     dirty: dirty !== "",
     host: hostInfo(),

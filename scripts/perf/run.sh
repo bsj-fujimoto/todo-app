@@ -190,10 +190,10 @@ STATUS=0
 "${NODE[@]}" scripts/perf/verdict.mjs --run-dir "$RUN_DIR_ABS" || STATUS=$?
 if [ "$STATUS" = 2 ]; then exit 2; fi
 "${NODE[@]}" scripts/perf/record.mjs --run-dir "$RUN_DIR_ABS"
-if [ "$COMPARE" = 1 ] && [ -s perf/baseline.json ] && "${NODE[@]}" -e 'process.exit(JSON.parse(require("fs").readFileSync("perf/baseline.json","utf8")).baselines.length?0:1)' 2>/dev/null; then
+if [ "$COMPARE" = 1 ] && [ -s perf/baseline.json ]; then
   "${NODE[@]}" scripts/perf/compare.mjs --run-dir "$RUN_DIR_ABS" || STATUS=1
 else
-  log "baseline.json に基準が無い（または --no-compare）。比較は行わない"
+  log "perf/baseline.json が無い（または --no-compare）。比較は行わない"
 fi
 log "完了: $RUN_DIR (exit $STATUS)"
 exit "$STATUS"

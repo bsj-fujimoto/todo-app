@@ -60,7 +60,12 @@ function main() {
   );
   const metrics = flattenMetrics(verdicts);
   const envDoc = parse(readFileSync("perf/environment.yaml", "utf8"));
-  const head = { run_id: run.run_id, commit_sha: run.commit_sha, started_at: run.started_at };
+  const head = {
+    run_id: run.run_id,
+    commit_sha: run.commit_sha,
+    started_at: run.started_at,
+    env_class: run.env_class,
+  };
   writeJson(join(runDir, "metrics.json"), { ...head, environment: environmentLabel(run), metrics });
   writeJson(join(runDir, "perf-runs.json"), buildRuns({ run, envDoc, metrics, analyses }, verdicts));
   writeJson(join(runDir, "manifest.json"), manifest(runDir));
