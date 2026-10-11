@@ -14,7 +14,8 @@
 //     stress    SLO は判定しない。限界点（最初に SLO・エラー・取りこぼしのいずれかを割る段）を求める。合否はエラー率が最初の段（想定負荷）で < 1%。
 //     spike     跳ね上がり後 30 秒以内に list p95 が SLO 内・エラー率 < 1% に戻り（5 秒区間の推移から求める）、回復期の末尾 30 秒の p95・エラー率も SLO 内。
 //     soak      エラー率 < 1%、list p95 が SLO 内、後半の p95 が前半より +DRIFT_PCT% 超悪化しない。メモリ増加は warning（+20%）/ fail（+50%）。
-//     capacity  各件数（1,000 → 10,000）で list / create / toggle / delete の p95 と error が SLO 内（超えた件数を max_tasks_within_slo に記録）。
+//     capacity  各件数（1,000 → 10,000）で list / create / toggle / delete の p95 と error を SLO の目標と比べる。SLO の適用範囲（通常の 1,000 件）は必須（fail）、
+//               それを超える件数は容量計画の指標で、超えても警告（SLO 内の最大件数を max_tasks_within_slo に記録。環境が遅いと小さくなる）。
 import { mean, round, varianceStats } from "./stats.mjs";
 
 export const VERDICT_RULE = {

@@ -49,7 +49,7 @@ function judge(scenario, ctx, iterations) {
   }
   if (scenario === "spike") return verdictSpike(slo, iterations);
   if (scenario === "soak") return verdictSoak(slo, iterations);
-  return verdictCapacity(slo, iterations, capacitySteps(iterations));
+  return verdictCapacity(slo, iterations, capacitySteps(iterations), wl.data_volume.normal_tasks);
 }
 
 function withVariance(v, warmupSec) {

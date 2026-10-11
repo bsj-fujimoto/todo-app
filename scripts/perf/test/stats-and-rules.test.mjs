@@ -5,6 +5,7 @@ import { latencyStats } from "../lib/analyze.mjs";
 import { compareAll, compareMetric } from "../lib/compare-rules.mjs";
 import { parsePercent, parseSize, parseStatsRecord } from "../lib/observe-parse.mjs";
 import { judgeMetric, satisfies, verdictLoad } from "../lib/rules.mjs";
+import { verdictCapacity } from "../lib/rules-scenarios.mjs";
 import { percentile, trimTop, varianceStats } from "../lib/stats.mjs";
 
 const SLO = {
@@ -147,5 +148,33 @@ describe("timeline（spike の回復）", () => {
       null,
       "エラー率が高い区間も戻っていない",
     );
+  });
+});
+
+describe("capacity の判定範囲", () => {
+  const SLO_ALL = {
+    ...SLO,
+    api_create_p95_ms: { metric: "api_create_p95_ms", operator: "<=", target: 300, unit: "ms" },
+    api_update_p95_ms: { metric: "api_update_p95_ms", operator: "<=", target: 300, unit: "ms" },
+    api_delete_p95_ms: { metric: "api_delete_p95_ms", operator: "<=", target: 300, unit: "ms" },
+  };
+  const seg = (p95) => ({
+    requests: 100,
+    error_rate: 0,
+    check_fail_rate: 0,
+    endpoints: { list: { p95 }, create: { p95: 10 }, toggle: { p95: 10 }, delete: { p95: 10 } },
+  });
+  const its = (a, b) => [{ segments: { "step-1000": seg(a), "step-7500": seg(b) } }];
+
+  it("SLO の適用範囲（1,000 件）を超える件数の違反は警告で、fail にしない", () => {
+    const v = verdictCapacity(SLO_ALL, its(10, 1500), [1000, 7500], 1000);
+    assert.equal(v.status, "pass");
+    assert.equal(v.warnings.length, 1);
+    assert.equal(v.max_tasks_within_slo, 1000);
+  });
+
+  it("適用範囲の中で SLO を超えたら fail", () => {
+    const v = verdictCapacity(SLO_ALL, its(900, 1500), [1000, 7500], 1000);
+    assert.equal(v.status, "fail");
   });
 });

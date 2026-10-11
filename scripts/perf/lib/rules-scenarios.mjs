@@ -223,16 +223,27 @@ function stepSummary(slo, iterations, n) {
   };
 }
 
-export function verdictCapacity(slo, iterations, steps) {
+// capacity: SLO の適用範囲（scopeTasks = 通常の件数 1,000）では SLO を満たすことを必須（fail）にする。
+// それを超える件数（成長予測 10,000 件まで）は容量計画の指標で、SLO を超えても fail にはせず警告にする（max_tasks_within_slo に記録）。
+// 環境（runner など CPU が遅い）で「SLO 内で捌ける最大件数」は変わるため、件数の上限は環境ごとの観測値として扱う。
+export function verdictCapacity(slo, iterations, steps, scopeTasks) {
   const perStep = steps.map((n) => stepSummary(slo, iterations, n));
   const firstBad = perStep.find((s) => s.violations.length > 0);
   const okBefore = perStep.filter((s) => !firstBad || s.tasks < firstBad.tasks).map((s) => s.tasks);
-  const reasons = firstBad ? [`${firstBad.tasks} 件で SLO 違反: ${firstBad.violations.join(", ")}`] : [];
+  const message = (s) => `${s.tasks} 件で SLO の目標を超える: ${s.violations.join(", ")}`;
+  const inScope = perStep.filter((s) => s.tasks <= scopeTasks && s.violations.length > 0);
+  const beyond = perStep.filter((s) => s.tasks > scopeTasks && s.violations.length > 0);
   const series = {};
   for (const s of perStep) series[`list_p95_ms@${s.tasks}tasks`] = s.list_p95_per_iteration;
-  return result("capacity", reasons, [], {
-    steps: perStep,
-    max_tasks_within_slo: okBefore.length ? Math.max(...okBefore) : 0,
-    series,
-  });
+  return result(
+    "capacity",
+    inScope.map(message),
+    beyond.map((s) => `${message(s)}（SLO の適用範囲 ${scopeTasks} 件を超える。容量計画の指標）`),
+    {
+      steps: perStep,
+      scope_tasks: scopeTasks,
+      max_tasks_within_slo: okBefore.length ? Math.max(...okBefore) : 0,
+      series,
+    },
+  );
 }
