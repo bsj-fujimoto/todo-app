@@ -25,6 +25,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/TaskList" }
         "500": { $ref: "#/components/responses/DataCorrupt" }
+        "503": { $ref: "#/components/responses/StorageFailure" }
     post:
       tags: [tasks]
       operationId: createTask
@@ -150,6 +151,9 @@ components:
           properties:
             code:
               type: string
+              description: >-
+                INTERNAL_ERROR は想定外のサーバー障害（HTTP 500）、ROUTE_NOT_FOUND は契約にないパス（HTTP 404）。
+                どちらも非破壊の追加で、各 operation の 500 / 404 の本文に現れうる。
               enum:
                 - TITLE_REQUIRED
                 - TITLE_TOO_LONG
@@ -158,6 +162,8 @@ components:
                 - TASK_NOT_FOUND
                 - STORAGE_FAILURE
                 - DATA_CORRUPT
+                - INTERNAL_ERROR
+                - ROUTE_NOT_FOUND
             message: { type: string, description: 利用者向けの日本語文言（仕様書の文言と一致） }
   responses:
     TitleInvalid:
