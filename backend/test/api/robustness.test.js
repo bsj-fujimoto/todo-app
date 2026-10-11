@@ -1,8 +1,9 @@
 // 入力の堅牢性と、想定外の障害の扱い（テストケース外の補助検査）。
 import assert from "node:assert/strict";
 import http from "node:http";
+import { Readable } from "node:stream";
 import { afterEach, describe, it } from "node:test";
-import { BODY_LIMIT_BYTES, buildApp } from "../../src/app.js";
+import { BODY_LIMIT_BYTES, MAX_DRAIN_BYTES, buildApp } from "../../src/app.js";
 import { AppError } from "../../src/errors.js";
 import { fixedClock, sequentialIdGenerator } from "../../test-support/clock.js";
 import { STANDARD_TASKS } from "../../test-support/datasets.js";
@@ -11,32 +12,43 @@ import { assertError, assertSpecError } from "../helpers/assertions.js";
 import { DEFAULT_NOW, INFO, createHarness } from "../helpers/harness.js";
 
 /**
- * 本文サイズ超過では backend は応答してすぐ接続を閉じるため、fetch は書込み中のリセットで失敗しうる。
- * 応答が届いた時点で結果を返し、その後のソケットエラーは無視する。
+ * 生の HTTP 交換（fetch は早期応答と書込みの競合を隠すため使わない）。ソケットエラーは握りつぶさず errors に残し、
+ * 応答の受信前に起きれば reject する。body が undefined ならヘッダだけ送って本文は書かない。
  */
-function postOversize(baseUrl, json) {
+function exchange(baseUrl, { method = "POST", path = "/api/v1/tasks", headers = {}, body, agent }) {
   return new Promise((resolve, reject) => {
-    const url = new URL("/api/v1/tasks", baseUrl);
-    const body = JSON.stringify(json);
+    const url = new URL(path, baseUrl);
+    const errors = [];
     const request = http.request(
-      {
-        host: url.hostname,
-        port: url.port,
-        path: url.pathname,
-        method: "POST",
-        headers: { "content-type": "application/json", "content-length": Buffer.byteLength(body) },
-      },
+      { host: url.hostname, port: url.port, path, method, headers, agent },
       (response) => {
         let text = "";
         response.on("data", (chunk) => (text += chunk));
-        response.on("end", () => resolve({ status: response.statusCode, body: JSON.parse(text) }));
+        response.on("end", () =>
+          resolve({
+            status: response.statusCode,
+            headers: response.headers,
+            body: JSON.parse(text),
+            request,
+            errors,
+          }),
+        );
       },
     );
     request.on("error", (error) => {
-      if (!request.res) reject(error);
+      errors.push(error);
+      reject(error);
     });
-    request.end(body);
+    if (body === undefined) request.flushHeaders();
+    else if (typeof body === "string") request.end(body);
+    else body.pipe(request);
   });
+}
+
+const JSON_HEADERS = { "content-type": "application/json" };
+
+function* chunksOf(totalBytes, chunkBytes = 64 * 1024) {
+  for (let sent = 0; sent < totalBytes; sent += chunkBytes) yield Buffer.alloc(chunkBytes, 0x61);
 }
 
 describe("入力の堅牢性", () => {
@@ -49,18 +61,71 @@ describe("入力の堅牢性", () => {
     return { dbPath, api: await harness.start({ dbPath }) };
   }
 
-  it("[補助] 数 MB の本文は bodyLimit で 400 INVALID_REQUEST になり、backend は落ちず DB も変わらない", async () => {
-    const { dbPath, api } = await startSeeded();
-    const before = readRows(dbPath);
-    const huge = { title: "a".repeat(3 * 1024 * 1024) };
-    assert.ok(JSON.stringify(huge).length > BODY_LIMIT_BYTES);
+  describe("本文サイズ超過（bodyLimit 1 MiB）", () => {
+    const REPEAT = 20;
+    const INVALID = { error: { code: "INVALID_REQUEST", message: "リクエストの形式が正しくありません" } };
 
-    const res = await postOversize(api.baseUrl, huge);
-    assert.equal(res.status, 400);
-    assert.equal(res.body.error.code, "INVALID_REQUEST");
+    // 超過しても、応答が RST で失われず確実に届き、backend も DB も無事で、以後のリクエストが正常であること
+    async function assertStillHealthy(api, dbPath, before) {
+      assert.equal((await api.get("/api/v1/tasks")).status, 200);
+      assert.deepEqual(readRows(dbPath), before);
+    }
 
-    assert.equal((await api.get("/api/v1/tasks")).status, 200);
-    assert.deepEqual(readRows(dbPath), before);
+    it("[補助] fetch で 3 MiB の本文を送っても、400 INVALID_REQUEST を毎回確実に受け取れる", async () => {
+      const { dbPath, api } = await startSeeded();
+      const before = readRows(dbPath);
+      const huge = JSON.stringify({ title: "a".repeat(3 * 1024 * 1024) });
+      assert.ok(huge.length > BODY_LIMIT_BYTES);
+      for (let attempt = 0; attempt < REPEAT; attempt += 1) {
+        const res = await api.request("POST", "/api/v1/tasks", { raw: huge });
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, INVALID);
+      }
+      await assertStillHealthy(api, dbPath, before);
+    });
+
+    it("[補助] Connection: close のクライアント（Content-Length あり・3 MiB）でも応答を確実に受け取れる", async () => {
+      const { dbPath, api } = await startSeeded();
+      const before = readRows(dbPath);
+      const body = JSON.stringify({ title: "a".repeat(3 * 1024 * 1024) });
+      for (let attempt = 0; attempt < REPEAT; attempt += 1) {
+        const res = await exchange(api.baseUrl, {
+          headers: { ...JSON_HEADERS, "content-length": Buffer.byteLength(body) },
+          body,
+          agent: false,
+        });
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, INVALID);
+        assert.deepEqual(res.errors, []);
+      }
+      await assertStillHealthy(api, dbPath, before);
+    });
+
+    it("[補助] Content-Length なし（chunked）で上限超過（3 MiB）でも応答を確実に受け取れる", async () => {
+      const { dbPath, api } = await startSeeded();
+      const before = readRows(dbPath);
+      for (let attempt = 0; attempt < REPEAT; attempt += 1) {
+        const res = await exchange(api.baseUrl, {
+          headers: { ...JSON_HEADERS, "transfer-encoding": "chunked" },
+          body: Readable.from(chunksOf(3 * 1024 * 1024)),
+        });
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, INVALID);
+        assert.deepEqual(res.errors, []);
+      }
+      await assertStillHealthy(api, dbPath, before);
+    });
+
+    it("[補助] 宣言された Content-Length が読み捨て上限を超える場合は、本文を待たず 400 を返して接続を閉じる", async () => {
+      const { dbPath, api } = await startSeeded();
+      const before = readRows(dbPath);
+      const headers = { ...JSON_HEADERS, "content-length": MAX_DRAIN_BYTES + 1 };
+      const res = await exchange(api.baseUrl, { headers });
+      assert.equal(res.status, 400);
+      assert.deepEqual(res.body, INVALID);
+      assert.equal(res.headers.connection, "close");
+      await assertStillHealthy(api, dbPath, before);
+    });
   });
 
   it("[補助] 1 万文字のタイトルは 422 TITLE_TOO_LONG で返せる（bodyLimit に掛からない）", async () => {
