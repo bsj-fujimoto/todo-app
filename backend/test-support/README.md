@@ -10,14 +10,14 @@ import { seedTasks, STANDARD_TASKS, spawnBackend } from "@todo-app/backend/test-
 
 ## DB を直接扱う（`db.js`）
 
-| 関数                           | 用途                                                                                                    |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `seedTasks(dbPath, rows)`      | スキーマ（マイグレーション v1）を作り、`rows` を配列の順（= 保存順）に INSERT する。同時刻など API では作れないデータ用 |
-| `corruptDbFile(dbPath)`        | 先頭 100 バイトを 0x00 で上書きして破損させる（DS-007）                                                  |
-| `insertInvalidRow(dbPath, row)` | CHECK 制約を迂回して検証に通らない行を入れる（例: `completed: 2`、`title: ""`、`createdAt: "yesterday"`）   |
-| `readRows(dbPath)`             | tasks 全行を保存順で返す（読み取り専用で開くので DB を書き換えない）。列名は `created_at`                  |
-| `listTables(dbPath)`           | `sqlite_master` のテーブル名一覧                                                                        |
-| `sha256File(path)`             | ファイルの SHA-256。書き換えられていないことの確認用                                                    |
+| 関数                            | 用途                                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `seedTasks(dbPath, rows)`       | スキーマ（マイグレーション v1）を作り、`rows` を配列の順（= 保存順）に INSERT する。同時刻など API では作れないデータ用 |
+| `corruptDbFile(dbPath)`         | 先頭 100 バイトを 0x00 で上書きして破損させる（DS-007）                                                                 |
+| `insertInvalidRow(dbPath, row)` | CHECK 制約を迂回して検証に通らない行を入れる（例: `completed: 2`、`title: ""`、`createdAt: "yesterday"`）               |
+| `readRows(dbPath)`              | tasks 全行を保存順で返す（読み取り専用で開くので DB を書き換えない）。列名は `created_at`                               |
+| `listTables(dbPath)`            | `sqlite_master` のテーブル名一覧                                                                                        |
+| `sha256File(path)`              | ファイルの SHA-256。書き換えられていないことの確認用                                                                    |
 
 `rows` は `{ id, title, completed?, createdAt }`。backend 停止中、または backend が操作を受けていない間に呼ぶ
 （backend は操作ごとに DB を開き直すので、起動中に `seedTasks` / `insertInvalidRow` をしても次の操作から見える）。

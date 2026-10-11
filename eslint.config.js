@@ -11,7 +11,13 @@ const impureCalls = [
 
 export default [
   {
-    ignores: ["**/node_modules/**", "**/dist/**", "**/coverage/**", "**/test-results/**", "**/playwright-report/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/coverage/**",
+      "**/test-results/**",
+      "**/playwright-report/**",
+    ],
   },
   js.configs.recommended,
   {
@@ -25,7 +31,10 @@ export default [
       "no-restricted-properties": ["error", ...impureCalls],
       "no-restricted-syntax": [
         "error",
-        { selector: "NewExpression[callee.name='Date'][arguments.length=0]", message: "現在時刻は clock として注入する" },
+        {
+          selector: "NewExpression[callee.name='Date'][arguments.length=0]",
+          message: "現在時刻は clock として注入する",
+        },
       ],
       eqeqeq: "error",
       "no-var": "error",
