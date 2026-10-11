@@ -27,6 +27,26 @@ artifacts:
     source_sha256: "97e4d99367af9b7d7ccdb08728602604fc824a751d3848ae47fa27ee7c374446"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
+  - artifact_id: ART-55
+    path: docs/01-test-plan.md
+    type: document
+    title: "01 テスト計画書"
+    version: "1.0"
+    status: draft
+    owner_role: "QA リード"
+    approved_by: null
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: false
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "7e816083f6e3bf50e6edbbd6c29d6697a0221949f1a606977b50f65994f8846f"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+    doc_id: DOC-01
   - artifact_id: ART-02
     path: docs/02-test-perspectives.md
     type: document
@@ -104,6 +124,101 @@ artifacts:
         change: "spec: v1.1 保存先を backend API（SQLite）へ変更 (CR-01) (#1)"
         commit: "2b9d76f"
     source_sha256: "85b33d081ef4b159d71b49d0d5e2cce5ef4006ed61617c4ee2dc47068ecabf3f"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-56
+    path: docs/adr/0002-test-and-quality-toolchain.md
+    type: adr
+    title: "ADR-0002: テスト・品質ツールチェーンの選定（なぜそれで、何を捨てたか）"
+    version: "git:eb8c753"
+    status: approved
+    owner_role: "QA リード"
+    approved_by: "QA リード"
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: true
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "2f68f3fdd0f6c45fc69fbae5c67ff0b57fa65011d99bd4c3050e7361edc4daf7"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-57
+    path: docs/adr/0003-node-lts-24-pin.md
+    type: adr
+    title: "ADR-0003: Node.js は LTS の 24 系に固定する（奇数 major は採用しない）"
+    version: "git:eb8c753"
+    status: approved
+    owner_role: "プロダクトオーナー"
+    approved_by: "プロダクトオーナー"
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: true
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "9256c63846fa85883b66845bcf666e2a5c9be658ce6c990ec0d6b805a2cbf668"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-58
+    path: docs/adr/0004-single-maintainer-governance.md
+    type: adr
+    title: "ADR-0004: 単独メンテナ運用の統制（Ruleset・承認・bypass の扱いと限界）"
+    version: "git:eb8c753"
+    status: approved
+    owner_role: "プロダクトオーナー"
+    approved_by: "1 件 + **code owner review**"
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: true
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "14520ec9de7aa26c7b809401fe0d35f59bc3855b30b1825c5e6c63b77f5670f3"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-59
+    path: docs/adr/0005-functional-layer-perf-sentinel.md
+    type: adr
+    title: "ADR-0005: 機能層の性能テストは「番兵」にし、SLO の本判定は perf 層で行う"
+    version: "git:eb8c753"
+    status: approved
+    owner_role: "QA リード"
+    approved_by: "QA リード"
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: true
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "3137b4a5873eae977b19c57938b6adc7fea0aa486df81e76ce7ed128b946eddf"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-60
+    path: docs/adr/0006-title-validation-order.md
+    type: adr
+    title: "ADR-0006: タイトルの検証順は「必須 → 長さ → 改行」とする（UNK-001）"
+    version: "git:eb8c753"
+    status: approved
+    owner_role: "QA リード"
+    approved_by: "QA リード"
+    updated_at: "2026-10-12T01:01:41+09:00"
+    authoritative: true
+    normalized_format: md
+    history:
+      - at: "2026-10-12T01:01:41+09:00"
+        by: maintainer
+        change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
+        commit: eb8c753
+    source_sha256: "2ec79a975c53e0489a76cb5f837f10fea383c4585f1c2ec8996241602e5f4701"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-05
@@ -210,14 +325,18 @@ artifacts:
     path: docs/data/evidence-index.csv
     type: "table:evidence-index"
     title: docs/data/evidence-index.csv
-    version: "git:958ca7b"
+    version: "git:c5956e6"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:04:11+09:00"
+    updated_at: "2026-10-12T01:20:25+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T01:20:25+09:00"
+        by: maintainer
+        change: "data(evidence): セキュリティ証跡を墨消し済みに取り込み直す（run 38152472087）。Issue のスナップショットを更新"
+        commit: c5956e6
       - at: "2026-10-12T01:04:11+09:00"
         by: maintainer
         change: "data(evidence): v1.0.0 の不具合表（10 件）・検出表（12 件）・アクション表（12 件）・証拠索引・追跡表"
@@ -230,7 +349,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "76914c4c31ab59bdcbf598478deacd2a0742b2f7ba59af8f14fc84c92278da84"
+    source_sha256: ae426247a57e2f2011befc2f99c0d6dc7af13c4bb9e1757e39352f4fa1cd853f
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-10
@@ -390,14 +509,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:1659e84"
+    version: "git:a99369d"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:04:50+09:00"
+    updated_at: "2026-10-12T01:20:13+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T01:20:13+09:00"
+        by: maintainer
+        change: "feat(evidence): 取り込み時に人の氏名・メール・アカウント名・秘密情報らしい値を墨消しし、検査の許可リストの例外を無くす"
+        commit: a99369d
       - at: "2026-10-12T01:04:50+09:00"
         by: maintainer
         change: "fix(evidence): 取り込んだ gitleaks の SARIF の author・noreply アドレスを、簡易検査の許可リストに理由つきで載せる"
@@ -406,7 +529,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "458819bf953499503037a65738ba45391bddb956fe02bfd1719c26518a21824b"
+    source_sha256: "69734a1a011fd76514abc02354ae3ecc7c5640b13bd3428a74bf0b81cf92f86d"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18

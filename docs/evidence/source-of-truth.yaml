@@ -24,6 +24,11 @@ source_of_truth:
     path: docs/adr
     artifact_ids:
       - ART-04
+      - ART-56
+      - ART-57
+      - ART-58
+      - ART-59
+      - ART-60
     authoritative: true
     status: present
     note: "アーキテクチャ判断（ADR）。ディレクトリ配下の全 ADR が対象"
