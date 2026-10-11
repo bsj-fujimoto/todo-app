@@ -46,7 +46,7 @@
      frontend:
        image: ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:<手順 2 の digest>
    ```
-5. 入れ替える: `docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`
+5. 入れ替える: `COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）
 6. 確認: `curl -s localhost:8080/api/v1/health` の version / commit が戻した版か。`node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out monitoring/out` が全部成功か。
 7. incident Issue の「ロールバック有無」に戻した digest を書き、`defect` を起票して原因の版を記録する。再リリースは修正後。
 
@@ -61,4 +61,11 @@
 
 ## 訓練記録
 
-（ドリル実施後に追記）
+| 日時（UTC）      | 訓練                                                                                                                                                | 結果 | 所要                             | 記録                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------- | ------------------------------------------------ |
+| 2026-10-11 07:25 | 悪いリリースの検知 → 一次対応（health の commit・`docker compose ps`・ログ）→ rollback（`rollback.yml` で前のイメージへ。`--no-build`）→ 監視で確認 | pass | 検知から rollback 完了まで 16 秒 | `monitoring/drills/20261011T0725Z-rollback/`     |
+| 2026-10-11 07:27 | backend 停止 → 一次対応（`docker compose up -d backend`）→ 監視の回復                                                                               | pass | 検知から 31 秒                   | `monitoring/drills/20261011T0726Z-notification/` |
+
+- 訓練で見つかった不備: 焼き込み済みイメージを `COMMIT_SHA` 未指定で起動すると health の commit が `unknown` になる（#16）。rollback の手順に `COMMIT_SHA` の指定を追記した。
+- 限界: 前のイメージは**ローカルでタグ固定したもの**。GHCR の digest の取得（`docker buildx imagetools inspect`）と digest 固定の pull は未検証（リリースが無い）。DB のスキーマ移行が前方のみの場合の戻しは未訓練。
+- 次回: 最初のリリース後に、GHCR の digest で rollback を訓練する。

@@ -20,11 +20,8 @@ suppression_rules:
       公開時刻から N 分以内、または health の version / commit が前回の実行から変わった直後が対象。
       コンテナの入れ替え・起動中の一時的な失敗による誤報を抑える。15 分を過ぎても失敗が続けば通知する。
     marker_source: deployment-markers.jsonl
-  - id: SUP-002
-    kind: after_drill
-    minutes: 0
-    monitor_ids: []
-    description: "通知試験（drill）の失敗は drill ラベル付きの Issue に分離する。実際の incident Issue は作らない（抑制ではなく経路の分離）。"
+# 通知試験（drill）の失敗は、抑制ではなく drill ラベル付きの Issue に分離する（alert.mjs --drill。実際の incident Issue は作らない）。
+# drill のフェーズでは抑制を評価しない（通知経路の確認が目的）。
 feature_flags:
   exists: false
   note: >-

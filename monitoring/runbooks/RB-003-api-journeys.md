@@ -31,7 +31,7 @@
 
 1. `docker buildx imagetools inspect ghcr.io/bsj-fujimoto/todo-app-backend:vPREV --format '{{json .Manifest.Digest}}'` で backend の digest を引く（frontend も同様）。
 2. DB ボリュームをバックアップ: `docker run --rm -v todo-data:/data -v "$PWD":/backup alpine tar czf /backup/todo-data-backup.tgz -C /data .`
-3. `rollback.yml` に `image: …@sha256:…` を書き、`docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`。
+3. `rollback.yml` に `image: …@sha256:…` を書き、`COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）。
 4. 失敗した監視を手で再実行して確認: `node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out monitoring/out --only MON-003,MON-004,MON-005,MON-006`。
 5. Issue に戻した digest を記録し、`defect` を起票する。合成データが残っていれば（`synthetic-` で始まるタイトル）削除する。
 
@@ -43,4 +43,8 @@
 
 ## 訓練記録
 
-（ドリル実施後に追記）
+| 日時（UTC）             | 訓練                                                                                                                                                                                                   | 結果                    | 記録                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ---------------------------------------------------------------------------- |
+| 2026-10-11 07:21〜07:29 | backend / frontend 停止時に MON-003 が失敗し、失敗詳細（`step create: status が 502`、`通信エラー: fetch failed（ECONNREFUSED）`）から手順と原因の層を読み取れることを確認（一次対応 1）。復旧後に回復 | 一部（一次対応 1 のみ） | `monitoring/drills/20261011T0726Z-notification/`、`20261011T0729Z-frontend/` |
+
+- 未訓練: 手での再現（一次対応 2）と、切り分け表の個別行（契約違反・永続化されない・入力検証の崩れ）。これらは意図的に不具合を作る訓練が必要で、未実施。

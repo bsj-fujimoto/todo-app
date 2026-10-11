@@ -39,4 +39,5 @@
 
 ## 訓練記録
 
-（ドリル実施後に追記）
+未訓練。理由: Actions 上の障害（イメージ取得失敗・Playwright の導入失敗・cron の欠落）は手元では再現できない。`resolve-target` のフォールバックは手元で動作を確認した（リリースが無いため mode=fallback、`monitoring/drills/*/target.json`）。
+`synthetic.yml` が main に入った後に、`force_fallback` と `drill` の手動実行で訓練し、ここに追記する。
