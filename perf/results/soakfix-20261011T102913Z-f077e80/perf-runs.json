@@ -1,0 +1,64 @@
+[
+  {
+    "run_id": "soakfix-20261011T102913Z-f077e80/soak",
+    "type": "soak",
+    "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+    "env_diff": {
+      "scale_ratio": 1,
+      "mocks": [],
+      "limits": "backend cpus=1.0 / mem 512m、frontend cpus=0.5 / mem 128m（perf/compose.perf.yml）。 k6 は同じ Docker VM 内の別コンテナで動くため、負荷生成と被試験側が同じホストの CPU・メモリ・ネットワークを共有する。 TLS 終端なし（HTTP のみ）。実ネットワークの遅延・帯域なし（compose の内部ネットワーク）。",
+      "notes": "本番が無いので絶対値は本番の予測値ではない。相対比較（退行検出・件数増加の傾き・飽和の仕方）に使う。 Docker Desktop（macOS）は Linux VM 上で動くため、ネットワークとファイル I/O が Linux ネイティブより遅い。 SQLite のファイルは Docker のボリューム（VM 内のファイルシステム）にあり、macOS のホストのディスクではない。 GitHub-hosted runner（4 vCPU・16 GiB・Linux ネイティブ Docker）は測定機と性能特性が異なり、同じ値にならない。 比較は同じ環境の run 同士でだけ行う（baseline.json は environment を併記する）。"
+    },
+    "data_profile": {
+      "volume": "1,000 件（DS-006）。capacity で 10,000 件まで",
+      "vs_prod_ratio": 1,
+      "skew": "タイトルは連番（タスク-0001…）で長さがほぼ均一、偶数番が完了済み（50%）。実利用の偏り（長短・未完了が多い）は再現していない",
+      "cache_state": "warm-up 30 秒後（接続・JIT・SQLite ページキャッシュが温まった状態）。各反復は DB ボリュームを作り直して始める（コールドスタートの影響は計測対象外）",
+      "history_depth": "履歴を持たない（ToDo アプリは更新履歴なし）。createdAt は backend が採番するため投入時刻（DS-006 の 1 秒間隔は再現できない）"
+    },
+    "tool": "k6",
+    "tool_version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)",
+    "script_path": "perf/k6/soak.js",
+    "script_sha": "c6f464c28595896582e8df66e565cadeffd31f78f7c7a358a1d381ac97189e9c",
+    "config_sha": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "commit_sha": "f077e8004d35b17f730aa54b6871613582cee9f8",
+    "warmup_sec": 30,
+    "iterations": 3,
+    "variance_stats": "list_p95_ms: n=3 mean=9.885 sd=0.4944 ci95=[8.6568, 11.1132]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; list_p95_drift_pct: n=3 mean=37.0767 sd=13.2395 ci95=[4.1852, 69.9681]; backend_memory_growth_ratio: n=3 mean=1.1458 sd=0.0652 ci95=[0.9839, 1.3077]",
+    "metrics": {
+      "soak.api_list_p95_ms": 9.885,
+      "soak.error_rate": 0
+    },
+    "server_metrics": [
+      {
+        "source": "cpu",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "memory",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "db",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      },
+      {
+        "source": "apm",
+        "time_aligned": true,
+        "ref": "soak/iter-N/analysis.json#observe"
+      }
+    ],
+    "verdict": "fail",
+    "verdict_rule": {
+      "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+      "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+      "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+      "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+      "slo_ref": "perf/slo.yaml"
+    },
+    "started_at": "2026-10-11T10:29:28.571Z"
+  }
+]

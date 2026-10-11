@@ -1,0 +1,157 @@
+{
+ "scenario": "stress",
+ "iterations": [
+  [
+   {
+    "key": "20",
+    "seconds": 45.2,
+    "requests": 1024,
+    "achieved_rps": 22.7,
+    "responses_5xx": 0,
+    "backend_cpu": {
+     "mean": 71.3,
+     "p95": 85.7,
+     "max": 99.1
+    },
+    "frontend_cpu": {
+     "mean": 1.6,
+     "p95": 2.1,
+     "max": 3.1
+    },
+    "k6_cpu": {
+     "mean": 14.7,
+     "p95": 18.3,
+     "max": 21.1
+    },
+    "backend_mem": {
+     "mean_mib": 69.4,
+     "max_mib": 83.9
+    },
+    "health": {
+     "n": 45,
+     "p50_ms": 16.1,
+     "p95_ms": 52.8,
+     "max_ms": 114.1
+    }
+   },
+   {
+    "key": "50",
+    "seconds": 89.7,
+    "requests": 1928,
+    "achieved_rps": 21.5,
+    "responses_5xx": 73,
+    "backend_cpu": {
+     "mean": 99.6,
+     "p95": 100.8,
+     "max": 101.1
+    },
+    "frontend_cpu": {
+     "mean": 2.7,
+     "p95": 3.5,
+     "max": 3.7
+    },
+    "k6_cpu": {
+     "mean": 25.7,
+     "p95": 64.4,
+     "max": 98.2
+    },
+    "backend_mem": {
+     "mean_mib": 85.6,
+     "max_mib": 104.8
+    },
+    "health": {
+     "n": 7,
+     "p50_ms": 3811.4,
+     "p95_ms": 4710.1,
+     "max_ms": 4804.8
+    }
+   },
+   {
+    "key": "100",
+    "seconds": 73.8,
+    "requests": 4404,
+    "achieved_rps": 59.7,
+    "responses_5xx": 2956,
+    "backend_cpu": {
+     "mean": 99.6,
+     "p95": 101.3,
+     "max": 103.9
+    },
+    "frontend_cpu": {
+     "mean": 3.3,
+     "p95": 4.2,
+     "max": 4.8
+    },
+    "k6_cpu": {
+     "mean": 29.1,
+     "p95": 71.9,
+     "max": 98.2
+    },
+    "backend_mem": {
+     "mean_mib": 89.3,
+     "max_mib": 107.8
+    },
+    "health": null
+   },
+   {
+    "key": "150",
+    "seconds": 57,
+    "requests": 6241,
+    "achieved_rps": 109.6,
+    "responses_5xx": 4971,
+    "backend_cpu": {
+     "mean": 99.5,
+     "p95": 101.6,
+     "max": 102.3
+    },
+    "frontend_cpu": {
+     "mean": 3.5,
+     "p95": 4.8,
+     "max": 6.1
+    },
+    "k6_cpu": {
+     "mean": 31.9,
+     "p95": 81.8,
+     "max": 93.5
+    },
+    "backend_mem": {
+     "mean_mib": 92.1,
+     "max_mib": 112.4
+    },
+    "health": null
+   },
+   {
+    "key": "ramp",
+    "seconds": 189.7,
+    "requests": 1202,
+    "achieved_rps": 6.3,
+    "responses_5xx": 592,
+    "backend_cpu": {
+     "mean": 90.9,
+     "p95": 100.8,
+     "max": 103.9
+    },
+    "frontend_cpu": {
+     "mean": 2.6,
+     "p95": 4,
+     "max": 4.9
+    },
+    "k6_cpu": {
+     "mean": 23.1,
+     "p95": 63.6,
+     "max": 98.2
+    },
+    "backend_mem": {
+     "mean_mib": 81.7,
+     "max_mib": 107.8
+    },
+    "health": {
+     "n": 64,
+     "p50_ms": 18.2,
+     "p95_ms": 3762.9,
+     "max_ms": 4804.8
+    }
+   }
+  ]
+ ]
+}

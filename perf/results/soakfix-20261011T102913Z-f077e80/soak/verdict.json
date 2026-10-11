@@ -1,0 +1,111 @@
+{
+ "scenario": "soak",
+ "status": "fail",
+ "reasons": [
+  "list p95 が前半→後半で 37.1% 悪化（> 20%）"
+ ],
+ "warnings": [],
+ "slo_judgements": [
+  {
+   "metric": "api_list_p95_ms",
+   "operator": "<=",
+   "target": 500,
+   "unit": "ms",
+   "values": [
+    9.336,
+    10.295,
+    10.024
+   ],
+   "mean": 9.885,
+   "sd": 0.494379,
+   "ci95": [
+    8.656794,
+    11.113206
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "error_rate",
+   "operator": "<",
+   "target": 0.01,
+   "unit": "ratio",
+   "values": [
+    0,
+    0,
+    0
+   ],
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ],
+   "pass": true,
+   "warnings": []
+  }
+ ],
+ "series": {
+  "list_p95_ms": [
+   9.336,
+   10.295,
+   10.024
+  ],
+  "error_rate": [
+   0,
+   0,
+   0
+  ],
+  "list_p95_drift_pct": [
+   21.99,
+   42.48,
+   46.76
+  ],
+  "backend_memory_growth_ratio": [
+   1.154,
+   1.0769,
+   1.2065
+  ]
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "list_p95_ms": {
+   "n": 3,
+   "mean": 9.885,
+   "sd": 0.4944,
+   "ci95": [
+    8.6568,
+    11.1132
+   ]
+  },
+  "error_rate": {
+   "n": 3,
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "list_p95_drift_pct": {
+   "n": 3,
+   "mean": 37.0767,
+   "sd": 13.2395,
+   "ci95": [
+    4.1852,
+    69.9681
+   ]
+  },
+  "backend_memory_growth_ratio": {
+   "n": 3,
+   "mean": 1.1458,
+   "sd": 0.0652,
+   "ci95": [
+    0.9839,
+    1.3077
+   ]
+  }
+ },
+ "variance_stats_text": "list_p95_ms: n=3 mean=9.885 sd=0.4944 ci95=[8.6568, 11.1132]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; list_p95_drift_pct: n=3 mean=37.0767 sd=13.2395 ci95=[4.1852, 69.9681]; backend_memory_growth_ratio: n=3 mean=1.1458 sd=0.0652 ci95=[0.9839, 1.3077]"
+}

@@ -1,0 +1,10 @@
+{
+  "run_id": "exp-e1-log-silent-f077e80",
+  "commit_sha": "f077e8004d35b17f730aa54b6871613582cee9f8",
+  "started_at": "2026-10-11T11:07:19.569Z",
+  "env_class": "local:darwin-arm64",
+  "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+  "metrics": {
+    "stress.max_sustained_rps": 100
+  }
+}

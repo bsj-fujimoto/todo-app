@@ -46,6 +46,20 @@ mise x -- node scripts/perf/compare.mjs --run-dir perf/results/<run_id> --update
 mise x -- node --test "scripts/perf/test/*.test.mjs"                       # 判定ロジックの単体テスト
 ```
 
+## 実測の run（`results/`）
+
+| run                                     | 内容                                                                                      | 判定                                                                                                                  |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `20261011T082949Z-f948648`              | **全シナリオ・3 反復**（load / stress / spike / soak / capacity / screen）。baseline の元 | load・stress・spike・capacity・screen は pass、**soak は fail**（件数が一定でなかった試験側の不備。`analysis.md` §4） |
+| `soakfix-20261011T102913Z-f077e80`      | soak の再実験 1（削除対象が無いときの代替を修正）。まだ件数が増え fail                    | fail（記録として残す）                                                                                                |
+| `soak-r2-20261011T112525Z-191a25b`      | soak の再実験 2（プール上限で追加=削除を釣り合わせ、件数一定）。baseline の soak はこれ   | pass                                                                                                                  |
+| `load-compare-20261011T115828Z-191a25b` | load だけ 3 反復の再実行。baseline（初回）と比較                                          | pass、退行 0 件（8 指標。最大の変化は削除 p95 −20.7%、悪化側は無し）                                                  |
+| `exp-e0〜e3-*`                          | ボトルネック分析の実験（ログ停止・CPU 2 vCPU・10,000 件）。各 1 反復                      | `analysis.md` §7                                                                                                      |
+
+- **baseline**（`baseline.json`）: 初回実測（run `20261011T082949Z-f948648`、soak のみ `soak-r2`）。環境の区分は `local:darwin-arm64`。**退行検出の動作確認**として、基準の ms 指標を半分にした疑似 baseline と比べると、追加・更新・health の 3 指標が +88〜90% 悪化として検出され終了コード 1 になることを確認した（疑似であり、実際の退行ではない）。単体テストでも検出・ノイズ除け・環境区分を確認している。
+- 段別のリソースと取りこぼしの突き合わせ: `mise x -- node scripts/perf/stage-report.mjs --run-dir perf/results/<run_id> --scenario stress`（または spike）。結果は `<scenario>/stage-resources.json`。
+- 実験: `COMPOSE_EXTRA=perf/experiments/log-silent.yml STRESS_STAGES=50,100,150,200 STRESS_STAGE_SEC=45 scripts/perf/run.sh --scenarios stress --iterations 1 --no-compare`（`NORMAL_TASKS=10000` で件数を変える）。
+
 ## 結果ディレクトリの構成（`perf/results/<run_id>/`）
 
 | ファイル                                                                        | 内容                                                                                                                  | コミット                                              |
@@ -99,6 +113,6 @@ queue・外部依存は**無い**ため取得していない（SQLite は同期�
 
 - **本番が無く、実測ログも無い**。ワークロードは想定で、絶対値は本番の予測値ではない。外挿の限界・残存リスクは [`analysis.md`](analysis.md)。
 - **DS-006 の `createdAt` は 1 秒間隔にできない**。API 経由の投入では backend が作成時刻で採番する（投入は数秒で終わる）。`seedTasks()`（一括 INSERT）は backend 内部の関数で、負荷試験は API だけを使う。
-- 長時間 soak（2 時間以上）は今回**実施していない**（CI 短縮版 10 分のみ）。`SOAK_DURATION_SEC` で実行できる。
+- 長時間 soak（2 時間以上）は今回**実施していない**（CI 短縮版 10 分のみ）。stress・spike の balanced は、soak で見つけた件数増加の不備を直した後の版（プール上限）では再実測していない（60〜180 秒と短く、影響は小さいと見ているが未評価）。`SOAK_DURATION_SEC` で実行できる。
 - 開発機（Apple Silicon の Docker Desktop）と GitHub-hosted runner（Linux ネイティブ）は性能特性が違う。baseline は**同じ環境の区分の run 同士**でだけ比べる（`env_class`）。runner の baseline は、初回の `perf.yml` 実行結果を `--update-baseline` で追記して作る（今回は実行できていない）。
 - queue・外部依存の観測は、アーキテクチャに存在しないため取得していない。
