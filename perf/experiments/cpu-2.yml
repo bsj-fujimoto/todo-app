@@ -1,0 +1,4 @@
+# 実験: backend の CPU 上限を 2 vCPU にする。Node が単一スレッドで、CPU を増やしても飽和点が動かないかの検証用。
+services:
+  backend:
+    cpus: 2.0

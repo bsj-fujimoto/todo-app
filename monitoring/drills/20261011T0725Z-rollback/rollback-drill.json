@@ -1,0 +1,62 @@
+{
+  "kind": "runbook-drill",
+  "runbook": "RB-002",
+  "scenario": "悪いリリースの検知と前のイメージへの rollback",
+  "detected_at": "2026-10-11T07:25:38Z",
+  "rolled_back_at": "2026-10-11T07:25:54Z",
+  "detect_to_rollback_sec": 16,
+  "monitors_exit": {
+    "good_before": 0,
+    "bad": 1,
+    "after_rollback": 0
+  },
+  "result": "pass",
+  "note": "前のイメージはローカルでタグ固定したもの。GHCR の digest 解決は未検証（リリースが無い）",
+  "timeline": [
+    {
+      "at": "2026-10-11T07:25:13Z",
+      "step": "1-good-deploy",
+      "detail": "良い版（commit 552a854c1be89363354fd7bf6c56311cf5774c16）を起動"
+    },
+    {
+      "at": "2026-10-11T07:25:29Z",
+      "step": "1-good-verified",
+      "detail": "固定したイメージ: sha256:e930bc2e627730e0ce0c8b12759ad141bc7e6d222e2aafcaba15b7777f91f2e3 / sha256:337f888dcd348e5e597eaca395560b5cf3ab442b792085eb856142ec096d1e90"
+    },
+    {
+      "at": "2026-10-11T07:25:30Z",
+      "step": "1-monitors",
+      "detail": "良い版の監視 exit=0"
+    },
+    {
+      "at": "2026-10-11T07:25:30Z",
+      "step": "2-bad-deploy",
+      "detail": "悪い版（commit drill-bad-release-0000000000000000000000000）に入れ替える"
+    },
+    {
+      "at": "2026-10-11T07:25:42Z",
+      "step": "2-detected",
+      "detail": "期待する commit との不一致を監視が検知 exit=1（1 なら検知）"
+    },
+    {
+      "at": "2026-10-11T07:25:42Z",
+      "step": "3-triage",
+      "detail": "一次対応: health の commit と docker compose ps / logs で稼働中の版を確認（runbook RB-002）"
+    },
+    {
+      "at": "2026-10-11T07:25:42Z",
+      "step": "3-rollback",
+      "detail": "rollback.yml（前のイメージ）で入れ替える"
+    },
+    {
+      "at": "2026-10-11T07:25:54Z",
+      "step": "4-rolled-back",
+      "detail": "health: {'status':'ok','version':'1.0.0','commit':'552a854c1be89363354fd7bf6c56311cf5774c16','db':'ok'}"
+    },
+    {
+      "at": "2026-10-11T07:25:54Z",
+      "step": "4-verified",
+      "detail": "rollback 後の監視 exit=0（0 なら成功）"
+    }
+  ]
+}

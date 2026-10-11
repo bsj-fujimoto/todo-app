@@ -12,6 +12,7 @@ write_permissions:
   "security.yml#container-iac": [security-events] # trivy / hadolint の SARIF を Code Scanning にアップロードする
   "security.yml#file-security-issues": [issues] # medium の検出を Issue にする（schedule / main push のみ）
   "nightly.yml#file-issues": [issues] # flaky を Issue にする
+  "synthetic.yml#alert": [issues] # 外形監視の失敗を incident Issue にする（作成・コメント・close・ラベル）。監視を動かすジョブには付けない
   "release.yml#security": [security-events, issues] # security.yml を呼ぶ（create_issues=false なので issues は使わないが、呼ばれる側が要求するので許す）
   "release.yml#publish": [contents, packages, attestations] # GHCR への push・GitHub Release・provenance の attest（id-token は下）
 

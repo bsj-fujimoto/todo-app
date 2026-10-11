@@ -1,0 +1,103 @@
+{
+ "baseline": "initial-main-6e5d2db",
+ "config": {
+  "regression_threshold_pct": 20,
+  "min_abs_delta": {
+   "ms": 5,
+   "sec": 5,
+   "ratio": 0.001,
+   "other": 0
+  },
+  "metrics": {}
+ },
+ "compared": 8,
+ "only_in_baseline": [
+  "stress.max_sustained_rps",
+  "spike.recovery_tail_list_p95_ms",
+  "spike.recovery_tail_error_rate",
+  "spike.time_to_recover_sec",
+  "spike.during_list_p95_ms",
+  "soak.api_list_p95_ms",
+  "soak.error_rate",
+  "capacity.max_tasks_within_slo",
+  "capacity.list_p95_ms_at_1000",
+  "capacity.create_p95_ms_at_1000",
+  "capacity.list_p95_ms_at_2500",
+  "capacity.create_p95_ms_at_2500",
+  "capacity.list_p95_ms_at_5000",
+  "capacity.create_p95_ms_at_5000",
+  "capacity.list_p95_ms_at_7500",
+  "capacity.create_p95_ms_at_7500",
+  "capacity.list_p95_ms_at_10000",
+  "capacity.create_p95_ms_at_10000",
+  "screen.screen_ready_ms"
+ ],
+ "only_in_current": [],
+ "regressions": [],
+ "rows": [
+  {
+   "key": "load.api_list_p95_ms",
+   "baseline": 10.647333,
+   "current": 9.851333,
+   "change_pct": -7.48,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.api_list_p99_ms",
+   "baseline": 11.709667,
+   "current": 10.692,
+   "change_pct": -8.69,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.api_create_p95_ms",
+   "baseline": 11.812667,
+   "current": 11.095,
+   "change_pct": -6.08,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.api_update_p95_ms",
+   "baseline": 12.075667,
+   "current": 11.439333,
+   "change_pct": -5.27,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.api_delete_p95_ms",
+   "baseline": 10.885667,
+   "current": 8.635667,
+   "change_pct": -20.67,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.error_rate",
+   "baseline": 0,
+   "current": 0,
+   "change_pct": 0,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.throughput_rps",
+   "baseline": 1.000133,
+   "current": 1.0002,
+   "change_pct": -0.01,
+   "threshold_pct": 20,
+   "regressed": false
+  },
+  {
+   "key": "load.health_p95_ms",
+   "baseline": 14.063333,
+   "current": 13.337333,
+   "change_pct": -5.16,
+   "threshold_pct": 20,
+   "regressed": false
+  }
+ ]
+}

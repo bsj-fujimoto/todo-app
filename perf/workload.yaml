@@ -1,0 +1,98 @@
+# ワークロードモデル（機械可読）。k6 スクリプトと scripts/perf/run.sh がこの値を使う。
+#
+# 重要: 本リポジトリには本番も実測ログ（アクセスログ・利用統計）も無い。
+#       以下は「実測ではなく想定」。個人用 ToDo の使われ方から理屈で導出し、安全率を掛けて試験の負荷にした。
+#       本番ログが得られたら source_ref の想定値を実測に置き換え、perf/baseline.json を更新する。
+version: 1
+basis: assumed # assumed = 想定（実測ではない）/ measured = 本番ログから導出
+source_ref: perf/workload.yaml#derivation # 実測ログは無い。導出過程を本ファイルの derivation に置く
+
+derivation:
+  principle: >-
+    本アプリは個人用（認証なし・1 人 1 インスタンス）。利用者は 1 人で、同時に開くのはせいぜいスマホと PC と複数タブの 3 つ。
+    したがって「想定負荷」は人が操作する速さで決まり、サーバーの能力で決まらない。
+    人の操作で生じる要求率を上限から見積もり、そこに安全率を掛けたものを load の負荷とする。
+  steps:
+    - "1 日の操作数: ヘビーユーザーを想定して 100 操作/日（追加 25・完了切替 10・削除 5 のほかは一覧の表示 60）。内訳は mix と同じ比率。"
+    - "操作は朝・昼・夕の 3 回の集中（各 10 分）に偏ると仮定: 100 操作 ÷ 3 回 ÷ 600 秒 ≒ 0.06 操作/秒。"
+    - "最速の人が操作する上限: 1 操作 2 秒（連続して追加する場合）= 0.5 操作/秒。これを「想定ピーク」とする。"
+    - "画面は 1 操作ごとに一覧を再取得しない（追加・切替・削除の成功後は画面へ反映）が、保守的に 1 操作 = 1 API 要求とみなす。"
+    - "安全率 40: 想定ピーク 0.5 req/s × 40 = 20 req/s を load の到着率とする。複数端末・将来の自動化クライアント・ブラウザの再試行・外形監視の要求を含めても余裕をもって収まる大きさで、かつ 5 分間で 6,000 要求（統計が取れる量）になる。"
+  limits_of_derivation:
+    - "100 操作/日・集中の仕方・安全率 40 はいずれも想定。実利用者が別の使い方をすれば前提が崩れる。"
+    - "利用者が 1 人なので「同時 100 ユーザー」型の負荷は作っていない。stress で上限を見るだけで、SLO の対象にしていない。"
+
+# 同時数・到着率（load シナリオの定常負荷）
+concurrency:
+  expected_users: 1
+  expected_peak_devices: 3
+  load_virtual_users: 10 # 到着率 20 req/s を捌くのに必要な VU の目安（k6 preAllocatedVUs の初期値）
+  max_virtual_users: 100
+arrival_rate:
+  expected_peak_rps: 0.5
+  safety_factor: 40
+  load_rps: 20 # constant-arrival-rate（オープンモデル。応答が遅くなっても到着は減らない）
+  model: open # open（到着率固定）。クローズドモデル（VU 固定の think time）は使わない。理由は README の設計判断
+
+# 操作比率（API 要求の比率。load・soak・capacity の定常部分）
+mix:
+  list: 0.60 # GET /api/v1/tasks
+  create: 0.25 # POST /api/v1/tasks
+  toggle: 0.10 # PATCH /api/v1/tasks/{id}
+  delete: 0.05 # DELETE /api/v1/tasks/{id}
+# stress・spike はデータ量を 1,000 件前後に保つため、追加と削除を同数にした比率を使う（理由は perf/README.md）
+mix_balanced:
+  list: 0.60
+  create: 0.15
+  toggle: 0.10
+  delete: 0.15
+
+# データ量
+data_volume:
+  normal_tasks: 1000 # DS-006（タスク-0001〜タスク-1000。偶数番 500 件が完了済み）。TC-073・TC-074 と同じ
+  growth_tasks: 10000 # 成長予測の上限（capacity で 1,000 → 10,000 を測る）
+  title_length_distribution: "DS-006 の連番タイトル（11 文字前後）。実利用の 5〜40 文字より短く、レスポンスサイズは実際より小さめに出る"
+  seed: "k6 setup から POST /api/v1/tasks で投入（API 経由）。1 トランザクション一括の seedTasks() は backend 内部関数のため使わない"
+  note: "load の定常中にデータは増える（追加 25%・削除 5%）。5 分で約 +600 件（20 req/s × 300 s × 0.20）。これは実利用でも起きる増加と同じ向き"
+
+# 成長シナリオ
+growth:
+  assumption: "追加 25 件/日・削除 5 件/日（1 日 100 操作の想定）で正味 +20 件/日。完了済みを消さない使い方を最悪ケースとする"
+  scenarios:
+    - name: 現状
+      tasks: 1000
+      reached_after_days: 50 # 0 件から 1,000 件まで
+    - name: 1 年後（最悪ケース）
+      tasks: 7300
+      reached_after_days: 365
+    - name: 成長予測の上限
+      tasks: 10000
+      reached_after_days: 500
+  note: "上限件数は未決（docs/data/unknowns.csv の UNK-002）。決まれば本ファイルと capacity の上限を更新する"
+
+# シナリオ（試験種別）の定義。時間は profile で変わる（run.sh --profile）
+scenarios:
+  load:
+    purpose: 想定負荷（20 req/s）で SLO を満たすかを判定する。SLO の判定対象
+    duration_sec: { full: 300, ci: 300, quick: 60 }
+  stress:
+    purpose: 到着率を段階的に上げ、SLO を割り始める点（限界点）と壊れ方（飽和資源）を探す。SLO の判定対象外
+    stages_rps: [20, 50, 100, 200, 400, 800]
+    stage_duration_sec: { full: 60, ci: 60, quick: 15 }
+  spike:
+    purpose: 急な到着率の跳ね上がり（20 → 400 req/s を 10 秒で）と、その後の回復を見る
+    duration_sec: { full: 180, ci: 180, quick: 60 }
+  soak:
+    purpose: 想定負荷で長く流して、メモリ・DB サイズ・応答時間の劣化（リーク・断片化）を見る
+    duration_sec: { full: 600, ci: 600, quick: 60 } # CI 短縮版は 10 分。長時間版は SOAK_DURATION_SEC で指定（例: 7200）
+    long_version: "SOAK_DURATION_SEC=7200（2 時間）以上を手元・夜間で。今回の実測は 10 分版のみ"
+  capacity:
+    purpose: データ件数 1,000 → 10,000 の増加でレイテンシがどう伸びるか（容量計画）
+    steps_tasks: [1000, 2500, 5000, 7500, 10000]
+    step_measure_sec: { full: 60, ci: 60, quick: 15 }
+    rps: 20 # 各ステップとも load と同じ到着率
+
+warmup:
+  duration_sec: 30
+  note: "判定から除外する。ステージ前に同じ負荷（5 req/s）を 30 秒流し、接続・JIT・SQLite のページキャッシュを温める"
+iterations: 3 # 各シナリオを 3 回（毎回 DB を作り直して開始）

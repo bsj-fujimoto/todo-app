@@ -1,0 +1,109 @@
+{
+ "scenario": "soak",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "slo_judgements": [
+  {
+   "metric": "api_list_p95_ms",
+   "operator": "<=",
+   "target": 500,
+   "unit": "ms",
+   "values": [
+    7.32,
+    7.507,
+    7.122
+   ],
+   "mean": 7.316333,
+   "sd": 0.192526,
+   "ci95": [
+    6.838033,
+    7.794634
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "error_rate",
+   "operator": "<",
+   "target": 0.01,
+   "unit": "ratio",
+   "values": [
+    0,
+    0,
+    0
+   ],
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ],
+   "pass": true,
+   "warnings": []
+  }
+ ],
+ "series": {
+  "list_p95_ms": [
+   7.32,
+   7.507,
+   7.122
+  ],
+  "error_rate": [
+   0,
+   0,
+   0
+  ],
+  "list_p95_drift_pct": [
+   2.28,
+   4.93,
+   10.76
+  ],
+  "backend_memory_growth_ratio": [
+   1.0831,
+   1.0057,
+   1.0119
+  ]
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "list_p95_ms": {
+   "n": 3,
+   "mean": 7.3163,
+   "sd": 0.1925,
+   "ci95": [
+    6.838,
+    7.7946
+   ]
+  },
+  "error_rate": {
+   "n": 3,
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "list_p95_drift_pct": {
+   "n": 3,
+   "mean": 5.99,
+   "sd": 4.3382,
+   "ci95": [
+    -4.7876,
+    16.7676
+   ]
+  },
+  "backend_memory_growth_ratio": {
+   "n": 3,
+   "mean": 1.0336,
+   "sd": 0.043,
+   "ci95": [
+    0.9267,
+    1.1404
+   ]
+  }
+ },
+ "variance_stats_text": "list_p95_ms: n=3 mean=7.3163 sd=0.1925 ci95=[6.838, 7.7946]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; list_p95_drift_pct: n=3 mean=5.99 sd=4.3382 ci95=[-4.7876, 16.7676]; backend_memory_growth_ratio: n=3 mean=1.0336 sd=0.043 ci95=[0.9267, 1.1404]"
+}

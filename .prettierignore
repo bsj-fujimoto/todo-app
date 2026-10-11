@@ -14,3 +14,8 @@ security-results
 security-findings
 reports
 contract-report
+# 実測・実施の記録（ツールが出力する証跡。整形すると sha256（manifest.json）が変わるため対象外）
+perf/results/
+monitoring/drills/
+monitoring/out/
+monitoring/history/

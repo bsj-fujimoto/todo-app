@@ -1,0 +1,11 @@
+{
+  "run_id": "soakfix-20261011T102913Z-f077e80",
+  "commit_sha": "f077e8004d35b17f730aa54b6871613582cee9f8",
+  "started_at": "2026-10-11T10:29:28.571Z",
+  "env_class": "local:darwin-arm64",
+  "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+  "metrics": {
+    "soak.api_list_p95_ms": 9.885,
+    "soak.error_rate": 0
+  }
+}

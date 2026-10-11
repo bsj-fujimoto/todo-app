@@ -521,6 +521,7 @@ entries:
     paths:
       - "perf/**"
       - "scripts/perf/**"
+      - "scripts/lib/**"
       - ".github/workflows/perf.yml"
     case_ids: [TC-073, TC-074]
     excluded_risk: "機能ケース（性能試験の変更では機能を触らない）"
@@ -529,6 +530,8 @@ entries:
     paths:
       - "monitoring/**"
       - "scripts/monitoring/**"
+      - "scripts/lib/**"
+      - "e2e/synthetic/**"
       - ".github/workflows/synthetic.yml"
     case_ids: [TC-075, TC-077]
     excluded_risk: "機能ケース（監視設定の変更では機能を触らない）"

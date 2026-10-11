@@ -1,0 +1,69 @@
+{
+  "run_id": "exp-e0-default-f077e80",
+  "started_at": "2026-10-11T11:02:31.876Z",
+  "profile": "full",
+  "env_class": "local:darwin-arm64",
+  "commit_sha": "f077e8004d35b17f730aa54b6871613582cee9f8",
+  "dirty": true,
+  "host": {
+    "platform": "darwin",
+    "os_release": "27.0.0",
+    "arch": "arm64",
+    "cpu_model": "Apple M5 Pro",
+    "cpu_count": 15,
+    "mem_total_bytes": 51539607552,
+    "node": "v24.21.0"
+  },
+  "docker": {
+    "server_version": "29.8.2",
+    "compose_version": "5.5.1",
+    "vm": {
+      "ncpu": 15,
+      "mem_total_bytes": 8318844928,
+      "os": "Docker Desktop",
+      "arch": "aarch64",
+      "kernel": "7.0.14-linuxkit"
+    }
+  },
+  "k6": {
+    "image": "grafana/k6@sha256:e66db15b860113878fa74670e31f5e274830b7b6e42c8bff28b2f2d86a257603",
+    "version": "k6 v2.3.0 (commit/e088784614, go1.27.1, linux/arm64)"
+  },
+  "containers": {
+    "backend": {
+      "container": "73c91a5175bf",
+      "image": "sha256:fa840ac9a21fdfdcaae1fda43cf32408a59dd41ad2433c008fced63a88cde35c todo-perf-backend"
+    },
+    "frontend": {
+      "container": "cad79583557a",
+      "image": "sha256:50159c0a2980ef05542489052e25cf21dc08e97626dec46c42f165b972b03af3 todo-perf-frontend"
+    }
+  },
+  "script_sha256": {
+    "perf/k6/capacity-step.js": "41c7b59e585d151af59ab6f624702f86d9eb08a24b0c6c9cda052d756016d8e0",
+    "perf/k6/lib/common.js": "d3110ab39ed098319410135dff474a9a4053f04fd3c85caa407f0cb8a3f8be6c",
+    "perf/k6/load.js": "4f19a6a5a4bd82b1cb7f57b839b06d85c083359a015a0febc67c928ec4bcab05",
+    "perf/k6/seed.js": "9061eef07386f967b2b566e3e13a60a5bb6327c0544cd9e5920a445bddad3aa2",
+    "perf/k6/soak.js": "c6f464c28595896582e8df66e565cadeffd31f78f7c7a358a1d381ac97189e9c",
+    "perf/k6/spike.js": "8a0a165e32bb8b2b57eebe2c916b2fb29a963f9056f36adf7956b7cd6962f43c",
+    "perf/k6/stress.js": "9812ee5690570ceb4206d8921fb275ec9e282cb0fa58fd1e9d6e71da9fcca668",
+    "perf/k6/warmup.js": "880d5c738ff8950b1a54fbd87ff2c78b01827f229958623b0ba3f19fd2d34799",
+    "perf/screen/measure.mjs": "25d1c064b2265a9cdbd48494ea44c6b49a19c1afab51eea21b2459e56956245e",
+    "perf/screen/Dockerfile": "7ad52b502ee6166b37de36f41dad970285fcdf97bb72a94f20413e718ad08d3e",
+    "perf/screen/package-lock.json": "7d48483bcee14d2c4cc6758b5b93f47f366e90506c7e6c3f9627ad761b949f80",
+    "scripts/perf/run.sh": "573309a0d33799ef60329b5367453d4d5af35427d7dd24b5c4f55912b9de5ada",
+    "scripts/perf/lib/rules.mjs": "324ac9af2eb02992291db4f230d92191aba51cd9f68b065a7adb7f6455e550f3",
+    "scripts/perf/lib/rules-scenarios.mjs": "7b50b289eb58349ff74edff36fd3b1545e871472213e3c806854fa330b220963"
+  },
+  "config_sha256": {
+    "perf/slo.yaml": "5f585a79fc33ea8429b9b25cb059768555344313e8262f1c5411437826bf4beb",
+    "perf/workload.yaml": "2317287a18bb30e3f8e2d5c49b513f66012d0857e184212112ba3159296aabf1",
+    "perf/regression-threshold.yaml": "43913e78c4d64ff267f573fcd93b36119fe030e28ecde62e3ba5a1f802ce8321",
+    "perf/compose.perf.yml": "ad7184ff9e62270cc3adb2c44b79e135b3b865911b182534a478a21e921f6a3a",
+    "perf/environment.yaml": "b11e5c0f0c579132fce81c87da420bc347adb1fe04d5aa196331236e49b275d9",
+    "docker-compose.yml": "6ff45e2a6a376af547de41adcf19d218a2d0f5771309194a42c4af9fa1a3851e"
+  },
+  "runner": {
+    "github_actions": false
+  }
+}

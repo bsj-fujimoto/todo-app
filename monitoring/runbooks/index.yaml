@@ -1,0 +1,45 @@
+# runbook の索引（監視 → runbook の対応）。alert.mjs が incident Issue に runbook へのリンクを書くのに使う。
+# triage / isolate / rollback / contacts は、各 runbook に「一次対応」「切り分け」「rollback」「連絡経路」の節があることの宣言。
+# scripts/monitoring/check-config.mjs が節の有無を機械で確かめ、宣言と食い違えば失敗する。
+version: 1
+runbooks:
+  - runbook_id: RB-001
+    path: monitoring/runbooks/RB-001-frontend-delivery.md
+    service: todo-app
+    monitor_ids: [MON-001]
+    triage: true
+    isolate: true
+    rollback: true
+    contacts: true
+  - runbook_id: RB-002
+    path: monitoring/runbooks/RB-002-backend-health.md
+    service: todo-app
+    monitor_ids: [MON-002, MON-013]
+    triage: true
+    isolate: true
+    rollback: true
+    contacts: true
+  - runbook_id: RB-003
+    path: monitoring/runbooks/RB-003-api-journeys.md
+    service: todo-app
+    monitor_ids: [MON-003, MON-004, MON-005, MON-006]
+    triage: true
+    isolate: true
+    rollback: true
+    contacts: true
+  - runbook_id: RB-004
+    path: monitoring/runbooks/RB-004-browser-journeys.md
+    service: todo-app
+    monitor_ids: [MON-007, MON-008, MON-009, MON-010]
+    triage: true
+    isolate: true
+    rollback: true
+    contacts: true
+  - runbook_id: RB-005
+    path: monitoring/runbooks/RB-005-monitor-infra.md
+    service: todo-app
+    monitor_ids: []
+    triage: true
+    isolate: true
+    rollback: true
+    contacts: true

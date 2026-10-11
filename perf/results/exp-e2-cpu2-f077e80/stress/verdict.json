@@ -1,0 +1,80 @@
+{
+ "scenario": "stress",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "max_sustained_rps": 150,
+ "first_violation_rps": 200,
+ "first_violation_per_iteration": [
+  {
+   "iteration": 1,
+   "rps": 200,
+   "reasons": [
+    "list p95 4061.598ms > 500ms",
+    "create p95 4398.897ms > 300ms",
+    "toggle p95 3699.606ms > 300ms",
+    "delete p95 3713.133ms > 300ms",
+    "エラー率 0.0775 ≥ 0.01"
+   ]
+  }
+ ],
+ "stages_rps": [
+  50,
+  100,
+  150,
+  200
+ ],
+ "series": {
+  "first_violation_rps": [
+   200
+  ],
+  "list_p95_ms@50rps": [
+   5.065
+  ],
+  "list_p95_ms@100rps": [
+   15.841
+  ],
+  "list_p95_ms@150rps": [
+   76.901
+  ],
+  "list_p95_ms@200rps": [
+   4061.598
+  ]
+ },
+ "note": "stress は SLO の合否を判定しない。限界点（SLO・エラー・取りこぼしのいずれかを最初に割る到着率）を求める。",
+ "iterations": 1,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "first_violation_rps": {
+   "n": 1,
+   "mean": 200,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@50rps": {
+   "n": 1,
+   "mean": 5.065,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@100rps": {
+   "n": 1,
+   "mean": 15.841,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@150rps": {
+   "n": 1,
+   "mean": 76.901,
+   "sd": null,
+   "ci95": null
+  },
+  "list_p95_ms@200rps": {
+   "n": 1,
+   "mean": 4061.598,
+   "sd": null,
+   "ci95": null
+  }
+ },
+ "variance_stats_text": "first_violation_rps: n=1 mean=200 sd=null ci95=-; list_p95_ms@50rps: n=1 mean=5.065 sd=null ci95=-; list_p95_ms@100rps: n=1 mean=15.841 sd=null ci95=-; list_p95_ms@150rps: n=1 mean=76.901 sd=null ci95=-; list_p95_ms@200rps: n=1 mean=4061.598 sd=null ci95=-"
+}

@@ -1,0 +1,32 @@
+# 計画停止・変更（リリース）時の誤報を抑える設定。scripts/monitoring/run-monitors.mjs が実行時に評価する。
+# 抑制した失敗も run history（JSONL）に result=fail・alert_suppressed=true・suppression_reason 付きで残す（隠さない）。
+version: 1
+# 計画停止の窓（UTC）。monitor_ids を空にすると全監視が対象。窓の中の失敗は通知しない。
+# 使い方: 計画停止の前に PR でここへ追記する（レビュー経由）。窓が過ぎた行は残して履歴にする。
+maintenance_windows: []
+# 書式の例（有効ではない）:
+#   - id: MW-2026-10-20
+#     from: "2026-10-20T01:00:00Z"
+#     to: "2026-10-20T01:30:00Z"
+#     monitor_ids: []
+#     reason: "SQLite ボリュームのバックアップ作業"
+suppression_rules:
+  - id: SUP-001
+    kind: after_release
+    minutes: 15
+    monitor_ids: [] # 全監視
+    description: >-
+      リリース直後 15 分は失敗を通知しない。デプロイマーカー（scripts/monitoring/marker.mjs）が記録した最新リリースの
+      公開時刻から N 分以内、または health の version / commit が前回の実行から変わった直後が対象。
+      コンテナの入れ替え・起動中の一時的な失敗による誤報を抑える。15 分を過ぎても失敗が続けば通知する。
+    marker_source: deployment-markers.jsonl
+# 通知試験（drill）の失敗は、抑制ではなく drill ラベル付きの Issue に分離する（alert.mjs --drill。実際の incident Issue は作らない）。
+# drill のフェーズでは抑制を評価しない（通知経路の確認が目的）。
+feature_flags:
+  exists: false
+  note: >-
+    本アプリに feature flag の仕組みは無い。フラグ切替に伴う挙動変更は起きない。将来 flag を導入したら、
+    flag の切替をデプロイマーカーと同様に記録し、切替直後の suppression_rules に加える。
+release_correlation:
+  marker: "scripts/monitoring/marker.mjs が health の version / commit と GitHub Release のタグ・公開時刻を記録する"
+  incident_link: "incident Issue の本文に直前のデプロイマーカー（version / commit / release_tag）を自動で書く（deployment_ref）"

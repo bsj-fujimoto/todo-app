@@ -1,0 +1,287 @@
+{
+  "run_dir": "/Users/fujimoto/Documents/tmp/todo-app/.claude/worktrees/agent-a21985d6a4a1c9208/perf/results/soak-r2-20261011T112525Z-191a25b",
+  "files": [
+    {
+      "path": "metrics.json",
+      "bytes": 373,
+      "sha256": "dca4630dfc79aa753c9c6995d298545a4caaec9ccf7f27d9d0a9cf4b38293b5f",
+      "committed": true
+    },
+    {
+      "path": "perf-runs.json",
+      "bytes": 4380,
+      "sha256": "c3c6d523f7e337c31965c41c321578330d563e7d332005e2c084e7dd7248b231",
+      "committed": true
+    },
+    {
+      "path": "run.json",
+      "bytes": 3253,
+      "sha256": "cbcc56c3dac059fe3359b32816043b763cd51b930ce6f4749159c01285d1cfcc",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/analysis.json",
+      "bytes": 15536,
+      "sha256": "3e0227587640b6f56c5b4bda72a9ec58c68920df323932f46be47ab777a53c4f",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/backend.log",
+      "bytes": 48020,
+      "sha256": "f71d4650109dd2d3d1bf7e9c3ee9d11fbe04e7e443c088d50b4fac1763905e85",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/main.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/main.k6.log",
+      "bytes": 53,
+      "sha256": "f55438f23bc1675dfc86d4b8bb25ab1b0112ce8d2137ffe86d4fcc770d9c9c10",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/main.raw.json.gz",
+      "bytes": 2640545,
+      "sha256": "991998650aac9c7a4c0d1f063ebe37ddfd91f8814471b32960ac0bec26d168ec",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-1/main.summary.json",
+      "bytes": 6626,
+      "sha256": "4c4c10e474df37c77b90f60619841d0267882c28e518fd65e37ef3fd1541f24b",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/measure-end.txt",
+      "bytes": 21,
+      "sha256": "9f566b0e14c313fc74d75dc3516a330f14d2c4d47bdcca8f1e54435e1662639b",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/measure-start.txt",
+      "bytes": 21,
+      "sha256": "c229df1ba9e61032d4b487a982abe2fd2d99191f3210145d467258764d52bd9e",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/observe.jsonl",
+      "bytes": 512455,
+      "sha256": "d27b82c9e762841337fa97bd6abe5345dfb5b5ad2e34b8b1a91dcc3559f40383",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-1/seed.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/seed.k6.log",
+      "bytes": 22,
+      "sha256": "159b562db25af91a3aa3b3b15be8e5307ab20fe7695f7efc2b46a503473be35f",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/warmup.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/warmup.k6.log",
+      "bytes": 53,
+      "sha256": "b5f8dca15c7adf7c2ede1b6c1d9cc72fc574a1c9b6d5133023ad50cefa52b15d",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-1/warmup.summary.json",
+      "bytes": 6179,
+      "sha256": "3b65a04afe442ca2875fa0f8dec48a5cd4dfba576577e5717806dfd5da0a0521",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/analysis.json",
+      "bytes": 15534,
+      "sha256": "ca7b57cb836171f148bfc94aeaee2e6789b9d845f1681714365bc2c77e6e83ed",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/backend.log",
+      "bytes": 47975,
+      "sha256": "b290a1e5b3dc1968d554ca06a6654df52ab7e8a64a0c7caf53e347322f248f64",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/main.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/main.k6.log",
+      "bytes": 53,
+      "sha256": "f55438f23bc1675dfc86d4b8bb25ab1b0112ce8d2137ffe86d4fcc770d9c9c10",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/main.raw.json.gz",
+      "bytes": 2638766,
+      "sha256": "c1d5ccc87b2fb732b089257cbb359fdbbe294849d0433c14ee400f1859580335",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-2/main.summary.json",
+      "bytes": 6660,
+      "sha256": "0a1df4ee49ec92bf5d516f60ea71552386bc0c11bc22b3a04b0b1622f3007886",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/measure-end.txt",
+      "bytes": 21,
+      "sha256": "d71e0e37c01061a64993fb951ee9e76bbb1774236eb62cd18491c9f3b06b4da5",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/measure-start.txt",
+      "bytes": 21,
+      "sha256": "b3714fc9b3970f5b1cd196242d56e7836b01f74ab8ccaf6aaf5b4c682e839b43",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/observe.jsonl",
+      "bytes": 513031,
+      "sha256": "736e4ba6a8ac3166231f6b2688b0f8df203f6a2ea28f440776e2c97ded35ae20",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-2/seed.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/seed.k6.log",
+      "bytes": 22,
+      "sha256": "159b562db25af91a3aa3b3b15be8e5307ab20fe7695f7efc2b46a503473be35f",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/warmup.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/warmup.k6.log",
+      "bytes": 53,
+      "sha256": "b5f8dca15c7adf7c2ede1b6c1d9cc72fc574a1c9b6d5133023ad50cefa52b15d",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-2/warmup.summary.json",
+      "bytes": 6216,
+      "sha256": "80360f2d8abc149ba00339a55c9fbf0e6121d2fa1888c9fed45827f61b97fbda",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/analysis.json",
+      "bytes": 15542,
+      "sha256": "e72f175ecccf4cceb44df8f31845352befba5f3fe88ce7051f015c88cae7a6df",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/backend.log",
+      "bytes": 48016,
+      "sha256": "1a13da426609f087861085277c68085b419d8a4ec73a53a163e966e1330fce2e",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/main.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/main.k6.log",
+      "bytes": 53,
+      "sha256": "f55438f23bc1675dfc86d4b8bb25ab1b0112ce8d2137ffe86d4fcc770d9c9c10",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/main.raw.json.gz",
+      "bytes": 2637850,
+      "sha256": "7883c784a2c26c4168fc6d79a0bbdd8ae8b4c3169d952a1d8c9563725095b5f1",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-3/main.summary.json",
+      "bytes": 6629,
+      "sha256": "3b9ed3a05b17ac71e03e5e8a0be47bdf994911ce554dfff53958982dca8d7d6a",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/measure-end.txt",
+      "bytes": 21,
+      "sha256": "cd256f60ad88389c31c0119425ef1e9fb1d0305a95a65787d833189cb2f47e7c",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/measure-start.txt",
+      "bytes": 21,
+      "sha256": "eb7fcb33a18264d6727d06f001fd2600996d943482500cb6d60db58474c2d8a2",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/observe.jsonl",
+      "bytes": 511894,
+      "sha256": "5d2ba664ccf4ed371e83de0a51698113eb91b4d55201b3e15d8aee5058702bca",
+      "committed": false
+    },
+    {
+      "path": "soak/iter-3/seed.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/seed.k6.log",
+      "bytes": 22,
+      "sha256": "159b562db25af91a3aa3b3b15be8e5307ab20fe7695f7efc2b46a503473be35f",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/warmup.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/warmup.k6.log",
+      "bytes": 53,
+      "sha256": "43046bb7ee3f424985a4106dc5a9d638671347b368ad4fe19cc7316e6ce530d4",
+      "committed": true
+    },
+    {
+      "path": "soak/iter-3/warmup.summary.json",
+      "bytes": 6298,
+      "sha256": "05f910d05333af934c0daa01b02d60aea01e0a017a133f6ed22ef96d0a2f4584",
+      "committed": true
+    },
+    {
+      "path": "soak/verdict.json",
+      "bytes": 1620,
+      "sha256": "eca6b58fb37d13bf25bbe5e42a065140ad7cac68bbc43642ab1eeb1b02a5fc21",
+      "committed": true
+    },
+    {
+      "path": "verdict.json",
+      "bytes": 1023,
+      "sha256": "07e8251f32579d8e48a1b679b63745df7963ab1eb5977b2fc5cee1af47c1e48d",
+      "committed": true
+    }
+  ]
+}

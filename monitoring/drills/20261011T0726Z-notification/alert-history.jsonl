@@ -1,0 +1,4 @@
+{"monitor_id":"MON-002","at":"2026-10-11T07:27:07.345Z","kind":"created","severity":"sev1","acknowledged_at":null,"in_maintenance":false,"issue":17,"drill":true}
+{"monitor_id":"MON-003","at":"2026-10-11T07:27:12.224Z","kind":"created","severity":"sev2","acknowledged_at":null,"in_maintenance":false,"issue":18,"drill":true}
+{"monitor_id":"MON-002","at":"2026-10-11T07:27:39.952Z","kind":"recovered","severity":null,"acknowledged_at":null,"in_maintenance":false,"issue":17,"drill":true}
+{"monitor_id":"MON-003","at":"2026-10-11T07:27:45.510Z","kind":"recovered","severity":null,"acknowledged_at":null,"in_maintenance":false,"issue":18,"drill":true}
