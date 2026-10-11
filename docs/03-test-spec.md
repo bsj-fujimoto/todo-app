@@ -321,7 +321,7 @@ high / medium / low。**ケースに紐づくリスクの priority の最大値*
 | api | `backend/test/api/data-corrupt.test.js` | TC-052〜TC-054 | DS-007（破損 DB）。SHA-256 を前後で比較する |
 | api | `backend/test/api/security.test.js` | TC-059, TC-060 | 直接 API・不正入力 |
 | api | `backend/test/api/concurrency.test.js` | TC-064, TC-065 | Promise.all による並行リクエスト |
-| api | `backend/test/api/performance.test.js` | TC-073 | DS-006（1,000 件）。しきい値は docs/07-performance.md の SLO で更新 |
+| api | `backend/test/api/performance.test.js` | TC-073 | DS-006（1,000 件）。性能の番兵（一覧 p95 500ms・追加 p95 300ms。CI は 3 倍）。SLO の本判定は perf 層（perf/slo.yaml の api_list_p95_ms・api_create_p95_ms） |
 | e2e | `e2e/tests/main-flow.spec.js` | TC-001, TC-041, TC-070 | ブラウザ互換のケース（互換）は Playwright の projects（chromium / firefox / webkit）で実行する（`@cross-browser` を付けた TC-001・TC-056・TC-070 を 3 ブラウザで実行） |
 | e2e | `e2e/tests/add-task.spec.js` | TC-002〜TC-007, TC-016〜TC-020 | ペアワイズのケースは表（§8.1）の行をパラメータ化する |
 | e2e | `e2e/tests/toggle-delete.spec.js` | TC-008, TC-013〜TC-014 | 状態遷移表 §8.2 の画面側 |
@@ -331,7 +331,7 @@ high / medium / low。**ケースに紐づくリスクの priority の最大値*
 | e2e | `e2e/tests/security.spec.js` | TC-061 | dialog イベントの監視を含む |
 | e2e | `e2e/tests/concurrency.spec.js` | TC-063, TC-066 | UNK-003・004 は解決済みで確定値 |
 | e2e | `e2e/tests/a11y-responsive.spec.js` | TC-067〜TC-069 | @axe-core/playwright を使用。TC-067 は project `chromium-mobile-360`（360x640・タッチ） |
-| e2e | `e2e/tests/performance.spec.js` | TC-074 | DS-006（1,000 件） |
+| e2e | `e2e/tests/performance.spec.js` | TC-074 | DS-006（1,000 件）。性能の番兵（表示完了 2,000ms・各操作 1,000ms。CI は 3 倍）。SLO の本判定は perf 層（perf/slo.yaml の screen_ready_ms）。実測値を観察値に残す |
 | e2e | `e2e/compose/stack.spec.js` | TC-043〜TC-044, TC-076〜TC-077 | Playwright の project 'compose'（workers=1）。専用プロジェクト名で docker compose を操作する |
 | manual | 手動（実施記録は成果物 09 に残す） | TC-071, TC-072 | 実機。manual_reason に自動化しない理由を記録 |
 
@@ -349,7 +349,7 @@ high / medium / low。**ケースに紐づくリスクの priority の最大値*
 | @security | 直接 API・不正入力・XSS | TC-059〜TC-062 |
 | @a11y | ラベル・キーボード・読み上げ | TC-069, TC-068, TC-071 |
 | @compat | 画面幅・ブラウザ・実機 | TC-067, TC-070, TC-072 |
-| @perf | 性能（暫定しきい値） | TC-073, TC-074 |
+| @perf | 性能の番兵（機能層。SLO の本判定は perf 層の perf/slo.yaml。CI はしきい値 3 倍） | TC-073, TC-074 |
 | @compose | docker compose を使う（直列実行） | TC-043〜TC-044, TC-076〜TC-077 |
 | @pending | 暫定期待値を含む（未決の決定後に更新） | TC-073〜TC-074（UNK-002 のみ未決） |
 
