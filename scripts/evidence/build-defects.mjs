@@ -6,7 +6,7 @@
 // （事実に基づいて Issue 本文を補筆してから再実行する）。取得した内容が変わらなければスナップショットは書き換えない。
 // composition root: 時刻・gh・git・ファイル入出力をここで束ねる。
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { createReport, readJson, sha256, writeJson } from "./lib/common.mjs";
@@ -77,8 +77,18 @@ function redactionRecords(rawText, red) {
   ];
 }
 
+/** コミット済みのスナップショット（無ければ null）。存在確認と読み込みの間に競合が起きないよう、読んで ENOENT なら null にする。 */
+function readCommitted() {
+  try {
+    return readJson(snapshotPath);
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+
 function loadSnapshot() {
-  const committed = existsSync(snapshotPath) ? readJson(snapshotPath) : null;
+  const committed = readCommitted();
   if (args.offline) {
     if (!committed) throw new Error(`${SNAPSHOT_FILE} が無い（--offline では先に gh で取得しておく）`);
     return committed;
