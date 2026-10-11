@@ -146,6 +146,24 @@ describe("api ジャーニー", () => {
     assert.match(r.failure, /残っている|削除/);
   });
 
+  it("MON-013（J-05）: 一覧が 200・契約どおりなら成功。DATA_CORRUPT（500）なら失敗", async () => {
+    const ok = await runApiAttempt(find("MON-013"), deps(fakeApi().fetchFn), ctx);
+    assert.equal(ok.ok, true, ok.failure);
+    const corrupt = async () =>
+      new Response(
+        JSON.stringify({ error: { code: "DATA_CORRUPT", message: "保存データを読み込めませんでした" } }),
+        { status: 500 },
+      );
+    const ng = await runApiAttempt(find("MON-013"), deps(corrupt), ctx);
+    assert.equal(ng.ok, false);
+    assert.match(ng.failure, /500/);
+  });
+
+  it("health（MON-002）はジャーニーではなくサービス監視で、J-05 は MON-013 が受け持つ", () => {
+    assert.equal(find("MON-002").journey_id, null);
+    assert.equal(find("MON-013").journey_id, "J-05");
+  });
+
   it("通信エラーは失敗詳細に出る", async () => {
     const r = await runHttpAttempt(
       find("MON-002"),

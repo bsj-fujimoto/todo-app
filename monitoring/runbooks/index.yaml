@@ -14,7 +14,7 @@ runbooks:
   - runbook_id: RB-002
     path: monitoring/runbooks/RB-002-backend-health.md
     service: todo-app
-    monitor_ids: [MON-002]
+    monitor_ids: [MON-002, MON-013]
     triage: true
     isolate: true
     rollback: true

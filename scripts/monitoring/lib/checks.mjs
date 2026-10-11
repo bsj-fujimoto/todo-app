@@ -22,6 +22,10 @@ function checkBodyContains(text, res) {
   return res.bodyText.includes(text) ? null : `本文に ${show(text)} が無い`;
 }
 
+function checkBodyNotContains(text, res) {
+  return res.bodyText.includes(text) ? `本文に ${show(text)} が含まれる` : null;
+}
+
 function checkJson(spec, res) {
   if (res.json === undefined) return "本文が JSON でない";
   if (spec.when_set && (spec.equals === "" || spec.equals === undefined)) return null;
@@ -72,6 +76,7 @@ const CHECKS = {
   status: (v, res) => checkStatus(v, res),
   header: (v, res) => checkHeader(v, res),
   body_contains: (v, res) => checkBodyContains(v, res),
+  body_not_contains: (v, res) => checkBodyNotContains(v, res),
   json: (v, res) => checkJson(v, res),
   schema: (v, res, ctx) => checkSchema(v, res, ctx),
   array_contains: (v, res) => checkArrayContains(v, res),

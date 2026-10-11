@@ -6,7 +6,8 @@
 #     リリースがまだ無いときは docker compose up --build（main の HEAD）にフォールバックし、run の summary に明記する。
 #   - 認証なし（1 人用）。資格情報は使わない。合成データだけを使い、ジャーニーが作ったタスクは必ず削除する。
 #   - regions は実行環境（GitHub-hosted runner。リージョン非固定）を正直に書く。多地点監視はできない。
-#   - interval_sec は schedule（30 分）。GitHub の cron は遅延・欠落しうるため、実際の間隔はこれより長くなりうる。
+#   - interval_sec は schedule の実態（1800 秒 = 30 分）。GitHub の cron は最短 5 分で、遅延・欠落しうるため実際の間隔はこれより長くなりうる。
+#     MTTD の目標は 30 分 + retry 時間（monitoring/README.md「実行間隔と検知時間」。monitors の既定の上限 300 秒は満たさない）。
 version: 1
 service: todo-app
 base_url_env: BASE_URL # 既定 http://localhost:8080（run-monitors.mjs の --base-url / 環境変数 BASE_URL）
@@ -47,7 +48,7 @@ monitors:
     name: backend health とデプロイマーカー（GET /api/v1/health）
     type: http
     target: "${BASE_URL}/api/v1/health"
-    journey_id: J-05
+    journey_id: null # ジャーニーではなくサービス監視（死活・準備状態・デプロイマーカー）。J-05（データを守る）は MON-013
     sli: "health が status=ok・db=ok を返す割合。応答時間 p95"
     slo_ref: health_p95_ms
     user_impact: backend 停止・DB 異常。保存と読み込みができず、画面は保存失敗の表示になる（sev1）。
@@ -273,6 +274,44 @@ monitors:
         }
     cleanup: []
     data_cleanup: "不正入力は保存されない設計なので作成データなし。万一保存された場合は件数差で検知して失敗にする（自動削除はしない: 本番データを誤って消さないため）"
+
+  - monitor_id: MON-013
+    name: API ジャーニー J-05 保存データが壊れていない（GET /api/v1/tasks が 200・契約どおりで DATA_CORRUPT でない）
+    type: api
+    target: "${BASE_URL}/api/v1/tasks"
+    journey_id: J-05
+    sli: "一覧取得が 200・契約（TaskList）どおりで、DATA_CORRUPT（500）でない割合"
+    slo_ref: api_list_p95_ms
+    user_impact: 保存データが壊れている（DATA_CORRUPT）と、以降の読み書きが止まり、画面は「保存データを読み込めませんでした」になる。利用者のタスクが見えず、操作できない（sev1）。
+    timeout_sec: 20
+    retries: 1
+    steps:
+      - id: list
+        request: { method: GET, path: /api/v1/tasks }
+        expect:
+          - { status: 200 }
+          - { schema: TaskList }
+          - { body_not_contains: DATA_CORRUPT }
+          - { latency_ms_max: 500 }
+    assertions:
+      - {
+          kind: status,
+          value: "GET 200（500 DATA_CORRUPT・503 STORAGE_FAILURE でない）",
+          check: { status: 200 },
+        }
+      - {
+          kind: schema,
+          value: "TaskList（openapi.yaml）に適合。先頭 20 件の Task の主要項目を検証",
+          check: { schema: TaskList },
+        }
+      - { kind: content, value: "本文に DATA_CORRUPT を含まない", check: { body_not_contains: DATA_CORRUPT } }
+      - {
+          kind: latency,
+          value: "応答 500ms 以内（perf/slo.yaml api_list_p95_ms）",
+          check: { latency_ms_max: 500 },
+        }
+    cleanup: []
+    data_cleanup: "読み取りのみ（作成するデータなし）"
 
   - monitor_id: MON-007
     name: ブラウザジャーニー J-01 追加 → 再読込で残る

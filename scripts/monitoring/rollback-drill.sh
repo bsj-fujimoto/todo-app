@@ -84,8 +84,8 @@ services:
     image: todo-drill/frontend:good
 YAML
 cp "$OUT/rollback.yml" "$OUT/rollback.used.yml"
-# docker-compose.yml は environment で COMMIT_SHA を渡す（未指定なら unknown）。戻す版の commit を指定しないと health の commit が unknown になる
-COMMIT_SHA="$GOOD_COMMIT" compose -f docker-compose.yml -f "$OUT/rollback.yml" up -d --no-build --pull never --wait >/dev/null 2>&1
+# 戻すときは COMMIT_SHA を渡さない（焼き込み済みのイメージの commit が health に出ることの確認。#16 の修正後）
+compose -f docker-compose.yml -f "$OUT/rollback.yml" up -d --no-build --pull never --wait >/dev/null 2>&1
 wait_health
 RECOVER_AT="$(now)"
 mark "4-rolled-back" "health: $(curl -s "$BASE_URL/api/v1/health")"

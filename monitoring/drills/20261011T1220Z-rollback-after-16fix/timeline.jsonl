@@ -1,0 +1,9 @@
+{"at":"2026-10-11T12:20:32Z","step":"1-good-deploy","detail":"良い版（commit 08df5b7da03f543add68aafcfd7f4d3024a8432e）を起動"}
+{"at":"2026-10-11T12:20:48Z","step":"1-good-verified","detail":"固定したイメージ: sha256:cf98da38e4ac527089a01c192544377f53a6208003027c34ae6b8cb50fc43bca / sha256:0a822f9499b8a82d177c3fcb6f3af70a0ddd08f72728975f427499974252387f"}
+{"at":"2026-10-11T12:20:48Z","step":"1-monitors","detail":"良い版の監視 exit=0"}
+{"at":"2026-10-11T12:20:48Z","step":"2-bad-deploy","detail":"悪い版（commit drill-bad-release-0000000000000000000000000）に入れ替える"}
+{"at":"2026-10-11T12:21:00Z","step":"2-detected","detail":"期待する commit との不一致を監視が検知 exit=1（1 なら検知）"}
+{"at":"2026-10-11T12:21:00Z","step":"3-triage","detail":"一次対応: health の commit と docker compose ps / logs で稼働中の版を確認（runbook RB-002）"}
+{"at":"2026-10-11T12:21:00Z","step":"3-rollback","detail":"rollback.yml（前のイメージ）で入れ替える"}
+{"at":"2026-10-11T12:21:11Z","step":"4-rolled-back","detail":"health: {'status':'ok','version':'1.0.0','commit':'08df5b7da03f543add68aafcfd7f4d3024a8432e','db':'ok'}"}
+{"at":"2026-10-11T12:21:11Z","step":"4-verified","detail":"rollback 後の監視 exit=0（0 なら成功）"}

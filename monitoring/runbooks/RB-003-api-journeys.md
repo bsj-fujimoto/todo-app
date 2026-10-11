@@ -31,7 +31,7 @@
 
 1. `docker buildx imagetools inspect ghcr.io/bsj-fujimoto/todo-app-backend:vPREV --format '{{json .Manifest.Digest}}'` で backend の digest を引く（frontend も同様）。
 2. DB ボリュームをバックアップ: `docker run --rm -v todo-data:/data -v "$PWD":/backup alpine tar czf /backup/todo-data-backup.tgz -C /data .`
-3. `rollback.yml` に `image: …@sha256:…` を書き、`COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）。
+3. `rollback.yml` に `image: …@sha256:…` を書き、`docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`。
 4. 失敗した監視を手で再実行して確認: `node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out monitoring/out --only MON-003,MON-004,MON-005,MON-006`。
 5. Issue に戻した digest を記録し、`defect` を起票する。合成データが残っていれば（`synthetic-` で始まるタイトル）削除する。
 

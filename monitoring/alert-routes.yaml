@@ -24,7 +24,7 @@ severities:
 routes:
   - route_id: RT-SEV1
     severity: sev1
-    monitor_ids: [MON-001, MON-002]
+    monitor_ids: [MON-001, MON-002, MON-013]
     channel: "github-issue:incident"
     oncall_ref: "role:maintainer"
     ack_policy: >-

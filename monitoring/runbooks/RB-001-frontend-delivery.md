@@ -25,7 +25,7 @@
 直前のリリースが原因なら、前のリリースのイメージ（digest 固定）へ戻す。手順の全体と注意は RB-002 の「rollback」と同じ。要点:
 
 1. 1 つ前のリリースタグの frontend / backend の digest を `docker buildx imagetools inspect ghcr.io/bsj-fujimoto/todo-app-frontend:vPREV --format '{{json .Manifest.Digest}}'` で引く。
-2. `rollback.yml`（`image: …@sha256:…` を frontend / backend に指定）を作り、`COMMIT_SHA=<戻す版の commit> docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`（`COMMIT_SHA` を渡さないと health の commit が `unknown` になる。#16）。
+2. `rollback.yml`（`image: …@sha256:…` を frontend / backend に指定）を作り、`docker compose -f docker-compose.yml -f rollback.yml up -d --no-build --pull always`。
 3. `curl -sI localhost:8080/` と health の version を確認し、`node scripts/monitoring/run-monitors.mjs --base-url http://localhost:8080 --out monitoring/out` で全監視が成功することを確認する。
 4. Issue に戻した digest を記録し、`defect` を起票する。
 

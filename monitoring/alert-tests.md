@@ -27,4 +27,4 @@
 | 未               | RB-003 の切り分け表の個別行、RB-004 の locator 変更、RB-005 | —                                                                                                                                                                                                    | 未実施                                     | 理由: 個別の不具合（契約違反・DOM 変更・Actions の障害）を意図的に作る訓練は未実施。次の訓練で行う |
 
 - **rollback の訓練の限界**: 前のイメージは**ローカルでタグ固定したもの**（`todo-drill/backend:good`）。GHCR のリリースが無いため、`docker buildx imagetools inspect` による digest の取得と、digest 固定での pull は**検証していない**。手順の機構（上書きファイル・`--no-build`・health の版確認・監視での確認）と判断の流れを検証した。
-- **訓練で見つかった不備**: 焼き込み済みイメージを `COMMIT_SHA` 未指定で起動すると、`docker-compose.yml` の `environment` が上書きして health の commit が `unknown` になる（#16）。rollback 手順と `synthetic.yml` に `COMMIT_SHA` の指定を反映した。
+- **訓練で見つかった不備**: 焼き込み済みイメージを `COMMIT_SHA` 未指定で起動すると、`docker-compose.yml` の `environment` が上書きして health の commit が `unknown` になった（#16）。compose 側の恒久修正（#19）が main に入ったため、rollback 手順と `synthetic.yml` の `COMMIT_SHA` 回避策は外した。外した後に rollback 訓練を再実施して pass（下の 12:20 の行）。
