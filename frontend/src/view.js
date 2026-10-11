@@ -65,8 +65,8 @@ function listMessage(state) {
   return "";
 }
 
-export function createView(doc) {
-  const el = {
+function queryElements(doc) {
+  return {
     form: doc.getElementById("add-form"),
     input: doc.getElementById("title-input"),
     add: doc.getElementById("add-button"),
@@ -76,65 +76,69 @@ export function createView(doc) {
     message: doc.getElementById("list-message"),
     list: doc.getElementById("task-list"),
   };
+}
 
-  function renderErrors(state) {
-    setText(el.saveError, state.topError ? messageFor(state.topError) : "");
-    setText(el.inputError, state.inputError ? messageFor(state.inputError) : "");
-    if (state.inputError) el.input.setAttribute("aria-invalid", "true");
-    else el.input.removeAttribute("aria-invalid");
-    el.retry.hidden = state.phase !== "load-error";
-  }
+function renderErrors(el, state) {
+  setText(el.saveError, state.topError ? messageFor(state.topError) : "");
+  setText(el.inputError, state.inputError ? messageFor(state.inputError) : "");
+  if (state.inputError) el.input.setAttribute("aria-invalid", "true");
+  else el.input.removeAttribute("aria-invalid");
+  el.retry.hidden = state.phase !== "load-error";
+}
 
-  function renderControls(state) {
-    el.input.disabled = !controlsEnabled(state);
-    el.add.disabled = !controlsEnabled(state) || state.submitting;
-  }
+function renderControls(el, state) {
+  el.input.disabled = !controlsEnabled(state);
+  el.add.disabled = !controlsEnabled(state) || state.submitting;
+}
 
-  /** 削除などでフォーカス中の行が消えたら、近い行のチェックボックス（無ければ一覧のメッセージ）へ移す。 */
-  function keepFocus(rowIndex) {
-    if (rowIndex < 0 || el.list.contains(doc.activeElement)) return;
-    const rows = el.list.children;
-    const next = rows[Math.min(rowIndex, rows.length - 1)];
-    (next?.querySelector(".task-check") ?? el.message).focus();
-  }
+/** 削除などでフォーカス中の行が消えたら、近い行のチェックボックス（無ければ一覧のメッセージ）へ移す。 */
+function keepFocus(doc, el, rowIndex) {
+  if (rowIndex < 0 || el.list.contains(doc.activeElement)) return;
+  const rows = el.list.children;
+  const next = rows[Math.min(rowIndex, rows.length - 1)];
+  (next?.querySelector(".task-check") ?? el.message).focus();
+}
 
-  function renderList(state) {
-    const focused = doc.activeElement?.closest?.("li.task");
-    const rowIndex = focused && el.list.contains(focused) ? [...el.list.children].indexOf(focused) : -1;
-    syncRows(doc, el.list, state.phase === "ready" ? state.tasks : [], state.busyIds);
-    el.list.hidden = el.list.children.length === 0;
-    setText(el.message, listMessage(state));
-    el.message.hidden = el.message.textContent === "";
-    keepFocus(rowIndex);
-  }
+function renderList(doc, el, state) {
+  const focused = doc.activeElement?.closest?.("li.task");
+  const rowIndex = focused && el.list.contains(focused) ? [...el.list.children].indexOf(focused) : -1;
+  syncRows(doc, el.list, state.phase === "ready" ? state.tasks : [], state.busyIds);
+  el.list.hidden = el.list.children.length === 0;
+  setText(el.message, listMessage(state));
+  el.message.hidden = el.message.textContent === "";
+  keepFocus(doc, el, rowIndex);
+}
 
+function bindEvents(el, handlers) {
+  el.form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    handlers.onSubmit();
+  });
+  el.input.addEventListener("input", () => handlers.onInput());
+  el.retry.addEventListener("click", () => handlers.onRetry());
+  el.list.addEventListener("change", (event) => {
+    const row = event.target.closest("li.task");
+    if (row && event.target.matches(".task-check")) handlers.onToggle(row.dataset.id, event.target.checked);
+  });
+  el.list.addEventListener("click", (event) => {
+    const row = event.target.closest("li.task");
+    if (row && event.target.closest("button.delete")) handlers.onDelete(row.dataset.id);
+  });
+}
+
+export function createView(doc) {
+  const el = queryElements(doc);
   return {
     render(state) {
-      renderErrors(state);
-      renderControls(state);
-      renderList(state);
+      renderErrors(el, state);
+      renderControls(el, state);
+      renderList(doc, el, state);
     },
     getInputValue: () => el.input.value,
     clearInput() {
       el.input.value = "";
     },
     focusInput: () => el.input.focus(),
-    bind(handlers) {
-      el.form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        handlers.onSubmit();
-      });
-      el.input.addEventListener("input", () => handlers.onInput());
-      el.retry.addEventListener("click", () => handlers.onRetry());
-      el.list.addEventListener("change", (event) => {
-        const row = event.target.closest("li.task");
-        if (row && event.target.matches(".task-check"))
-          handlers.onToggle(row.dataset.id, event.target.checked);
-      });
-      el.list.addEventListener("click", (event) => {
-        const row = event.target.closest("li.task");
-        if (row && event.target.closest("button.delete")) handlers.onDelete(row.dataset.id);
-      });
-    },
+    bind: (handlers) => bindEvents(el, handlers),
   };
 }
