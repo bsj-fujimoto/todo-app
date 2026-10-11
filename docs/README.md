@@ -32,7 +32,7 @@ todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/Q
 | 10 | テスト品質報告書（quality） | 作成中 | `docs/data/` の各 CSV と `docs/evidence/` の集計 |
 | 11 | 外形監視・運用品質成果物（monitoring） | 作成中 | [monitoring/](../monitoring/README.md)（`monitors.yaml`・`runbooks/`・`fp-fn-log.md`） |
 | 12 | テスト結果分析レポート（analysis） | 作成中 | `docs/data/actions.csv`・`findings.csv`・`defects.csv` |
-| 13 | 品質証跡・AIコンテキスト（evidence） | 作成中（証跡の実体は[evidence/](evidence/README.md)、AI 向け文脈は[ai-context.yaml](ai-context.yaml)） | `docs/evidence/`・`docs/data/evidence-index.csv`・`traceability.csv` |
+| 13 | [品質証跡・AIコンテキスト（evidence）](13-evidence.md) | あり（draft。証跡の実体は[evidence/](evidence/README.md)、AI 向け文脈は[ai-context.yaml](ai-context.yaml)） | `docs/evidence/`・`docs/data/evidence-index.csv`・`traceability.csv` |
 
 ### 成果物に付随するもの
 
