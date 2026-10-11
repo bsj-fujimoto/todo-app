@@ -1,0 +1,395 @@
+# 外形監視の定義（Monitoring as Code の正本）。scripts/monitoring/run-monitors.mjs がこのファイルを読んで実行する。
+# 変更は PR（CODEOWNERS のレビュー）経由。監視の追加・調整は monitoring/fp-fn-log.md の記録と対応させる。
+#
+# 実行環境の前提（monitoring/README.md に詳細）:
+#   - 本番は無い。リリース済みコンテナイメージ（GHCR、digest 固定）を GitHub Actions 上で compose 起動し、localhost に対して実行する。
+#     リリースがまだ無いときは docker compose up --build（main の HEAD）にフォールバックし、run の summary に明記する。
+#   - 認証なし（1 人用）。資格情報は使わない。合成データだけを使い、ジャーニーが作ったタスクは必ず削除する。
+#   - regions は実行環境（GitHub-hosted runner。リージョン非固定）を正直に書く。多地点監視はできない。
+#   - interval_sec は schedule（30 分）。GitHub の cron は遅延・欠落しうるため、実際の間隔はこれより長くなりうる。
+version: 1
+service: todo-app
+base_url_env: BASE_URL # 既定 http://localhost:8080（run-monitors.mjs の --base-url / 環境変数 BASE_URL）
+defaults:
+  service: todo-app
+  regions: ["github-hosted-runner（リージョン非固定）"]
+  locations: 1
+  interval_sec: 1800
+  auth:
+    method: none
+    inline_credentials: false
+  pii_policy: "個人情報を使わない合成データのみ（タイトルは 'synthetic-<run_id>-…' の機械生成文字列）。実在の個人・秘密情報は入れない。"
+  defined_in: monitoring/monitors.yaml
+monitors:
+  - monitor_id: MON-001
+    name: frontend 配信（GET /）
+    type: http
+    target: "${BASE_URL}/"
+    journey_id: J-01
+    sli: "frontend が画面（HTML）を返せる割合"
+    slo_ref: availability_synthetic_ratio
+    user_impact: 画面が開けない。ToDo の追加・確認・完了・削除が一切できない（sev1）。
+    timeout_sec: 10
+    retries: 2
+    request: { method: GET, path: / }
+    assertions:
+      - { kind: status, value: "200", check: { status: 200 } }
+      - { kind: content, value: '本文に "My TODO" を含む（見出し）', check: { body_contains: "My TODO" } }
+      - {
+          kind: header,
+          value: "Content-Security-Policy ヘッダがある",
+          check: { header: { name: content-security-policy, present: true } },
+        }
+      - { kind: latency, value: "応答 2,000ms 以内", check: { latency_ms_max: 2000 } }
+    data_cleanup: "作成するデータなし（読み取りのみ）"
+
+  - monitor_id: MON-002
+    name: backend health とデプロイマーカー（GET /api/v1/health）
+    type: http
+    target: "${BASE_URL}/api/v1/health"
+    journey_id: J-05
+    sli: "health が status=ok・db=ok を返す割合。応答時間 p95"
+    slo_ref: health_p95_ms
+    user_impact: backend 停止・DB 異常。保存と読み込みができず、画面は保存失敗の表示になる（sev1）。
+    timeout_sec: 10
+    retries: 2
+    request: { method: GET, path: /api/v1/health }
+    assertions:
+      - { kind: status, value: "200", check: { status: 200 } }
+      - {
+          kind: schema,
+          value: "Health（openapi.yaml#/components/schemas/Health）に適合",
+          check: { schema: Health },
+        }
+      - { kind: content, value: "status=ok", check: { json: { path: "$.status", equals: "ok" } } }
+      - { kind: content, value: "db=ok", check: { json: { path: "$.db", equals: "ok" } } }
+      - {
+          kind: content,
+          value: "version が期待する版（デプロイマーカー）と一致",
+          check: { json: { path: "$.version", equals: "${expected_version}", when_set: true } },
+        }
+      - {
+          kind: content,
+          value: "commit が期待する commit と一致（最新リリース／checkout の commit）",
+          check: { json: { path: "$.commit", equals: "${expected_commit}", when_set: true } },
+        }
+      - {
+          kind: latency,
+          value: "応答 200ms 以内（perf/slo.yaml health_p95_ms）",
+          check: { latency_ms_max: 200 },
+        }
+    data_cleanup: "作成するデータなし（読み取りのみ）"
+
+  - monitor_id: MON-003
+    name: API ジャーニー J-01 追加して一覧に残る（POST → GET → DELETE）
+    type: api
+    target: "${BASE_URL}/api/v1/tasks"
+    journey_id: J-01
+    sli: "タスクを追加して一覧に現れるまで成功する割合。追加 p95"
+    slo_ref: api_create_p95_ms
+    user_impact: 追加したタスクが保存されない、または一覧に出ない。入力した内容が失われる（sev2）。
+    timeout_sec: 20
+    retries: 1
+    steps:
+      - id: create
+        request: { method: POST, path: /api/v1/tasks, body: { title: "${synthetic_title}" } }
+        save: { task_id: "$.id" }
+        expect:
+          - { status: 201 }
+          - { schema: Task }
+          - { json: { path: "$.title", equals: "${synthetic_title}" } }
+          - { json: { path: "$.completed", equals: false } }
+          - { latency_ms_max: 300 }
+      - id: list
+        request: { method: GET, path: /api/v1/tasks }
+        expect:
+          - { status: 200 }
+          - { schema: TaskList }
+          - { array_contains: { path: "$.tasks", key: id, value: "${task_id}" } }
+    assertions:
+      - { kind: status, value: "POST 201 / GET 200", check: { status: 201 } }
+      - { kind: schema, value: "Task / TaskList（openapi.yaml）に適合", check: { schema: Task } }
+      - { kind: content, value: "追加したタスクが一覧に含まれる（永続化）", check: { array_contains: task } }
+      - {
+          kind: latency,
+          value: "追加 300ms 以内（perf/slo.yaml api_create_p95_ms）",
+          check: { latency_ms_max: 300 },
+        }
+    cleanup:
+      - { request: { method: DELETE, path: "/api/v1/tasks/${task_id}" }, ignore_status: [404] }
+    data_cleanup: "journey が作った task_id を finally で必ず DELETE（失敗時も実行。404 は削除済みとして許容）"
+
+  - monitor_id: MON-004
+    name: API ジャーニー J-02 完了切替（POST → PATCH → GET → PATCH → DELETE）
+    type: api
+    target: "${BASE_URL}/api/v1/tasks/{id}"
+    journey_id: J-02
+    sli: "完了状態を切り替えて反映される割合。更新 p95"
+    slo_ref: api_update_p95_ms
+    user_impact: チェックを入れても状態が変わらない、または戻る。やったことが記録できない（sev2）。
+    timeout_sec: 20
+    retries: 1
+    steps:
+      - id: create
+        request: { method: POST, path: /api/v1/tasks, body: { title: "${synthetic_title}" } }
+        save: { task_id: "$.id" }
+        expect: [{ status: 201 }, { schema: Task }]
+      - id: complete
+        request: { method: PATCH, path: "/api/v1/tasks/${task_id}", body: { completed: true } }
+        expect:
+          - { status: 200 }
+          - { schema: Task }
+          - { json: { path: "$.completed", equals: true } }
+          - { json: { path: "$.id", equals: "${task_id}" } }
+          - { latency_ms_max: 300 }
+      - id: verify
+        request: { method: GET, path: /api/v1/tasks }
+        expect:
+          - { status: 200 }
+          - {
+              array_item_equals:
+                { path: "$.tasks", key: id, value: "${task_id}", field: completed, equals: true },
+            }
+      - id: uncomplete
+        request: { method: PATCH, path: "/api/v1/tasks/${task_id}", body: { completed: false } }
+        expect: [{ status: 200 }, { json: { path: "$.completed", equals: false } }]
+    assertions:
+      - { kind: status, value: "PATCH 200", check: { status: 200 } }
+      - { kind: schema, value: "Task に適合", check: { schema: Task } }
+      - {
+          kind: content,
+          value: "completed が true → false に切り替わり、一覧にも反映される",
+          check: { json: { path: "$.completed", equals: true } },
+        }
+      - {
+          kind: latency,
+          value: "更新 300ms 以内（perf/slo.yaml api_update_p95_ms）",
+          check: { latency_ms_max: 300 },
+        }
+    cleanup:
+      - { request: { method: DELETE, path: "/api/v1/tasks/${task_id}" }, ignore_status: [404] }
+    data_cleanup: "journey が作った task_id を finally で必ず DELETE"
+
+  - monitor_id: MON-005
+    name: API ジャーニー J-03 削除（POST → DELETE → GET → DELETE）
+    type: api
+    target: "${BASE_URL}/api/v1/tasks/{id}"
+    journey_id: J-03
+    sli: "削除したタスクが一覧から消える割合。削除 p95"
+    slo_ref: api_delete_p95_ms
+    user_impact: 不要なタスクが消せない、または消したものが復活する（sev2）。
+    timeout_sec: 20
+    retries: 1
+    steps:
+      - id: create
+        request: { method: POST, path: /api/v1/tasks, body: { title: "${synthetic_title}" } }
+        save: { task_id: "$.id" }
+        expect: [{ status: 201 }, { schema: Task }]
+      - id: delete
+        request: { method: DELETE, path: "/api/v1/tasks/${task_id}" }
+        expect: [{ status: 204 }, { latency_ms_max: 300 }]
+      - id: verify
+        request: { method: GET, path: /api/v1/tasks }
+        expect:
+          - { status: 200 }
+          - { array_not_contains: { path: "$.tasks", key: id, value: "${task_id}" } }
+      - id: delete-again
+        request: { method: DELETE, path: "/api/v1/tasks/${task_id}" }
+        expect:
+          - { status: 404 }
+          - { schema: Error }
+          - { json: { path: "$.error.code", equals: TASK_NOT_FOUND } }
+    assertions:
+      - { kind: status, value: "DELETE 204 / 2 回目 404", check: { status: 204 } }
+      - { kind: schema, value: "Error（openapi.yaml）に適合", check: { schema: Error } }
+      - {
+          kind: content,
+          value: "削除後は一覧に含まれず、再削除は TASK_NOT_FOUND",
+          check: { json: { path: "$.error.code", equals: TASK_NOT_FOUND } },
+        }
+      - {
+          kind: latency,
+          value: "削除 300ms 以内（perf/slo.yaml api_delete_p95_ms）",
+          check: { latency_ms_max: 300 },
+        }
+    cleanup:
+      - { request: { method: DELETE, path: "/api/v1/tasks/${task_id}" }, ignore_status: [404] }
+    data_cleanup: "journey 自身が削除する。途中失敗に備え finally でも DELETE（404 許容）"
+
+  - monitor_id: MON-006
+    name: API ジャーニー J-04 不正入力が弾かれる（空・101 文字・改行・不正本文）
+    type: api
+    target: "${BASE_URL}/api/v1/tasks"
+    journey_id: J-04
+    sli: "不正な入力を保存せず、規定のエラーで返す割合"
+    slo_ref: error_rate
+    user_impact: 不正な入力が保存される、または原因が分からないエラーになる。入力検証が壊れている（sev2）。
+    timeout_sec: 20
+    retries: 1
+    steps:
+      - id: before
+        request: { method: GET, path: /api/v1/tasks }
+        save: { count_before: "$.tasks.length" }
+        expect: [{ status: 200 }]
+      - id: empty
+        request: { method: POST, path: /api/v1/tasks, body: { title: "   " } }
+        expect:
+          - { status: 422 }
+          - { schema: Error }
+          - { json: { path: "$.error.code", equals: TITLE_REQUIRED } }
+          - { json: { path: "$.error.message", equals: "タスク名を入力してください" } }
+      - id: too-long
+        request: { method: POST, path: /api/v1/tasks, body: { title: "${repeat_a_101}" } }
+        expect:
+          - { status: 422 }
+          - { json: { path: "$.error.code", equals: TITLE_TOO_LONG } }
+          - { json: { path: "$.error.message", equals: "タスク名は100文字以内で入力してください" } }
+      - id: multiline
+        request: { method: POST, path: /api/v1/tasks, body: { title: "a\nb" } }
+        expect:
+          - { status: 422 }
+          - { json: { path: "$.error.code", equals: TITLE_MULTILINE } }
+      - id: invalid-body
+        request: { method: POST, path: /api/v1/tasks, body: { unknown: 1 } }
+        expect:
+          - { status: 400 }
+          - { json: { path: "$.error.code", equals: INVALID_REQUEST } }
+      - id: after
+        request: { method: GET, path: /api/v1/tasks }
+        expect:
+          - { status: 200 }
+          - { json: { path: "$.tasks.length", equals: "${count_before}" } }
+    assertions:
+      - { kind: status, value: "不正入力は 422 / 400", check: { status: 422 } }
+      - { kind: schema, value: "Error に適合", check: { schema: Error } }
+      - {
+          kind: content,
+          value: "error.code と日本語メッセージが仕様どおり、件数が増えない",
+          check: { json: { path: "$.error.code", equals: TITLE_REQUIRED } },
+        }
+    cleanup: []
+    data_cleanup: "不正入力は保存されない設計なので作成データなし。万一保存された場合は件数差で検知して失敗にする（自動削除はしない: 本番データを誤って消さないため）"
+
+  - monitor_id: MON-007
+    name: ブラウザジャーニー J-01 追加 → 再読込で残る
+    type: browser
+    target: "${BASE_URL}/"
+    journey_id: J-01
+    sli: "画面からタスクを追加し、再読込後も表示される割合"
+    slo_ref: screen_ready_ms
+    user_impact: 画面操作で追加できない・再読込すると消える。利用者が最初に行う操作が壊れている（sev2）。
+    timeout_sec: 60
+    retries: 1
+    runner: { kind: playwright, config: e2e/synthetic/playwright.synthetic.config.js, grep: "\\[MON-007\\]" }
+    assertions:
+      - { kind: status, value: "画面が開く（HTTP 200）", check: { status: 200 } }
+      - {
+          kind: content,
+          value: "追加したタイトルが一覧に表示され、再読込後も表示される",
+          check: { playwright: "e2e/synthetic/journey.spec.js [MON-007]" },
+        }
+      - {
+          kind: latency,
+          value: "画面表示完了 2,000ms 以内（perf/slo.yaml screen_ready_ms の運用側の確認）",
+          check: { playwright: "e2e/synthetic/journey.spec.js [MON-007]" },
+        }
+    data_cleanup: "ジャーニーが作ったタスクは UI の削除ボタンで消し、afterEach で API からも DELETE（失敗時の取りこぼし防止）"
+
+  - monitor_id: MON-008
+    name: ブラウザジャーニー J-02 完了切替（チェック → 再読込で保持）
+    type: browser
+    target: "${BASE_URL}/"
+    journey_id: J-02
+    sli: "画面のチェック操作が反映・保持される割合"
+    slo_ref: api_update_p95_ms
+    user_impact: チェックしても状態が保持されない（sev2）。
+    timeout_sec: 60
+    retries: 1
+    runner: { kind: playwright, config: e2e/synthetic/playwright.synthetic.config.js, grep: "\\[MON-008\\]" }
+    assertions:
+      - { kind: status, value: "画面が開く（HTTP 200）", check: { status: 200 } }
+      - {
+          kind: content,
+          value: "チェック → 完了表示（取り消し線）→ 再読込後も完了のまま",
+          check: { playwright: "e2e/synthetic/journey.spec.js [MON-008]" },
+        }
+    data_cleanup: "ジャーニーが作ったタスクは削除し、afterEach で API からも DELETE"
+
+  - monitor_id: MON-009
+    name: ブラウザジャーニー J-03 削除（削除ボタン → 再読込でも消えたまま）
+    type: browser
+    target: "${BASE_URL}/"
+    journey_id: J-03
+    sli: "画面の削除操作が反映・保持される割合"
+    slo_ref: api_delete_p95_ms
+    user_impact: 削除したタスクが消えない・復活する（sev2）。
+    timeout_sec: 60
+    retries: 1
+    runner: { kind: playwright, config: e2e/synthetic/playwright.synthetic.config.js, grep: "\\[MON-009\\]" }
+    assertions:
+      - { kind: status, value: "画面が開く（HTTP 200）", check: { status: 200 } }
+      - {
+          kind: content,
+          value: "削除ボタンで行が消え、再読込後も表示されない",
+          check: { playwright: "e2e/synthetic/journey.spec.js [MON-009]" },
+        }
+    data_cleanup: "ジャーニー自身が削除する。afterEach で API からも DELETE（404 許容）"
+
+  - monitor_id: MON-010
+    name: ブラウザジャーニー J-04 不正入力が弾かれる（空入力 → エラー表示・件数不変）
+    type: browser
+    target: "${BASE_URL}/"
+    journey_id: J-04
+    sli: "画面が不正入力を弾き、規定のエラー文言を表示する割合"
+    slo_ref: error_rate
+    user_impact: 不正な入力でエラーが出ない、または保存される（sev2）。
+    timeout_sec: 60
+    retries: 1
+    runner: { kind: playwright, config: e2e/synthetic/playwright.synthetic.config.js, grep: "\\[MON-010\\]" }
+    assertions:
+      - { kind: status, value: "画面が開く（HTTP 200）", check: { status: 200 } }
+      - {
+          kind: content,
+          value: "空入力で「タスク名を入力してください」が表示され、一覧の件数が変わらない",
+          check: { playwright: "e2e/synthetic/journey.spec.js [MON-010]" },
+        }
+    data_cleanup: "作成データなし（弾かれる操作のみ）。万一作られた場合は afterEach で検知して失敗にする"
+
+  # ---- 定義するが無効（嘘の実施にしない）。理由は monitoring/README.md「検証できないもの」
+  - monitor_id: MON-011
+    name: "TLS 証明書の期限（無効: 本番ドメインと実証明書が無い）"
+    type: tls
+    enabled: false
+    disabled_reason: >-
+      本リポジトリに本番環境・ドメイン・実証明書が無い。runner 内の localhost は HTTP のみ（TLS 終端を compose に追加しない前提）で、
+      証明書の期限は検証できない。本番（独自ドメインと TLS 終端）を持つ場合に有効化する。
+    target: "https://<本番ドメイン>:443"
+    journey_id: null
+    sli: "証明書の残り有効日数"
+    slo_ref: availability_synthetic_ratio
+    user_impact: 証明書が失効するとブラウザが警告を出し、利用者は画面に到達できない（sev1 相当）。
+    timeout_sec: 10
+    retries: 2
+    interval_sec: 86400
+    assertions:
+      - { kind: tls_expiry, value: "残り 14 日以上" }
+    data_cleanup: "作成するデータなし"
+
+  - monitor_id: MON-012
+    name: "DNS 解決（無効: 本番ドメインが無い）"
+    type: dns
+    enabled: false
+    disabled_reason: >-
+      本リポジトリに本番ドメインが無い。runner 内は compose のサービス名と localhost で、実 DNS の解決・伝播は検証できない。
+      本番を持つ場合に A/AAAA/CNAME の解決先と TTL を期待値と照合する監視として有効化する。
+    target: "<本番ドメイン>"
+    journey_id: null
+    sli: "名前解決の成功と解決先の一致"
+    slo_ref: availability_synthetic_ratio
+    user_impact: 名前が引けないと、アプリが動いていても利用者は到達できない（sev1 相当）。
+    timeout_sec: 10
+    retries: 2
+    interval_sec: 3600
+    assertions:
+      - { kind: dns, value: "A レコードが期待する IP と一致" }
+    data_cleanup: "作成するデータなし"

@@ -1,0 +1,2 @@
+# 手元の実行出力（run-monitors.mjs の既定の出力先）。コミットする記録は monitoring/drills/ と monitoring/history/ に置く
+out/
