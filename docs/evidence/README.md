@@ -20,7 +20,8 @@ docs/evidence/
     junit/               JUnit XML（e2e-<project>-junit.xml / compose / backend / frontend / contract）
     observations/        テストが実際に観察した値（e2e / backend / frontend。TC-ID ごとの JSON）
   security/              SARIF・CycloneDX SBOM・scan-run.json・findings.json・gate.json の写し（security.yml の artifact から）
-  perf/  monitoring/     性能・外形監視の結果（取得したら置く。今は空）
+  perf/                  性能試験の結果（GitHub 上の run 38152548008。PR #61 で取り込み済み。`version` は取り込み時の既定で `pre-1.0.0` のまま。成果物 07 の担当が直す）
+  monitoring/            外形監視の結果（取得したら置く。今は無い。Actions 上の実行は artifact `monitoring-results-<run_id>` に 90 日保存）
   github/                GitHub 統制の取得結果と、不具合 Issue のスナップショット（defect-issues.json）
 ```
 

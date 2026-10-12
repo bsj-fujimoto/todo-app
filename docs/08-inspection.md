@@ -158,7 +158,7 @@
 
 ## inspection-05 Coverage・除外
 
-**結論**: 走査範囲と除外は、各 `scan-run.json` の `coverage`・`exclusions` に機械的に残り、下表のとおり。**除外が意図どおりかは、筆者（AI）が設定を読んで確認した**。人（プロダクトオーナー）の確認は、この PR のマージで行う（マージ前は「人の確認済み」と書かない）。
+**結論**: 走査範囲と除外は、各 `scan-run.json` の `coverage`・`exclusions` に機械的に残り、下表のとおり。**除外が意図どおりかは、筆者（AI）が設定を読んで確認した**。人（プロダクトオーナー）の確認は未実施で、PR のマージ（フェーズ1は AI の代行）は人の確認ではない（「人の確認済み」と書かない）。
 
 | 検査 | 言語・path | URL・API | image | 除外 | 筆者の確認 |
 |---|---|---|---|---|---|
@@ -380,7 +380,7 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:c82e88bae5e0aeb7d04d
 
 **結論**: Dependabot の version updates と security updates は有効（2026-10-11 に有効化）で、alerts は取得でき、**open も過去分も 0 件**。**version updates の設定は、PR #57 でマニフェスト 13 件すべてを覆う形になった**（以前は 13 件中 8 件）。**週次の定期 audit はまだ 1 回も成功していない**（初回は 2026-10-12 19:00 UTC）。
 
-**設定**（[dependabot.yml](../.github/dependabot.yml)）: npm（`/`・`/backend`・`/frontend`・`/e2e`）、github-actions（`/`・`/.github/actions/setup-node-npm`、SHA 固定のまま追従）、docker（`/backend`・`/frontend`）、docker-compose（`/`）。週次（月曜 03:00 JST）、公開直後の版は 3 日待つ（cooldown）、グループ化、更新 PR 上限 5、ラベル・reviewer 付き。Node の奇数 major は提案しない（ADR-0003）。
+**設定**（[dependabot.yml](../.github/dependabot.yml)）: npm（`/`・`/backend`・`/frontend`・`/e2e`）、github-actions（`/`・`/.github/actions/setup-node-npm`、SHA 固定のまま追従）、docker（`/backend`・`/frontend`）、docker-compose（`/`）。週次（月曜 03:00 JST）、公開直後の版は 3 日待つ（cooldown）、グループ化、更新 PR 上限 5、ラベル・reviewer 付き。Node は major を提案しない（`ignore` の `update-types: version-update:semver-major`。PR #60 で、versions 指定が効かなかったため直した。ADR-0003）。
 
 **coverage（マニフェスト 13 件との照合。PR #57 の後は 13/13。「備考」の列に以前の状態を残す）**:
 
@@ -400,13 +400,13 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:c82e88bae5e0aeb7d04d
 |---|---|
 | alerts | 取得できる（`dependabot/alerts` が 200）。**全状態で 0 件** |
 | security updates | enabled（`gh api repos/bsj-fujimoto/todo-app` の `security_and_analysis`）。vulnerability-alerts は有効（204） |
-| 実績 | 2026-10-11 08:58 UTC に Dependabot の更新 job 4 本（npm・github-actions・docker・docker-compose）が成功。PR は 1 件（#27、node 24 → 25 の docker）で、LTS でないためオーナーがクローズし、`ignore` を足した（ADR-0003） |
+| 実績 | 2026-10-11 08:58 UTC に Dependabot の更新 job 4 本（npm・github-actions・docker・docker-compose）が成功。PR は 2 件（#27・#58。どちらも node 24 → 25 の docker）で、LTS でないためクローズした（#27 の後に足した `ignore`〔versions 指定〕が効かず #58 が出たため、PR #60〔2026-10-12〕で `update-types`〔major〕に変えた。ADR-0003） |
 | dependency review | PR のみ（high 以上と方針外ライセンスで失敗）。PR の run で success を確認。push では skipped が正 |
 | npm audit | `security.yml` の sca ジョブで 2 本（`--omit=dev`・全体）、結果は JSON を artifact に 90 日保存、`scan-run.json` にコマンド・commit・日時 |
 | 定期 audit | `security.yml` の `schedule: 0 19 * * 1`。**`last_success_at` は null**（schedule の成功実績がまだ無い）。週次の run が台帳と実際のずれ（`stale_ledger_entries`）も出す |
 | 放置された重大 alert | なし（alert 0 件） |
 
-**できていないこと**: ① ~~5 マニフェストの version updates~~（PR #57 で解消。追加分の Dependabot の PR 実績はまだ無い）。② 定期 audit の成功実績（初回の 2026-10-12 19:00 UTC の後に確認する。運用が 4 日未満で継続性は評価できない）。③ Dependabot が出した PR は 1 件だけで、「週次で PR が作られている」実績は評価できない。
+**できていないこと**: ① ~~5 マニフェストの version updates~~（PR #57 で解消。追加分の Dependabot の PR 実績はまだ無い）。② 定期 audit の成功実績（初回の 2026-10-12 19:00 UTC の後に確認する。運用が 4 日未満で継続性は評価できない）。③ Dependabot が出した PR は 2 件（#27・#58。どちらも不採用）だけで、「週次で PR が作られている」実績は評価できない。
 
 ## inspection-16 Triage・重複排除
 
@@ -496,7 +496,7 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:c82e88bae5e0aeb7d04d
 
 ## inspection-20 単一責任
 
-**結論**: **閾値を決めて CI で止めており、超過は 0 件・受容も 0 件**。`ci.yml` の `lint` ジョブ（`npm run lint`）が必須の集約ジョブ `ci-result` の `needs` に入っている。**ただし Ruleset が未適用のため、GitHub が赤いままのマージを止めるわけではない**（inspection-13）。
+**結論**: **閾値を決めて CI で止めており、超過は 0 件・受容も 0 件**。`ci.yml` の `lint` ジョブ（`npm run lint`）が必須の集約ジョブ `ci-result` の `needs` に入っている。**ただし Ruleset が未適用のため、GitHub が赤いままのマージを止めるわけではない**（inspection-13）。PR #57 から、閾値（`complexity`・`max-lines-per-function`・`max-params`・`max-depth`・`max-lines`）と違反の件数は、`security.yml` の `maintainability` ジョブが `thresholds.json`・`summary.json`・SARIF・`scan-run.json`（`rule_classes`: complexity・size・params・purity）として記録する（違反が 1 件でもあれば失敗）。v1.0.0 の run の記録には無く、次の run から残る。
 
 | ルール | 上限 | 設定 | 実測の最大（backend/src・frontend/src の 19 ファイル。2026-10-12） |
 |---|---|---|---|
@@ -512,7 +512,7 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:c82e88bae5e0aeb7d04d
 
 ## inspection-21 純粋さと副作用の閉じ込め
 
-**結論**: 時刻・乱数・ID 採番を直接呼ぶ規則を CI で止めており、**対象コードの違反は 0 件**。実際、`backend/src`・`frontend/src`・`scripts/*/lib` で `Date.now`・`Math.random`・`randomUUID()`・引数なしの `new Date()` は、composition root の `backend/src/main.js:19`（`new Date().toISOString()` を `clock` として注入）の 1 箇所だけ（2026-10-12、grep で確認）。規約は [eslint.config.js](../eslint.config.js) の冒頭と [CONTRIBUTING.md](../CONTRIBUTING.md) に明文化されている。
+**結論**: 時刻・乱数・ID 採番を直接呼ぶ規則を CI で止めており、**対象コードの違反は 0 件**。実際、`backend/src`・`frontend/src`・`scripts/*/lib` で `Date.now`・`Math.random`・`randomUUID()`・引数なしの `new Date()` は、composition root の `backend/src/main.js:19`（`new Date().toISOString()` を `clock` として注入）の 1 箇所だけ（2026-10-12、grep で確認）。規約は [eslint.config.js](../eslint.config.js) の冒頭と [CONTRIBUTING.md](../CONTRIBUTING.md) に明文化されている。PR #57 から、この規則の違反は `maintainability` ジョブの `rule_classes: purity` として検査記録（`summary.json`・`scan-run.json`）に残る（v1.0.0 の run には無い）。
 
 | 規則 | 内容 | 設定 |
 |---|---|---|
@@ -540,6 +540,8 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-frontend@sha256:c82e88bae5e0aeb7d04d
 | 終了処理 | SIGTERM・SIGINT で `app.close()` | `main-process.test.js` |
 
 **使っていない機能**: Fastify の route `schema`（JSON Schema による検証・直列化）は使っていない。入力検証は `domain/`・`http/` の自前の関数で、契約の検証は ajv を使う契約テスト。`dependency-selection.yaml` の fastify の選定理由は「スキーマによる検証が標準」と書くが、実装は使っていない（食い違いとして依頼表に書く）。
+
+**`ai-context.yaml` との関係**: `framework` は期待する検査（`expected_checks`）に含めず、`not_expected` に「Fastify 用の専用 lint・規約検査は無い。できていないことで、承認された対象外ではない」と理由つきで残した（本書と一致。横断整合の PR）。`security/expected-scans.yaml` にも `framework` の検査は無い。
 
 **検査の無い理由**: ESLint の Fastify 用プラグインは導入しておらず、静的に検査するだけの規模（ルート 5・ファイル 12）でもないと判断してきたが、**この判断は文書化もレビューもされていない**。nginx の設定は `nginx -t` 相当の検査や専用の lint を持たず、ZAP のヘッダ検査・E2E・compose テストで間接的に見る。
 

@@ -307,7 +307,7 @@ exceptions:
     criterion_id: api-02
     reason: "認証なしの 1 人用で、認証が要る endpoint が無い（REQ-015。openapi.yaml に security scheme も 401/403 も無い）。認証・認可の API 試験は対象にならない"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
     review_by: "2027-01-12" # docs/01 の plan-03（api-02）に合わせた見直し日
@@ -316,7 +316,7 @@ exceptions:
     criterion_id: api-08
     reason: "ページングを持つ endpoint が無い（GET /api/v1/tasks は全件返却。openapi.yaml に limit / offset / cursor が無い）。件数の上限は UNK-002（open）で未決"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
     review_by: "2026-10-16（UNK-002 の回答期限）。件数が 5,000 を超えたら即時" # docs/01 の plan-03（api-08）に合わせた見直し日
@@ -325,7 +325,7 @@ exceptions:
     criterion_id: inspection-12
     reason: "公開コンテンツサイトではなく、SEO / AIO の対象外（個人用のログイン不要アプリ。検索エンジンに載せる目的が無い）"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
     review_by: "2027-04-12" # docs/01 の plan-03（inspection-12）と同じ
@@ -334,7 +334,7 @@ exceptions:
     criterion_id: monitoring-05
     reason: "認証が無く、認証付き監視が存在しない。ただし書込みを伴う監視は専用の合成データで行い、作ったデータは必ず後始末する（書込みを伴う MON-003・004・005・007・008・009 の data_cleanup）"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
     review_by: "2027-01-12" # docs/01 の plan-03（monitoring-05）に合わせた見直し日。api-02 の見直しと同時
@@ -343,7 +343,7 @@ exceptions:
     criterion_id: regression-15
     reason: "外部連携が無く、frontend と backend は同一リリース単位（同じ commit・同じタグから両イメージを作る）。連携先との互換性回帰・バージョン組合せの回帰は要らない"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
     review_by: "2026-12-31（または /api/v2 を出す判断のとき、どちらか早い方）" # docs/01 の plan-03（regression-15）に合わせた見直し日
