@@ -44,20 +44,27 @@ function installShutdown({ app, store }) {
   for (const signal of SHUTDOWN_SIGNALS) process.on(signal, () => shutdown(signal));
 }
 
+// 終了コードを返す（process.exitCode への代入は await の後に書かず、呼び出し側でまとめる。ESLint require-atomic-updates）
 async function main() {
   const config = loadConfig(process.env);
   const parts = compose(config);
   installShutdown(parts);
   try {
     await parts.app.listen({ port: config.port, host: config.host });
+    return 0;
   } catch (error) {
     parts.app.log.fatal({ err: error }, "起動に失敗した");
     parts.store.close();
-    process.exitCode = 1;
+    return 1;
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main().then(
+  (code) => {
+    process.exitCode = code;
+  },
+  (error) => {
+    console.error(error);
+    process.exitCode = 1;
+  },
+);

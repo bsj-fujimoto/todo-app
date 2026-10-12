@@ -32,17 +32,59 @@ function completedRequests(text) {
   return completed;
 }
 
-/** backend は未起動の状態で始め、start() で起動する。 */
+/** backend プロセスの起動・停止（未起動の状態で始め、start() で起動する）。start / stop は 1 つのテストから逐次に呼ぶ。 */
+function backendController({ dbPath, logs }) {
+  let backend = null;
+  return {
+    port: () => backend?.port ?? null,
+    async start() {
+      if (backend) return;
+      // await をまたぐ代入だが、並行に呼ばないので競合しない
+      // eslint-disable-next-line require-atomic-updates
+      backend = await startBackendProcess({ root: ROOT, dbPath, log: logs.append });
+    },
+    async stop() {
+      const running = backend;
+      backend = null;
+      await stopChild(running?.child);
+    },
+  };
+}
+
+const toTask = (row) => ({
+  id: row.id,
+  title: row.title,
+  completed: row.completed === 1,
+  createdAt: row.created_at,
+});
+
+/** DB への直接の操作（seed・破損・内容の確認）。 */
+function databaseHelpers(dbPath, control) {
+  return {
+    /** DS-002 などを DB へ直接投入する（backend は操作ごとに DB を開き直すので、起動中でも次の操作から見える） */
+    seed: async (rows) => seedTasks(dbPath, rows),
+    /** DS-007: backend を止め、DB の先頭 100 バイトを 0x00 で上書きしてから再起動する */
+    async corruptDb() {
+      await control.stop();
+      corruptDbFile(dbPath);
+      await control.start();
+    },
+    dbSha256: async () => sha256File(dbPath),
+    /** 保存データ（tasks テーブル）を保存順に返す。seed の行と同じ形（{ id, title, completed, createdAt }）。 */
+    db: async () => readRows(dbPath).map(toTask),
+  };
+}
+
 async function createStack() {
   const tmp = await mkdtemp(path.join(tmpdir(), "todo-e2e-"));
   const dbPath = path.join(tmp, "todo.db");
   const logs = createLogBuffer();
   const requests = [];
-  let backend = null;
+  const control = backendController({ dbPath, logs });
 
   const frontend = await startFrontendServer({
     frontendDir: path.join(ROOT, "frontend"),
-    getBackendPort: () => backend?.port ?? null,
+    getBackendPort: control.port,
     record: (entry) => requests.push(entry),
   });
 
@@ -56,40 +98,16 @@ async function createStack() {
     logs: () => logs.toString(),
     /** backend の標準出力（pino の JSON 行）から、完了したリクエストの { method, url, status } を出現順に返す（health を除く）。 */
     requestLog: () => completedRequests(logs.toString()),
-
-    async startBackend() {
-      if (backend) return;
-      backend = await startBackendProcess({ root: ROOT, dbPath, log: logs.append });
-    },
-    async stopBackend() {
-      const running = backend;
-      backend = null;
-      await stopChild(running?.child);
-    },
-    /** DS-002 などを DB へ直接投入する（backend は操作ごとに DB を開き直すので、起動中でも次の操作から見える） */
-    seed: async (rows) => seedTasks(dbPath, rows),
-    /** DS-007: backend を止め、DB の先頭 100 バイトを 0x00 で上書きしてから再起動する */
-    async corruptDb() {
-      await stack.stopBackend();
-      corruptDbFile(dbPath);
-      await stack.startBackend();
-    },
-    dbSha256: async () => sha256File(dbPath),
-    /** 保存データ（tasks テーブル）を保存順に返す。seed の行と同じ形（{ id, title, completed, createdAt }）。 */
-    db: async () =>
-      readRows(dbPath).map((row) => ({
-        id: row.id,
-        title: row.title,
-        completed: row.completed === 1,
-        createdAt: row.created_at,
-      })),
+    startBackend: control.start,
+    stopBackend: control.stop,
+    ...databaseHelpers(dbPath, control),
     /** backend を直接呼んで保存済みのタスクを得る（画面を経由しない確認用） */
     async tasks() {
-      const response = await fetch(`http://127.0.0.1:${backend.port}/api/v1/tasks`);
+      const response = await fetch(`http://127.0.0.1:${control.port()}/api/v1/tasks`);
       return { status: response.status, body: await response.json() };
     },
     async dispose() {
-      await stack.stopBackend();
+      await control.stop();
       await frontend.close();
       await rm(tmp, { recursive: true, force: true });
     },

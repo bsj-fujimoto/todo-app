@@ -176,7 +176,8 @@ const POOL_CAP = 2;
 function createIntoPool(extra, balanced) {
   const t = createTask(`性能確認-${exec.vu.idInTest}-${exec.scenario.iterationInTest}`, extra);
   if (t) pool.push(t.id);
-  while (balanced && pool.length > POOL_CAP) deleteTask(pool.shift(), extra);
+  const excess = balanced ? pool.length - POOL_CAP : 0;
+  for (let i = 0; i < excess; i += 1) deleteTask(pool.shift(), extra);
 }
 
 function toggleFromPool(extra) {

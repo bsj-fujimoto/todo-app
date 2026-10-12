@@ -114,7 +114,9 @@ export async function startFrontendServer({ frontendDir, getBackendPort, record 
       serveStatic(req, res, frontendDir);
     }
   });
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  await new Promise((resolve) => {
+    server.listen(0, "127.0.0.1", resolve);
+  });
   return {
     port: server.address().port,
     close: () =>

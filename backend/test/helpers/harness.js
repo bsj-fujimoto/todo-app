@@ -100,6 +100,43 @@ export function createClient(baseUrl, { contract = true } = {}) {
 }
 
 /**
+ * backend（Fastify）を空きポートで起動する。同じ dbPath で stop() → start() すれば再起動を再現できる。
+ * 停止の後始末（stop）は cleanups に積む。
+ */
+async function startApp({ dbPath, clock, idGenerator, rest }, cleanups) {
+  const { stream, lines } = logCollector();
+  const store = createStore({ dbPath, clock });
+  const app = buildApp({
+    store,
+    clock,
+    idGenerator,
+    requestIdGenerator: sequentialRequestIds(),
+    logger: { level: "info", stream },
+    info: rest.info ?? INFO,
+  });
+  await app.listen({ port: 0, host: "127.0.0.1" });
+  const baseUrl = `http://127.0.0.1:${app.server.address().port}`;
+  let stopped = false;
+  const stop = async () => {
+    if (stopped) return;
+    stopped = true;
+    await app.close();
+    store.close();
+  };
+  cleanups.push(stop);
+  return {
+    ...createClient(baseUrl, { contract: rest.contract ?? true }),
+    baseUrl,
+    app,
+    stop,
+    /** これまでに出力されたログ（pino の JSON 行をパースしたもの）。 */
+    logs: () => [...lines],
+    /** 完了ログ（request completed）を、受信ログ（incoming request）の method・url と突き合わせたもの。 */
+    completedLogs: () => completedRequests(lines),
+  };
+}
+
+/**
  * 1 つのテストが使う資源（一時ディレクトリ・起動した backend）をまとめて管理し、afterEach で cleanup() する。
  */
 export function createHarness() {
@@ -117,38 +154,8 @@ export function createHarness() {
      * backend（Fastify）を空きポートで起動する。同じ dbPath で stop() → start() すれば再起動を再現できる。
      * @param {{dbPath: string, clock?: () => string, idGenerator?: () => string, contract?: boolean, info?: object}} options
      */
-    async start({ dbPath, clock = fixedClock(DEFAULT_NOW), idGenerator = sequentialIdGenerator(), ...rest }) {
-      const { stream, lines } = logCollector();
-      const store = createStore({ dbPath, clock });
-      const app = buildApp({
-        store,
-        clock,
-        idGenerator,
-        requestIdGenerator: sequentialRequestIds(),
-        logger: { level: "info", stream },
-        info: rest.info ?? INFO,
-      });
-      await app.listen({ port: 0, host: "127.0.0.1" });
-      const baseUrl = `http://127.0.0.1:${app.server.address().port}`;
-      let stopped = false;
-      const stop = async () => {
-        if (stopped) return;
-        stopped = true;
-        await app.close();
-        store.close();
-      };
-      cleanups.push(stop);
-      return {
-        ...createClient(baseUrl, { contract: rest.contract ?? true }),
-        baseUrl,
-        app,
-        stop,
-        /** これまでに出力されたログ（pino の JSON 行をパースしたもの）。 */
-        logs: () => [...lines],
-        /** 完了ログ（request completed）を、受信ログ（incoming request）の method・url と突き合わせたもの。 */
-        completedLogs: () => completedRequests(lines),
-      };
-    },
+    start: ({ dbPath, clock = fixedClock(DEFAULT_NOW), idGenerator = sequentialIdGenerator(), ...rest }) =>
+      startApp({ dbPath, clock, idGenerator, rest }, cleanups),
 
     async cleanup() {
       for (const cleanup of cleanups.reverse()) await cleanup();
