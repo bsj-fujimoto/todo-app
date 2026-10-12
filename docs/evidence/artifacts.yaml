@@ -31,14 +31,18 @@ artifacts:
     path: backend/test/api-tags.yaml
     type: api_test_mapping
     title: "API テストの「どの endpoint を、何の観点で検証するか」の対応表（TC → endpoint・method・タグ）。"
-    version: "git:"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "バックエンド担当"
     approved_by: null
-    updated_at: "2026-10-12T09:25:50.481Z"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: yaml
-    history: []
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
     source_sha256: "964b25f402da716dcd1acdb77b84688462c6e50c8a90e360fab99e2cecb1cf09"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
@@ -146,10 +150,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -194,10 +202,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -266,10 +278,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -290,10 +306,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -338,10 +358,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -362,10 +386,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -539,14 +567,18 @@ artifacts:
     path: docs/data/api-results.csv
     type: "table:api-results"
     title: docs/data/api-results.csv
-    version: "git:"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T09:27:05.824Z"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: true
     normalized_format: csv
-    history: []
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
     source_sha256: "15610ce78e4d37697c813c266ec7238c2457dc3a2b6bebb3622e350dfd279bfd"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
@@ -631,14 +663,18 @@ artifacts:
     path: docs/data/deviations.csv
     type: "table:deviations"
     title: docs/data/deviations.csv
-    version: "git:"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T09:27:05.753Z"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: true
     normalized_format: csv
-    history: []
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
     source_sha256: "778ce853e7ecdd6a5f09d053f9549a0c8f57dea9300bbaca069efff08fb99ca4"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
@@ -646,14 +682,18 @@ artifacts:
     path: docs/data/evidence-index.csv
     type: "table:evidence-index"
     title: docs/data/evidence-index.csv
-    version: "git:2eb62aa"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -673,14 +713,18 @@ artifacts:
     path: docs/data/executions.csv
     type: "table:executions"
     title: docs/data/executions.csv
-    version: "git:d14c713"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:30:20+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -784,14 +828,18 @@ artifacts:
     path: docs/data/traceability.csv
     type: "table:traceability"
     title: docs/data/traceability.csv
-    version: "git:6a07b95"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:23:59+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:23:59+09:00"
         by: maintainer
         change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
@@ -846,14 +894,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:2eb62aa"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -892,14 +944,18 @@ artifacts:
     path: docs/evidence/run-roles.yaml
     type: evidence_ledger
     title: "run の役割台帳（生成物。手で編集しない）。scripts/evidence/build-run-roles.mjs が、取り込んだ run の SOURCE.json と perf/results/*/run.json から作る。"
-    version: "git:"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T09:27:05.860Z"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: yaml
-    history: []
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
     source_sha256: "8b9646b4ab85f2142aa1c82993795bfdd0a53bf660ec47bc0186330c70801af2"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
