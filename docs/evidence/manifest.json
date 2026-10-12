@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-12T08:06:18.264Z",
+  "generated_at": "2026-10-12T08:18:17.809Z",
   "root": "docs/evidence",
   "algorithm": "sha256",
   "count": 365,
@@ -27,11 +27,11 @@
     },
     {
       "path": "perf/SOURCE.json",
-      "sha256": "cdd280d8c859b2e13a8340c00bcbe1d94c071a508665b906086d9c49b2cc23cf",
-      "size": 547,
+      "sha256": "8b71b6f175ef65141802a3ec11d312a6f36db9863b70e8020a70c34ae785cdf9",
+      "size": 1017,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -40,7 +40,7 @@
       "size": 9696,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -49,7 +49,7 @@
       "size": 657730,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -58,7 +58,7 @@
       "size": 6599,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -67,7 +67,7 @@
       "size": 6869,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -76,7 +76,7 @@
       "size": 6661,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -85,7 +85,7 @@
       "size": 6751,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -94,7 +94,7 @@
       "size": 6896,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -103,7 +103,7 @@
       "size": 6273,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -112,7 +112,7 @@
       "size": 9693,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -121,7 +121,7 @@
       "size": 672509,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -130,7 +130,7 @@
       "size": 6694,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -139,7 +139,7 @@
       "size": 6907,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -148,7 +148,7 @@
       "size": 6612,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -157,7 +157,7 @@
       "size": 6729,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -166,7 +166,7 @@
       "size": 6840,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -175,7 +175,7 @@
       "size": 6302,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -184,7 +184,7 @@
       "size": 9688,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -193,7 +193,7 @@
       "size": 656495,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -202,7 +202,7 @@
       "size": 6689,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -211,7 +211,7 @@
       "size": 6900,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -220,7 +220,7 @@
       "size": 6683,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -229,7 +229,7 @@
       "size": 6724,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -238,7 +238,7 @@
       "size": 6876,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -247,7 +247,7 @@
       "size": 6306,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -256,7 +256,7 @@
       "size": 3893,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -265,7 +265,7 @@
       "size": 472,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -274,7 +274,7 @@
       "size": 3027,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -283,7 +283,7 @@
       "size": 8618,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -292,7 +292,7 @@
       "size": 258477,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -301,7 +301,7 @@
       "size": 6339,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -310,7 +310,7 @@
       "size": 3026,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -319,7 +319,7 @@
       "size": 8654,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -328,7 +328,7 @@
       "size": 258517,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -337,7 +337,7 @@
       "size": 6352,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -346,7 +346,7 @@
       "size": 3030,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -355,7 +355,7 @@
       "size": 8571,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -364,7 +364,7 @@
       "size": 258511,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -373,7 +373,7 @@
       "size": 6300,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -382,7 +382,7 @@
       "size": 3979,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -391,7 +391,7 @@
       "size": 51183,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -400,7 +400,7 @@
       "size": 1471,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -409,7 +409,7 @@
       "size": 27626,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -418,7 +418,7 @@
       "size": 3449,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -427,7 +427,7 @@
       "size": 575943,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -436,7 +436,7 @@
       "size": 3281,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -445,7 +445,7 @@
       "size": 3258,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -454,7 +454,7 @@
       "size": 1669,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -463,7 +463,7 @@
       "size": 15040,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -472,7 +472,7 @@
       "size": 6699,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -481,7 +481,7 @@
       "size": 511744,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -490,7 +490,7 @@
       "size": 6252,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -499,7 +499,7 @@
       "size": 15065,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -508,7 +508,7 @@
       "size": 6674,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -517,7 +517,7 @@
       "size": 512047,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -526,7 +526,7 @@
       "size": 6315,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -535,7 +535,7 @@
       "size": 15037,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -544,7 +544,7 @@
       "size": 6700,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -553,7 +553,7 @@
       "size": 512324,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -562,7 +562,7 @@
       "size": 6320,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -571,7 +571,7 @@
       "size": 1649,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -580,7 +580,7 @@
       "size": 11361,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -589,7 +589,7 @@
       "size": 6714,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -598,7 +598,7 @@
       "size": 143259,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -607,7 +607,7 @@
       "size": 6331,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -616,7 +616,7 @@
       "size": 11249,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -625,7 +625,7 @@
       "size": 6758,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -634,7 +634,7 @@
       "size": 136485,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -643,7 +643,7 @@
       "size": 6296,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -652,7 +652,7 @@
       "size": 11371,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -661,7 +661,7 @@
       "size": 6710,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -670,7 +670,7 @@
       "size": 138031,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -679,7 +679,7 @@
       "size": 6300,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -688,7 +688,7 @@
       "size": 2600,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -697,7 +697,7 @@
       "size": 12090,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -706,7 +706,7 @@
       "size": 6608,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -715,7 +715,7 @@
       "size": 311250,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -724,7 +724,7 @@
       "size": 6289,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -733,7 +733,7 @@
       "size": 12107,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -742,7 +742,7 @@
       "size": 6676,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -751,7 +751,7 @@
       "size": 317362,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -760,7 +760,7 @@
       "size": 6322,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -769,7 +769,7 @@
       "size": 12103,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -778,7 +778,7 @@
       "size": 6694,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -787,7 +787,7 @@
       "size": 322404,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -796,7 +796,7 @@
       "size": 6361,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -805,7 +805,7 @@
       "size": 3251,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -814,7 +814,7 @@
       "size": 2494,
       "captured_at": "2026-10-12T07:49:48.682Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {

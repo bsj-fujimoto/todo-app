@@ -35,10 +35,18 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
+      - at: "2026-10-12T17:14:35+09:00"
+        by: maintainer
+        change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
+        commit: "2d33827"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -47,7 +55,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
         commit: eb8c753
-    source_sha256: "36aef96683d77e56440d0ec314b05556dedc5c59dad571a414ede55dffa283dd"
+    source_sha256: "901eec6475173af9d3c8533931e85f977bbc1bf5d23325d5b881a9e2ff7db008"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-01
@@ -199,6 +207,30 @@ artifacts:
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-06
+  - artifact_id: ART-72
+    path: docs/07-performance.md
+    type: document
+    title: "07 負荷・性能試験成果物"
+    version: "1.0"
+    status: draft
+    owner_role: "QA 担当・運用"
+    approved_by: null
+    updated_at: "2026-10-12T17:18:17+09:00"
+    authoritative: false
+    normalized_format: md
+    history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
+      - at: "2026-10-12T17:14:35+09:00"
+        by: maintainer
+        change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
+        commit: "2d33827"
+    source_sha256: "84acaf4e751ebf8fc99f44bddafc8dea2ce1c73de7caf8087e66dd51a9841045"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+    doc_id: DOC-07
   - artifact_id: ART-64
     path: docs/08-inspection.md
     type: document
@@ -235,10 +267,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -247,7 +283,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 09 テスト実施・結果記載（execution-01〜14） (#47)"
         commit: "901e458"
-    source_sha256: "2c1f0c5575748139e1da600abde18224a0670de9bcaa590c9a2996574c344b36"
+    source_sha256: "5a47509e3ebdf619b43349dd06e96375c8c5ac0589f33ea4b809a1b78af709cd"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-09
@@ -259,10 +295,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -271,7 +311,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 10 テスト品質報告書（quality-01〜14） (#54)"
         commit: a1cb9ae
-    source_sha256: a7c4fc663d5f4faf2a76dc460e7a36aa50982c9cab021a1c4700562eb82bc40b
+    source_sha256: "5f6bee4ca3f7e9501d655f9598e18dbe6909bb04a8eba627529a8418119cb041"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-10
@@ -311,10 +351,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -323,7 +367,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 12 テスト結果分析レポート（analysis-01〜15） (#56)"
         commit: adc9dc9
-    source_sha256: "1d92cfec9d2b379ca467879015addaeab42f17e48605a6d406748030a73a613f"
+    source_sha256: "2a4ad273193c5cb29679f735cb66cab98284ecb059b86f9e4d09a4028d8cfd09"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-12
@@ -335,10 +379,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:11:05+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:11:05+09:00"
         by: maintainer
         change: "docs: 13 の数え直し・旧 run/ART-58/Release 添付/FND-012 の解消の反映、schedule 実績（2026-10-12 17:00 JST）の反映"
@@ -347,7 +395,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 13 品質証跡・AIコンテキスト（evidence-01〜11） (#55)"
         commit: ba2d2bd
-    source_sha256: cd99f8f3daa3a3e158f649e9d3cc577ca9ecd7721185fa4226a8c49363531cf8
+    source_sha256: f6139787e35194e088c7d5e82135cb57ff450e602713a4ba32af8f37d4948faa
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-13
@@ -469,14 +517,22 @@ artifacts:
     path: docs/data/actions.csv
     type: "table:actions"
     title: docs/data/actions.csv
-    version: "git:adc9dc9"
+    version: "git:190de19"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:54:54+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
+      - at: "2026-10-12T17:14:35+09:00"
+        by: maintainer
+        change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
+        commit: "2d33827"
       - at: "2026-10-12T01:54:54+09:00"
         by: maintainer
         change: "docs: 成果物 12 テスト結果分析レポート（analysis-01〜15） (#56)"
@@ -493,7 +549,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: a936f4812c29fac07935168ceb06611e18c44b8903427c464c69fd8601680216
+    source_sha256: "4b04dbd86ac70a3ecb0e5a7df7c0e97d5e9617bbfeb788d8ac4e380345d8a80f"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-06
@@ -597,7 +653,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "525a04224344c39b09a450c9c53fb38953b59d2d3139812d23785edf1c2aa8ac"
+    source_sha256: e5ce902659c843369d325cc2b4143c49c5d263dbb9d3f5423051b1054f193483
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-10
@@ -715,14 +771,18 @@ artifacts:
     path: docs/data/traceability.csv
     type: "table:traceability"
     title: docs/data/traceability.csv
-    version: "git:adc9dc9"
+    version: "git:2d33827"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:54:54+09:00"
+    updated_at: "2026-10-12T17:14:35+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:14:35+09:00"
+        by: maintainer
+        change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
+        commit: "2d33827"
       - at: "2026-10-12T01:54:54+09:00"
         by: maintainer
         change: "docs: 成果物 12 テスト結果分析レポート（analysis-01〜15） (#56)"
@@ -739,7 +799,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "8114122635b1ca50e0ef216b8408e723d638f935049336bba378c590126028de"
+    source_sha256: "826ede86ac49534ea1556303b402eac321003c006ce77bba493d74cd587fe0c0"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-16
@@ -769,14 +829,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:4c56a92"
+    version: "git:190de19"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:12:40+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:12:40+09:00"
         by: maintainer
         change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
@@ -793,7 +857,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "6bf82b94b0417617ce0d32c8fa2ec55873627c6d9f7b4c535dd85d76e6d4803f"
+    source_sha256: "78ac8a79259685e535a1372f801381d334f91f7d172dd1ceca5b7b878711cea0"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
@@ -980,14 +1044,18 @@ artifacts:
     path: perf/README.md
     type: perf_config
     title: "負荷・性能試験"
-    version: "git:ac5feba"
+    version: "git:190de19"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T16:58:13+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T16:58:13+09:00"
         by: maintainer
         change: "test(perf): GitHub-hosted runner の実測（v1.0.0 上の run 38152548008）の取り込みと runner baseline (#61)"
@@ -1000,7 +1068,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: "16bdafc0f5ed1ce6873e4e75abf25b10ee44617461e81995ba4a22116f3eb36f"
+    source_sha256: "2076e9e42a4b1237fb0349e5aaf0f9ac5939a8655a4995c88beff95b103c90a8"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-47
@@ -1110,14 +1178,18 @@ artifacts:
     path: perf/slo.yaml
     type: slo
     title: "性能 SLO（機械可読の正本）。判定は scripts/perf/verdict.mjs、k6 の threshold、"
-    version: "git:89c3b2b"
+    version: "git:190de19"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:18:17+09:00"
     authoritative: true
     normalized_format: yaml
     history:
+      - at: "2026-10-12T17:18:17+09:00"
+        by: maintainer
+        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
+        commit: "190de19"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -1126,7 +1198,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: cba2ed520148f4858873197a6d6a4d30347fa8e7a6d6b1adfb2854dbc24e6c0e
+    source_sha256: "76870d2069b670d6c09305cf58870896772688e740d4493a98e256fb9069f6f6"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-53
