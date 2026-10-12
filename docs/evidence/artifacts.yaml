@@ -357,7 +357,7 @@ artifacts:
     version: "git:eb8c753"
     status: approved
     owner_role: "QA リード"
-    approved_by: "QA リード"
+    approved_by: "プロダクトオーナー"
     updated_at: "2026-10-12T01:01:41+09:00"
     authoritative: true
     normalized_format: md
@@ -414,7 +414,7 @@ artifacts:
     version: "git:eb8c753"
     status: approved
     owner_role: "QA リード"
-    approved_by: "QA リード"
+    approved_by: "プロダクトオーナー"
     updated_at: "2026-10-12T01:01:41+09:00"
     authoritative: true
     normalized_format: md
@@ -433,7 +433,7 @@ artifacts:
     version: "git:eb8c753"
     status: approved
     owner_role: "QA リード"
-    approved_by: "QA リード"
+    approved_by: "プロダクトオーナー"
     updated_at: "2026-10-12T01:01:41+09:00"
     authoritative: true
     normalized_format: md
@@ -557,14 +557,18 @@ artifacts:
     path: docs/data/evidence-index.csv
     type: "table:evidence-index"
     title: docs/data/evidence-index.csv
-    version: "git:d14c713"
+    version: "git:02ea43b"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:30:20+09:00"
+    updated_at: "2026-10-12T17:07:14+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:07:14+09:00"
+        by: maintainer
+        change: "chore(evidence): 再生成（成果物台帳・証拠索引・検出表・manifest）。ADR の承認者を『承認』と書かれたロールから読む"
+        commit: "02ea43b"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -603,14 +607,18 @@ artifacts:
     path: docs/data/findings.csv
     type: "table:findings"
     title: docs/data/findings.csv
-    version: "git:d14c713"
+    version: "git:02ea43b"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:30:20+09:00"
+    updated_at: "2026-10-12T17:07:14+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:07:14+09:00"
+        by: maintainer
+        change: "chore(evidence): 再生成（成果物台帳・証拠索引・検出表・manifest）。ADR の承認者を『承認』と書かれたロールから読む"
+        commit: "02ea43b"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
