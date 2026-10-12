@@ -20,12 +20,12 @@
 - **監視 13 件（有効 11・無効 2）**。重要ジャーニー J-01〜J-05（[quality/journeys.yaml](../quality/journeys.yaml)）の **5 件すべて**が http / api / browser の監視で守られている（J-01〜J-04 は API と browser、J-05 は API）。ping だけの監視は無い（monitoring-02）。
 - 全監視が service・SLI・SLO（`perf/slo.yaml` の metric）・利用者影響・severity に紐づく。通知経路 3 本が 13 件すべてを覆い、runbook 5 本はいずれも一次対応・切り分け・rollback・連絡経路の 4 節を持つ（monitoring-01・07・08）。
 - 監視・経路・runbook・実行・通知試験のすべてを Git で管理し、設定の整合は `check-config.mjs` と単体テスト 34 件で検査する（monitoring-10。2026-10-12 に手元で 34 件 pass・`[check-config] OK` を確認。PR #51 から PR の CI（`ci.yml` の lint ジョブ）でも動く）。
-- **本物のインシデントが 2 件ある**。①#36: MON-008 の**誤検知**で、原因は製品の挙動修正（PR #12）に監視の `check()` が追随していなかったこと。検知から Issue 起票まで約 37 秒、回復で自動 close、defect・テスト・監視・runbook・PR テンプレートへ還流した（monitoring-12・14）。②#59（2026-10-12 06:36 UTC）: 死活監視 `monitoring-watchdog.yml` が「`synthetic.yml` の最終実行が 5.3 時間前」を検知して `[sev3][MON-META] 外形監視が 3 時間以上実行されていない` を起票し、次の schedule 実行（08:00 UTC）が成功して自動 close した（約 84 分。monitoring-07）。**これは誤検知ではなく、schedule が 30 分ごとに動いていない実態を捉えた本物の検知**。
+- **本物のインシデントが 2 件ある**。①#36: MON-008 の**誤検知**で、原因は製品の挙動修正（PR #12）に監視の `check()` が追随していなかったこと。検知から Issue 起票まで約 37 秒、回復で自動 close、defect・テスト・監視・runbook・PR テンプレートへ還流した（monitoring-12・14）。②#59（2026-10-12 06:36 UTC）: 死活監視 `monitoring-watchdog.yml` が「`synthetic.yml` の最終実行が 5.3 時間前」を検知して `[sev3][MON-META] 外形監視が 3 時間以上実行されていない` を起票し、次の schedule 実行（08:00 UTC）が成功して自動 close した（約 84 分。monitoring-07）。**事実（最終実行が 5.3 時間前）は正しいが、原因は製品の障害でなく、しきい値 3 時間が schedule の実効間隔（3.4〜6.7 時間）に合っていなかったこと**。`monitoring/fp-fn-log.md` は FP（誤検知の見込み。閾値設計の不備）として記録し、PR #65 でしきい値を 8 時間に直した。
 - **できていないこと（正直に）**。
-  - **定期実行（schedule）の履歴はまだ短く、指定の 30 分間隔で動いていない**。2026-10-12 17:00 JST（08:00 UTC）時点で、`event=schedule` の実行は計 8 件（`gh api repos/bsj-fujimoto/todo-app/actions/runs?event=schedule` の total_count = 8）: `synthetic.yml` が 4 回（2026-10-11 18:01・21:52、2026-10-12 01:16・07:57 UTC。**すべて release モード・成功・監視 11/11**）、死活監視 `monitoring-watchdog.yml` が 2 回（22:29・06:35 UTC。ともに成功）、nightly が 2 回。**実際の間隔は 3 時間 24 分〜6 時間 41 分で、cron（`7,37 * * * *`＝30 分ごと）を大きく外れる**（GitHub の schedule の遅延・欠落。monitoring-06）。それ以前（〜2026-10-11 17:20 UTC）は 0 件だった。`synthetic.yml` の Actions 実行は計 9 回（手動 5〔通常 2・通知試験 3〕＋ schedule 4）。**成功率（`availability_synthetic_ratio` ≥ 0.99）は評価できない**（schedule の標本が 4 で、30 日の約 1,440 回に遠く、間隔も 30 分でないため。monitoring-11）。
+  - **定期実行（schedule）の履歴はまだ短く、指定の 30 分間隔で動いていない**。2026-10-12 17:00 JST（08:00 UTC）時点で、`event=schedule` の実行は計 8 件（`gh api repos/bsj-fujimoto/todo-app/actions/runs?event=schedule` の total_count = 8）: `synthetic.yml` が 4 回（2026-10-11 18:01・21:52、2026-10-12 01:16・07:57 UTC。**すべて release モード・成功・監視 11/11**）、死活監視 `monitoring-watchdog.yml` が 2 回（22:29・06:35 UTC。ともに成功）、nightly が 2 回。**synthetic の schedule は、宣言の枠 39 に対し実行 4 回（欠落 35）で、実効間隔は 3.8・3.4・6.7 時間（中央値 3.8 時間）と、cron（`7,37 * * * *`＝30 分ごと）を大きく外れる**（GitHub の schedule の遅延・欠落。watchdog も枠 5 に対し 2 回、間隔 8.1 時間。記録: [monitoring/cadence/cadence-20261012T0803Z.md](../monitoring/cadence/cadence-20261012T0803Z.md)、monitoring-06）。それ以前（〜2026-10-11 17:20 UTC）は 0 件だった。`synthetic.yml` の Actions 実行は計 9 回（手動 5〔通常 2・通知試験 3〕＋ schedule 4）。**成功率（`availability_synthetic_ratio` ≥ 0.99）は評価できない**（schedule の標本が 4 で、30 日の約 1,440 回に遠く、間隔も 30 分でないため。monitoring-11）。
   - **リリース済みイメージ（v1.0.0。digest 固定）を監視した実績**: schedule の 4 回（すべて `mode: release`、11/11 成功）と通知試験 2 回（run 38154528493・38155028980）。手動の通常実行 2 回（#36 の誤検知とその回復確認）はフォールバック（main の HEAD をビルド）だった（monitoring-13）。
   - **DNS・TLS 証明書は検証できない**（MON-011・MON-012 は `enabled: false`）。runner 内の localhost は HTTP だけで、本番ドメインと実証明書が無い（monitoring-04）。
-  - **多地点・地域監視はできない**（GitHub-hosted runner 1 か所）。**実行間隔の定義は 1800 秒**（30 分）で、既定の上限 300 秒を満たさない。**しかも実績の間隔は 3〜7 時間**（monitoring-03・06）。
+  - **多地点・地域監視はできない**（GitHub-hosted runner 1 か所）。**実行間隔の定義は 1800 秒**（30 分）で、既定の上限 300 秒を満たさない。**しかも実績の間隔は 3.4〜6.7 時間**（monitoring-03・06）。
   - **通知が人に届いたかは観測できない**。観測できるのは「Issue が作られた」「assignee が設定された」まで。外部通知（メール・チャット・電話）は無く、連絡先はメンテナ 1 名だけ（monitoring-07）。
   - 認証が無いため、認証付き監視・テストアカウントは対象外（monitoring-05。承認は下記のとおり PR のマージ＝代行で、オーナーの確認は未実施）。
   - **監視基盤自身の沈黙への対策は PR #51（2026-10-11T16:30Z マージ）で入った**。設定の検査は PR の CI にも入った（`ci.yml` の lint ジョブ）。実行基盤の失敗は `meta-alert` が `[sev3][MON-META]` で起票する（run 38155036726 の基盤試験で pass）。**死活監視（`monitoring-watchdog.yml`）は schedule で 2 回動き、2 回目（2026-10-12 06:35 UTC）に実際に MON-META を起票して動作を確認できた（#59）**。ただし死活監視自身も GitHub の schedule で動くため、schedule が止まれば一緒に止まる（同じ基盤の死活は同じ基盤では監視できない。monitoring-10・RB-005）。
@@ -34,7 +34,7 @@
 
 - **本番環境が無い**（[SECURITY.md](../SECURITY.md)、[docs/ai-context.yaml](ai-context.yaml) の `product.criticality: low`）。そのため監視の対象は、**リリース済みコンテナイメージ（GHCR・digest 固定）を GitHub Actions の runner で compose 起動し、localhost に対して実行したもの**になる。リリースが引けないときは main の HEAD をビルドして起動する（フォールバック。run の summary に対象を明記）。確かめているのは「リリースしたイメージが起動して主要ジャーニーが通ること」で、**本番の可用性ではない**（[monitoring/README.md](../monitoring/README.md) 設計判断 1）。
 - 利用者は 1 人（1 インスタンス = 1 人。認証なし）。サービス区分は best-effort で、SLA は無い（`ai-context.yaml` の `product.service_tier`）。SLO の目標値は**実測ではなく想定**を含む（`perf/slo.yaml` の `basis`）。
-- 実行の流れ: `synthetic.yml`（30 分ごと + 手動）→ 対象の決定（`resolve-target.mjs`）→ compose 起動 → デプロイマーカー記録（`marker.mjs`）→ 監視の実行（`run-monitors.mjs`）→ 監視が失敗なら incident Issue（`alert.mjs`、`alert` ジョブ）→ 結果を artifact に 90 日保存。監視の結果が出る前に実行基盤が失敗したときは `meta-alert` ジョブが `[sev3][MON-META]` を起票する（`issues: write` を持つのは `alert`・`meta-alert` と、死活監視 `monitoring-watchdog.yml` の `watch`）。
+- 実行の流れ: `synthetic.yml`（schedule〔宣言 30 分。実効は 3.4〜6.7 時間〕+ main への push + Release 成功後 + 手動。契機の追加は PR #65）→ 対象の決定（`resolve-target.mjs`）→ compose 起動 → デプロイマーカー記録（`marker.mjs`）→ 監視の実行（`run-monitors.mjs`）→ 監視が失敗なら incident Issue（`alert.mjs`、`alert` ジョブ）→ 結果を artifact に 90 日保存。監視の結果が出る前に実行基盤が失敗したときは `meta-alert` ジョブが `[sev3][MON-META]` を起票する（`issues: write` を持つのは `alert`・`meta-alert` と、死活監視 `monitoring-watchdog.yml` の `watch`）。
 
 ## 監視一覧（監視ごとの表）
 
@@ -172,7 +172,7 @@
 
 ## monitoring-06 Schedule・Timeout・Retry
 
-**結論**: 実行間隔の定義は **1800 秒（30 分）**。既定の上限 300 秒（5 分）は**満たしていない**。**しかも schedule の実績の間隔は 3〜7 時間で、定義の 30 分を満たしていない**（下の「検知時間」）。timeout と retry は監視の種類に応じて決め、誤報を抑えている。理由と限界は以下のとおり。
+**結論**: 実行間隔の定義は **1800 秒（30 分）**。既定の上限 300 秒（5 分）は**満たしていない**。**しかも schedule の実績の間隔は 3.4〜6.7 時間（中央値 3.8 時間）で、宣言の 30 分を満たしていない**（下の「検知時間」）。`interval_sec` は宣言（設計目標）の 1800 秒を維持し、実測を `observed_interval_sec`（中央値 13,826 秒）・`observed_interval_max_sec`（最大 24,031 秒）として別に持つ（PR #65。[monitoring/README.md](../monitoring/README.md)「実行間隔と検知時間」）。timeout と retry は監視の種類に応じて決め、誤報を抑えている。理由と限界は以下のとおり。
 
 | 項目 | 値 | 理由・根拠 |
 |---|---|---|
@@ -181,13 +181,13 @@
 | **retry（最初の失敗の後の追加回数）** | MON-001・002 が 2、そのほかが 1 | 一過性の失敗で鳴らさない。最悪でも `timeout × (retry + 1)` + 待機 5 秒で結果が出る（例: MON-007 は 60 秒 × 2 + 5 秒 ≈ 2 分、MON-002 は 10 秒 × 3 + 数秒 ≈ 40 秒）。E2E は retry で flaky を隠さない方針（Playwright `retries: 0`）だが、**外形監視は retry を定義の一部として持ち（`run-monitors.mjs` が実行）、`attempts` と失敗詳細を記録する**（Playwright 側の retry は 0 で、再試行は監視側に一本化） |
 | **多地点** | 1 か所 | monitoring-03 を参照。`locations: 1` |
 
-**検知時間（MTTD）**: 目標は「**30 分 + retry 時間**」。障害が起きた直後に実行が終わっていれば次の実行（最大 30 分後 + cron の遅延）で検知する。cron の遅延は保証しない。実測では、検知 → 通知は 17〜37 秒（通知試験 17・20 秒、本物の #36 は 37 秒。monitoring-07・12）。**ただし schedule の実行の間隔が、cron の 30 分でなく 3 時間 24 分〜6 時間 41 分だった**（2026-10-11 18:01・21:52、10-12 01:16・07:57 UTC の 4 回。いずれも `event=schedule`）。**この実績では、MTTD は「30 分 + retry」ではなく最大 7 時間近くになり、目標を満たしていない**。GitHub の schedule は遅延・欠落しうると定義時から書いていたが、実績で裏付けられた。死活監視（3 時間しきい値）が、最終実行から 5.3 時間空いた 2026-10-12 06:35 UTC に #59 を起票した（monitoring-07）。
+**検知時間（MTTD）**: 宣言（設計目標）は「30 分 + retry 時間」だが、**実測では「実効間隔 + retry」で見る**（PR #65 の `monitoring/README.md`）。schedule の実績は宣言の枠 39 に対し 4 回（欠落 35）、間隔 3.8・3.4・6.7 時間（中央値 3.8 時間。2026-10-11 18:01・21:52、10-12 01:16・07:57 UTC）で、**MTTD は中央値 3.8 時間、最悪 6.7 時間**（障害が起きてから次の実行まで。平均は約半分）+ retry 約 2 分。**宣言の 30 分は満たしていない**。検知 → 通知は 17〜37 秒（通知試験 17・20 秒、本物の #36 は 37 秒。monitoring-07・12）。**マージ・リリース直後は、PR #65 で足した `push: main` と Release 成功後の契機により、約 3.5 分で 1 回動く**（schedule の遅延に依らない。ただし push・Release の契機は main にマージされるまで Actions 上で動かず、**実績はまだ無い**）。沈黙（実行が来ないこと）の検知は、死活監視のしきい値が **8 時間**（最大実測間隔 6.7 時間を切り上げて 7、余裕 1 時間）で、watchdog 自身の実効間隔も 8.1 時間なので、沈黙から起票までは最悪 約 16 時間（推定。標本が少ない）。標本は少なく（実行 4 回・間隔 3 件、有効化から約 20 時間）、GitHub は新しい・活動の少ないリポジトリの schedule を後回しにするため、実効間隔は縮むことも伸びることもある。記録: [monitoring/cadence/cadence-20261012T0803Z.md](../monitoring/cadence/cadence-20261012T0803Z.md)（`node scripts/monitoring/cadence.mjs --out monitoring/cadence` で再測定）。
 
 **誤報との両立**: 1 回の失敗では鳴らさず、retry で再試行してから失敗とする。リリース直後 15 分（SUP-001）と計画停止は通知を抑える（monitoring-09）。実際に鳴った 1 件（#36）は誤検知で、retry（2 回試行）では防げなかった（監視の定義が古く、再試行しても毎回失敗するため）。誤検知の原因は閾値ではなく**定義の鮮度**だった（monitoring-12）。
 
 **文書化と見直し**: 基準は [monitoring/README.md](../monitoring/README.md) と本書に書いた。見直しは `fp-fn-log.md` の運用ルール（月 1 回またはリリースごと）で行う。**月次の見直しはまだ 1 度も実施していない**（運用開始が 2026-10-11 で 1 か月に満たない）。
 
-**可用性 SLO との整合**: `availability_synthetic_ratio` は「障害の継続時間」ではなく「30 分ごとの実行の成功率」で定義している。30 日で約 1,440 回の実行（30 分間隔なら 48 回/日 × 30）があり、99% は失敗 14 回以下に当たる。**実績の schedule 間隔が 3〜7 時間だと、30 日の実行は 100〜200 回程度**で、定義の前提が崩れる。**30 分未満の短い障害は観測できない**（実行の間に起きて回復すれば見逃す。実績の間隔では数時間の障害も見逃しうる）。短い障害の検知（再起動復帰）は TC-042・TC-043・TC-077 が担当し、外形監視は「ある時点でジャーニーが通るか」を保証する。
+**可用性 SLO との整合**: `availability_synthetic_ratio` は「障害の継続時間」ではなく「30 分ごとの実行の成功率」で定義している。30 日で約 1,440 回の実行（30 分間隔なら 48 回/日 × 30）があり、99% は失敗 14 回以下に当たる。**実績の schedule 間隔（3.4〜6.7 時間）だと、30 日の実行は 100〜200 回程度**で、定義の前提が崩れる。**30 分未満の短い障害は観測できない**（実行の間に起きて回復すれば見逃す。実績の間隔では数時間の障害も見逃しうる）。短い障害の検知（再起動復帰）は TC-042・TC-043・TC-077 が担当し、外形監視は「ある時点でジャーニーが通るか」を保証する。
 
 ## monitoring-07 Alert routing・Owner
 
@@ -218,11 +218,11 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 | 2026-10-11 16:14 | 通知試験（**GitHub Actions**。v1.0.0 のイメージを digest 固定で起動。run 38154528493） | 31 秒 | 4 秒（assignee の確認） | —（**fail**。失敗フェーズの直後に回復フェーズを呼ぶと、作成直後の #45 が Issue 一覧〔検索の索引〕に載らず回復できなかった） | #44（close 済み）・#45（取り残し → 手動で close）、`monitoring/drills/20261011T1614Z-gha-drill-fail-index-lag/` |
 | 2026-10-11 16:21 | 通知試験（GitHub Actions。修正後。run 38155028980） | 36 秒 | 5 秒（assignee の確認） | 8 秒 | #48・#49（close 済み）、`monitoring/drills/20261011T1621Z-gha-drill-pass/`。**pass** |
 | 2026-10-11 16:2x | 実行基盤の失敗の通知試験（`meta_drill=true`。run 38155036726） | `meta-alert` が `[drill][sev3][MON-META]` を起票 | — | すぐ close | #50（close 済み）。`alert` ジョブは skipped（監視の失敗と区別される）。**pass** |
-| 2026-10-12 06:36 | **本物（GitHub Actions。死活監視 `monitoring-watchdog.yml`）** | 約 18 秒（watchdog の実行 06:35:42Z → Issue 作成 06:36:00Z） | assignee の設定のみ（人のコメントは無い。ack 目標は 72 時間） | 約 84 分（08:00:25Z に schedule の `synthetic.yml` が成功して自動 close） | #59（`[sev3][MON-META] 外形監視が 3 時間以上実行されていない`。失敗の詳細: 最終実行が 5.3 時間前〔2026-10-12T01:16:32Z〕）、run 38213286831・38220637289 |
+| 2026-10-12 06:36 | **本物の通知（GitHub Actions。死活監視 `monitoring-watchdog.yml`）。ただし誤検知の見込み（しきい値 3 時間が実効間隔に合わない。PR #65 で 8 時間に）** | 約 18 秒（watchdog の実行 06:35:42Z → Issue 作成 06:36:00Z） | assignee の設定のみ（人のコメントは無い。ack 目標は 72 時間） | 約 84 分（08:00:25Z に schedule の `synthetic.yml` が成功して自動 close） | #59（`[sev3][MON-META] 外形監視が 3 時間以上実行されていない`。失敗の詳細: 最終実行が 5.3 時間前〔2026-10-12T01:16:32Z〕）、run 38213286831・38220637289 |
 | 2026-10-11 12:43 | **本物（GitHub Actions）** | 約 37 秒（失敗の開始 12:43:35 → Issue 作成 12:44:12） | assignee（メンテナ）のアカウントのコメントが 15:57（起票から約 3 時間 13 分、24 時間目標以内。**目的は ack ではなく defect 本文の補筆**。投稿者が人か AI かは区別できない） | 約 12 分（12:56:26 に自動 close） | #36、run 38140285304・38141090678 |
 
 - 試験の ack は **assignee が設定されていることの確認**までで、**人が通知を受け取ったかは観測できない**（`alert-routes.yaml` の `delivery_note`、`monitoring/README.md`）。GitHub が assignee へメール・Web 通知を送るが、到達は観測外。したがって「通知の到達と ack が記録されている」を満点どおりには満たさない。
-- **GitHub Actions 上の通知試験（`drill: true`）は 2026-10-11 に 3 回実施した**（初回は fail → 修正 → pass。ほかに実行基盤の失敗の試験が 1 回。上の表）。初回の fail は、GitHub 上の drill でしか見つからない不具合（回復フェーズが一覧の索引の遅れで取りこぼす）を見つけ、PR #51 で `drill-state.json` の既知の Issue を使うよう直した（単体テストあり）。#36 の本物の失敗も、Actions の経路（失敗 → 起票 → assignee → 回復 → close）を実際に通した（`alert-tests.md`、PR #39）。通知試験は手元 2 回 + Actions 3 回の計 5 回で、すべて 2026-10-11（同じ日）。**#59 は、MON-META の通知が通知試験でなく本物の停止で動いた最初の記録**（死活監視 → incident → 次の実行で自動回復）。ただし #59 の本文は起票時のままで、切り分け・ロールバック有無・還流のチェックリストは空欄・未チェック（RB-005 に沿った対応記録は無い。schedule の遅延は GitHub 側の事象で、こちらの修正で直るものではない）。
+- **GitHub Actions 上の通知試験（`drill: true`）は 2026-10-11 に 3 回実施した**（初回は fail → 修正 → pass。ほかに実行基盤の失敗の試験が 1 回。上の表）。初回の fail は、GitHub 上の drill でしか見つからない不具合（回復フェーズが一覧の索引の遅れで取りこぼす）を見つけ、PR #51 で `drill-state.json` の既知の Issue を使うよう直した（単体テストあり）。#36 の本物の失敗も、Actions の経路（失敗 → 起票 → assignee → 回復 → close）を実際に通した（`alert-tests.md`、PR #39）。通知試験は手元 2 回 + Actions 3 回の計 5 回で、すべて 2026-10-11（同じ日）。**#59 は、MON-META の通知が通知試験でなく実際の実行で動いた最初の記録**（死活監視 → incident → 次の実行で自動回復）。`fp-fn-log.md` は FP（閾値設計の不備）と記録した。通知の経路としては正しく動いたが、しきい値が実効間隔より短かった。ただし #59 の本文は起票時のままで、切り分け・ロールバック有無・還流のチェックリストは空欄・未チェック（RB-005 に沿った対応記録は無い。schedule の遅延は GitHub 側の事象で、こちらの修正で直るものではない。対応は PR #65 のしきい値の見直し）。
 - 本物の #36 では、起票時の本文（概要・対応・還流先チェックリスト）を後で欠陥票の書式に**書き換えた**ため、現行の本文には還流のチェックリストなどが残っていなかった。**PR #51 で、起票時の本文を編集履歴から復元し、defect の項目を `---` の後ろに追記した形に戻した**（現行の本文に、概要・直前のデプロイ〔deployment_ref〕・失敗の詳細・対応〔ack 目標〕・再発防止チェックリストがあることを 2026-10-12 に確認した）。incident と defect を同じ Issue で兼ねるときは、本文を上書きせず追記する規則を `monitoring/README.md` と `incident.md` テンプレートに書いた（monitoring-14）。
 
 ## monitoring-08 Runbook・Escalation
@@ -257,7 +257,7 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 | **通知試験（drill）** | 抑制ではなく分離 | drill ラベル付きの Issue に分け、本物の incident と混ざらない（drill のフェーズでは抑制を評価しない） |
 | **保守中に発報した件数** | 0 件（アラート履歴のうち保守中のもの） | 窓が未登録のため。計測できる状態ではない |
 
-- **誤報率**: 誤報（誤検知）は #36 の 1 件。監視（MON-001〜013）が通知した本物の incident は 1 件なので誤検知率は 1/1 に見えるが、**母数が 1 で、傾向としての意味は無い**（monitoring-12）。#59（MON-META）は誤報ではなく、実際の schedule の空白を捉えた通知。見直しの規則（20% を超えたら見直す）は `fp-fn-log.md` にあり、#36 では定義を直した。
+- **誤報率**: 誤報（誤検知）は #36 の 1 件（監視 MON-001〜013）と、#59 の 1 件（基盤 MON-META）。監視（MON-001〜013）が通知した本物の incident は 1 件なので誤検知率は 1/1 に見えるが、**母数が 1 で、傾向としての意味は無い**（monitoring-12）。#59（MON-META。基盤の通知）は、最終実行が 5.3 時間前という事実は正しいが、しきい値が実効間隔に合っていなかったため `fp-fn-log.md` が FP（誤検知の見込み）として記録している。見直しの規則（20% を超えたら見直す）は `fp-fn-log.md` にあり、#36 では定義を直した。
 - できていないこと: 実際の計画停止での窓の運用、リリース時の SUP-001 の発動、feature flag を持ったときの扱い。
 
 ## monitoring-10 Monitoring as Code・Version
@@ -273,7 +273,7 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 | runbook と索引 | `monitoring/runbooks/` |
 | ブラウザジャーニー | `e2e/synthetic/journey.spec.js` |
 | 実行・通知・マーカー・検査・死活監視 | `scripts/monitoring/`（単体テスト 34 件） |
-| 起動 | `.github/workflows/synthetic.yml`（30 分ごと + 手動）、`.github/workflows/monitoring-watchdog.yml`（死活監視。3 時間ごと） |
+| 起動 | `.github/workflows/synthetic.yml`（schedule〔宣言 30 分。実効 3.4〜6.7 時間〕・main への push・Release 成功後・手動）、`.github/workflows/monitoring-watchdog.yml`（死活監視。宣言 3 時間ごと〔実効 8.1 時間〕。しきい値は 8 時間） |
 
 **レビュー**: `.github/CODEOWNERS` の `*` がプロダクトオーナー兼メンテナ。変更の手順は `monitoring/README.md` の「変更の手順」（PR → `check-config` と単体テスト → 製品の振る舞いを変える PR は監視の期待も同じ PR で確認）。**ただし、`main` への PR 必須・承認・required checks を強制する Ruleset は未適用**（`ai-context.yaml` の `repository.expected_controls`。`gh api repos/bsj-fujimoto/todo-app/rulesets` が 0 件）。実態としては、監視の変更はすべて PR（#32、#39、#51）でマージされたが、レビューは単独のリポジトリオーナー（AI の代行マージを含む）によるもので、**独立した第二のレビュアーはいない**。
 
@@ -293,11 +293,11 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 |---|---|---|
 | GitHub Actions（`gh run list --workflow synthetic.yml`）の通常実行 | 2026-10-11 12:42 UTC（run 38140285304、手動、**失敗**＝#36 の誤検知）と 12:54 UTC（run 38141090678、手動、成功）。どちらも対象は「フォールバック（main の HEAD）」 | 2 run（監視記録 22 件。有効 11 件 × 2） |
 | 同・通知試験（`drill: true`）と基盤試験（`meta_drill: true`） | 16:13 UTC（run 38154528493、**失敗**＝回復の取りこぼしを見つけた）、16:20 UTC（run 38155028980、成功）、16:20 UTC（run 38155036726、基盤試験。意図的に失敗させて `meta-alert` を確認）。前 2 つは v1.0.0 のイメージを digest 固定で起動 | 3 run。**`synthetic.yml` の Actions 上の実行は、ここまでで手動 5 回** |
-| GitHub Actions の schedule 実行（`gh api repos/bsj-fujimoto/todo-app/actions/runs?event=schedule`。2026-10-12 17:00 JST〔08:00 UTC〕時点で total_count = 8） | `synthetic.yml` が **4 回**: 2026-10-11 18:01:35Z（run 38162078317）、21:52:01Z（38178114415。MON-003 が 2 試行目で成功）、2026-10-12 01:16:32Z（38191254696）、07:57:03Z（38220637289）。**すべて対象は v1.0.0（release モード、digest 固定）、成功、監視 11/11（有効 11 件 × 4 = 記録 44 件）**。間隔は 3 時間 50 分・3 時間 24 分・6 時間 41 分（cron は 30 分ごと）。`monitoring-watchdog.yml` が 2 回（22:29:56Z〔run 38180651666〕、06:35:42Z〔38213286831。#59 を起票〕）、nightly が 2 回 | `synthetic.yml` 4 + watchdog 2 + nightly 2 = 8 |
+| GitHub Actions の schedule 実行（`gh api repos/bsj-fujimoto/todo-app/actions/runs?event=schedule`。2026-10-12 17:00 JST〔08:00 UTC〕時点で total_count = 8） | `synthetic.yml` が **4 回**: 2026-10-11 18:01:35Z（run 38162078317）、21:52:01Z（38178114415。MON-003 が 2 試行目で成功）、2026-10-12 01:16:32Z（38191254696）、07:57:03Z（38220637289）。**すべて対象は v1.0.0（release モード、digest 固定）、成功、監視 11/11（有効 11 件 × 4 = 記録 44 件）**。間隔は 3.8・3.4・6.7 時間（中央値 3.8 時間。宣言の枠 39 に対し 4 回で欠落 35。cron は 30 分ごと）。`monitoring-watchdog.yml` が 2 回（22:29:56Z〔run 38180651666〕、06:35:42Z〔38213286831。#59 を起票〕）、nightly が 2 回 | `synthetic.yml` 4 + watchdog 2 + nightly 2 = 8 |
 | Git に保存した手元の実行（`monitoring/history/`、`monitoring/drills/`） | 通常実行 1 回（2026-10-11 07:20 UTC）と、通知試験・rollback 訓練・frontend 停止訓練・Actions の drill の記録（`run-history.jsonl` は 15 ファイルで計 97 行） | 97 行 |
 
-- **成功率**: 通常の実行（手動 2 回 + schedule 4 回）で成功 5・失敗 1（失敗は #36 の誤検知）。通知試験・基盤試験の 3 回は意図的に失敗させたものを含み、成功率に数えない。**標本が 6（schedule は 4）で、成功率（`availability_synthetic_ratio` ≥ 0.99）としての意味は無い**。`history_retention_days` は 90（artifact の保持）だが、実際の履歴は約 1 日。本来は 30 日の約 1,440 回が必要で、実績の間隔（3〜7 時間）では 100〜200 回にしかならない。
-- **schedule の経緯と間隔**: `synthetic.yml` は 2026-10-11 12:36 UTC（PR #32 のマージ）から main にあり、cron は `7,37 * * * *`。最初の schedule 実行は **5 時間 25 分後の 18:01 UTC**（それまでは 0 件。新しい workflow の schedule は初回が遅れることがある、という GitHub の挙動と整合する）。**その後も、30 分ごとではなく 3〜7 時間に 1 回程度**しか起動していない（原因は GitHub 側の schedule の遅延・欠落と見られるが、**GitHub に確認していない。未特定**）。`monitoring-watchdog.yml`（cron `47 */3 * * *`）は PR #51 のマージ（16:30 UTC）後、22:29 UTC と 06:35 UTC の 2 回だけ起動した（3 時間ごとの定義なら 5 回ほど起動するはずで、これも遅延・欠落している）。**次の確認**: `event=schedule` の件数と間隔を再確認し、定義（30 分）と実績の差が続くなら、`synthetic.yml` の間隔の定義か、schedule に頼らない手段（常駐の外部監視。本番を持つなら必須）を決める。RB-005 の「実行が来ない」の手順（有効化・default branch・無活動 60 日の無効化）は該当しない（リポジトリに活動がある）。
+- **成功率**: 通常の実行（手動 2 回 + schedule 4 回）で成功 5・失敗 1（失敗は #36 の誤検知）。通知試験・基盤試験の 3 回は意図的に失敗させたものを含み、成功率に数えない。**標本が 6（schedule は 4）で、成功率（`availability_synthetic_ratio` ≥ 0.99）としての意味は無い**。`history_retention_days` は 90（artifact の保持）だが、実際の履歴は約 1 日。本来は 30 日の約 1,440 回が必要で、実績の間隔（3.4〜6.7 時間）では 100〜200 回にしかならない。
+- **schedule の経緯と間隔**（PR #65 で `scripts/monitoring/cadence.mjs` が測定し、[monitoring/cadence/cadence-20261012T0803Z.md](../monitoring/cadence/cadence-20261012T0803Z.md) に記録）: `synthetic.yml` は 2026-10-11 12:36 UTC（PR #32 のマージ）から main にあり、cron は `7,37 * * * *`。最初の schedule 実行は **5 時間 25 分後の 18:01 UTC**（それまでは 0 件。新しい workflow の schedule は初回が遅れることがある、という GitHub の挙動と整合する）。**その後も、30 分ごとではなく 3.4〜6.7 時間に 1 回程度**しか起動していない（原因は GitHub 側の schedule の遅延・欠落と見られるが、**GitHub に確認していない。未特定**）。`monitoring-watchdog.yml`（cron `47 */3 * * *`）は PR #51 のマージ（16:30 UTC）後、22:29 UTC と 06:35 UTC の 2 回だけ起動した（枠 5 に対し欠落 3、間隔 8.1 時間）。`nightly.yml` は 2 回（欠落なし。枠からの遅れ 3.4・3.3 時間）。**PR #65 の対応**: `interval_sec` は宣言（設計目標）のままにして実測を別項目で持ち、MTTD を「実効間隔 + retry」で見る、watchdog のしきい値を 3 時間から **8 時間**に、`synthetic.yml` に `push: main` と Release 成功後の契機を足した（マージ・リリース直後に約 3.5 分で 1 回動く）。**次の確認**: `cadence.mjs` で再測定し、`recommendation.hours` がしきい値と違えば見直す（`monitoring/README.md` の手順）。ACT-027 が追う。schedule に頼らない手段（常駐の外部監視。本番を持つなら必須）は、本番を持つと決めたときに判断する。RB-005 の「実行が来ない」の手順（有効化・default branch・無活動 60 日の無効化）は該当しない（リポジトリに活動がある）。
 - **失敗内容**: `run-history.jsonl` の `failure_detail` に試行ごとの失敗の内容を記録し、browser は失敗時の screenshot と trace を artifact に残す設定（`retain-on-failure`）。失敗した run 38140285304 の履歴は、試行 2 回とも `locator.check: Clicking the checkbox did not change its state` を記録している。失敗 1 件のうち詳細ありは 1 件（100%）。
 - **対象 version**: 各記録に `version`（例 `1.0.0@2c357a6`）、`mode`（release / fallback）、`region`、`run_id` を持つ。version は health の `version@commit` で、記録の 100% に入っている。
 - **alert 履歴**: `alert-history.jsonl`（`kind: created / recovered`、severity、Issue 番号、drill かどうか）と incident Issue 自体（GitHub。ラベル `incident` の Issue は #13・#14・#17・#18・#36・#44・#45・#48・#49・#50・#59 の 11 件。本物は #36〔誤検知〕と #59〔MON-META〕の 2 件、残り 9 件は drill）。ただし**通知の到達と人の ack は記録できない**（monitoring-07）。
@@ -305,7 +305,7 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 
 ## monitoring-12 誤検知・見逃し・Alert test
 
-**結論**: **誤検知 1 件**を台帳に記録して原因分類と対応（PR・再発防止）まで行い、**通知試験は手元 2 回 + GitHub Actions 3 回の計 5 回**（2026-10-11。手元 2 回は pass、Actions は 1 回 fail〔不具合を見つけた〕→ 修正 → pass と、実行基盤の失敗の試験 1 回 pass）実施した。見逃しは 0 件記録だが、**見逃しの発見源（実利用者）が無い**。通知試験は 90 日以内（次回 2027-01-09）の周期にしてある。
+**結論**: **誤検知 2 件**（#36、#59。#59 は閾値設計の不備による FP の見込み）を台帳に記録して原因分類と対応（PR・再発防止）まで行い、**通知試験は手元 2 回 + GitHub Actions 3 回の計 5 回**（2026-10-11。手元 2 回は pass、Actions は 1 回 fail〔不具合を見つけた〕→ 修正 → pass と、実行基盤の失敗の試験 1 回 pass）実施した。見逃しは 0 件記録だが、**見逃しの発見源（実利用者）が無い**。通知試験は 90 日以内（次回 2027-01-09）の周期にしてある。
 
 **通知試験（alert test）**: 台帳は [monitoring/alert-tests.md](../monitoring/alert-tests.md)。意図的な障害注入（backend コンテナの停止）→ 失敗検知 → incident Issue 作成（labels `incident` + `drill`、assignee 確認）→ 復旧 → 回復コメント → 自動 close を確かめる。
 
@@ -325,11 +325,12 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 | 日付（UTC） | 種別 | 監視 | 原因・分類 | 対応 |
 |---|---|---|---|---|
 | 2026-10-11 12:43 | **FP（誤検知）** | MON-008（J-02 完了切替、browser） | 監視の定義が古い。PR #12 で製品は「チェックは API 成功後にだけ反転する」に直った（設計どおり）が、監視の Playwright `check()` はクリック直後に状態変化を検証するため合わなくなった。製品の不具合ではない | `click()` + `expect(...).toBeChecked()` に変更（PR #39）、PR テンプレート・`monitoring/README.md`・RB-004 に還流（Issue #36） |
+| 2026-10-12 06:35 | **FP（誤検知の見込み）** | MON-META（外形監視の実行。watchdog） | しきい値 3 時間が schedule の実効間隔（宣言 30 分に対し 3.4〜6.7 時間）に合っていない。「最終実行が 5.3 時間前」という事実は正しいが、製品の障害ではない（閾値設計の不備） | しきい値を 8 時間に（PR #65）、実効間隔の測定（`cadence.mjs`・`monitoring/cadence/`）、Issue #59 |
 
 - 見逃し（FN）の記録は 0 件。**実利用者が居ないため、見逃しを発見する源が無い**（`fp-fn-log.md` の「現状の注記」）。見逃しの発見は通知試験と手動の障害注入に限られる。
 - **訓練・試験で見つけた不備**（誤検知の芽）: リリース済みイメージを `COMMIT_SHA` 未指定で起動すると health の commit が `unknown` になり、MON-002 の commit 一致が不一致になる（実環境では誤報になる）。rollback 訓練で見つけ（#16）、PR #19 で compose の設定を直した。直した後に rollback 訓練を再実施して pass（`monitoring/drills/20261011T1220Z-rollback-after-16fix/`）。GitHub 上の通知試験（run 38154528493）は、回復フェーズが Issue 一覧の索引の遅れで取りこぼす不具合を見つけ、PR #51 で直して再実施した（pass）。
-- **誤検知率**: 運用の規則は「直近 30 日の通知回数のうち問題なしだった割合。20% を超えたら retry・timeout・assertion を見直す」。**現在の値は、監視（MON-001〜013）の本物の通知 1 件（#36）のうち誤検知 1 件で 1 / 1 = 100%**で、規則の閾値を超えるが、母数が 1 件で統計的な意味は無い。閾値は超えたので見直した（#36 の定義修正）。基盤（MON-META）の本物の通知 #59 は、実際の schedule の空白を捉えた正しい通知で、誤検知に数えない。drill の通知（9 件: #13・#14・#17・#18・#44・#45・#48・#49・#50）は母数に含めない。月次の集計表は**まだ空**（運用が 1 か月に満たない）。
-- 満点の「誤検知率が改善に使われている」に対して、**改善に使った実例は 1 件**（#36 → 定義の修正と PR テンプレート）。率の推移は無い。
+- **誤検知率**: 運用の規則は「直近 30 日の通知回数のうち問題なしだった割合。20% を超えたら retry・timeout・assertion を見直す」。**現在の値は、監視（MON-001〜013）の本物の通知 1 件（#36）のうち誤検知 1 件で 1 / 1 = 100%**で、規則の閾値を超えるが、母数が 1 件で統計的な意味は無い。閾値は超えたので見直した（#36 の定義修正）。基盤（MON-META）の通知 #59 は、`fp-fn-log.md` が FP（誤検知の見込み。閾値設計の不備）と記録している。これも含めると、本物の通知 2 件（#36・#59）のうち 2 件が誤検知で、**誤検知率は 2 / 2 = 100%**（母数が 2 で統計的な意味は無い。原因は #36 が監視の定義の鮮度、#59 がしきい値の設計。PR #39・#65 で直した）。drill の通知（9 件: #13・#14・#17・#18・#44・#45・#48・#49・#50）は母数に含めない。月次の集計表は**まだ空**（運用が 1 か月に満たない）。
+- 満点の「誤検知率が改善に使われている」に対して、**改善に使った実例は 2 件**（#36 → 定義の修正と PR テンプレート、#59 → watchdog のしきい値の見直しと実効間隔の測定〔PR #65〕）。率の推移は無い。
 
 ## monitoring-13 Release correlation
 
@@ -354,7 +355,7 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 
 - **リリース済みイメージを対象にした実行**: 手動の通常 2 回（v1.0.0 公開前）はフォールバック（main の HEAD）で、`release_tag` は null、`matches_latest_release` は null だった。v1.0.0 公開後の Actions 上の通知試験 2 回（run 38154528493・38155028980）と、**通常の schedule 実行 4 回**では、GHCR の digest 解決と release モードでの起動（`mode: release`、`matches_latest_release: true`）が動いた。イメージ名の不一致でフォールバックに落ちる事象は、公開後の実行では起きていない。
 - GitHub-hosted runner では実行ごとに前回のマーカーが無いため、`version_changed_at` は付かず、リリースの公開時刻（`release_published_at`）を起点にする。
-- **「release と異常の相関の定期的な分析」は未実施**。本物の incident が 2 件（#36 は監視の誤検知、#59 は schedule の空白）で、いずれもリリースとは無関係。分析の対象が無い。
+- **「release と異常の相関の定期的な分析」は未実施**。本物の incident が 2 件（#36 は監視の誤検知、#59 はしきい値と schedule の実効間隔の不一致）で、いずれもリリースとは無関係。分析の対象が無い。
 
 ## monitoring-14 Incident・Feedback
 
@@ -393,7 +394,7 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 
 | 項目 | 状態 | 次の一手（提案。期日は提案で、マージで承認される） | 担当ロール |
 |---|---|---|---|
-| schedule の実行間隔が定義（30 分）と合わない（実績は 3〜7 時間。synthetic 4 回・watchdog 2 回） | 原因は GitHub の schedule の遅延・欠落と見られるが未確認。#59 で死活監視が実際に起票した | `event=schedule` の間隔を継続して記録する。差が続くなら間隔の定義を実態に合わせるか、schedule に頼らない手段（外部の常駐監視）を決める。#59 の切り分け・還流のチェックリストを埋める | 運用（SRE）担当、プロダクトオーナー |
+| schedule の実行間隔が宣言（30 分）と合わない（実績は 3.4〜6.7 時間。synthetic 4 回・watchdog 2 回） | 原因は GitHub の schedule の遅延・欠落と見られるが未確認。#59（しきい値の設計の不備）を PR #65 で 8 時間に直した。push・Release の契機はマージ後の実績がまだ無い | ACT-027: `cadence.mjs` で再測定し、しきい値・`observed_*` を見直す。push・Release の契機の初回の実行を確認する。#59 の切り分け・還流のチェックリストを埋める | 運用（SRE）担当、プロダクトオーナー |
 | 通常実行でのリリース済みイメージの監視が未実施 | 通常の 2 回はフォールバック。通知試験 2 回は release モードで動いた | `Run workflow`（`force_fallback` なし、`drill` なし）で release モードの通常実行を確認 | 運用（SRE）担当 |
 | 通知試験の定期実施 | 5 回すべて 2026-10-11（同じ日） | 90 日に 1 回、`drill: true` で実施し、`alert-tests.md` に追記（次回の期限 2027-01-09） | 運用（SRE）担当 |
 | 設定の検査が PR の CI に無い | **解消**（PR #51: lint ジョブで `check-config.mjs` と単体テストを実行。基盤の失敗は MON-META で起票。死活監視の起票は #59 で実際に確認できた） | — | 運用（SRE）担当、開発リード |
@@ -408,4 +409,4 @@ MON-META は監視（monitor）ではなく、実行基盤の失敗・停止を�
 | 版 | 日付 | 内容 | 作成 | レビュー | 承認 |
 |---|---|---|---|---|---|
 | 1.0 | 2026-10-12 | 初版（v1.0.0 の外形監視・運用品質の判断と実績。PR #51 より前の値） | 運用（SRE）担当（AI エージェントが作成） | QA リード（未実施） | プロダクトオーナー（PR #43 のマージ＝承認の代行。オーナーの確認は未実施） |
-| 1.1 | 2026-10-12 | PR #51 の反映と数え直し: Actions 上の通知試験 3 回（1 回は fail → 修正 → pass、1 回は MON-META の基盤試験）、`synthetic.yml` の Actions 実行は手動 5 回、schedule 4 回（2026-10-12 17:00 JST 時点。それ以前は 0 件。間隔は 3〜7 時間で 30 分でない）、死活監視の 2 回の実行と #59（本物の MON-META）、MON-META・`monitoring-watchdog.yml`（3 時間ごと）、v1.0.0 のイメージを digest 固定で起動した drill、MON-007 は応答時間（ready 2,000 ms）を測る形に、単体テスト 27 → 34 件、設定の検査が PR の CI に入った、#36 の本文の復元、EXC-004 の見直し日を plan-03 に一致 | 運用（SRE）担当（AI エージェントが作成） | QA リード（未実施） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |
+| 1.1 | 2026-10-12 | PR #51 の反映と数え直し: Actions 上の通知試験 3 回（1 回は fail → 修正 → pass、1 回は MON-META の基盤試験）、`synthetic.yml` の Actions 実行は手動 5 回、schedule 4 回（2026-10-12 17:00 JST 時点。それ以前は 0 件。宣言の枠 39 に対し欠落 35。間隔 3.8・3.4・6.7 時間で 30 分でない）、死活監視の 2 回の実行と #59（MON-META。しきい値の設計の不備として FP 記録。PR #65 で 8 時間に）、PR #65 の反映（実効間隔・MTTD の見直し・push／Release の契機）、MON-META・`monitoring-watchdog.yml`（3 時間ごと）、v1.0.0 のイメージを digest 固定で起動した drill、MON-007 は応答時間（ready 2,000 ms）を測る形に、単体テスト 27 → 34 件、設定の検査が PR の CI に入った、#36 の本文の復元、EXC-004 の見直し日を plan-03 に一致 | 運用（SRE）担当（AI エージェントが作成） | QA リード（未実施） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |

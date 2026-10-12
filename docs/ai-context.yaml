@@ -239,10 +239,10 @@ strategy:
     ref: monitoring/monitors.yaml
     critical_journeys: [J-01, J-02, J-03, J-04, J-05] # J-01〜J-04 は API と browser、J-05 は API（MON-013）。monitoring/monitors.yaml の journey_id
     regions: ["github-hosted-runner（リージョン非固定）"] # 多地点監視はできない（monitoring/README.md）
-    max_interval_sec: 1800 # 30 分（synthetic.yml の cron の定義）。monitors の既定上限 300 秒は満たさない。理由は monitoring/README.md。**実績の schedule 間隔は 3〜7 時間**（2026-10-12 17:00 JST 時点で 4 回。GitHub の schedule の遅延・欠落。docs/11 の monitoring-06）
+    max_interval_sec: 1800 # 30 分（synthetic.yml の cron の定義）。monitors の既定上限 300 秒は満たさない。理由は monitoring/README.md。**実績の schedule 間隔は 3.4〜6.7 時間（中央値 3.8 時間。宣言の枠 39 に対し 4 回。monitors.yaml の observed_interval_sec・monitoring/cadence/。MTTD は実効間隔 + retry で見る）**。watchdog のしきい値は 8 時間（PR #65）。docs/11 の monitoring-06
     max_retries: 2 # monitors.yaml の retries の最大値（MON-001・002・011・012 が 2、そのほかは 1）
     history_retention_days: 90 # GitHub Actions artifact の保持（synthetic.yml の retention-days）。Git に置く履歴（monitoring/history/）は永続だが保存例のみ
-    history_note: "運用期間はまだ短い（4 週間未満）。schedule 実行は 2026-10-12 17:00 JST 時点で synthetic 4 回・死活監視 2 回（うち 1 回は実際に MON-META #59 を起票）・nightly 2 回（すべて成功）にとどまる。時間依存の傾向（FP/FN 率の推移・稼働率など）は実績が足りない（monitoring/fp-fn-log.md、docs/11 の monitoring-11）"
+    history_note: "運用期間はまだ短い（4 週間未満）。schedule 実行は 2026-10-12 17:00 JST 時点で synthetic 4 回・死活監視 2 回（うち 1 回は MON-META #59 を起票。しきい値 3 時間が実効間隔に合わない FP の見込みで、PR #65 で 8 時間に）・nightly 2 回（すべて成功）にとどまる。時間依存の傾向（FP/FN 率の推移・稼働率など）は実績が足りない（monitoring/fp-fn-log.md、docs/11 の monitoring-11）"
 
 # ---------------------------------------------------------------------------------------------
 inspection:

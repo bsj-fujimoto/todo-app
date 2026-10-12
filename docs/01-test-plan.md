@@ -97,7 +97,7 @@
 | Q-09 | API 契約: 破壊的変更 0、redocly lint の error 0、契約適合テスト 8 件が合格 | contract 8/8 合格（Release v1.0.0 本文） | RISK-008 |
 | Q-10 | 追跡性: 要求 34 件がすべて観点に紐づく（100%）、適用観点 57 行がすべてケースに紐づく（100%）、未解決の ID 参照 0 | 要求→観点 100%、適用観点→ケース 100%（[02 の 1.3](02-test-perspectives.md)・[03 の 1.1](03-test-spec.md)）。未解決参照は `docs-check` が CI で止める | 計画の漏れの検出 |
 | Q-11 | 自動化率 **95% 以上**（手動以外のケースの割合） | 97.4%（75 / 77 件。[03 の 13.1](03-test-spec.md)） | 回帰を機械で回す前提 |
-| Q-12 | 外形監視の成功率 ≥ 0.99（30 分間隔） | **評価できない**。運用の実績が短く、定期実行（schedule）の履歴は 2026-10-12 17:00 JST 時点で synthetic が 4 回（約 14 時間）で、間隔も 3〜7 時間と 30 分に届かない（[11 の monitoring-11](11-monitoring.md)） | `perf/slo.yaml` の `availability_synthetic_ratio`。目標値は想定で、実測の根拠は無い |
+| Q-12 | 外形監視の成功率 ≥ 0.99（宣言 30 分間隔） | **評価できない**。運用の実績が短く、定期実行（schedule）の履歴は 2026-10-12 17:00 JST 時点で synthetic が 4 回（約 14 時間）で、間隔も 3.4〜6.7 時間と 30 分に届かない（[11 の monitoring-11](11-monitoring.md)） | `perf/slo.yaml` の `availability_synthetic_ratio`。目標値は想定で、実測の根拠は無い |
 
 **目標の根拠（過去の障害・実測）**
 
@@ -236,7 +236,7 @@
 | **探索的** | TC-071・TC-072（観察結果を記録して判断）。必須区分は「探索」 | 期待が一意に書けない確認を、観察で判断する | QA 担当 | **時間枠つきの自由探索セッションは実施していない**。計画: フェーズ2の着手前に 60 分 1 回（対象: 保存失敗の画面操作、複数タブ操作 UNK-003、IME 入力）。担当 QA 担当 |
 | **リスクベース** | high 3 件を全件必須、リスクの最大値でケース優先度、PR は変更影響で選択（外した範囲のリスクを記録） | 限られた実行時間を高リスクに寄せる（plan-04） | QA リード（方針）、QA 担当 | 実施済み。`regression-selection.json` に選択理由・除外リスクを残す |
 | **シフトレフト** | 下表 | 欠陥を安い工程で止める | 各担当 | 実施済み |
-| **シフトライト** | 外形監視（30 分間隔）、週次の全件 3 回・perf・security、flaky の自動起票、incident Issue からの回帰ケース追加 | 本番の無い環境で、リリース後の劣化・停止・不安定を見る | 運用（SRE）担当 | 実施中。ただし**定期実行の履歴がまだ無い**（手動実行のみ。plan-14） |
+| **シフトライト** | 外形監視（宣言 30 分間隔。実効は 3.4〜6.7 時間）、週次の全件 3 回・perf・security、flaky の自動起票、incident Issue からの回帰ケース追加 | 本番の無い環境で、リリース後の劣化・停止・不安定を見る | 運用（SRE）担当 | 実施中。ただし**定期実行の履歴がまだ無い**（手動実行のみ。plan-14） |
 
 **シフトレフト／ライト: どの工程で何を検出するか**
 
@@ -457,7 +457,7 @@
 | 全件回帰・flaky・選択漏れ・健全性トレンド | 日次（UTC 18:00。JST 03:00）、週次（日曜 UTC 20:00。全件を 3 回） | `nightly.yml` のレポート。flaky は Issue を自動起票。**定期実行は main に入ったばかりで、履歴は短い**（nightly は 2026-10-12 17:00 JST 時点で schedule 2 回〔成功〕。間隔の評価はできない） |
 | セキュリティ検査 | PR・push ごと、週次（月曜 UTC 19:00） | `security.yml`、`findings.json`。medium は Issue を自動起票 |
 | 性能 | 週次（月曜 UTC 03:17）、リリース前、手動 | `perf.yml`。結果は 90 日の artifact と `perf/results/` |
-| 外形監視 | 30 分間隔（GitHub の cron は遅延・欠落しうる） | `synthetic.yml`。失敗は incident Issue、回復でクローズ |
+| 外形監視 | 宣言 30 分間隔（GitHub の cron は遅延・欠落しうる。実績の間隔は 3.4〜6.7 時間。`monitoring/cadence/`）+ main への push・Release 成功後（PR #65） | `synthetic.yml`。失敗は incident Issue、回復でクローズ |
 | 品質報告・実施記録 | リリースごと（今回は 2026-10-12） | DOC-09・DOC-10 |
 
 **報告の宛先（recipients）**: プロダクトオーナー（リポジトリオーナー）。通知経路は GitHub（PR のコメント、Actions の通知、Issue。`incident`・`flaky`・`security`・`defect` のラベル）。外部の通知基盤（メール・チャット）は持たない。
@@ -491,7 +491,7 @@
 | 自動 | **実施** | 回帰を毎回同じ手順で、証拠つきで回す（自動化率 97.4%） | `backend/test/`、`frontend/test/unit/`、`e2e/tests/`、`e2e/compose/`、`docs/data/cases.csv`（`automation_layer`）、`docs/05-automation.md` | バックエンド担当・フロントエンド担当（実装）、QA 担当（ケース） | カバレッジ 90%（Q-05）、flaky 0（Q-06）、自動化率（Q-11） | 手動 2 件（TC-071・TC-072）は未実施 |
 | API | **実施** | 契約先行の API で、ステータス・エラー・スキーマ・検証順を機械で検査（RISK-008） | `backend/openapi.yaml`、`backend/test/api/`、`backend/test/api/contract.test.js`、`scripts/ci/redocly.yaml`、`scripts/ci/oasdiff-breaking.sh`、`docs/06-api-test.md` | バックエンド担当 | 契約 8/8、破壊的変更 0、redocly の error 0（Q-09） | 認証・認可・ページングは対象外（api-02・api-08） |
 | 負荷 | **実施** | 件数増加と過負荷での限界を測り、SLO を判定（RISK-010）。k6（load・stress・spike・soak・capacity）と画面計測 | `perf/slo.yaml`、`perf/workload.yaml`、`perf/analysis.md`、`perf/results/`、`perf/baseline.json`、`.github/workflows/perf.yml`、`docs/07-performance.md` | バックエンド担当（API）、フロントエンド担当（画面） | SLO（perf/analysis.md §1 の 8 行）の達成（Q-07）。機能層の TC-073・TC-074 は任意（番兵） | **長時間 soak（2 時間以上）は未実施**。**runner の baseline は 1 回の run から作った**（PR #61。run 間のノイズは分からない）。絶対値は本番の予測値ではない |
-| 外形監視 | **実施** | 本番が無いので、リリース済みイメージを runner で起動し、主要ジャーニーと health を 30 分間隔で見る（RISK-011） | `monitoring/monitors.yaml`、`monitoring/alert-routes.yaml`、`monitoring/runbooks/`、`monitoring/alert-tests.md`、`e2e/synthetic/`、`.github/workflows/synthetic.yml`、`docs/11-monitoring.md` | 運用（SRE）担当 | 監視の失敗（sev1・sev2）の未解決はリリース不可の材料。稼働率（Q-12）は**評価できない**ため判定に使わない | 本番の可用性ではない。TLS・DNS は無効（定義のみ）。定期実行の履歴はまだ無く、通知試験（drill）の記録のみ |
+| 外形監視 | **実施** | 本番が無いので、リリース済みイメージを runner で起動し、主要ジャーニーと health を宣言 30 分間隔（実効 3.4〜6.7 時間）で見る（RISK-011） | `monitoring/monitors.yaml`、`monitoring/alert-routes.yaml`、`monitoring/runbooks/`、`monitoring/alert-tests.md`、`e2e/synthetic/`、`.github/workflows/synthetic.yml`、`docs/11-monitoring.md` | 運用（SRE）担当 | 監視の失敗（sev1・sev2）の未解決はリリース不可の材料。稼働率（Q-12）は**評価できない**ため判定に使わない | 本番の可用性ではない。TLS・DNS は無効（定義のみ）。定期実行の履歴はまだ無く、通知試験（drill）の記録のみ |
 | 脆弱性検査 | **実施** | 依存・イメージ・コード・秘密情報・ライセンス・ワークフロー・DAST を継続的に検査（RISK-009・RISK-005） | `security/`（`README.md`、`triage.yaml`、`accepted-risks.yaml` ほか）、`.github/workflows/security.yml`、`docs/data/findings.csv`、`docs/evidence/security/`、`docs/08-inspection.md` | セキュリティ担当 | `security-result`（critical・high の未解決 0）が必須。medium の受容は期限つきで plan-12 の残存リスクに載せる | 認証付き走査は対象外。実在の第三者による診断（ペネトレーションテスト）は未実施 |
 
 **まとめ**: 脆弱性・負荷・外形監視を「実施しない」と決めたものは無い。逆に、**実施の度合いが限定的なもの**（長時間 soak、runner の baseline、定期実行の履歴、実機）を各行の「未実施・限界」に書いた。
