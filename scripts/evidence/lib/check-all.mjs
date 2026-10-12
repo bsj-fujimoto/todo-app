@@ -8,6 +8,8 @@ import { checkActions } from "./actions.mjs";
 import { checkActualResults, checkRows, checkSingleVersion } from "./execution-checks.mjs";
 import { checkReferences } from "./id-check.mjs";
 import { checkParity } from "./parity.mjs";
+import { API_RESULT_COLUMNS } from "./api-results.mjs";
+import { checkExecutionRuns } from "./run-roles.mjs";
 import { scanFiles } from "./sensitive.mjs";
 
 const result = (id, title, report, stats = {}) => ({
@@ -121,6 +123,7 @@ const gapSubject = (r) =>
 export function traceability(bundle, currentCsv) {
   const report = createReport();
   const tables = Object.fromEntries(TRACE_TABLES.map((n) => [n, bundle.tables[n]?.rows ?? []]));
+  tables.apiResults = bundle.tables["api-results"]?.rows ?? null;
   const rows = buildTraceability(tables);
   if (currentCsv !== toCsv(TRACE_COLUMNS, rows)) {
     report.error(
@@ -144,6 +147,74 @@ export function artifactsResult({ stale, strictArtifacts, message }) {
     warnings: stale && !failed ? [message] : [],
     stats: { strict_artifacts: strictArtifacts },
   };
+}
+
+const skipped = (id, title, message) => ({
+  id,
+  title,
+  status: "skipped",
+  messages: [message],
+  warnings: [],
+  stats: {},
+});
+
+/**
+ * run の役割台帳（run-roles.yaml）: 生成結果と一致し、実施表が履歴の run を根拠にしていない。
+ * roles: 台帳の runs（無ければ null）、stale: 台帳が生成結果と違う、skip: 検査しない理由（あれば skipped にする）。
+ */
+export function runRoles({ rows, roles, stale, skip }) {
+  const title = "run の役割台帳（対象版 / 履歴）が最新で、実施表が履歴の run を根拠にしていない";
+  if (skip) return skipped("run-roles", title, skip);
+  const report = createReport();
+  if (!roles) report.error("docs/evidence/run-roles.yaml が無い（build-run-roles.mjs で生成する）");
+  else checkExecutionRuns(rows, roles, report);
+  if (roles && stale)
+    report.error("run-roles.yaml が生成結果と一致しない（build-run-roles.mjs で再生成する）");
+  const history = (roles ?? []).filter((r) => r.role === "history").length;
+  return result("run-roles", title, report, { runs: roles?.length ?? 0, history });
+}
+
+/** api-results.csv の行ごとの検査。問題の配列。 */
+function apiRowProblems(rows, caseIds, refs) {
+  return rows.flatMap((r) => [
+    ...(caseIds.has(r.test_id) ? [] : [`${r.test_id}: cases.csv に無い TC`]),
+    ...(["pass", "fail"].includes(r.status) ? [] : [`${r.test_id}: status が語彙外（${r.status}）`]),
+    ...(refs.has(r.evidence_ref)
+      ? []
+      : [`${r.test_id} ${r.method} ${r.endpoint}: evidence_ref ${r.evidence_ref} が証拠索引に無い`]),
+    ...["schema_validated", "asserts_status", "asserts_header", "asserts_content_type"]
+      .filter((c) => !["true", "false"].includes(r[c]))
+      .map((c) => `${r.test_id}: ${c} が true / false でない`),
+  ]);
+}
+
+/** api-results.csv 全体の検査（表がある場合）。問題の配列。 */
+function apiTableProblems(bundle, table, stale) {
+  const refs = new Set(bundle.tables["evidence-index"].rows.map((r) => r.ref));
+  const caseIds = new Set(bundle.tables.cases.rows.map((c) => c.test_case_id));
+  return [
+    ...(JSON.stringify(table.header) === JSON.stringify(API_RESULT_COLUMNS)
+      ? []
+      : [`api-results.csv の列が違う（CSV: ${table.header.join(",")}）`]),
+    ...apiRowProblems(table.rows, caseIds, refs),
+    ...(stale ? ["api-results.csv が生成結果と一致しない（build-api-results.mjs で再生成する）"] : []),
+  ];
+}
+
+/**
+ * API テストの結果表（api-results.csv）: 列・語彙・参照（TC・証拠）が正しく、生成結果と一致する。
+ * hasMapping: backend/test/api-tags.yaml がある。stale: 生成結果と違う（null は確かめていない）。
+ */
+export function apiResults(bundle, { hasMapping, stale }) {
+  const title =
+    "API 結果表（api-results.csv）の列・参照が正しく、対応表・JUnit・観察値からの生成結果と一致する";
+  const table = bundle.tables["api-results"];
+  if (!hasMapping && !table)
+    return skipped("api-results", title, "backend/test/api-tags.yaml も api-results.csv も無い");
+  const report = createReport();
+  if (!table) report.error("docs/data/api-results.csv が無い（build-api-results.mjs で生成する）");
+  else for (const p of apiTableProblems(bundle, table, stale)) report.error(p);
+  return result("api-results", title, report, { rows: table?.rows.length ?? 0, stale });
 }
 
 export function sensitive(bundle) {

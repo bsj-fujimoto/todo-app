@@ -27,6 +27,25 @@ artifacts:
     source_sha256: "97e4d99367af9b7d7ccdb08728602604fc824a751d3848ae47fa27ee7c374446"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
+  - artifact_id: ART-73
+    path: backend/test/api-tags.yaml
+    type: api_test_mapping
+    title: "API テストの「どの endpoint を、何の観点で検証するか」の対応表（TC → endpoint・method・タグ）。"
+    version: "git:99d38c9"
+    status: reviewed
+    owner_role: "バックエンド担当"
+    approved_by: null
+    updated_at: "2026-10-12T18:28:20+09:00"
+    authoritative: false
+    normalized_format: yaml
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+    source_sha256: "964b25f402da716dcd1acdb77b84688462c6e50c8a90e360fab99e2cecb1cf09"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
   - artifact_id: ART-55
     path: docs/01-test-plan.md
     type: document
@@ -35,26 +54,18 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:27:41+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:27:41+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
-        commit: "1d6a247"
-      - at: "2026-10-12T17:18:17+09:00"
-        by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T17:14:35+09:00"
         by: maintainer
         change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
         commit: "2d33827"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
       - at: "2026-10-12T01:01:41+09:00"
         by: maintainer
         change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
@@ -71,14 +82,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:06:10+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-11T21:59:52+09:00"
         by: maintainer
         change: "fix(e2e): TC-074 の性能しきい値を CI で 3 倍にし、機能層は番兵・本判定は perf 層の方針に揃える（#37） (#38)"
@@ -103,14 +114,18 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:06:10+09:00"
+      - at: "2026-10-12T18:22:45+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
+      - at: "2026-10-12T17:32:25+09:00"
+        by: maintainer
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-11T21:59:52+09:00"
         by: maintainer
         change: "fix(e2e): TC-074 の性能しきい値を CI で 3 倍にし、機能層は番兵・本判定は perf 層の方針に揃える（#37） (#38)"
@@ -127,7 +142,7 @@ artifacts:
         by: maintainer
         change: "docs: テスト設計（要求・リスク・観点・ケース）フェーズ1 (#4)"
         commit: e580862
-    source_sha256: c921b75d3ad5aba59b976f7ed7f7b7f48209850b96fbafd3a3bae114b8c44533
+    source_sha256: "1a02a1e3aa69bbc80d33e7d7c32b31f16b68af7e43f049cab2e60bec23c70fde"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-03
@@ -139,23 +154,23 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:12:40+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:12:40+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
-        commit: "4c56a92"
-      - at: "2026-10-12T17:06:10+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:31:35+09:00"
         by: maintainer
         change: "docs: 成果物 04 リグレッションテスト成果物・05 自動テスト成果物 (#53)"
         commit: d2ea4ad
-    source_sha256: "18d62b6e255794f0917195827465a326b5b275a7c950ced4a6646963e7ab8fdb"
+    source_sha256: "1cb8e1d8001a1305240bd83c55a83c5b9040cfe585208c020e79941c55dae1f0"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-04
@@ -167,14 +182,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:06:10+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:31:35+09:00"
         by: maintainer
         change: "docs: 成果物 04 リグレッションテスト成果物・05 自動テスト成果物 (#53)"
@@ -191,23 +206,23 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:12:40+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:12:40+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
-        commit: "4c56a92"
-      - at: "2026-10-12T17:06:10+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:19:17+09:00"
         by: maintainer
         change: "docs: 成果物 06 API テスト成果物（13 観点・網羅表・対象外・改善計画） (#46)"
         commit: "91aeb73"
-    source_sha256: "91cddff156303c15973b33b41bb2a33a863c2e3dc3964dd5cba9cf37fb7cf4cb"
+    source_sha256: "4e84cb562673996325b99c95b7271ccb1705f6ce02773f5d0a81274c61f6b513"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-06
@@ -219,18 +234,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当・運用"
     approved_by: null
-    updated_at: "2026-10-12T17:19:16+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:19:16+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs(07): 見直し日を ACT-006 の期限（2026-12-31）に合わせる"
-        commit: dc3ecbc
-      - at: "2026-10-12T17:18:17+09:00"
-        by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T17:14:35+09:00"
         by: maintainer
         change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
@@ -247,18 +258,14 @@ artifacts:
     status: draft
     owner_role: "セキュリティ担当"
     approved_by: null
-    updated_at: "2026-10-12T17:12:40+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:12:40+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
-        commit: "4c56a92"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:30:35+09:00"
         by: maintainer
         change: "docs: 成果物 08 テスト対象の検査結果レポート（inspection-01〜23） (#52)"
@@ -275,27 +282,23 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:27:41+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:27:41+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
-        commit: "1d6a247"
-      - at: "2026-10-12T17:18:17+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:19:46+09:00"
         by: maintainer
         change: "docs: 成果物 09 テスト実施・結果記載（execution-01〜14） (#47)"
         commit: "901e458"
-    source_sha256: b05d8cca613c2c94ce581ac42432b63657ca6e30115c7edae2cfc7d2f524e33f
+    source_sha256: "0fe6b63e2696fd9ec4a4ef89fe0192f0bc3cf3f51a49dfce438b1d037280a531"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-09
@@ -307,27 +310,23 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:27:41+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:27:41+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
-        commit: "1d6a247"
-      - at: "2026-10-12T17:18:17+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:49:35+09:00"
         by: maintainer
         change: "docs: 成果物 10 テスト品質報告書（quality-01〜14） (#54)"
         commit: a1cb9ae
-    source_sha256: "138d203c1217f2fac63ea400f325fc34ee63e09daeb771d11c7d91a1c38c6900"
+    source_sha256: b3509b1445dbb47ccf5a4cd75ec5b8f57d394daea59cdc7ec650540a4d6f1bb9
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-10
@@ -339,22 +338,14 @@ artifacts:
     status: draft
     owner_role: "運用"
     approved_by: null
-    updated_at: "2026-10-12T17:27:41+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:27:41+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
-        commit: "1d6a247"
-      - at: "2026-10-12T17:12:40+09:00"
-        by: maintainer
-        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
-        commit: "4c56a92"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:13:34+09:00"
         by: maintainer
         change: "docs: 成果物 11 外形監視・運用品質成果物（docs/11-monitoring.md） (#43)"
@@ -371,23 +362,23 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:18:17+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:06:10+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:54:54+09:00"
         by: maintainer
         change: "docs: 成果物 12 テスト結果分析レポート（analysis-01〜15） (#56)"
         commit: adc9dc9
-    source_sha256: "2a4ad273193c5cb29679f735cb66cab98284ecb059b86f9e4d09a4028d8cfd09"
+    source_sha256: b2fca42c711cc93a14675e2c24c7a8f20deef6b1cb5d1e900001c4968b48820e
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-12
@@ -399,31 +390,23 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:28:20+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:28:20+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "docs(13): PR #65 の後の件数に数え直し"
-        commit: "9c4c6ed"
-      - at: "2026-10-12T17:18:51+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "docs(13): 07 取り込み後の件数に数え直し"
-        commit: f9a20a6
-      - at: "2026-10-12T17:18:17+09:00"
-        by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:11:05+09:00"
-        by: maintainer
-        change: "docs: 13 の数え直し・旧 run/ART-58/Release 添付/FND-012 の解消の反映、schedule 実績（2026-10-12 17:00 JST）の反映"
-        commit: ac41baf
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:52:28+09:00"
         by: maintainer
         change: "docs: 成果物 13 品質証跡・AIコンテキスト（evidence-01〜11） (#55)"
         commit: ba2d2bd
-    source_sha256: c8c97e1df6e29250f339f2ab5ce17fef17e9c9c56486a0385f6bd8cc4efe7822
+    source_sha256: "45931c897c68553e5a80c76a3886fb261fb80b0bcd77cb485adea9ee29272c1b"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-13
@@ -545,26 +528,22 @@ artifacts:
     path: docs/data/actions.csv
     type: "table:actions"
     title: docs/data/actions.csv
-    version: "git:8eaacf1"
+    version: "git:2eb62aa"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:25:40+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: csv
     history:
-      - at: "2026-10-12T17:25:40+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge remote-tracking branch 'origin/main' into docs/reconcile"
-        commit: "8eaacf1"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T17:23:59+09:00"
         by: maintainer
         change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
         commit: "6a07b95"
-      - at: "2026-10-12T17:18:17+09:00"
-        by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
       - at: "2026-10-12T17:14:35+09:00"
         by: maintainer
         change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
@@ -586,6 +565,25 @@ artifacts:
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
     source_sha256: "4d71aca1b665cf67a57d642a7a4f35b48a02bc5de5d01c0dcc910e17ca02a937"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-74
+    path: docs/data/api-results.csv
+    type: "table:api-results"
+    title: docs/data/api-results.csv
+    version: "git:99d38c9"
+    status: reviewed
+    owner_role: "QA 担当"
+    approved_by: null
+    updated_at: "2026-10-12T18:28:20+09:00"
+    authoritative: true
+    normalized_format: csv
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+    source_sha256: "15610ce78e4d37697c813c266ec7238c2457dc3a2b6bebb3622e350dfd279bfd"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-06
@@ -665,26 +663,45 @@ artifacts:
     source_sha256: "872dd7ae693563d932bb32110c132731f811f3ebe7af18cf03ff2af82a80c124"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
+  - artifact_id: ART-75
+    path: docs/data/deviations.csv
+    type: "table:deviations"
+    title: docs/data/deviations.csv
+    version: "git:99d38c9"
+    status: reviewed
+    owner_role: "QA 担当"
+    approved_by: null
+    updated_at: "2026-10-12T18:28:20+09:00"
+    authoritative: true
+    normalized_format: csv
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+    source_sha256: "778ce853e7ecdd6a5f09d053f9549a0c8f57dea9300bbaca069efff08fb99ca4"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
   - artifact_id: ART-09
     path: docs/data/evidence-index.csv
     type: "table:evidence-index"
     title: docs/data/evidence-index.csv
-    version: "git:9ff7f55"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:18:24+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
-      - at: "2026-10-12T17:18:24+09:00"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "chore(evidence): 再生成（07 取り込み後）"
-        commit: "9ff7f55"
-      - at: "2026-10-12T17:07:14+09:00"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "chore(evidence): 再生成（成果物台帳・証拠索引・検出表・manifest）。ADR の承認者を『承認』と書かれたロールから読む"
-        commit: "02ea43b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -693,21 +710,25 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: e5ce902659c843369d325cc2b4143c49c5d263dbb9d3f5423051b1054f193483
+    source_sha256: c19f5ba6c7a1a83906b0e1705ece05cb0ef990a4bd86cab23a39f90071db3117
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-10
     path: docs/data/executions.csv
     type: "table:executions"
     title: docs/data/executions.csv
-    version: "git:d14c713"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T01:30:20+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -716,25 +737,25 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "9498d11f1bbded95419e40c04ebdb02e8ab62dc59584b5a535ab7a056221b8e2"
+    source_sha256: "2296a05f756a5130f8d6d08f0f2f8f0028fb7eff79bc7180cf994e3bf0669032"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-11
     path: docs/data/findings.csv
     type: "table:findings"
     title: docs/data/findings.csv
-    version: "git:02ea43b"
+    version: "git:2eb62aa"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:07:14+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: csv
     history:
-      - at: "2026-10-12T17:07:14+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "chore(evidence): 再生成（成果物台帳・証拠索引・検出表・manifest）。ADR の承認者を『承認』と書かれたロールから読む"
-        commit: "02ea43b"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -811,14 +832,18 @@ artifacts:
     path: docs/data/traceability.csv
     type: "table:traceability"
     title: docs/data/traceability.csv
-    version: "git:6a07b95"
+    version: "git:99d38c9"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:23:59+09:00"
+    updated_at: "2026-10-12T18:28:20+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
       - at: "2026-10-12T17:23:59+09:00"
         by: maintainer
         change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
@@ -843,7 +868,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: be34753f60a45b2ca8efc71ad92909d0cc8d5d6ef76dcd54ccf0c582a109affc
+    source_sha256: "93520017de44974d217ced7519fb5d97f3b581c9fb2b187a90b01c8dd5665be7"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-16
@@ -873,26 +898,30 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:190de19"
+    version: "git:8c3f96c"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T18:32:16+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:18:17+09:00"
+      - at: "2026-10-12T18:32:16+09:00"
         by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:12:40+09:00"
+        change: "fix(evidence): API 結果表の実装の版の確認から、結果に影響しない helpers の変更を除く"
+        commit: "8c3f96c"
+      - at: "2026-10-12T18:29:02+09:00"
         by: maintainer
-        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
-        commit: "4c56a92"
-      - at: "2026-10-12T17:06:17+09:00"
+        change: "fix(evidence): API 結果表の実装の版の確認を作業ツリーと対象 commit の比較にする"
+        commit: "0e60369"
+      - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
-        change: "docs(evidence): 旧 run に superseded の印、security の版の訂正、Release 添付の差し替えの記録、README の実態との食い違いを直す"
-        commit: "2d8056b"
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+      - at: "2026-10-12T17:32:25+09:00"
+        by: maintainer
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T01:30:20+09:00"
         by: maintainer
         change: "evidence: v1.0.0 の証跡の取り込み（実施表・不具合表・検出表・アクション表・台帳） (#42)"
@@ -901,7 +930,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "78ac8a79259685e535a1372f801381d334f91f7d172dd1ceca5b7b878711cea0"
+    source_sha256: dddf36a0bd08ef046815b1481f0136fe6daa930a21e4627f8e9f46af41527f11
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
@@ -921,6 +950,25 @@ artifacts:
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
     source_sha256: "7e225753a59600e1f800a69207fd9c59d259a4afbc23e95e242166b57e0d85b6"
+    retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
+    immutable_store: true
+  - artifact_id: ART-76
+    path: docs/evidence/run-roles.yaml
+    type: evidence_ledger
+    title: "run の役割台帳（生成物。手で編集しない）。scripts/evidence/build-run-roles.mjs が、取り込んだ run の SOURCE.json と perf/results/*/run.json から作る。"
+    version: "git:99d38c9"
+    status: reviewed
+    owner_role: "QA 担当"
+    approved_by: null
+    updated_at: "2026-10-12T18:28:20+09:00"
+    authoritative: false
+    normalized_format: yaml
+    history:
+      - at: "2026-10-12T18:28:20+09:00"
+        by: maintainer
+        change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
+        commit: "99d38c9"
+    source_sha256: "8b9646b4ab85f2142aa1c82993795bfdd0a53bf660ec47bc0186330c70801af2"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-39
@@ -1104,18 +1152,18 @@ artifacts:
     path: perf/README.md
     type: perf_config
     title: "負荷・性能試験"
-    version: "git:190de19"
+    version: "git:2eb62aa"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: md
     history:
-      - at: "2026-10-12T17:18:17+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T16:58:13+09:00"
         by: maintainer
         change: "test(perf): GitHub-hosted runner の実測（v1.0.0 上の run 38152548008）の取り込みと runner baseline (#61)"
@@ -1238,30 +1286,22 @@ artifacts:
     path: perf/slo.yaml
     type: slo
     title: "性能 SLO（機械可読の正本）。判定は scripts/perf/verdict.mjs、k6 の threshold、"
-    version: "git:8eaacf1"
+    version: "git:2eb62aa"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T17:25:40+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: true
     normalized_format: yaml
     history:
-      - at: "2026-10-12T17:25:40+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "Merge remote-tracking branch 'origin/main' into docs/reconcile"
-        commit: "8eaacf1"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T17:23:59+09:00"
         by: maintainer
         change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
         commit: "6a07b95"
-      - at: "2026-10-12T17:18:17+09:00"
-        by: maintainer
-        change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
-        commit: "190de19"
-      - at: "2026-10-12T17:06:10+09:00"
-        by: maintainer
-        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
-        commit: "89c3b2b"
       - at: "2026-10-11T21:36:39+09:00"
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
@@ -1338,14 +1378,18 @@ artifacts:
     path: quality/impact-map.yaml
     type: quality_ledger
     title: "変更影響マップ: 変更ファイル（パスの glob）→ 影響する機能 → 実行する TC-ID。"
-    version: "git:c14d39a"
+    version: "git:1592d37"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T02:16:05+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: yaml
     history:
+      - at: "2026-10-12T18:22:45+09:00"
+        by: maintainer
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
       - at: "2026-10-12T02:16:05+09:00"
         by: maintainer
         change: "fix(ci): レビュー指摘の CI・検査の不備 8 件（Issue 起票・Dependabot・選定記録・公開物検査・保守性・アーキテクチャ・Code Scanning・回帰台帳・健全性） (#57)"
@@ -1366,7 +1410,7 @@ artifacts:
         by: maintainer
         change: "ci: CI パイプライン・回帰運用（ci.yml / nightly.yml / scripts / quality） (#8)"
         commit: "1f23d5f"
-    source_sha256: "3f0a3a796767261d8d7649320747e234fa3c478c81badaebc468ccdfb8d56278"
+    source_sha256: "1fa24f52d4708e7b31eeafce012ba84df85a74b0d34499600df1296958ae4367"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-22
@@ -1538,14 +1582,18 @@ artifacts:
     path: security/dependency-selection.yaml
     type: security_policy
     title: "直接依存の選定記録（なぜこれを選び、何を検討し、保守状況がどうか）。docs ではなく、依存の変更と同じ PR で更新する台帳。"
-    version: "git:c14d39a"
+    version: "git:1592d37"
     status: reviewed
     owner_role: "セキュリティ担当"
     approved_by: null
-    updated_at: "2026-10-12T02:16:05+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: yaml
     history:
+      - at: "2026-10-12T18:22:45+09:00"
+        by: maintainer
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
       - at: "2026-10-12T02:16:05+09:00"
         by: maintainer
         change: "fix(ci): レビュー指摘の CI・検査の不備 8 件（Issue 起票・Dependabot・選定記録・公開物検査・保守性・アーキテクチャ・Code Scanning・回帰台帳・健全性） (#57)"
@@ -1554,7 +1602,7 @@ artifacts:
         by: maintainer
         change: "ci(security): セキュリティ検査・トリアージ・統制の自動検査（security.yml / security/ / scripts/security） (#19)"
         commit: fd2b322
-    source_sha256: "40234d91b8333eea901a7be25044ad8145ee39419d0f00121833ca659d03cf4e"
+    source_sha256: "434bc83008bcb7c9c311fa6577e9d0c3ea83633f1099c9f41a266dde7ef60b05"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-71
@@ -1710,18 +1758,18 @@ artifacts:
     path: security/triage.yaml
     type: security_policy
     title: "セキュリティ検出のトリアージ台帳（人が書く）。scripts/security/triage.mjs が検出に突き合わせ、security/findings.json の元にする。"
-    version: "git:06c2219"
+    version: "git:2eb62aa"
     status: reviewed
     owner_role: "セキュリティ担当"
     approved_by: null
-    updated_at: "2026-10-12T16:59:37+09:00"
+    updated_at: "2026-10-12T17:32:25+09:00"
     authoritative: false
     normalized_format: yaml
     history:
-      - at: "2026-10-12T16:59:37+09:00"
+      - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
-        change: "fix(evidence): ADR のヘッダ誤読（ART-58）・FND-012 の owner/due・superseded 印・security の版を直す"
-        commit: "06c2219"
+        change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
+        commit: "2eb62aa"
       - at: "2026-10-12T02:16:05+09:00"
         by: maintainer
         change: "fix(ci): レビュー指摘の CI・検査の不備 8 件（Issue 起票・Dependabot・選定記録・公開物検査・保守性・アーキテクチャ・Code Scanning・回帰台帳・健全性） (#57)"

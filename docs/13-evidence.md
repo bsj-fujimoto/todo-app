@@ -18,13 +18,13 @@
 
 ## この文書の結論
 
-- **対象版は 1 つに固定できている**: release v1.0.0 = 製品 commit `5fcf40a…` = イメージ digest 2 本（backend `sha256:87addb2e…`・frontend `sha256:c82e88ba…`）。実施表 111 行はすべてこの commit（evidence-01）。対象版でない旧 run の証跡 121 ファイル（run 38128562945、対象 52da4aa）は manifest に残るが、**`SOURCE.json` の `superseded_by` と manifest の `superseded_by` で「置き換え済み」の印を付けた**（実施表の行の根拠には使っていない。削除はしない＝履歴）。
+- **対象版は 1 つに固定できている**: release v1.0.0 = 製品 commit `5fcf40a…` = イメージ digest 2 本（backend `sha256:87addb2e…`・frontend `sha256:c82e88ba…`）。実施表 113 行はすべてこの commit（evidence-01）。対象版でない旧 run の証跡 121 ファイル（run 38128562945、対象 52da4aa）は manifest に残るが、**`SOURCE.json` の `superseded_by` と manifest の `superseded_by` で「置き換え済み」の印を付けた**（実施表の行の根拠には使っていない。削除はしない＝履歴）。
 - **review ID の規則を本書で定めた**（`QR-<YYYYMMDD>-<release>-<NN>`。例 `QR-20261012-v1.0.0-01`）。**規則に沿ったレビュー記録のファイルはまだ無い**（採点が走った時点で書く。置き場の提案は evidence-01）。
 - **機械で確かめられること**: manifest 365 ファイルの sha256 は不一致・欠落・未登録 0、ID 参照は 3,485 件中未解決 0、証拠索引 373 件は参照がすべて解決し sha256 不一致 0、秘密・個人情報らしい値は簡易検査 383 ファイルで 0 件（evidence-02・04・05・09。2026-10-12 17:00 JST に `check-evidence.mjs --strict-artifacts` が PASS）。manifest・証拠索引の件数は、PR #61 で取り込まれた性能の証跡 88 ファイルを含む。
 - **人が確認していないこと（上限が掛かる観点）**: 正本の真正性（evidence-03）、抽出の内容 parity（evidence-07）、秘密・個人情報の最終確認（evidence-09）、改変防止の実効性（evidence-11）。**いずれも確認者・確認日の記録は無い**（未実施）。
 - **「改変防止された保管先」と言えるのは、署名済みイメージ（digest・cosign・provenance・Rekor）だけ**。Git 履歴と hash 台帳は**改変を検知できる**が、**防止は main の Ruleset が未適用**（`gh api repos/bsj-fujimoto/todo-app/rulesets` が空。ACT-008、期限 2026-10-16）のため管理者の履歴書換えを止められない。CI の artifact（90 日、2027-01-09 まで）と Release の添付は削除・差し替えができる（evidence-11）。
 - **秘密・個人情報**: 取り込み時に墨消し（5 ファイル 103 箇所、元と墨消し後の sha256 を記録）。**ただし墨消し前の値は、Git 履歴（b800097 の `docs/evidence/security/`、メール形式 44 件）に残っている**。履歴からは消せない（evidence-09）。**公開 Release の `release-evidence.zip`（初版の時点では墨消し前の 4 ファイル・メール形式 46 件を含んでいた）は、2026-10-12 に墨消し済みの版へ差し替えた**（sha256 `75d2fa5c9b741efa24c40bf96a73b9331b7d9aae6da80f7c817cda02ec97021e`、墨消し 584 箇所・11 ファイル。元の版は削除した。[docs/evidence/README.md](evidence/README.md) の「リリースの添付」）。
-- **追跡**: REQ 34・RISK 16・TC 77・EXEC 111・DEF 10・ACT 27 は追跡表にすべて載る。VIEW は 69 件中 12 件、FND は 12 件中 6 件が載らない（前者は全件が対象外、後者は対応不要。理由は evidence-04）。接続の欠落（gaps）は 14 行（evidence-04。以前は 7 行で、ACT-013〜015・023〜025・027 の追加で増えた）。
+- **追跡**: REQ 34・RISK 16・TC 77・EXEC 113・DEF 10・ACT 27 は追跡表にすべて載る。VIEW は 69 件中 12 件、FND は 12 件中 6 件が載らない（前者は全件が対象外、後者は対応不要。理由は evidence-04）。接続の欠落（gaps）は 14 行（evidence-04。以前は 7 行で、ACT-013〜015・023〜025・027 の追加で増えた）。
 - **承認・履歴**: 成果物台帳 72 件（approved 6・reviewed 53・draft 13）。PR 41 件（マージ 36）のうち GitHub 上の Review 記録は 6 PR に計 11 件で**すべて COMMENTED、APPROVED は 0**。承認は「オーナーが PR をマージした時点（フェーズ1は AI の代行）」で、第二の目は無い（evidence-10）。文書 01〜06・08〜13 の状態は、オーナーの確認が済むまで `draft` のまま（reviewed・approved にしない）。
 - **成果物台帳は再生成済み**（版 1.1）: 72 件すべての sha256 が現物と一致し、`--strict-artifacts` が PASS（初版の時点では文書 9 件が未登録・sha256 不一致 7 件だった）。文書を更新したら、コミット後に `npm run evidence:build` で再生成する運用は変わらない（evidence-02・10）。`docs/README.md`・`docs/ai-context.yaml` は台帳の種別規則（`typeOf`）に無く、台帳には載らない（evidence-02）。
 
@@ -89,7 +89,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 | 検査 | 結果 | 出典 |
 |---|---|---|
-| 実施表の `commit_sha` の種類 | 1 種類（111 / 111 行が X）。2 種類以上、または `release.json` の SHA 以外の行があれば失敗 | `docs/data/executions.csv`、`node scripts/evidence/check-evidence.mjs --release 5fcf40a7e58dc253e53ff56860d0669a69abda26 --strict`（リリースの記録 PASS） |
+| 実施表の `commit_sha` の種類 | 1 種類（113 / 113 行が X）。2 種類以上、または `release.json` の SHA 以外の行があれば失敗 | `docs/data/executions.csv`、`node scripts/evidence/check-evidence.mjs --release 5fcf40a7e58dc253e53ff56860d0669a69abda26 --strict`（リリースの記録 PASS） |
 | 証拠索引の `head_sha` | 373 件中 356 件が X（run 224・セキュリティ 44・性能 88）。11 件は Issue スナップショットを取った時点の main（`49c40cc`）、6 件は旧 run（`52da4aa`。`superseded` 印あり）。後者 2 種は主張の文面に対象 SHA を書いてあり、X の実施結果の根拠には使っていない | `docs/data/evidence-index.csv` |
 | manifest の `head_sha` | 365 件中 X が 242 件（release の run 121 + セキュリティ 33 + 性能 88）、`52da4aa` が 121 件（旧 run。すべて `superseded_by: 38152472087`）、`49c40cc` が 2 件（Issue スナップショット） | [manifest.json](evidence/manifest.json) |
 | 製品コードの変更 | X から main（ac5feba 以降。2026-10-12 17:00 JST の作業ツリー）まで `backend`・`frontend`・`docker-compose.yml`・`spec` の差分は 0。変わったのは文書・証跡・監視・CI 設定（`git diff --stat X HEAD -- backend frontend docker-compose.yml spec` が空） | `git diff` |
@@ -176,7 +176,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 | RISK（`risks.csv`） | 16 | 16 | なし（RISK-009・RISK-012 は「対応するケースがない」行として載る） |
 | VIEW（`perspectives.csv`） | 69 | 57 | 12 件。**すべて `not_applicable`**（VIEW-023・024・026・029・042・046・055〜060。理由は `rationale`、判断は [02 テスト観点表](02-test-perspectives.md) の対象外の節） |
 | TC（`cases.csv`） | 77 | 77 | なし |
-| EXEC（`executions.csv`） | 111 | 111 | なし |
+| EXEC（`executions.csv`） | 113 | 113 | なし |
 | DEF（`defects.csv`） | 10 | 10 | なし |
 | FND（`findings.csv`） | 12 | 6 | 6 件（FND-001・004・005・006・008・009）。いずれも `status: na`（info・low で対応不要と判断した検出。アクションに結び付けていない） |
 | ACT（`actions.csv`） | 27 | 27 | なし |
@@ -282,8 +282,8 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 | 表・列 | 空欄 | 意味 |
 |---|---|---|
-| `executions`: `defect_ids`・`reason`・`owner`・`retest_due` | 100〜109 / 111 | pass の行には不具合・未実施の理由・owner が無いのが正常。**`not_run` の 2 行では `reason`・`owner`・`retest_due` が埋まっている**（空欄 0） |
-| `executions`: `evidence_ids`・`executed_at`・`executor` | 2 / 111 | 未実施の 2 行（実施していないので証拠・時刻・実施者が無い） |
+| `executions`: `defect_ids`・`reason`・`owner`・`retest_due` | 100〜109 / 113 | pass の行には不具合・未実施の理由・owner が無いのが正常。**`not_run` の 2 行では `reason`・`owner`・`retest_due` が埋まっている**（空欄 0） |
+| `executions`: `evidence_ids`・`executed_at`・`executor` | 2 / 113 | 未実施の 2 行（実施していないので証拠・時刻・実施者が無い） |
 | `requirements`: `validation_rules`・`state_machines` | 25 / 34 | 入力規則・状態遷移を持たない種類の要求 |
 | `cases`: `manual_reason`・`combination_ref` | 75・63 / 77 | 手動でない・組合せ表を使わないケース |
 | `perspectives`: `unknown_ids`・`risk_ids` | 66・6 / 69 | 未決が絡まない観点。`risk_ids` が空の 6 件はすべて対象外の観点（VIEW-055〜060） |

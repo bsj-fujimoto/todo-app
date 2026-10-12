@@ -11,7 +11,8 @@ import { toCsv } from "../ci/lib/csv.mjs";
 import { EVIDENCE_DIR, createReport, idsIn } from "./lib/common.mjs";
 import { csvPath, loadEvidenceRows, loadFindingLedger, readTable, saveEvidenceRows } from "./lib/data-io.mjs";
 import { checkEvidenceIndex } from "./lib/evidence-checks.mjs";
-import { collectEvidenceEntries } from "./lib/evidence-files.mjs";
+import { collectEvidenceEntries, derivedEntries } from "./lib/evidence-files.mjs";
+import { readReleaseRecord } from "./lib/release-record.mjs";
 import { EVIDENCE_COLUMNS, createRegistry } from "./lib/evidence-registry.mjs";
 
 const args = parseArgs(process.argv.slice(2), { flags: ["check"] });
@@ -20,7 +21,10 @@ const report = createReport();
 
 const registry = createRegistry(loadEvidenceRows(root));
 const fresh = new Set(
-  collectEvidenceEntries(join(root, EVIDENCE_DIR), loadFindingLedger(root)).map((e) => registry.allocate(e)),
+  [
+    ...collectEvidenceEntries(join(root, EVIDENCE_DIR), loadFindingLedger(root)),
+    ...derivedEntries(root, readReleaseRecord(root).data?.commit_sha),
+  ].map((e) => registry.allocate(e)),
 );
 const referenced = new Set(
   ["executions", "defects"].flatMap((t) => readTable(root, t).rows.flatMap((r) => idsIn(r.evidence_ids))),

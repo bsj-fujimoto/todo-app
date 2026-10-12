@@ -1,0 +1,100 @@
+# run の役割台帳（生成物。手で編集しない）。scripts/evidence/build-run-roles.mjs が、取り込んだ run の SOURCE.json と perf/results/*/run.json から作る。
+# role: target = 対象版（release.json の commit_sha）の実行。実施表（kind=regression・performance）の根拠になる。
+# role: history = 対象版の結果ではない（別の commit・開発機の実験・初回・未コミットの変更を含む実行）。証跡として残すが、実施表・証拠索引の根拠にしない。
+# GitHub 上のほかの run（取り込んでいないもの）はここに載らない。取り込んだ時点で SOURCE.json から役割が決まる。
+version: 1
+release: v1.0.0
+target_commit_sha: "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+runs:
+  - run_ref: gh-run-38128562945
+    kind: ci
+    workflow: CI
+    commit_sha: "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+    evidence: docs/evidence/runs/38128562945
+    role: history
+    reason: "実施表の基準を run 38152472087（対象 5fcf40a）へ取り替えた。この run は履歴。対象版 5fcf40a と別の commit（52da4aa）。対象版の試験結果ではない"
+  - run_ref: gh-run-38152472087
+    kind: ci
+    workflow: Release
+    commit_sha: "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+    evidence: docs/evidence/runs/38152472087
+    role: target
+    reason: "対象版 5fcf40a の実行"
+  - run_ref: gh-run-38152472087
+    kind: security
+    workflow: Release
+    commit_sha: "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+    evidence: docs/evidence/security
+    role: target
+    reason: "対象版 5fcf40a の実行"
+  - run_ref: gh-run-38152548008
+    kind: perf
+    workflow: perf
+    commit_sha: "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+    evidence: docs/evidence/perf
+    role: target
+    reason: "対象版 5fcf40a の実行"
+  - run_ref: perf-20261011T082949Z-f948648
+    kind: perf
+    workflow: null
+    commit_sha: f948648c016644d20f24a1138866199b948382f2
+    evidence: perf/results/20261011T082949Z-f948648
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f948648）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-exp-e0-default-f077e80
+    kind: perf
+    workflow: null
+    commit_sha: f077e8004d35b17f730aa54b6871613582cee9f8
+    evidence: perf/results/exp-e0-default-f077e80
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f077e80）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-exp-e1-log-silent-f077e80
+    kind: perf
+    workflow: null
+    commit_sha: f077e8004d35b17f730aa54b6871613582cee9f8
+    evidence: perf/results/exp-e1-log-silent-f077e80
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f077e80）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-exp-e2-cpu2-f077e80
+    kind: perf
+    workflow: null
+    commit_sha: f077e8004d35b17f730aa54b6871613582cee9f8
+    evidence: perf/results/exp-e2-cpu2-f077e80
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f077e80）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-exp-e3-10000tasks-f077e80
+    kind: perf
+    workflow: null
+    commit_sha: f077e8004d35b17f730aa54b6871613582cee9f8
+    evidence: perf/results/exp-e3-10000tasks-f077e80
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f077e80）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-load-compare-20261011T115828Z-191a25b
+    kind: perf
+    workflow: null
+    commit_sha: "191a25b25b22dc16707e71757c3ae55759d349fc"
+    evidence: perf/results/load-compare-20261011T115828Z-191a25b
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（191a25b）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-soak-r2-20261011T112525Z-191a25b
+    kind: perf
+    workflow: null
+    commit_sha: "191a25b25b22dc16707e71757c3ae55759d349fc"
+    evidence: perf/results/soak-r2-20261011T112525Z-191a25b
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（191a25b）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-soakfix-20261011T102913Z-f077e80
+    kind: perf
+    workflow: null
+    commit_sha: f077e8004d35b17f730aa54b6871613582cee9f8
+    evidence: perf/results/soakfix-20261011T102913Z-f077e80
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（f077e80）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"

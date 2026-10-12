@@ -38,14 +38,14 @@
 | 項目 | 内容 | 出典 |
 |---|---|---|
 | **release（版）** | v1.0.0（タグ v1.0.0。公開 2026-10-11T15:46:54Z = 2026-10-12 00:46 JST） | `docs/evidence/release.json`、GitHub Release |
-| **commit** | `5fcf40a7e58dc253e53ff56860d0669a69abda26`（実施表 111 行すべてが同じ commit。版の混在 0） | `docs/data/executions.csv`、[09 の execution-01](09-test-execution.md) |
+| **commit** | `5fcf40a7e58dc253e53ff56860d0669a69abda26`（実施表 113 行すべてが同じ commit。版の混在 0） | `docs/data/executions.csv`、[09 の execution-01](09-test-execution.md) |
 | **build** | Release ワークフロー run 38152472087（成功）。イメージ digest: backend `sha256:87addb2e3998f9c793e1c979f9b65d98d3cca98e1eea57be8c6ac28705f5a213`、frontend `sha256:c82e88bae5e0aeb7d04df9e31808d1d490cdc6bc01b98efe11db7cd9b526ee9a` | `release.json` |
 | **機能（features）** | フェーズ1の F-01 追加・F-02 一覧・F-03 完了切替・F-04 削除、入力検証、保存の扱い、品質条件（360px 以上・ラベル・キーボード）。要求 REQ-001〜REQ-034、API 5 operation（`backend/openapi.yaml`）。フェーズ2（期限設定）は範囲外 | [01 の plan-02](01-test-plan.md) |
 | **期間（period）** | 2026-10-09（仕様受領）〜 2026-10-12（リリースと本報告）。全件回帰の実施は 2026-10-11T15:43:47Z〜15:45:21Z（JST 2026-10-12 00:43〜00:45） | [01 の plan-10](01-test-plan.md)、`executions.csv` の `executed_at` |
 | **環境（environments）** | GitHub-hosted runner `ubuntu-24.04`（Linux 6.17.0-1022-azure x64、Node v24.21.0）。ブラウザは chromium 156.0.8078.4・firefox 157.0・webkit 27.2、画面幅 1280x800 と 360x640。compose（実 nginx・コンテナ・ボリューム）。実機は未実施（quality-11）。**本番環境は無い** | `executions.csv` の `environment`、[01 の plan-07](01-test-plan.md) |
 
 - **この報告に含めないもの**: 本書の初版の時点では性能の GitHub 上の本計測（`perf.yml` の run 38152548008）は実行中で含めなかった。**版 1.1 で、取り込み済み（PR #61。ACT-009 は done）の結果を反映した**（quality-04・06・09・13）。v1.0.0 の commit に対する外形監視の定期実行（履歴なし）。
-- **他の成果物との一致**: [09](09-test-execution.md)（111 行・pass 109・not_run 2・不具合 10）、[08](08-inspection.md)（15 検査すべて同じ commit、検出 12 件）と数字が一致することを突き合わせた（食い違いの扱いは quality-14 の末尾）。
+- **他の成果物との一致**: [09](09-test-execution.md)（113 行・pass 111・not_run 2・不具合 10）、[08](08-inspection.md)（15 検査すべて同じ commit、検出 12 件）と数字が一致することを突き合わせた（食い違いの扱いは quality-14 の末尾）。
 
 ## quality-03 計画対実績
 
@@ -66,7 +66,7 @@
 | 項目 | 実績 | 出典 |
 |---|---|---|
 | 範囲 | 75 ケースが pass、2 ケース（TC-071・TC-072）が not_run。fail・blocked・skipped は 0 | `executions.csv` |
-| 実施した件数（実施表の行） | 109 行が pass、not_run 2 行（計 111 行 = 75 ケース × 環境 + 手動 2。1 ケースが複数環境で行を持つ） | `executions.csv` |
+| 実施した件数（実施表の行） | 111 行が pass、not_run 2 行（計 113 行 = 75 ケース × 環境 + 手動 2 + 性能 2〔TC-073・TC-074 の perf 層の判定〕。1 ケースが複数環境で行を持つ） | `executions.csv` |
 | 日程 | 計画どおり。全件回帰は 2026-10-12 00:43〜00:45 JST、リリースは 00:46 JST | [09 の execution-09](09-test-execution.md) |
 | 工数 | **記録していない**（測れない） | — |
 | 品質目標 12 項目 | **達成 9**（Q-01・02・03・04・05・07・09・10・11。初版は 7 で、Q-03・Q-07 は版 1.1 で達成）、**条件付き 2**（Q-06 flaky の隔離 2 件、Q-08 未判断 1 件）、**評価できない 1**（Q-12 稼働率）（Q-03 は #31 の期限が Issue に追記され ACT-006 と 2026-12-31 に一本化、Q-07 は GitHub 本計測〔run 38152548008〕で SLO 全達成） | 下の判定と quality-13 |
@@ -151,7 +151,7 @@ REQ-008・009・010 は実機のスクリーンリーダー・モバイルのキ
 | 適用観点のうち、未実施ケースにも紐づく | 5（VIEW-005・035・037・038・039） |
 | status が ready でない観点 | 1（VIEW-066。性能の目標値を SLO で定義する観点。件数の上限は UNK-002 が未決） |
 
-**環境の網羅（environments）**: 出典 `executions.csv` の `environment`（12 区分、111 行）。
+**環境の網羅（environments）**: 出典 `executions.csv` の `environment`（13 区分、113 行。うち perf 層 2 行）。
 
 | 環境 | 行 | 結果 |
 |---|---|---|
@@ -161,10 +161,11 @@ REQ-008・009・010 は実機のスクリーンリーダー・モバイルのキ
 | e2e / webkit（互換 3 ケース。Linux 上の Playwright WebKit） | 3 | pass |
 | compose（実 nginx・コンテナ） | 4 | pass |
 | unit（frontend 27・backend 9）・api 27・contract 2 | 65 | pass |
+| perf 層（k6・画面計測。TC-073・TC-074 の SLO 判定。run 38152548008） | 2 | pass |
 | **実機（macOS VoiceOver + Safari、Windows NVDA + Firefox）** | 1 | **not_run（TC-071）** |
 | **実機（iPhone の Safari、日本語ソフトウェアキーボード）** | 1 | **not_run（TC-072）** |
 
-12 区分中 **10 を実施（pass）、2 を未実施**。非 Chromium のブラウザは互換 3 ケース（TC-001・TC-056・TC-070）だけ。v1.0.0 の実施表の OS は Linux（CI）のみで、macOS の開発機の実行と Windows は含まない。
+13 区分中 **11 を実施（pass）、2 を未実施**。非 Chromium のブラウザは互換 3 ケース（TC-001・TC-056・TC-070）だけ。v1.0.0 の実施表の OS は Linux（CI）のみで、macOS の開発機の実行と Windows は含まない。
 
 **重要な利用経路の網羅（journeys）**: 出典 `quality/journeys.yaml`・`executions.csv`。
 

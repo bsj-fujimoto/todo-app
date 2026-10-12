@@ -1,6 +1,8 @@
 // 抽出パリティ: 表（docs/data/*.csv）と md の記載（件数・列）が一致するか。純粋関数。
 // 例: docs/03 の「ケース 77 件（TC）」と cases.csv の行数。md に書かれた「N 件（PREFIX）」「N 行（PREFIX）」を全文書から拾って、表の行数と突き合わせる。
 import { parseCsvObjects } from "../../ci/lib/csv.mjs";
+import { API_DOC, apiResultsParity } from "./api-parity.mjs";
+import { DEVIATIONS_DOC, deviationParity } from "./deviations.mjs";
 
 /** ID の接頭辞 → 表（docs/data/<name>.csv）。 */
 export const PREFIX_TABLE = {
@@ -107,11 +109,15 @@ function columnProblems(path, md, tables) {
  * 戻り値: { checked, problems[] }。
  */
 export function checkParity(docs, tables) {
-  const parts = Object.entries(docs).flatMap(([path, md]) => [
-    countProblems(path, md, tables),
-    valueProblems(path, md, tables),
-    columnProblems(path, md, tables),
-  ]);
+  const parts = [
+    ...Object.entries(docs).flatMap(([path, md]) => [
+      countProblems(path, md, tables),
+      valueProblems(path, md, tables),
+      columnProblems(path, md, tables),
+    ]),
+    deviationParity(DEVIATIONS_DOC, docs[DEVIATIONS_DOC], tables.deviations ?? null),
+    apiResultsParity(API_DOC, docs[API_DOC], tables["api-results"] ?? null),
+  ];
   return { checked: parts.reduce((n, p) => n + p.checked, 0), problems: parts.flatMap((p) => p.problems) };
 }
 

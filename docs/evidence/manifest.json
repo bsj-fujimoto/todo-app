@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-12T08:18:17.809Z",
+  "generated_at": "2026-10-12T09:20:55.352Z",
   "root": "docs/evidence",
   "algorithm": "sha256",
   "count": 365,
@@ -3420,6 +3420,20 @@
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
       "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
+    }
+  ],
+  "derived": [
+    {
+      "path": "docs/data/api-results.csv",
+      "sha256": "15610ce78e4d37697c813c266ec7238c2457dc3a2b6bebb3622e350dfd279bfd",
+      "size": 7125,
+      "generated_by": "scripts/evidence/build-api-results.mjs"
+    },
+    {
+      "path": "docs/data/deviations.csv",
+      "sha256": "778ce853e7ecdd6a5f09d053f9549a0c8f57dea9300bbaca069efff08fb99ca4",
+      "size": 3995,
+      "generated_by": "scripts/evidence/build-deviations.mjs"
     }
   ]
 }

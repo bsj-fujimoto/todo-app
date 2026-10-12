@@ -39,7 +39,7 @@
 | api-10 後方互換・Versioning | 一部 | oasdiff による破壊的変更の検出は CI で運用。互換テスト（旧 consumer の期待）・deprecated・sunset の運用実績は無い | api-10 |
 | api-11 Consumer contract | **未導入** | 利用側は frontend のみ。Pact 等は無く、同等手段も一部。改善計画あり | api-11 |
 | api-12 データ・後始末 | 実施済み（tenant 分離は適用外） | テストごとに専用 DB・専用ポート・固定 clock。afterEach で必ず後始末 | api-12 |
-| api-13 自動化・CI・報告 | 実施済み（機械可読タグ・全文証拠は一部） | PR・main・日次・週次・リリースで実行。結果は JUnit と観察値 JSON に対象 SHA つきで保存 | api-13 |
+| api-13 自動化・CI・報告 | 実施済み（機械可読タグはケース ID 付き 27 件のみ・全文証拠は一部） | PR・main・日次・週次・リリースで実行。結果は JUnit と観察値 JSON に対象 SHA つきで保存 | api-13 |
 
 ## 0 対象と読み方
 
@@ -454,6 +454,7 @@
 | JUnit XML | 全件実行は `all.xml`、選択実行は `unit.xml`・`api.xml`、契約は `contract.xml`。テスト名に TC-ID | CI の artifact `junit-coverage-unit-api`・`contract-report`（保持 90 日）。v1.0.0 の写しは `docs/evidence/runs/38152472087/junit/` |
 | CI 要約 JSON | 層別の total・passed・failed・skipped・retried_success、ケース別の status・runs・layers・flaky、`commit_sha`・`run_id` | `ci-summary.json`（同 run） |
 | 観察値 JSON | テストごとに、実際に送った API 呼び出し（method・path・status・要求と応答の要約）、環境（OS・Node）、`commit_sha`・`run_id`・`workflow`・`event`、outcome（passed / failed）。**失敗したテストにも書かれる** | `backend/test-results/observations/<TC-ID>.json`。v1.0.0 の写しは `docs/evidence/runs/38152472087/observations/backend/` |
+| API 結果表（機械可読） | ケース ID を持つ API テスト 27 件 × endpoint × method（40 行）の、タグ（validation:*・error:*・idempotency・concurrency・retry・business・schema）・結果・`schema_validated`・`asserts_status`・`asserts_header`・`asserts_content_type`・観察値への参照・run。**対応表 `backend/test/api-tags.yaml`（人が決める）を、JUnit・観察値・テストの実装から機械的に検証して生成**する。宣言したタグに観察値の裏付けが無い（例: `error:4xx` なのに 4xx を観察していない）と生成が失敗する。アサートの有無はテストの実装から読む（テスト単位。同じ TC の複数の endpoint の行は同じ値）。`[補助]` 30 件・`[契約]` 6 件は観察値を残さないため含めない | `docs/data/api-results.csv`（`node scripts/evidence/build-api-results.mjs`）。数字は check-parity が本書の「検査の種類ごとの適用」の表と突き合わせる |
 | 契約差分の結果 | oasdiff の結果（base・head の SHA、`result`、`reason`）と changelog・破壊的変更の JSON | `contract-report/result.json`（同 run の artifact） |
 | カバレッジ | backend の行・分岐・関数。行 90% 未満で失敗 | `coverage-summary.json`（v1.0.0 は行 99.69%・分岐 98.09%） |
 | 実施表・証拠索引 | 27 ケースの pass、run・SHA・観察値・JUnit への参照 | `docs/data/executions.csv`、`evidence-index.csv` |
@@ -466,7 +467,7 @@
 
 **このテストが実際に見つけた不具合（検出力の実績）**: DEF-005（TC-050。書込み不可で開いた SQLite 接続が、権限を戻しても書込み不可のまま。major、fixed）、DEF-015（TC-031。本文サイズ超過の応答が RST で失われ、テストが不安定。minor、fixed）。DEF-025（TC-073 の p95 が共有ランナーで不安定。minor、open。ACT-002、隔離は `quality/flaky-ledger.yaml` に期限付き）は環境差によるテストの不安定さで、API の不具合ではない。
 
-**足りないこと**: ① API の結果に、endpoint・検証の種別（必須・型・境界・冪等性など）・schema 検証の有無・アサートの種類を表す**機械可読なタグが無い**（観察値は呼び出しの列のみ）。本書の表がその対応を人間向けに示している。② 全文の証拠。③ ゲートの GitHub 側の強制（Ruleset の適用は別手順）。改善は項番 5。
+**足りないこと**: ① 機械可読なタグ・アサートは `docs/data/api-results.csv`（ケース ID 付き 27 件）にある。ただし**テスト自身が出力するのでなく、人が書く対応表 `api-tags.yaml` を観察値・実装で検証して生成**しており、`[補助]` 30 件・`[契約]` 6 件は含まない。auth:*・paging・timeout・rate_limit・compat・tenant_isolation のタグは、該当するテストが無い（認証・ページング無し、timeout・rate limit のテスト無し）ため付けていない。② 全文の証拠。③ ゲートの GitHub 側の強制（Ruleset の適用は別手順）。改善は項番 5。
 
 ## できていないことと改善計画
 
@@ -476,7 +477,7 @@
 | 2 | oasdiff が壊れた変更を止めることの自動確認が無い（api-01 の確認は手動 1 回） | api-01・api-10 | base と改変版の 2 つの契約を固定のファイルで持ち、oasdiff が「壊れた変更は失敗・追加のみは成功」になることを、イメージを更新する PR で自動検査する。結果は互換テスト（`compat`）として記録する | QA 担当 | 2026-11-12 |
 | 3 | 同じ id への並列 PATCH、PATCH と DELETE の競合、PATCH の逆順到着、POST の重複送信（API 直接）が未検証 | api-07 | 新規ケースを起票し（`docs/data/cases.csv` への追加は成果物 03 の担当へ依頼）、`concurrency.test.js` に足す | QA 担当・バックエンド担当 | 2026-11-12 |
 | 4 | `GET /api/v1/tasks` の 503 を HTTP で再現していない。PATCH の壊れた JSON のテストが無い | api-03・api-04・api-06 | 読み取り時に失敗するストアの差し替え（または DB ファイルを読めない権限にする案）で一覧の 503 を再現する。PATCH に壊れた JSON を送るケースを `robustness.test.js` に足す | バックエンド担当 | 2026-11-12 |
-| 5 | API の結果に endpoint・検証種別・schema 検証・アサートの機械可読なタグが無い | api-13 | 観察値（`observe-node-test.js`）に、endpoint・method・タグ（auth・validation・schema・error・concurrency など）・`schema_validated`・アサートの種類を足す | バックエンド担当 | 2026-11-30 |
+| 5 | API の結果の機械可読なタグを、テスト自身が出力していない（対応表 `api-tags.yaml` + 生成で代替。`[補助]`・`[契約]` は対象外） | api-13 | 観察値（`observe-node-test.js`）に、endpoint・method・タグ・`schema_validated`・アサートの種類をテストから直接足し、`[補助]`・`[契約]` にも観察値を残して、対応表を不要にする | バックエンド担当 | 2026-11-30 |
 | 6 | `info.version`・`package.json`・タグの版の一致を検査していない | api-10 | `contract.test.js` に一致の検査を足す | バックエンド担当 | 2026-11-12 |
 | 7 | `Cache-Control: no-store` が無い。`x-request-id`・末尾スラッシュ・本文上限が契約に未記載 | api-04・api-01 | ヘッダの追加は ACT-005（期限 2026-12-31）。契約へ非破壊の追加として書くかを決める | バックエンド担当・プロダクトオーナー | 2026-12-31 |
 | 8 | rate limit・サーバー側の timeout・backoff が無い | api-09 | 設計判断として受容（api-09）。見直し条件に当たったら実装する | プロダクトオーナー | 見直し日 2027-01-12 |

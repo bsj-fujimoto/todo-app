@@ -3,7 +3,9 @@ import { idsIn, isIso, uniq } from "./common.mjs";
 import { classify } from "./executions.mjs";
 
 export const STATUSES = ["pass", "fail", "blocked", "not_run", "skipped"];
-export const KINDS = ["automated", "regression", "manual"];
+// regression: CI の全件回帰、automated: PR の CI、manual: 手動、performance: perf 層（k6・画面計測）の SLO 判定。
+// monitoring・security は、結び付く TC が無いので実施表の kind にしない（docs/evidence/README.md）
+export const KINDS = ["automated", "regression", "manual", "performance"];
 const norm = (text) => String(text).replace(/\s+/g, "");
 const done = (r) => ["pass", "fail"].includes(r.status);
 const pending = (r) => ["blocked", "not_run"].includes(r.status);

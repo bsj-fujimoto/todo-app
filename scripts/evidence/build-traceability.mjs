@@ -3,7 +3,7 @@
 //   node scripts/evidence/build-traceability.mjs [--check]   # --check は書かずに、いまの表が生成結果と一致するか確かめる
 // 元: requirements / risks / perspectives / cases / executions / defects / findings / actions（docs/data/*.csv）。
 // 全参照の解決は check-evidence.mjs が検査する。
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { toCsv } from "../ci/lib/csv.mjs";
@@ -23,6 +23,7 @@ const tables = {
   defects: rowsOf("defects"),
   findings: rowsOf("findings"),
   actions: rowsOf("actions"),
+  apiResults: existsSync(csvPath(root, "api-results")) ? rowsOf("api-results") : null,
 };
 const rows = buildTraceability(tables);
 

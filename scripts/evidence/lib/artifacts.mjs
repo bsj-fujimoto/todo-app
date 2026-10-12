@@ -16,7 +16,8 @@ const TYPE_RULES = [
   [/^(perf|monitoring)\/[^/]+\.(ya?ml|md)$/, (m) => `${m[1]}_config`],
   [/^security\/[^/]+\.(ya?ml|md|toml|env|tsv)$/, () => "security_policy"],
   [/^quality\/[^/]+\.(ya?ml|md|csv)$/, () => "quality_ledger"],
-  [/^docs\/evidence\/manual-plan\.yaml$/, () => "evidence_ledger"],
+  [/^docs\/evidence\/(manual-plan|run-roles)\.yaml$/, () => "evidence_ledger"],
+  [/^backend\/test\/api-tags\.yaml$/, () => "api_test_mapping"],
   [/^docs\/evidence\/README\.md$/, () => "document"],
 ];
 

@@ -238,6 +238,21 @@ describe("回帰スイート台帳の実施列", () => {
     assert.equal(r.last_result, "fail");
   });
 
+  it("perf 層の判定（kind=performance）は、機能層の回帰の最終実施に数えない", () => {
+    const r = lastRunOf([
+      exec({}),
+      exec({
+        kind: "performance",
+        run_ref: "gh-run-9",
+        environment: "perf（k6・画面計測） / github-hosted",
+        executed_at: "2026-10-13T10:00:00.000Z",
+      }),
+    ]);
+    assert.equal(r.last_run_ids, "gh-run-1");
+    assert.equal(r.environment, "e2e/chromium");
+    assert.equal(r.last_run_at, "2026-10-11T10:00:00.000Z");
+  });
+
   it("実施が無い（not_run のみ・履歴なし）なら空欄と not_run", () => {
     for (const e of [[], undefined, [exec({ status: "not_run", executed_at: "" })]]) {
       assert.deepEqual(lastRunOf(e), {
