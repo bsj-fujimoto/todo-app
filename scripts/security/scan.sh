@@ -142,7 +142,8 @@ scan_trivy_image() {
   record "$name" container trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" \
     "docker save $ref; docker run $TRIVY_IMAGE trivy image --input <tar> --format json → convert sarif|cyclonedx" \
     --image-digest "$id" --image-digest-kind "ローカルイメージ ID（config digest。レジストリ digest は release.yml で push 後に記録）" \
-    --coverage-image "$ref" --threshold "high 以上は triage.mjs で失敗"
+    --coverage-image "$ref" --rules "trivy の組み込みの検査規則（脆弱性 DB。版は trivy イメージ $TRIVY_VERSION に同梱）" \
+    --exclusion "除外なし（イメージの全レイヤー）" --threshold "high 以上は triage.mjs で失敗"
 }
 
 # 公開した digest の検査（release.yml）: :ci のローカルビルドではなく、GHCR に push した digest（dry-run は OCI アーカイブ）そのものを検査する。
@@ -168,6 +169,7 @@ scan_trivy_published() {
   record "$name" container trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" \
     "(docker pull + docker save | tar -x OCI アーカイブ) → docker run $TRIVY_IMAGE trivy image --input <入力> --scanners vuln,misconfig --format json → convert sarif" \
     --image-digest "$digest" --image-digest-kind "$kind" --coverage-image "$src" \
+    --rules "trivy の組み込みの検査規則（脆弱性 DB・trivy-checks。版は trivy イメージ $TRIVY_VERSION に同梱）" \
     --threshold "high 以上は triage.mjs で失敗（release.yml が published-scans を triage する）"
 }
 

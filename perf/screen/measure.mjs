@@ -144,7 +144,15 @@ const DEFINITION =
 
 async function main() {
   const startedAt = new Date().toISOString();
-  const tasks = (await (await fetch(`${BASE_URL}/api/v1/tasks`)).json()).tasks.length;
+  // 計測の前提: 一覧の件数が期待した件数（EXPECTED_ROWS）であること。応答に由来する値はそのまま結果ファイルに書かず、
+  // 期待した件数（環境変数）と一致したかだけを記録する（CodeQL js/http-to-file-access の是正。一致しないときは tasks を null にし、標準出力に実際の件数を出す）
+  const observedTasks = (await (await fetch(`${BASE_URL}/api/v1/tasks`)).json()).tasks.length;
+  const tasksMatch = observedTasks === EXPECTED_ROWS;
+  const tasks = tasksMatch ? EXPECTED_ROWS : null;
+  if (!tasksMatch)
+    console.warn(
+      `[screen] 一覧の件数 ${observedTasks} が期待した ${EXPECTED_ROWS} と違う。この計測は前提を満たさない`,
+    );
   const browser = await chromium.launch();
   const { samples, warmupSeconds, measureStartedAt } = await collectSamples(browser);
   const chromiumVersion = browser.version();
@@ -156,6 +164,7 @@ async function main() {
     finished_at: new Date().toISOString(), // サーバ指標（observe.jsonl）の時刻整合の窓は started_at 〜 finished_at（warm-up・計測・Lighthouse すべて）
     base_url: BASE_URL,
     tasks,
+    tasks_match_expected: tasksMatch,
     expected_rows: EXPECTED_ROWS,
     row_selector: ROW_SELECTOR,
     definition: DEFINITION,
