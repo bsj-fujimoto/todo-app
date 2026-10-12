@@ -114,10 +114,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:32:25+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:22:45+09:00"
+        by: maintainer
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
       - at: "2026-10-12T17:32:25+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・数字・証跡の印） (#64)"
@@ -138,7 +142,7 @@ artifacts:
         by: maintainer
         change: "docs: テスト設計（要求・リスク・観点・ケース）フェーズ1 (#4)"
         commit: e580862
-    source_sha256: c921b75d3ad5aba59b976f7ed7f7b7f48209850b96fbafd3a3bae114b8c44533
+    source_sha256: "1a02a1e3aa69bbc80d33e7d7c32b31f16b68af7e43f049cab2e60bec23c70fde"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-03
@@ -894,14 +898,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:0e60369"
+    version: "git:8c3f96c"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T18:29:02+09:00"
+    updated_at: "2026-10-12T18:32:16+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:32:16+09:00"
+        by: maintainer
+        change: "fix(evidence): API 結果表の実装の版の確認から、結果に影響しない helpers の変更を除く"
+        commit: "8c3f96c"
       - at: "2026-10-12T18:29:02+09:00"
         by: maintainer
         change: "fix(evidence): API 結果表の実装の版の確認を作業ツリーと対象 commit の比較にする"
@@ -922,7 +930,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "00a6e9f2e1f2c9f38c963c61fcde40369cfbccb94008c6d64c7b82b93cb8158a"
+    source_sha256: dddf36a0bd08ef046815b1481f0136fe6daa930a21e4627f8e9f46af41527f11
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
@@ -1370,14 +1378,18 @@ artifacts:
     path: quality/impact-map.yaml
     type: quality_ledger
     title: "変更影響マップ: 変更ファイル（パスの glob）→ 影響する機能 → 実行する TC-ID。"
-    version: "git:c14d39a"
+    version: "git:1592d37"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T02:16:05+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: yaml
     history:
+      - at: "2026-10-12T18:22:45+09:00"
+        by: maintainer
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
       - at: "2026-10-12T02:16:05+09:00"
         by: maintainer
         change: "fix(ci): レビュー指摘の CI・検査の不備 8 件（Issue 起票・Dependabot・選定記録・公開物検査・保守性・アーキテクチャ・Code Scanning・回帰台帳・健全性） (#57)"
@@ -1398,7 +1410,7 @@ artifacts:
         by: maintainer
         change: "ci: CI パイプライン・回帰運用（ci.yml / nightly.yml / scripts / quality） (#8)"
         commit: "1f23d5f"
-    source_sha256: "3f0a3a796767261d8d7649320747e234fa3c478c81badaebc468ccdfb8d56278"
+    source_sha256: "1fa24f52d4708e7b31eeafce012ba84df85a74b0d34499600df1296958ae4367"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-22
@@ -1570,14 +1582,18 @@ artifacts:
     path: security/dependency-selection.yaml
     type: security_policy
     title: "直接依存の選定記録（なぜこれを選び、何を検討し、保守状況がどうか）。docs ではなく、依存の変更と同じ PR で更新する台帳。"
-    version: "git:c14d39a"
+    version: "git:1592d37"
     status: reviewed
     owner_role: "セキュリティ担当"
     approved_by: null
-    updated_at: "2026-10-12T02:16:05+09:00"
+    updated_at: "2026-10-12T18:22:45+09:00"
     authoritative: false
     normalized_format: yaml
     history:
+      - at: "2026-10-12T18:22:45+09:00"
+        by: maintainer
+        change: "test(contract): consumer contract（Pact）で frontend の期待を backend が検証する（api-11） (#66)"
+        commit: "1592d37"
       - at: "2026-10-12T02:16:05+09:00"
         by: maintainer
         change: "fix(ci): レビュー指摘の CI・検査の不備 8 件（Issue 起票・Dependabot・選定記録・公開物検査・保守性・アーキテクチャ・Code Scanning・回帰台帳・健全性） (#57)"
@@ -1586,7 +1602,7 @@ artifacts:
         by: maintainer
         change: "ci(security): セキュリティ検査・トリアージ・統制の自動検査（security.yml / security/ / scripts/security） (#19)"
         commit: fd2b322
-    source_sha256: "40234d91b8333eea901a7be25044ad8145ee39419d0f00121833ca659d03cf4e"
+    source_sha256: "434bc83008bcb7c9c311fa6577e9d0c3ea83633f1099c9f41a266dde7ef60b05"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-71
