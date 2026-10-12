@@ -552,6 +552,18 @@ describe("成果物台帳・正本の所在地・YAML", () => {
     );
   });
 
+  it("決定者が複数のロールを並べる ADR は、承認と書かれたロール（プロダクトオーナー）を承認者にする。決定者の先頭は owner_role", () => {
+    const multi =
+      "# ADR-0002: x\n\n- 状態: 採用（2026-10-11）\n- 決定者: QA リード（ツールの選定）、セキュリティ担当（検査ツールの選定）、プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ）\n";
+    const a = describeContent("docs/adr/0002-x.md", multi, "adr");
+    assert.deepEqual([a.owner_role, a.approved_by], ["QA リード", "プロダクトオーナー"]);
+    const odd =
+      "# ADR-0006: x\n\n- 状態: 採用（2026-10-11）\n- 決定者: QA リード（UNK-001 の回答担当ロール）。契約への記載は PR #2、承認はプロダクトオーナー（PR のマージをもって承認）\n";
+    assert.equal(describeContent("docs/adr/0006-x.md", odd, "adr").approved_by, "プロダクトオーナー");
+    const none = "# ADR-0009: x\n\n- 状態: 採用\n- 決定者: 開発リード\n";
+    assert.equal(describeContent("docs/adr/0009-x.md", none, "adr").approved_by, "開発リード");
+  });
+
   it("ヘッダ表の後ろにある別の表の行は、ヘッダの値を上書きしない", () => {
     const md = `${HEADER}\n## 章\n\n| 項目 | 内容 |\n|---|---|\n| 承認 | 別の表の値 |\n`;
     assert.equal(parseDocHeader(md)["承認"], "プロダクトオーナー（ロール。PR 承認で確定）");

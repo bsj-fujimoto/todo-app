@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-12T07:53:51.962Z",
+  "generated_at": "2026-10-12T08:06:18.264Z",
   "root": "docs/evidence",
   "algorithm": "sha256",
   "count": 365,
   "files": [
     {
       "path": "github/SOURCE.json",
-      "sha256": "ec583d78b922ad1781a434aac3d61e3ab84bd2dd4408e1711448457fab457b57",
-      "size": 1110,
+      "sha256": "45b800e3b798ff550ea0af5a824400f658f5cbf2023014422dc086feac764de5",
+      "size": 1266,
       "captured_at": "2026-10-11T16:19:01.094Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/issues?q=is%3Aissue+label%3Adefect%2Cflaky",
       "version": "pre-1.0.0",
@@ -819,12 +819,13 @@
     },
     {
       "path": "runs/38128562945/SOURCE.json",
-      "sha256": "765bcfe451e6d6a73d32b3166eaf73c6f7e4705cb95cf1b773eca48b3453f60d",
-      "size": 1041,
+      "sha256": "5461873b31c36a69ac73a99fd4446e4e98025a1e9f94dfa937a4e4c439905a32",
+      "size": 1570,
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/ci-summary.json",
@@ -833,7 +834,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/coverage-backend.json",
@@ -842,7 +844,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/coverage-frontend.json",
@@ -851,7 +854,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/docs-check-report.json",
@@ -860,7 +864,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/backend-junit.xml",
@@ -869,7 +874,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/compose-junit.xml",
@@ -878,7 +884,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/contract-junit.xml",
@@ -887,7 +894,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/e2e-chromium-junit.xml",
@@ -896,7 +904,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/e2e-chromium-mobile-360-junit.xml",
@@ -905,7 +914,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/e2e-firefox-junit.xml",
@@ -914,7 +924,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/e2e-webkit-junit.xml",
@@ -923,7 +934,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/junit/frontend-junit.xml",
@@ -932,7 +944,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-009.json",
@@ -941,7 +954,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-010.json",
@@ -950,7 +964,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-011.json",
@@ -959,7 +974,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-012.json",
@@ -968,7 +984,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-015.json",
@@ -977,7 +994,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-021.json",
@@ -986,7 +1004,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-022.json",
@@ -995,7 +1014,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-023.json",
@@ -1004,7 +1024,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-024.json",
@@ -1013,7 +1034,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-025.json",
@@ -1022,7 +1044,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-026.json",
@@ -1031,7 +1054,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-027.json",
@@ -1040,7 +1064,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-028.json",
@@ -1049,7 +1074,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-029.json",
@@ -1058,7 +1084,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-030.json",
@@ -1067,7 +1094,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-031.json",
@@ -1076,7 +1104,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-032.json",
@@ -1085,7 +1114,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-033.json",
@@ -1094,7 +1124,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-034.json",
@@ -1103,7 +1134,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-035.json",
@@ -1112,7 +1144,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-036.json",
@@ -1121,7 +1154,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-037.json",
@@ -1130,7 +1164,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-038.json",
@@ -1139,7 +1174,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-039.json",
@@ -1148,7 +1184,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-042.json",
@@ -1157,7 +1194,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-050.json",
@@ -1166,7 +1204,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-051.json",
@@ -1175,7 +1214,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-052.json",
@@ -1184,7 +1224,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-053.json",
@@ -1193,7 +1234,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-054.json",
@@ -1202,7 +1244,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-059.json",
@@ -1211,7 +1254,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-060.json",
@@ -1220,7 +1264,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-064.json",
@@ -1229,7 +1274,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-065.json",
@@ -1238,7 +1284,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-073.json",
@@ -1247,7 +1294,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/backend/TC-075.json",
@@ -1256,7 +1304,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-001.chromium.json",
@@ -1265,7 +1314,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-001.firefox.json",
@@ -1274,7 +1324,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-001.webkit.json",
@@ -1283,7 +1334,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-002.chromium.json",
@@ -1292,7 +1344,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-003.chromium.json",
@@ -1301,7 +1354,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-004.chromium.json",
@@ -1310,7 +1364,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-005.chromium.json",
@@ -1319,7 +1374,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-006.chromium.json",
@@ -1328,7 +1384,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-007.chromium.json",
@@ -1337,7 +1394,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-008.chromium.json",
@@ -1346,7 +1404,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-013.chromium.json",
@@ -1355,7 +1414,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-014.chromium.json",
@@ -1364,7 +1424,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-016.chromium.json",
@@ -1373,7 +1434,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-017.chromium.json",
@@ -1382,7 +1444,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-018.chromium.json",
@@ -1391,7 +1454,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-019.chromium.json",
@@ -1400,7 +1464,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-020.chromium.json",
@@ -1409,7 +1474,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-040.chromium.json",
@@ -1418,7 +1484,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-041.chromium.json",
@@ -1427,7 +1494,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-043.compose.json",
@@ -1436,7 +1504,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-044.compose.json",
@@ -1445,7 +1514,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-045.chromium.json",
@@ -1454,7 +1524,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-046.chromium.json",
@@ -1463,7 +1534,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-047.chromium.json",
@@ -1472,7 +1544,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-048.chromium.json",
@@ -1481,7 +1554,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-049.chromium.json",
@@ -1490,7 +1564,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-055.chromium.json",
@@ -1499,7 +1574,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-056.chromium.json",
@@ -1508,7 +1584,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-056.firefox.json",
@@ -1517,7 +1594,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-056.webkit.json",
@@ -1526,7 +1604,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-057.chromium.json",
@@ -1535,7 +1614,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-058.chromium.json",
@@ -1544,7 +1624,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-061.chromium.json",
@@ -1553,7 +1634,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-063.chromium.json",
@@ -1562,7 +1644,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-066.chromium.json",
@@ -1571,7 +1654,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-067.chromium-mobile-360.json",
@@ -1580,7 +1664,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-068.chromium.json",
@@ -1589,7 +1674,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-069.chromium.json",
@@ -1598,7 +1684,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-070.chromium.json",
@@ -1607,7 +1694,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-070.firefox.json",
@@ -1616,7 +1704,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-070.webkit.json",
@@ -1625,7 +1714,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-074.chromium.json",
@@ -1634,7 +1724,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-076.compose.json",
@@ -1643,7 +1734,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/e2e/TC-077.compose.json",
@@ -1652,7 +1744,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-003.json",
@@ -1661,7 +1754,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-008.json",
@@ -1670,7 +1764,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-013.json",
@@ -1679,7 +1774,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-014.json",
@@ -1688,7 +1784,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-016.json",
@@ -1697,7 +1794,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-017.json",
@@ -1706,7 +1804,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-021.json",
@@ -1715,7 +1814,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-022.json",
@@ -1724,7 +1824,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-023.json",
@@ -1733,7 +1834,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-024.json",
@@ -1742,7 +1844,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-025.json",
@@ -1751,7 +1854,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-026.json",
@@ -1760,7 +1864,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-027.json",
@@ -1769,7 +1874,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-028.json",
@@ -1778,7 +1884,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-029.json",
@@ -1787,7 +1894,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-045.json",
@@ -1796,7 +1904,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-046.json",
@@ -1805,7 +1914,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-047.json",
@@ -1814,7 +1924,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-055.json",
@@ -1823,7 +1934,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-056.json",
@@ -1832,7 +1944,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-057.json",
@@ -1841,7 +1954,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-058.json",
@@ -1850,7 +1964,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-061.json",
@@ -1859,7 +1974,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-062.json",
@@ -1868,7 +1984,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-063.json",
@@ -1877,7 +1994,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-066.json",
@@ -1886,7 +2004,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/observations/frontend/TC-069.json",
@@ -1895,7 +2014,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38128562945/regression-selection.json",
@@ -1904,7 +2024,8 @@
       "captured_at": "2026-10-11T09:33:46.672Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38128562945",
       "version": "pre-1.0.0",
-      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f"
+      "head_sha": "52da4aa824b4b8b8093564edd49bc56b1b10a98f",
+      "superseded_by": "38152472087"
     },
     {
       "path": "runs/38152472087/SOURCE.json",
@@ -2997,11 +3118,11 @@
     },
     {
       "path": "security/SOURCE.json",
-      "sha256": "c64eaf82132ec0184cccce1288dfee50883f1d3ce5002204e0b7c38894032195",
-      "size": 4146,
+      "sha256": "05ffe3d6ddded8a98ffbece691cba74e40a6c752e34f32ebe7d87df74a0ca2d5",
+      "size": 4777,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3010,7 +3131,7 @@
       "size": 33097,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3019,7 +3140,7 @@
       "size": 747,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3028,7 +3149,7 @@
       "size": 726,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3037,7 +3158,7 @@
       "size": 2318,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3046,7 +3167,7 @@
       "size": 1449,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3055,7 +3176,7 @@
       "size": 1350,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3064,7 +3185,7 @@
       "size": 1722,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3073,7 +3194,7 @@
       "size": 2125,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3082,7 +3203,7 @@
       "size": 1568,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3091,7 +3212,7 @@
       "size": 90683,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
       "redacted": true,
       "original_sha256": "69575f7e5fa025780b714cf9df89e866ad616b8fb3fa00fbc3bd6484099edb41"
@@ -3102,7 +3223,7 @@
       "size": 2330,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3111,7 +3232,7 @@
       "size": 4956,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3120,7 +3241,7 @@
       "size": 37985,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
       "redacted": true,
       "original_sha256": "ecbbd563188f82abd57df6e5630cebba57982be91917db680ed34f5e18f30951"
@@ -3131,7 +3252,7 @@
       "size": 2341,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3140,7 +3261,7 @@
       "size": 4965,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3149,7 +3270,7 @@
       "size": 4264,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3158,7 +3279,7 @@
       "size": 6432,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3167,7 +3288,7 @@
       "size": 4889,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3176,7 +3297,7 @@
       "size": 1575,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3185,7 +3306,7 @@
       "size": 1833,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3194,7 +3315,7 @@
       "size": 1824,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3203,7 +3324,7 @@
       "size": 1341368,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
       "redacted": true,
       "original_sha256": "8b0deb3157158532cc2fa6ed521465d61f2b43ecb8ddcce5d241882f9ff445ce"
@@ -3214,7 +3335,7 @@
       "size": 1796,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3223,7 +3344,7 @@
       "size": 1446,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3232,7 +3353,7 @@
       "size": 1491,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3241,7 +3362,7 @@
       "size": 1847,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3250,7 +3371,7 @@
       "size": 1871,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3259,7 +3380,7 @@
       "size": 41513,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3268,7 +3389,7 @@
       "size": 135421,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3277,7 +3398,7 @@
       "size": 1640,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     },
     {
@@ -3286,7 +3407,7 @@
       "size": 71827,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
       "redacted": true,
       "original_sha256": "2d5198ba318ce0f5f3109b594e6ad63539a66f825b2a7e234ca4703d8324e302"
@@ -3297,7 +3418,7 @@
       "size": 2090,
       "captured_at": "2026-10-11T16:15:54.625Z",
       "source": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
-      "version": "pre-1.0.0",
+      "version": "1.0.0",
       "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26"
     }
   ]

@@ -74,15 +74,40 @@ const htmlTitle = (html) => /<title>([^<]+)<\/title>/.exec(html)?.[1] ?? null;
 const htmlVersion = (html) => /Version\s+(\d+(?:\.\d+)*)/.exec(html)?.[1] ?? null;
 const openapiVersion = (text) => /^info:[\s\S]*?^\s+version:\s*(\S+)/m.exec(text)?.[1] ?? null;
 
-/** ADR は表ではなく箇条書き（- 状態: 採用 / - 決定者: プロダクトオーナー）で書かれている。 */
+const ROLES = [
+  "プロダクトオーナー",
+  "開発リード",
+  "QA リード",
+  "QA 担当",
+  "バックエンド担当",
+  "フロントエンド担当",
+  "セキュリティ担当",
+  "運用（SRE）担当",
+  "メンテナ",
+];
+
+/** 決定者の欄から承認者を読む: 「ロール（…承認…）」の形で承認と書かれたロール。無ければ先頭のロール。 */
+function adrApprover(decidedLine) {
+  const text = String(decidedLine ?? "");
+  const approver = new RegExp(
+    `(${ROLES.map((r) => r.replace(/[()（）]/g, "\\$&")).join("|")})（[^）]*承認`,
+  ).exec(text);
+  return approver?.[1] ?? roleOf(text);
+}
+
+/** ADR は表ではなく箇条書き（- 状態: 採用 / - 決定者: プロダクトオーナー）で書かれている。決定者は複数のロールを並べることがある。 */
 function adrFields(text) {
   const line = (key) => new RegExp(`^- ${key}:\\s*(.+)$`, "m").exec(text)?.[1];
-  return { status: statusFrom(line("状態")), decided: roleOf(line("決定者")) };
+  return {
+    status: statusFrom(line("状態")),
+    decided: roleOf(line("決定者")),
+    approver: adrApprover(line("決定者")),
+  };
 }
 
 function describeMd(text, type) {
   const header = parseDocHeader(text);
-  const adr = type === "adr" ? adrFields(text) : { status: null, decided: null };
+  const adr = type === "adr" ? adrFields(text) : { status: null, decided: null, approver: null };
   const status = statusFrom(header["状態"]) ?? adr.status;
   return {
     title: mdTitle(text),
@@ -90,7 +115,7 @@ function describeMd(text, type) {
     status,
     owner_role: roleOf(header["作成"]) ?? adr.decided,
     // 承認は「承認済みと書かれている文書の、承認者の役割」だけ。draft は承認前なので null
-    approved_by: status === "approved" ? (roleOf(header["承認"]) ?? adr.decided) : null,
+    approved_by: status === "approved" ? (roleOf(header["承認"]) ?? adr.approver) : null,
     doc_id: header["文書ID"] ?? null,
   };
 }
