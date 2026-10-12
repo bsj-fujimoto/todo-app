@@ -26,7 +26,7 @@ todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/Q
 | 04 | リグレッションテスト成果物（regression） | 作成中 | [quality/](../quality/README.md)（`journeys.yaml`・`impact-map.yaml`・`regression-suite.csv`・`flaky-ledger.yaml`） |
 | 05 | 自動テスト成果物（automation） | 作成中 | `.github/workflows/`・`quality/`・`e2e/`・`backend/test/`・`frontend/test/` |
 | 06 | APIテスト成果物（api） | 作成中 | `backend/openapi.yaml`・`backend/test/`・`scripts/ci/oasdiff-breaking.sh` |
-| 07 | 負荷・性能試験成果物（performance） | 作成中 | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`） |
+| 07 | [負荷・性能試験成果物（performance）](07-performance.md) | あり（draft） | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`）・`docs/evidence/perf/` |
 | 08 | テスト対象の検査結果レポート（inspection） | 作成中 | [security/](../security/README.md)・`docs/evidence/security/`・`docs/data/findings.csv` |
 | 09 | テスト実施・結果記載（execution） | 作成中 | `docs/data/executions.csv`・`defects.csv`・`docs/evidence/runs/` |
 | 10 | テスト品質報告書（quality） | 作成中 | `docs/data/` の各 CSV と `docs/evidence/` の集計 |
