@@ -46,6 +46,24 @@ export const SLOTS = [
       generated_by: "scripts/evidence/build-defects.mjs",
     },
   },
+  {
+    slot: "deviations",
+    path: "docs/data/deviations.csv",
+    note: "手順からの逸脱（DEV）。正本は docs/09 の DEV 表で、deviations.csv は build-deviations.mjs が表から生成した写し（直接編集しない。check-parity が表との一致を検査する）",
+    extra: {
+      authoritative_source: "docs/09-test-execution.md の DEV 表",
+      generated_by: "scripts/evidence/build-deviations.mjs",
+    },
+  },
+  {
+    slot: "api_results",
+    path: "docs/data/api-results.csv",
+    note: "API テストの結果（endpoint・method・タグ・アサート）。backend/test/api-tags.yaml の対応表と、JUnit・観察値・テスト実装から build-api-results.mjs が生成した派生物（直接編集しない）",
+    extra: {
+      mapping: "backend/test/api-tags.yaml",
+      generated_by: "scripts/evidence/build-api-results.mjs",
+    },
+  },
 ];
 
 /** artifacts: 台帳の項目（artifact_id, path）。exists(path): パスが実在するか。 */

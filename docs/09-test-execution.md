@@ -17,38 +17,38 @@
 
 ## この文書の結論
 
-- **対象版は 1 つだけ**: 実施表 111 行はすべて commit `5fcf40a7e58dc253e53ff56860d0669a69abda26`（タグ v1.0.0）、run 38152472087（Release ワークフロー）。版の混在は 0（execution-01）。
-- **結果**: 77 ケース中 75 ケースが pass（109 行）、2 ケース（TC-071・TC-072。実機の手動ケース）は **not_run**（2 行）。fail・blocked・skipped は 0。必須 66 ケースは 66 が pass、任意 9 も 9 が pass（execution-04）。
-- **証拠**: pass 109 行のすべてに、JUnit と観察値の 2 件（計 218 件）が付き、証拠索引に解決し、sha256 が一致する。ただし**画面キャプチャは無い**（execution-06）。
+- **対象版は 1 つだけ**: 実施表 113 行（run 38152472087 の 111 行 + 性能 run 38152548008 の 2 行）はすべて commit `5fcf40a7e58dc253e53ff56860d0669a69abda26`（タグ v1.0.0）。run 38152472087 は Release ワークフロー、38152548008 は同じタグ上で動かした perf.yml。版の混在は 0（execution-01）。対象版でない run（旧 run・開発機の性能試験・実験）は `docs/evidence/run-roles.yaml` で `role: history` とし、実施表の根拠にしない（execution-10）。
+- **結果**: 77 ケース中 75 ケースが pass（pass 111 行 = 全件回帰 109 + 性能 2）、2 ケース（TC-071・TC-072。実機の手動ケース）は **not_run**（2 行）。fail・blocked・skipped は 0。必須 66 ケースは 66 が pass、任意 9 も 9 が pass（execution-04）。
+- **証拠**: 全件回帰の pass 109 行のすべてに、JUnit と観察値の 2 件（計 218 件）が付き、証拠索引に解決し、sha256 が一致する。性能の 2 行（kind=performance）には、perf 層の判定（`load/verdict.json`・`screen/verdict.json`）と `run.json` が付く。ただし**画面キャプチャは無い**（execution-06）。
 - **不具合**: 起票 10 件（修正済み 7・未修正 3。critical 0・major 2〔修正済み〕・minor 8）。未修正 3 件はすべて minor で Issue と期限・追跡先がある（#31 は 2026-10-12 の Issue コメントで担当・期限 2026-12-31・回避策が追記済みで、ACT-006 の期限も 2026-12-31 に一本化した。execution-07）。
-- **できていないこと**: ①手動 2 ケース未実施（実施予定 2026-10-31 は暫定）。②人による第三者の追認は未実施（機械による再計算のみ）。③性能（perf.yml）の v1.0.0 の結果（run 38152548008）は PR #61 で `docs/evidence/perf/` に取り込み済みで、成果物 [07](07-performance.md) にまとめた（想定負荷で SLO 全達成。実施表の対象外）。④v1.0.0 のイメージ（digest 固定）に対する外形監視の結果は Actions 上にある（2026-10-12 17:00 JST 時点で schedule の通常実行 4 回、すべて 11/11 成功。通知試験 2 回は通知経路の試験で成功率の根拠でない）が、**実施表・`docs/evidence/monitoring/` には取り込んでいない**。schedule の間隔は 3.4〜6.7 時間で、稼働率の評価には足りない（[11](11-monitoring.md)）。⑤開始条件の確認は、実施前に人が署名した記録ではなく、機械の確認と事後の再構成（execution-02）。⑥実施表は最終 run のみで、過去の失敗の履歴は Issue にあり表には無い。
+- **できていないこと**: ①手動 2 ケース未実施（実施予定 2026-10-31 は暫定）。②人による第三者の追認は未実施（機械による再計算のみ）。③性能（perf.yml）の v1.0.0 の結果（run 38152548008）は PR #61 で `docs/evidence/perf/` に取り込み済みで、成果物 [07](07-performance.md) にまとめた（想定負荷で SLO 全達成）。**実施表には perf 層の判定を kind=performance の 2 行（EXEC-0112 = TC-073、EXEC-0113 = TC-074）として結び付けた**（SLO と TC の対応は `perf/slo.yaml` の `test_cases`。TC-073・074 の本判定は perf 層。ADR-0005）。④v1.0.0 のイメージ（digest 固定）に対する外形監視の結果は Actions 上にある（2026-10-12 17:00 JST 時点で schedule の通常実行 4 回、すべて 11/11 成功。通知試験 2 回は通知経路の試験で成功率の根拠でない）が、**実施表・`docs/evidence/monitoring/` には取り込んでいない**（外形監視はケース ID に結び付かない。実施表は 1 行 = 1 ケース × 環境 × run のため、kind=monitoring の行は作らない。取り込みは `fetch-run.mjs --kind monitoring`）。schedule の間隔は 3.4〜6.7 時間で、稼働率の評価には足りない（[11](11-monitoring.md)）。⑤開始条件の確認は、実施前に人が署名した記録ではなく、機械の確認と事後の再構成（execution-02）。⑥実施表は最終 run のみで、過去の失敗の履歴は Issue にあり表には無い。
 - **数字の出典と時点**: 本書の数字は、main の `docs/data/*.csv` と `docs/evidence/runs/38152472087/` から数え直した（2026-10-12、main c14d39a）。PR #42（v1.0.0 の証跡の取り込み）は **2026-10-11T16:30:20Z にマージ済み**で、main の実施表・不具合表・検出表は v1.0.0 の run（38152472087、対象 5fcf40a）になっている。旧 run（38128562945、対象 52da4aa）の行は実施表に残らない。食い違えば CSV が正。
 
-### 実施表の集計（`docs/data/executions.csv`、run 38152472087 の 111 行）
+### 実施表の集計（`docs/data/executions.csv`、113 行。regression 109・manual 2 は run 38152472087、performance 2 は run 38152548008）
 
 | 切り口 | 内訳 |
 |---|---|
-| 行数・ケース数 | 111 行、77 ケース（ケースごとの行数: 1 行 47・2 行 27・3 行 2・4 行 1） |
-| kind | regression 109（push・タグの全件回帰）、manual 2 |
-| status | pass 109、not_run 2、fail 0、blocked 0、skipped 0 |
-| 実行環境（`environment` の先頭） | e2e/chromium 33（うち 3 行はビューポート 360x640）・e2e/firefox 3・e2e/webkit 3・e2e/chromium-mobile-360 1・unit(frontend) 27・unit(backend) 9・api 27・contract 2・compose 4・実機（スクリーンリーダー）1・実機（iOS Safari）1 |
+| 行数・ケース数 | 113 行、77 ケース（ケースごとの行数: 1 行 45・2 行 29・3 行 2・4 行 1。2 行が増えた TC-073・TC-074 は機能層の番兵 + perf 層の判定） |
+| kind | regression 109（push・タグの全件回帰）、manual 2、performance 2（perf 層の SLO 判定。TC-073・TC-074） |
+| status | pass 111、not_run 2、fail 0、blocked 0、skipped 0 |
+| 実行環境（`environment` の先頭） | e2e/chromium 33（うち 3 行はビューポート 360x640）・e2e/firefox 3・e2e/webkit 3・e2e/chromium-mobile-360 1・unit(frontend) 27・unit(backend) 9・api 27・contract 2・compose 4・実機（スクリーンリーダー）1・実機（iOS Safari）1・perf（k6・画面計測）2 |
 | 必須区分（`cases.csv`） | 必須 66 → pass 66。任意 9 → pass 9。探索 2 → not_run 2 |
 | 不具合に関連付いた行（`defect_ids`） | 11 行（DEF-005 が 1、DEF-006 が 5、DEF-011 が 4、DEF-015 が 1。いずれも修正確認の pass 行） |
-| 実施日時（`executed_at`） | 2026-10-11T15:43:47Z〜15:45:21Z（UTC。JST では 2026-10-12 00:43〜00:45）の 109 行。manual 2 行は空 |
+| 実施日時（`executed_at`） | 2026-10-11T15:43:47Z〜15:45:21Z（UTC。JST では 2026-10-12 00:43〜00:45）の 111 行（性能 2 行は perf run の開始 15:45:08Z）。manual 2 行は空 |
 
 ## execution-01 対象Build・Commit
 
-**結論**: 111 行すべてに commit_sha と実行環境があり、commit は 1 種類（5fcf40a…）、対象版と一致、不一致 0。混在を防ぐ仕組みを 4 つ持つ。
+**結論**: 113 行すべてに commit_sha と実行環境があり、commit は 1 種類（5fcf40a…）、対象版と一致、不一致 0。混在を防ぐ仕組みを 4 つ持つ。
 
 | 固定する対象 | 値 | 出典 |
 |---|---|---|
 | 版・タグ | v1.0.0 | `docs/evidence/release.json`（PR #42 で main に取り込み済み）、[Release v1.0.0](https://github.com/bsj-fujimoto/todo-app/releases/tag/v1.0.0) |
-| 製品 commit | `5fcf40a7e58dc253e53ff56860d0669a69abda26`（111 行中 111 行） | `executions.csv` の `commit_sha` |
+| 製品 commit | `5fcf40a7e58dc253e53ff56860d0669a69abda26`（113 行中 113 行） | `executions.csv` の `commit_sha` |
 | ビルドした run | 38152472087（Release ワークフロー、event=push、ref=v1.0.0、attempt 1。2026-10-11T15:43:26Z 作成、成功） | `docs/evidence/runs/38152472087/SOURCE.json` |
 | artifact（イメージ） | backend `sha256:87addb2e…a213`、frontend `sha256:c82e88ba…ee9a`（全桁は `release.json`。Release 本文の digest と一致を確認した） | `release.json`、Release 本文 |
 | 実行環境の設定 | runner `ubuntu-24.04`（image 20261004.327.1、runner 2.337.0）、Linux 6.17.0-1022-azure x64、Node v24.21.0、chromium 156.0.8078.4・firefox 157.0・webkit 27.2、ロケール ja-JP、ビューポート 1280x800 と 360x640、再試行 0（`retries: 0`） | 各行の `environment`、観察値の `environment`、ジョブのログ |
 
-- 実行環境の組は 12 種類（上の集計表）。各行の `environment` は空でない（111 / 111）。
+- 実行環境の組は 13 種類（上の集計表）。各行の `environment` は空でない（113 / 113）。
 - **混在防止の仕組み**（いずれも `scripts/evidence/`）:
   1. `build-executions.mjs --prune-other-versions --release <SHA>` が、別の版の行を実施表に残さない。
   2. `check-evidence.mjs` が実施表の `commit_sha` の種類数を数え、2 種類以上なら失敗にする。`release.json` があれば、その `commit_sha` 以外の行も失敗にする（`--strict`。PR #42 の CI `docs-check` で通過を確認した。以降の main の CI でも毎回動く）。
@@ -108,7 +108,7 @@
 | DEV-003 | EXEC-0002 TC-001・EXEC-0079 TC-056・EXEC-0102 TC-070（firefox の 3 行） | 開発機（macOS）でなく、CI の Linux（ubuntu-24.04）で Firefox を実行 | 実施環境が開発機と CI で異なる（Firefox は CI のみ） | Firefox が macOS の開発機で動かない。**原因の切り分けは未実施** | プロダクトオーナー（plan-07 の差異 4 を含む PR #41 のマージをもって承認） | plan-07 の差異 4 |
 | DEV-004 | EXEC-0011 TC-008・EXEC-0065 TC-046・EXEC-0082 TC-057・EXEC-0091 TC-063（e2e/chromium） | 通信の遅延は「固定時間の遅延」でなく「応答を**保留して解放する**」方式で再現（`e2e/fixtures/gate.js`） | DS-012 に書かれた「指定ミリ秒の遅延」と方式が違う | 固定時間の遅延は共有ランナーで不安定になり、通信中の状態を決定的に観察できないため | 開発リード（UNK-005 の決定、2026-10-11。反映は PR #12 のマージ）。承認はプロダクトオーナーの PR マージ | [03 テスト仕様書](03-test-spec.md) の 9 章、`cases.csv` の TC-057・TC-063（還流済み）。**DS-012 の記述に「指定ミリ秒の遅延」が残っている**（依頼として報告） |
 | DEV-005 | EXEC-0106 TC-073・EXEC-0107 TC-074 | CI（環境変数 `CI` あり）では性能のしきい値を **3 倍**にして判定（TC-073: 一覧 1500ms・追加 900ms、TC-074: 表示完了 6000ms・各操作 3000ms）。ローカルは従来値（500・300・2000・1000ms） | 合否のしきい値が CI で緩い。2〜3 倍の劣化は機能層で見逃す | 共有ランナーの負荷で同じコードが pass と fail を繰り返した（#25・#37） | QA リード・バックエンド担当・フロントエンド担当の決定、プロダクトオーナー（PR #38 のマージをもって承認。2026-10-11T12:59Z） | [ADR-0005](adr/0005-functional-layer-perf-sentinel.md)、`cases.csv` の TC-073・TC-074（還流済み）。本判定は perf 層 |
-| DEV-006 | 実施表の全 111 行 | 実施表の基準を、main への push の run 38128562945（対象 52da4aa）から、**v1.0.0 の Release run 38152472087（対象 5fcf40a）**へ取り替えて作り直した | 実施表の対象 commit が 52da4aa から 5fcf40a に変わった。旧 run の行は残さない | タグ（5fcf40a）の版に結果を固定するため。タグは「テストした製品 commit」に打ち、証跡は後から取り込む運用（`scripts/evidence/README.md`） | プロダクトオーナー（PR #42 のマージをもって承認。2026-10-11T16:30:20Z、AI が代行マージ。**承認の根拠は成立した**） | `docs/evidence/README.md`・`scripts/evidence/README.md`（リリースの証跡の運用）。取り込み後に main の CSV で本書の数字を再確認した（2026-10-12。一致） |
+| DEV-006 | EXEC-0001〜EXEC-0111（この時点の実施表の全 111 行） | 実施表の基準を、main への push の run 38128562945（対象 52da4aa）から、**v1.0.0 の Release run 38152472087（対象 5fcf40a）**へ取り替えて作り直した | 実施表の対象 commit が 52da4aa から 5fcf40a に変わった。旧 run の行は残さない | タグ（5fcf40a）の版に結果を固定するため。タグは「テストした製品 commit」に打ち、証跡は後から取り込む運用（`scripts/evidence/README.md`） | プロダクトオーナー（PR #42 のマージをもって承認。2026-10-11T16:30:20Z、AI が代行マージ。**承認の根拠は成立した**） | `docs/evidence/README.md`・`scripts/evidence/README.md`（リリースの証跡の運用）。取り込み後に main の CSV で本書の数字を再確認した（2026-10-12。一致） |
 | DEV-007 | EXEC-0003 TC-001・EXEC-0080 TC-056・EXEC-0103 TC-070（webkit の 3 行） | 実機の Safari でなく、Linux 上の Playwright の WebKit 27.2 で実施 | 実機 Safari と同一ではない（IME・キーボード・描画の差が残る） | 実機が無い（DEV-002 と同じ） | プロダクトオーナー（plan-07 のブラウザの記載を含む PR #41 のマージをもって承認） | plan-07（端末・ブラウザ） |
 
 - **還流**: DEV-004・DEV-005 は仕様書（03）・ケース・ADR に反映済み。DEV-001〜003・007 は計画書（01）に残存リスクとして反映済み。DEV-004 は DS-012 の文言のみ未反映。
@@ -116,11 +116,11 @@
 
 ## execution-04 結果Status定義
 
-**結論**: status は **pass / fail / blocked / not_run / skipped** の 5 語（小文字・スネークケース）に統一し、111 行すべてがこの語彙内（表記揺れ 0・語彙外 0・空欄 0）。定義と集計は下表で、集計は CSV の行数と一致する。
+**結論**: status は **pass / fail / blocked / not_run / skipped** の 5 語（小文字・スネークケース）に統一し、113 行すべてがこの語彙内（表記揺れ 0・語彙外 0・空欄 0）。定義と集計は下表で、集計は CSV の行数と一致する。
 
 | status | 意味 | 使う条件 | 必須の付随情報 | v1.0.0 の件数 |
 |---|---|---|---|---|
-| pass | 期待結果のすべてを観察して合致した | JUnit の該当テストがすべて成功し、観察値が期待どおり。**再試行（retry）で通したものは pass にしない**（`retries: 0`、`retried_success` は常に 0） | 観察値（`actual_result`）、証拠 ID、ISO 8601 の `executed_at` | 109 |
+| pass | 期待結果のすべてを観察して合致した | JUnit の該当テストがすべて成功し、観察値が期待どおり。**再試行（retry）で通したものは pass にしない**（`retries: 0`、`retried_success` は常に 0） | 観察値（`actual_result`）、証拠 ID、ISO 8601 の `executed_at` | 111（全件回帰 109 + 性能 2） |
 | fail | 期待結果と 1 つでも食い違った、またはテストが異常終了した | 不具合を起票し、`defect_ids` を付ける | 同上 ＋ `defect_ids` | 0 |
 | blocked | **実施しようとしたが、環境・依存サービス・前提条件の障害で実施できなかった**（原因が外にある） | 環境が復旧したら再実施する | `reason`・`owner`・`retest_due` | 0 |
 | not_run | **実施していない**（着手・手配がされていない、仕様不明で止めた、計画上まだ実施しない） | 手配が始まって環境が確保できなければ blocked に変える | `reason`・`owner`・`retest_due` | 2（TC-071・TC-072） |
@@ -128,13 +128,13 @@
 
 - **TC-071・TC-072 を blocked でなく not_run とした判断**: 実機と実施者の手配がまだ始まっていない（環境の障害ではない）ため。手配したが実機を確保できない場合は blocked に変える。
 - **集計の規則**: 合格率 = pass ÷（pass + fail）、消化率 =（pass + fail）÷ 全行。ケース単位では、ケースの全行が pass なら合格、1 行でも fail なら不合格、pass 行が無ければ未実施。**消化しただけでは判定しない**（[01 テスト計画書](01-test-plan.md) の plan-12）。
-- **集計値（v1.0.0）**: ケース 77 のうち pass 75（97.4%）、not_run 2。必須 66 は pass 66（100%）。行では pass 109 ÷ 111 = 98.2%（not_run を除く 109 行では 100%）。
-- **語彙の検査**: `scripts/evidence/lib/execution-checks.mjs` の `STATUSES` が語彙外を失敗にする。`kind` の語彙は `automated`（pull_request の run）・`regression`（push・タグ・定期の全件回帰）・`manual`（今回は regression と manual のみ）。
+- **集計値（v1.0.0）**: ケース 77 のうち pass 75（97.4%）、not_run 2。必須 66 は pass 66（100%）。行では pass 111 ÷ 113 = 98.2%（not_run を除く 111 行では 100%）。
+- **語彙の検査**: `scripts/evidence/lib/execution-checks.mjs` の `STATUSES` が語彙外を失敗にする。`kind` の語彙は `automated`（pull_request の run）・`regression`（push・タグ・定期の全件回帰）・`manual`・`performance`（perf 層の SLO 判定。結び付くケースは `perf/slo.yaml` の `test_cases`）。今回は regression・manual・performance。監視（synthetic）とセキュリティの run は、結び付くケースが無いので kind にしない（実施表は 1 行 = 1 ケース × 環境 × run）。
 - JUnit の層別の件数（compose 4・contract 8・e2e 43・unit 143・api 74 = 272 テスト、失敗 0・skipped 0）は、実施表の行（1 ケース × 1 環境で 1 行）と数え方が違う。e2e の 43 テストと実施表の e2e の 40 行の差 3 は、chromium で TC-008・TC-058・TC-069 が 2 テストずつあるため（JUnit を数えて確認）。
 
 ## execution-05 実測値・観察結果
 
-**結論**: pass 109 行すべての `actual_result`（観察値）が、期待結果の転記でなく、**テストが実際に観察した値**から機械的に組まれている（期待結果と同一 0 件、期待結果の全文を含むもの 0 件、8 文字未満 0 件、空 0 件。中央値 123 文字、29〜700 文字）。73 行が通信の「method path → status」を、5 行が計測値（ms）を含む。
+**結論**: 全件回帰の pass 109 行すべての `actual_result`（観察値）が、期待結果の転記でなく、**テストが実際に観察した値**から機械的に組まれている（期待結果と同一 0 件、期待結果の全文を含むもの 0 件、8 文字未満 0 件、空 0 件。中央値 123 文字、29〜700 文字）。73 行が通信の「method path → status」を、5 行が計測値（ms）を含む。 性能の 2 行（kind=performance）の `actual_result` は観察値でなく、perf 層の `verdict.json` の SLO 判定（判定した値・目標・反復数・達成の別）から `build-perf-executions.mjs` が組む。
 
 **観察の採り方**: 各テストが終了時に、画面の行（表示テキスト・チェック状態・通信中）、入力欄の値、表示中のエラー文言、フォーカス、観測した API 呼び出し（method path → status と要求・応答の要約）、ブラウザ名と版・ビューポート・OS・Node 版を JSON に書き出す（`e2e/fixtures/observe.js`、`backend/test-support/observe.js`）。`build-executions.mjs` が**観察値だけから** `actual_result` を組み、期待結果は読まない。期待結果と同一なら生成が失敗する。UUID は `{uuid}` に伏せる。
 
@@ -157,7 +157,7 @@
 
 ## execution-06 証拠
 
-**結論**: pass 109 行のすべてに、証拠が 2 件ずつ（JUnit のテスト結果 1・観察値 1）付き、証拠索引（285 行）に解決し、sha256 が 218 / 218 件一致する。日時・入力・通信・DB 行数・ログ件数は残るが、**画面キャプチャは取っていない**。
+**結論**: 全件回帰の pass 109 行のすべてに、証拠が 2 件ずつ（JUnit のテスト結果 1・観察値 1）付き、証拠索引（285 行）に解決し、sha256 が 218 / 218 件一致する。日時・入力・通信・DB 行数・ログ件数は残るが、**画面キャプチャは取っていない**。
 
 | 証拠の種類 | 何が残るか | 場所（実施表の `evidence_ids` → 証拠索引の `ref`） |
 |---|---|---|
@@ -169,7 +169,7 @@
 | テスト結果 | 該当テストの成功（testcase 単位） | `docs/evidence/runs/38152472087/junit/*.xml` |
 
 - **索引**: [evidence-index.csv](data/evidence-index.csv) の 1 行 = 1 つの主張（claim）と参照先（`ref`、`./docs/evidence/…#アンカー`）、`sha256`、取得日時、対象 SHA。例: EXEC-0001（TC-001・chromium）は EV-0273（JUnit `e2e-chromium-junit.xml#TC-001`、sha256 `064fb930…ca69d`）と EV-0274（観察値 `observations/e2e/TC-001.chromium.json`、sha256 `0551b409…649c`）。
-- **集計**: 証拠索引 285 行のうち、実施表から参照されるのは 218（junit 109・observation 109）。pass 行の証拠 ID あり 109 / 109、索引に解決 218 / 218、sha256 一致 218 / 218（`check-evidence.mjs` の検査と、本書執筆時の再計算の両方）。not_run の 2 行には証拠が無い（実施していないため）。
+- **集計**: 証拠索引 285 行のうち、実施表から参照されるのは 218（junit 109・observation 109）。pass 行の証拠 ID あり 109 / 109、索引に解決 218 / 218、sha256 一致 218 / 218（`check-evidence.mjs` の検査と、本書執筆時の再計算の両方）。not_run の 2 行には証拠が無い（実施していないため）。性能の 2 行（EXEC-0112・0113）は perf 層の `load/verdict.json`・`screen/verdict.json`・`run.json`（EV-0586・EV-0594・EV-0590）を参照し、索引に解決する。
 - **保管先と改変防止の限界**:
   - 正本は **Git 履歴**（`manifest.json` が全ファイルの sha256・サイズ・取得元 run の URL・対象 SHA を持ち、`verify-manifest.mjs` と `docs-check` が不一致・欠落・未登録を**検知**する）。
   - **CI の artifact は 90 日で消える**（run 38152472087 は 2027-01-09 まで）。Release の添付 `release-evidence.zip` は期限が無い。ただし Release は immutable でない（`immutable: false`）。

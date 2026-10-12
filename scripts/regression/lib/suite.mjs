@@ -64,9 +64,14 @@ function aggregate(statuses) {
   return RESULT_ORDER.find((s) => statuses.includes(s)) ?? statuses[0] ?? "not_run";
 }
 
-/** そのケースの最新の実施（run_ref 単位）の要約。実施が無い（not_run のみ）なら空欄と not_run。 */
+/**
+ * そのケースの最新の実施（run_ref 単位）の要約。実施が無い（not_run のみ）なら空欄と not_run。
+ * kind=performance（perf 層の SLO 判定。機能層の回帰の実施ではない）は含めない。
+ */
 export function lastRunOf(executions) {
-  const done = (executions ?? []).filter((e) => e.status !== "not_run" && e.executed_at);
+  const done = (executions ?? []).filter(
+    (e) => e.status !== "not_run" && e.executed_at && e.kind !== "performance",
+  );
   if (done.length === 0)
     return { last_run_at: "", last_run_ids: "", environment: "", last_result: "not_run" };
   const newest = [...done].sort((a, b) => b.executed_at.localeCompare(a.executed_at));

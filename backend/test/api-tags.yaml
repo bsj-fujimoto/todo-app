@@ -1,0 +1,224 @@
+# API テストの「どの endpoint を、何の観点で検証するか」の対応表（TC → endpoint・method・タグ）。
+# docs/data/api-results.csv の元（scripts/evidence/build-api-results.mjs が JUnit・観察値と突き合わせて作る）。
+#
+# 決め方（水増ししない）:
+#   - 対象は backend/test/api/ のケース ID（[TC-xxx]）付きのテストだけ。観察値（API 呼び出しの実測）を残すのが TC 付きだけなので、
+#     endpoint・method・status を実測と突き合わせられるものに限る（[補助]・[契約] は含めない。docs/06 の付録に注記）。
+#   - 1 行 = 1 テスト × 1 endpoint（そのテストが「対象として」検証する endpoint）。状態の確認のために呼んだ一覧の取得などは載せない。
+#   - タグは docs/06 の網羅の表（api-03〜09）と、テストが実際に行う検査に対応する。語彙は qc-analyzer の api 観点に合わせる:
+#       validation:{required,type,format,boundary,unknown_field,malformed} / error:{4xx,5xx,error_code,retryable,leak}
+#       / schema / business / idempotency / concurrency / retry
+#   - 付けないタグ: auth:*（認証が無い設計で承認済み。TC-059 は「認証なしで通る」確認で、認証の検証ではない）、paging（ページング無し。
+#       TC-038・TC-039 は並び順の確認）、timeout・rate_limit（テストが無い。rate limit は未実装）、compat・tenant_isolation（テストが無い）。
+#   - error:leak は、応答の封筒のキーを完全一致で検査する（assertError・assertSpecError。health は 4 キーの完全一致）テストだけに付ける。
+#   - error:retryable は、障害から復旧した後に同じ操作が成功することを確かめるテスト（TC-050 の追加、TC-054 の health）だけ。
+#   - retry は、失敗した操作を再実行して 1 回だけ成功し重複しないことを確かめるテスト（TC-050）。
+#   - 宣言したタグは、観察値の裏付けを機械的に確かめる（例: error:4xx はその endpoint で 4xx を実際に観察している）。
+#   - status・header・content-type のアサートと契約スキーマ検証の有無は、このファイルに書かない。テストの実装から機械的に読む
+#     （build-api-results.mjs。api-results.csv の asserts_*・schema_validated）。
+version: 1
+tests:
+  - id: TC-009
+    endpoints:
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: [business, idempotency]
+  - id: TC-010
+    endpoints:
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags:
+          - business
+          - "validation:required"
+          - "validation:type"
+          - "validation:unknown_field"
+          - "error:4xx"
+          - "error:error_code"
+          - "error:leak"
+  - id: TC-011
+    endpoints:
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: [business, "error:4xx", "error:error_code", "error:leak"]
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: [business, "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-012
+    endpoints:
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags:
+          [
+            business,
+            "validation:format",
+            "validation:boundary",
+            "error:4xx",
+            "error:error_code",
+            "error:leak",
+          ]
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags:
+          [
+            business,
+            "validation:format",
+            "validation:boundary",
+            "error:4xx",
+            "error:error_code",
+            "error:leak",
+          ]
+  - id: TC-015
+    endpoints:
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: [business, idempotency, "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-030
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: [business, "validation:boundary"]
+  - id: TC-031
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["validation:boundary", "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-032
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["validation:required", "validation:format", "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-033
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["validation:format", "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-034
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: [business]
+  - id: TC-035
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags:
+          - "validation:required"
+          - "validation:type"
+          - "validation:malformed"
+          - "error:4xx"
+          - "error:error_code"
+          - "error:leak"
+  - id: TC-036
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags:
+          ["validation:unknown_field", "validation:malformed", "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-037
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: [schema]
+      - method: POST
+        path: /api/v1/tasks
+        tags: [business, schema]
+  - id: TC-038
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: [business]
+  - id: TC-039
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: [business]
+  - id: TC-042
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: [business]
+      - method: POST
+        path: /api/v1/tasks
+        tags: [business]
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: [business]
+  - id: TC-050
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["error:5xx", "error:error_code", "error:leak", "error:retryable", retry]
+  - id: TC-051
+    endpoints:
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+  - id: TC-052
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+  - id: TC-053
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+  - id: TC-054
+    endpoints:
+      - method: GET
+        path: /api/v1/health
+        tags: ["error:5xx", "error:leak", "error:retryable"]
+      - method: GET
+        path: /api/v1/tasks
+        tags: ["error:5xx", "error:error_code", "error:leak"]
+  - id: TC-059
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: []
+      - method: POST
+        path: /api/v1/tasks
+        tags: ["validation:boundary", "error:4xx", "error:error_code", "error:leak"]
+      - method: PATCH
+        path: "/api/v1/tasks/{id}"
+        tags: []
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: []
+  - id: TC-060
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: []
+  - id: TC-064
+    endpoints:
+      - method: POST
+        path: /api/v1/tasks
+        tags: [concurrency]
+  - id: TC-065
+    endpoints:
+      - method: DELETE
+        path: "/api/v1/tasks/{id}"
+        tags: [concurrency, idempotency, "error:4xx", "error:error_code", "error:leak"]
+  - id: TC-073
+    endpoints:
+      - method: GET
+        path: /api/v1/tasks
+        tags: []
+      - method: POST
+        path: /api/v1/tasks
+        tags: []
+  - id: TC-075
+    endpoints:
+      - method: GET
+        path: /api/v1/health
+        tags: [schema]

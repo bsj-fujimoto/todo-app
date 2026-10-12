@@ -19,6 +19,10 @@
  docs/data/findings.csv ← build-findings.mjs ← docs/evidence/security/**/findings.json
  docs/data/traceability.csv ← build-traceability.mjs   docs/evidence/manifest.json ← build-manifest.mjs
  docs/evidence/artifacts.yaml・source-of-truth.yaml ← build-artifacts.mjs（文書のヘッダ表と git log から）
+ executions.csv の kind=performance の行 ← build-perf-executions.mjs ← docs/evidence/perf/（perf 層の verdict.json）と perf/slo.yaml
+ docs/data/deviations.csv ← build-deviations.mjs ← docs/09 の DEV 表（正本）
+ docs/data/api-results.csv ← build-api-results.mjs ← backend/test/api-tags.yaml + 取り込んだ run の JUnit・観察値 + テストの実装
+ docs/evidence/run-roles.yaml ← build-run-roles.mjs ← 各 SOURCE.json・perf/results/*/run.json（対象版か履歴か）
                       │
                       ▼  check-evidence.mjs（manifest・ID 参照・パリティ・実施表・不具合・証拠索引・アクション・追跡表・秘密情報）
 ```
@@ -51,9 +55,9 @@ node scripts/evidence/build-defects.mjs
 node scripts/evidence/build-executions.mjs --run <ci-run-id> --retest-due 2026-10-31
 node scripts/evidence/build-defects.mjs --offline
 # ③ 派生する表・台帳
-npm run evidence:build   # defects --offline → findings → evidence-index → traceability → manifest → artifacts
+npm run evidence:build   # defects --offline → findings → perf 行 → deviations → api-results → run-roles → evidence-index → traceability → manifest → artifacts
 # ④ 検査
-npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不具合・証拠索引・アクション・追跡表・秘密情報
+npm run evidence:check   # manifest・ID 参照・パリティ・実施表・不具合・証拠索引・アクション・追跡表・run の役割・API 結果表・秘密情報
 ```
 
 `--artifacts <gh run download の出力ディレクトリ>` で、取得済みの artifact から取り込める。リリース用の最終生成は、`v*.*.*` タグの run で `--run <id> --prune-other-versions --release <SHA>` を付けて行う
@@ -132,6 +136,13 @@ gh release upload v1.0.0 ~/tmp/release-v1.0.0/release-evidence.zip --clobber --r
 - 反映: `build-manifest.mjs` が、その run の全ファイルの manifest の項目に `superseded_by: "<置き換えた run の id>"` を付ける。**実施表・証拠索引の根拠ではない**ことを機械で読める。証拠索引の既存の行（run 全体の証拠）は、主張の文面が対象 SHA を含むため書き換えない（EV の ID を変えない）。
 - 現在の印: `runs/38128562945`（PR #26 の CI、対象 52da4aa、`pre-1.0.0`）は、v1.0.0 の Release run `38152472087`（対象 5fcf40a）に置き換えた（実施表の基準の取替。`docs/09-test-execution.md` の DEV-006）。
 
+### 対象版でない run の扱い（role: history）と、実施表の kind
+
+実施表には対象版（`release.json` の `commit_sha` = X）の run の結果だけを入れる。対象版でない run（別の commit・開発機での実行・未コミットの変更を含む実験・置き換えた旧 run）は、`docs/evidence/run-roles.yaml` で **`role: history`** とし、理由を残す（`build-run-roles.mjs` が commit と実行の状態から決める）。履歴の証跡は残すが、実施表・証拠索引の根拠にしない。`check-evidence.mjs` の `run-roles` 検査は、台帳が生成結果と一致し、実施表の `run_ref` がすべて `target` の run であることを確かめる。
+
+- 実施表の `kind` は `regression`・`automated`・`manual`・`performance`。`performance` は perf 層の判定（`build-perf-executions.mjs`）。**監視（synthetic）とセキュリティの run は kind にしない**: 実施表の行は TC に結び付く結果で、これらは結び付くケースが無い（ケースの無い行を足すと、全ケースに行がある・追跡表で TC から実施に至る、という表の意味が崩れる）。結果は `docs/evidence/monitoring/`（`fetch-run.mjs --kind monitoring`）・`security/` に取り込む。
+- 取り込み直し（`fetch-run.mjs`）で `perf/` が別の commit の run に置き換わると、`build-perf-executions.mjs` は実施表に行を足さず（スキップと表示）、`run-roles.yaml` がその run を履歴にする。
+
 ### SOURCE.json の読み方
 
 - `version`: タグの run なら版（`v1.0.0` → `1.0.0`）、そうでなければ `pre-1.0.0`。ci の取り込みは `ci-summary.json` の `ref` から、`--kind security` などの取り込みは `gh run view` の `headBranch` から決める（`--sha`・`--url` で gh を使わないときは `--version` を渡す）。取り込み時に版を取り違えた場合は、`corrections` に変更前・変更後・理由・日付を残して直す（例: `docs/evidence/security/SOURCE.json` は、取得元が v1.0.0 の run なのに `pre-1.0.0` になっていたのを 2026-10-12 に直した）。
@@ -148,19 +159,23 @@ gh release upload v1.0.0 ~/tmp/release-v1.0.0/release-evidence.zip --clobber --r
 
 ## 3. 各スクリプト
 
-| スクリプト                 | 役割                                                                                                                                                                                                                                                                                                                                |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fetch-run.mjs`            | artifact を 1 つずつ取り（`*.dockerbuild` は除く）、小さな成果物だけを `docs/evidence/` へ。`SOURCE.json` を作る。`--kind ci / security / perf / monitoring / github`                                                                                                                                                               |
-| `build-executions.mjs`     | JUnit・観察値・`ci-summary.json`・`regression-selection.json` から実施表。1 行 = 1 ケース × 1 実行環境 × 1 run。全ケースに 1 行以上（無ければ `not_run` + 理由）。手動ケースは実施していなければ `not_run`（理由・owner・予定日は `docs/evidence/manual-plan.yaml`）                                                                |
-| `build-defects.mjs`        | Issue（`defect`・`flaky`）→ `defects.csv`。本文は `.github/ISSUE_TEMPLATE/defect.md` の見出しと「- キー: 値」を読む。語彙を統一し、欠けた項目は Issue 番号つきで指摘して失敗する（事実に基づいて Issue 本文を補筆してから再実行）                                                                                                   |
-| `build-findings.mjs`       | security の `findings.json` → `findings.csv`。finding_id は triage が振った安定 ID `FND-nnn`（FND を docs/data の中で定義する。未登録の仮 ID があれば失敗）。run の出力に owner・due が無い検出は、現在の `security/triage.yaml` の同じ検出への記載から owner・due だけを補う（status など run の判定は変えない。台帳に無ければ空） |
-| `build-evidence-index.mjs` | 証拠索引。run 全体・セキュリティ（検出 1 件ごと）・性能・監視・GitHub 統制の証拠を足し、全参照（ファイル・アンカー・sha256）を検査                                                                                                                                                                                                  |
-| `build-traceability.mjs`   | REQ → RISK → VIEW → TC → EXEC → DEF → FND → ACT。ケースに結び付かない要求・リスク・観点・検出・アクションは `gaps` つきの行で残す                                                                                                                                                                                                   |
-| `build-manifest.mjs`       | `docs/evidence/manifest.json`（path / sha256 / size / captured_at / source / version / head_sha）                                                                                                                                                                                                                                   |
-| `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                                                                                      |
-| `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                                                                                  |
-| `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                                                                                      |
-| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--strict-artifacts`（台帳の古さも失敗）・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                                                  |
+| スクリプト                  | 役割                                                                                                                                                                                                                                                                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetch-run.mjs`             | artifact を 1 つずつ取り（`*.dockerbuild` は除く）、小さな成果物だけを `docs/evidence/` へ。`SOURCE.json` を作る。`--kind ci / security / perf / monitoring / github`                                                                                                                                                               |
+| `build-executions.mjs`      | JUnit・観察値・`ci-summary.json`・`regression-selection.json` から実施表。1 行 = 1 ケース × 1 実行環境 × 1 run。全ケースに 1 行以上（無ければ `not_run` + 理由）。手動ケースは実施していなければ `not_run`（理由・owner・予定日は `docs/evidence/manual-plan.yaml`）                                                                |
+| `build-perf-executions.mjs` | 取り込み済みの `docs/evidence/perf/`（perf 層の `verdict.json`）から、実施表に kind=performance の行を足す。結び付けは `perf/slo.yaml` の `test_cases`。対象版（`release.json`）の run だけ（別の commit の run は足さない）。同じ run の行は置き換える（冪等）                                                                     |
+| `build-deviations.mjs`      | `docs/09` の DEV 表（正本）→ `docs/data/deviations.csv`。承認の根拠は表のとおり。`--check` で一致の確認。表と CSV のずれは `check-parity.mjs` が検知する                                                                                                                                                                            |
+| `build-api-results.mjs`     | `backend/test/api-tags.yaml`（TC → endpoint・method・タグ）と、取り込んだ run の JUnit・観察値、テストの実装（`backend/test/api/*.test.js`。アサート・契約検証の有無）→ `docs/data/api-results.csv`。タグの裏付けが観察値に無い・実測に無い endpoint・対応表に無い API 層のケースは失敗。`--check` で一致の確認                     |
+| `build-run-roles.mjs`       | `docs/evidence/run-roles.yaml`。取り込んだ run の `SOURCE.json` と `perf/results/*/run.json` を、対象版（`release.json`）の結果（target）か履歴（history）に分ける。履歴は実施表の根拠にしない。`--check` で一致の確認                                                                                                              |
+| `build-defects.mjs`         | Issue（`defect`・`flaky`）→ `defects.csv`。本文は `.github/ISSUE_TEMPLATE/defect.md` の見出しと「- キー: 値」を読む。語彙を統一し、欠けた項目は Issue 番号つきで指摘して失敗する（事実に基づいて Issue 本文を補筆してから再実行）                                                                                                   |
+| `build-findings.mjs`        | security の `findings.json` → `findings.csv`。finding_id は triage が振った安定 ID `FND-nnn`（FND を docs/data の中で定義する。未登録の仮 ID があれば失敗）。run の出力に owner・due が無い検出は、現在の `security/triage.yaml` の同じ検出への記載から owner・due だけを補う（status など run の判定は変えない。台帳に無ければ空） |
+| `build-evidence-index.mjs`  | 証拠索引。run 全体・セキュリティ（検出 1 件ごと）・性能・監視・GitHub 統制の証拠を足し、全参照（ファイル・アンカー・sha256）を検査                                                                                                                                                                                                  |
+| `build-traceability.mjs`    | REQ → RISK → VIEW → TC → EXEC → DEF → FND → ACT。ケースに結び付かない要求・リスク・観点・検出・アクションは `gaps` つきの行で残す                                                                                                                                                                                                   |
+| `build-manifest.mjs`        | `docs/evidence/manifest.json`（path / sha256 / size / captured_at / source / version / head_sha）                                                                                                                                                                                                                                   |
+| `verify-manifest.mjs`       | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                                                                                      |
+| `build-artifacts.mjs`       | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                                                                                  |
+| `check-parity.mjs`          | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                                                                                      |
+| `check-evidence.mjs`        | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--strict-artifacts`（台帳の古さも失敗）・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                                                  |
 
 ## 4. 設計判断と制約
 

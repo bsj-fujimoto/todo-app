@@ -44,6 +44,12 @@ function actionLinks(actions, defects) {
   }));
 }
 
+/** API 層のケースなのに、api-results.csv（機械可読な API 結果）に行が無い。表が無い（apiResults が null）ときは見ない。 */
+const missingApiResult = (c, ctx) =>
+  ctx.apiResults !== null &&
+  c.automation_layer === "api" &&
+  !ctx.apiResults.some((r) => r.test_id === c.test_case_id);
+
 function chainRow(c, ctx) {
   const defects = ctx.defects.filter((d) => idsIn(d.case_ids).includes(c.test_case_id));
   const linked = ctx.links.filter((l) => l.cases.includes(c.test_case_id));
@@ -51,6 +57,7 @@ function chainRow(c, ctx) {
   const gaps = [];
   if (execs.length === 0) gaps.push("実施行なし");
   else if (execs.every((e) => e.status !== "pass")) gaps.push("pass の実施行なし");
+  if (missingApiResult(c, ctx)) gaps.push("API 結果の行なし（api-results.csv）");
   return {
     ...empty,
     requirement_ids: join(idsIn(c.requirement_ids)),
@@ -115,9 +122,9 @@ function findingRows(ctx) {
 
 const orphanRows = (ctx) => [...gapRows(ctx), ...findingRows(ctx)];
 
-/** ctx: 各表の行 { cases, requirements, risks, perspectives, executions, defects, actions, findings }。 */
+/** ctx: 各表の行 { cases, requirements, risks, perspectives, executions, defects, actions, findings, apiResults（無ければ null） }。 */
 export function buildTraceability(tables) {
-  const ctx = { ...tables, links: actionLinks(tables.actions, tables.defects) };
+  const ctx = { apiResults: null, ...tables, links: actionLinks(tables.actions, tables.defects) };
   const rows = [
     ...ctx.cases.map((c) => chainRow(c, ctx)),
     ...orphanRows(ctx).map((r) => ({ ...empty, ...r })),
