@@ -14,7 +14,7 @@
 
 todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/QC 成果物 13 本**と、その元になる台帳・証跡の置き場を示す。
 **書いてある文書のリンクだけを張る。まだ無い文書は「作成中」とだけ書き、リンクにしない**（リンク切れを作らない。`node scripts/ci/docs-check.mjs` が検査する）。
-2026-10-12 時点で本文があるのは 01〜06・08〜13 の 12 本（すべて draft。オーナーの確認待ち）。**07（性能）だけが作成中**（GitHub 上の性能の本計測の取り込み後に作成する）。できたらこの表を更新する（更新規則を参照）。
+2026-10-12 時点で、01〜13 の 13 本すべてに本文がある（すべて draft。オーナーの確認待ち）。
 
 ## 1 成果物の索引（13 本）
 
@@ -26,7 +26,7 @@ todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/Q
 | 04 | [リグレッションテスト成果物（regression）](04-regression.md) | あり（draft） | [quality/](../quality/README.md)（`journeys.yaml`・`impact-map.yaml`・`regression-suite.csv`・`flaky-ledger.yaml`） |
 | 05 | [自動テスト成果物（automation）](05-automation.md) | あり（draft） | `.github/workflows/`・`quality/`・`e2e/`・`backend/test/`・`frontend/test/` |
 | 06 | [APIテスト成果物（api）](06-api-test.md) | あり（draft） | `backend/openapi.yaml`・`backend/test/`・`scripts/ci/oasdiff-breaking.sh` |
-| 07 | 負荷・性能試験成果物（performance） | 作成中（性能の本計測の取り込み後。リンクなし） | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`） |
+| 07 | [負荷・性能試験成果物（performance）](07-performance.md) | あり（draft） | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`）・`docs/evidence/perf/` |
 | 08 | [テスト対象の検査結果レポート（inspection）](08-inspection.md) | あり（draft） | [security/](../security/README.md)・`docs/evidence/security/`・`docs/data/findings.csv` |
 | 09 | [テスト実施・結果記載（execution）](09-test-execution.md) | あり（draft） | `docs/data/executions.csv`・`defects.csv`・`docs/evidence/runs/` |
 | 10 | [テスト品質報告書（quality）](10-quality-report.md) | あり（draft） | `docs/data/` の各 CSV と `docs/evidence/` の集計 |

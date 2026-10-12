@@ -65,7 +65,7 @@ slos:
     basis: assumed
     user_impact: 削除ボタンから行が消えるまでの待ち（確認画面が無く即時削除のため）。
   - metric: screen_ready_ms
-    description: 画面（/）を開いてから 1,000 行が描画されるまで（表示完了）。10 回計測の最大値（n が小さく p95 は最大に等しいため最大で判定）
+    description: 画面（/）を開いてから 1,000 行が描画されるまで（表示完了）。10 回計測の p95（線形補間。scripts/perf/verdict.mjs の画面計測の判定）で判定する
     operator: "<="
     target: 2000
     unit: ms

@@ -79,7 +79,7 @@
 | **母数（何を欠陥に数えたか）** | Issue 20 件のうち、欠陥表に入るのは label が defect または flaky の 10 件（#5・#6・#11・#15・#16・#25・#31・#33・#36・#37）。除外は drill の incident 9 件（#13・#14・#17・#18・#44・#45・#48・#49・#50。通知試験で欠陥ではない）と、security の #22（FND-002・FND-003 で追跡） | 除外の理由は本表。#36 は incident かつ defect のため含む |
 | **時刻の意味** | `opened_at` は Issue の起票時刻で、検出した時刻ではない。DEF-031 は測定の結果ディレクトリ名（`perf/results/20261011T082949Z-f948648`）が 08:29Z だが、起票は 12:17Z（約 3.8 時間後） | analysis-09 の検出遅延は上限値として読む。検出時刻の欄を ACT-019 で追加 |
 | **ノイズ** | #33 に、第三者の自動投稿らしいコメントが 1 件ある（`migrations.js:49` に動的評価の疑い、と読める内容）。該当行は `db.exec(migration.sql)` で、固定のマイグレーション定義を実行する SQLite の `exec` であり、利用者の入力は入らない（本書がコードを読んで確認） | 分析の材料にしない。取得物（defect-issues.json）には残っている |
-| **他の表との不整合** | DEF-031 の期限は Issue のコメントが 2026-12-31、[ACT-006](data/actions.csv) の `due` が 2026-12-15。[09 の execution-07](09-test-execution.md) は「期限が未設定」と書いた時点の値 | ACT-006 を実施の目標、Issue を受容の期限と読む。差は 16 日で、矛盾ではないが明記する。Issue 本文への期限の追記は ACT-014 が追う |
+| **他の表との不整合** | DEF-031 の期限は Issue のコメントが 2026-12-31、[ACT-006](data/actions.csv) の `due` は初版で 2026-12-15 だった。[09 の execution-07](09-test-execution.md) は「期限が未設定」と書いた時点の値 | **解消**: プロダクトオーナーの決定で、ACT-006 の `due` を Issue と同じ 2026-12-31 に揃えた（ACT-014 は done） |
 
 ## analysis-03 分類体系
 
@@ -189,7 +189,7 @@
 | 品質特性 | reliability 4・performance 3 | 70% | performance の 3 件は DEF-025・DEF-031・DEF-037 |
 | 混入元の PR | PR #7 が 4（DEF-005・015・025・031）、PR #9 が 4（DEF-006・011・016・037） | 80% | マージ済み 30 PR のうち 2 本。ただし両 PR は製品コードのほぼ全行が生まれた PR で、行数あたりでは 0.80 と 1.09（analysis-04）。残りは DEF-036（PR #12 の変更 × PR #32 の監視）と DEF-033（PR #32） |
 | Flaky | TC-073・TC-074（2/2） | 100% | 2 件とも VIEW-066・RISK-010（性能）。隔離 2 件 ÷ 自動化ケース 75 = 2.7%（[04 の regression-11](04-regression.md)）。ai-context.yaml の宣言上限 1% を超えている |
-| 性能退行 | DEF-031 のみ（限界点 約 100〜150 req/s） | — | 想定負荷では SLO 達成（一覧 p95 10.6ms。[perf/analysis.md](../perf/analysis.md)）。GitHub-hosted runner の baseline は未取得で、runner 上の退行は検出できない（ACT-009） |
+| 性能退行 | DEF-031 のみ（限界点 約 100〜150 req/s） | — | 想定負荷では SLO 達成（一覧 p95 10.6ms。[perf/analysis.md](../perf/analysis.md)）。GitHub-hosted runner の本計測（run 38152548008）でも想定負荷で SLO 全達成（一覧 p95 19.5ms）。runner の baseline は PR #61 で作成済み（ACT-009 は done）。1 回の run から作ったため run 間のノイズは分からない |
 | 検査の検出 | ZAP 6 / 12、CodeQL 2、trivy 2、compose-check 1、gitleaks 1 | ZAP 50% | 12 件の状態は na 6・accepted 4・tp 1・untriaged 1。真陽性で要是正は FND-007 の 1 件（ACT-005）、FND-012 は誤検出（ACT-010）。ZAP の info がノイズの大半（[08](08-inspection.md)） |
 
 **注目する集中: 低優先のリスクが、検査の不安定さを生んでいる**。RISK-010 は risk の優先度が low、TC-073・TC-074 は priority low・必須区分が「任意」（[cases.csv](data/cases.csv)）。ところが欠陥の 3/10（DEF-025・DEF-031・DEF-037）と、flaky の全件を占めた。リスクの優先度は「起きたときの影響」で付けたが、**「そのテストが不安定さ・偽陽性を作る費用」は評価の軸に無かった**。
@@ -331,7 +331,7 @@
 | ACT-022（新） | 次の PR から、テンプレートは 2026-11-15 まで | レビュー | 開発リード | 欠陥の修正 PR に欠陥 ID・再現ケース・「外すと落ちる」確認を書く。仕様と違う実装判断は UNK か Issue にする | RC-3・RC-4、DEF-011・DEF-016 | open |
 | ACT-002・ACT-012（既存） | 週次の `--repeat-each=3` の結果が出たあと、期限 2026-11-10 | テスト | バックエンド担当・フロントエンド担当 | TC-073・TC-074 の隔離を外す | RC-2: DEF-025・DEF-037 | in_progress |
 | ACT-011（既存） | 2026-11 中 | テスト設計 | QA リード | RISK-009・RISK-012 のケース、DEF-033・DEF-036・DEF-016 の新規ケース案の採否 | analysis-10 | open |
-| ACT-006（既存） | 2026-12-15 | 実装 | バックエンド担当 | 書込みを 1 行操作にするなど、件数依存のコストを下げる | RC-1: DEF-031 | open |
+| ACT-006（既存） | 2026-12-31 | 実装 | バックエンド担当 | 書込みを 1 行操作にするなど、件数依存のコストを下げる | RC-1: DEF-031 | open |
 | ACT-007（既存） | 2026-12-18 | 実装 | SRE 担当 | 結果ファイルへ書く文字列の長さ上限・制御文字の除去を共通化する | DEF-033 | accepted |
 | ACT-003（既存） | 実施済み（2026-10-11） | 実装 | バックエンド担当 | compose の COMMIT_SHA の上書きを除去した | DEF-016 | done |
 

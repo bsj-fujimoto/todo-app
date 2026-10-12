@@ -232,7 +232,7 @@ strategy:
     required_scenarios: [load, stress, spike, soak, capacity] # perf/workload.yaml の scenarios
     environments:
       - "local:darwin-arm64（開発機の Docker Desktop。baseline.json の env_class。初回実測）"
-      - "GitHub-hosted runner（perf.yml。Linux ネイティブ Docker。初回実行はまだ無く baseline は未作成: perf/README.md）"
+      - "GitHub-hosted runner（perf.yml。Linux ネイティブ Docker。v1.0.0 上の run 38152548008 で実測し、runner の baseline（v1.0.0、env_class github-hosted:ubuntu24:X64）を作成済み: PR #61、perf/README.md、docs/07-performance.md。1 回の run から作ったため run 間のノイズは分からない）"
     environments_note: "本番環境は無い（perf/environment.yaml の reference_production.exists=false）。絶対値は本番の予測ではなく、同じ環境の run 同士の相対比較に使う"
     workload_basis: "assumed（実測ではなく想定。導出は perf/workload.yaml#derivation）"
   monitoring:
@@ -428,7 +428,7 @@ ai_policy: # AI が成果物を読む・使うときの規則
     - id: AI-02
       rule: "推測で埋めない。書かれていない値・決まっていないことは『不明』として UNK に起こす。空欄を『問題なし』『該当なし』と読まない"
     - id: AI-03
-      rule: "未収集・未実施・未適用は、そのまま未収集・未実施・未適用と書く（例: Ruleset は未適用、手動ケースは not_run、runner の性能 baseline は未作成）。成功に見せない"
+      rule: "未収集・未実施・未適用は、そのまま未収集・未実施・未適用と書く（例: Ruleset は未適用、手動ケースは not_run、runner の性能 baseline は 1 回の run から作ったのでノイズは不明）。成功に見せない"
     - id: AI-04
       rule: "原本（spec/・backend/openapi.yaml・docs/data/ の正本 CSV・docs/evidence/ の証跡）を AI が書き換えない。生成物（artifacts.yaml・source-of-truth.yaml・manifest.json・defects.csv など）は手で編集せず生成スクリプトで作り直す"
     - id: AI-05

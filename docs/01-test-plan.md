@@ -21,11 +21,11 @@
 - **配分**: リスク 16 件のうち high は 3 件（データ損失、保存失敗時の画面と保存の乖離、破損データの自動上書き）。high 由来の 31 ケースはすべて必須とし、必須は 77 ケース中 66 件（plan-04）。
 - **自動化**: 77 ケース中 75 件（97.4%）が自動。手動は実機の 2 件（TC-071・TC-072）で、**未実施**（plan-05・plan-12）。
 - **リリース判定**: 必須ケース 100% 合格、critical・major の未修正 0、minor の未修正 5 件以下（全件に Issue・回避策・期限）、必須の未実施 0、残存リスクは期限・責任ロール・補完統制つきで受容（plan-12）。
-- **できていないこと（要約）**: 実機（iOS Safari・スクリーンリーダー）未実施、GitHub-hosted runner での性能 baseline 未取得、長時間（2 時間以上）の soak 未実施、運用の実績日数が短い（4 日未満）ため外形監視の稼働率・nightly の傾向は評価できない、Ruleset が未適用（ADR-0004）、独立した第二のレビュアーがいない（plan-09）。
+- **できていないこと（要約）**: 実機（iOS Safari・スクリーンリーダー）未実施、長時間（2 時間以上）の soak 未実施、runner の baseline は 1 回の run から作った（run 間のノイズは分からない）、運用の実績日数が短い（4 日未満）ため外形監視の稼働率・nightly の傾向は評価できない、Ruleset が未適用（ADR-0004）、独立した第二のレビュアーがいない（plan-09）。
 
 ## 成果物の一覧と所在
 
-成果物は `docs/NN-*.md`（番号は成果物 ID、DOC-NN）、行のあるものは `docs/data/*.csv` が正本である。**リンクは、main に存在するファイルだけ**に付けている（版 1.1 で 04〜06・08〜13 にリンクを足した）。リンクの無い行（07）は、まだ main に無い。追加されたらこの表にリンクを足す（plan-13 の変更管理）。
+成果物は `docs/NN-*.md`（番号は成果物 ID、DOC-NN）、行のあるものは `docs/data/*.csv` が正本である。**リンクは、main に存在するファイルだけ**に付けている（版 1.1 で 04〜06・08〜13 にリンクを足し、07 も main に入ったのでリンクした）。新しい成果物が追加されたらこの表にリンクを足す（plan-13 の変更管理）。
 
 | DOC | 成果物 | 所在 | 状態 |
 |---|---|---|---|
@@ -35,7 +35,7 @@
 | DOC-04 | リグレッションテスト成果物 | [docs/04-regression.md](04-regression.md) | draft（オーナーの確認待ち） |
 | DOC-05 | 自動テスト成果物 | [docs/05-automation.md](05-automation.md) | draft（オーナーの確認待ち） |
 | DOC-06 | API テスト成果物 | [docs/06-api-test.md](06-api-test.md) | draft（オーナーの確認待ち） |
-| DOC-07 | 負荷・性能試験成果物 | `docs/07-performance.md`（**リンクなし**） | 作成中（性能の本計測の取り込み後） |
+| DOC-07 | 負荷・性能試験成果物 | [docs/07-performance.md](07-performance.md) | draft（オーナーの確認待ち。SLO 10・試験種別 6・観点 13 章） |
 | DOC-08 | テスト対象の検査結果レポート | [docs/08-inspection.md](08-inspection.md) | draft（オーナーの確認待ち） |
 | DOC-09 | テスト実施・結果記載 | [docs/09-test-execution.md](09-test-execution.md) | draft（オーナーの確認待ち） |
 | DOC-10 | テスト品質報告書 | [docs/10-quality-report.md](10-quality-report.md) | draft（オーナーの確認待ち） |
@@ -92,7 +92,7 @@
 | Q-04 | 必須ケースの未実施 **0 件**。任意・探索の未実施は理由・担当・期限つき | 必須 0 件。探索の未実施 2 件（TC-071・TC-072、期限 2026-10-31） | `docs/evidence/manual-plan.yaml` |
 | Q-05 | 行カバレッジ **90% 以上**（backend の全体、frontend の `src`） | backend 99.69%、frontend 100%（`docs/evidence/runs/38128562945/coverage-*.json`。PR #26 の run） | 閾値は `backend/scripts/run-tests.js`・`frontend/package.json` が強制（下回ると失敗） |
 | Q-06 | ゲート対象テストの flaky **0 件**（`retries: 0`。隔離は 30 日以内） | 隔離 2 件（TC-073 #25、TC-074 #37。期限 2026-11-10。`quality/flaky-ledger.yaml`） | flaky が実際に 3 件出た（#15、#25、#37） |
-| Q-07 | SLO（想定負荷 20 req/s・1,000 件）: 一覧 p95 ≤ 500ms、p99 ≤ 1,000ms、追加・完了切替・削除 p95 ≤ 300ms、エラー率 < 1%、スループット ≥ 到着率の 95%、health p95 ≤ 200ms、表示完了 ≤ 2,000ms | perf/analysis.md §1 の 8 行すべてが達成（一覧 p95 10.6ms、追加 11.8ms、エラー 0%、表示完了 54.6ms。開発機の 3 反復。[perf/analysis.md](../perf/analysis.md) §1） | 値の正本は [perf/slo.yaml](../perf/slo.yaml)。実測は想定ピークの 40 倍でも目標の 2% |
+| Q-07 | SLO（想定負荷 20 req/s・1,000 件）: 一覧 p95 ≤ 500ms、p99 ≤ 1,000ms、追加・完了切替・削除 p95 ≤ 300ms、エラー率 < 1%、スループット ≥ 到着率の 95%、health p95 ≤ 200ms、表示完了 ≤ 2,000ms | perf/analysis.md §1 の 8 行すべてが達成（開発機: 一覧 p95 10.6ms、追加 11.8ms、エラー 0%、表示完了 54.6ms。**GitHub-hosted runner の本計測〔run 38152548008。3 反復〕: 一覧 p95 19.5ms、追加 18.4ms・完了切替 15.9ms・削除 14.1ms、エラー 0%、health p95 29.7ms、表示完了 p95 158.1ms**。[perf/analysis.md](../perf/analysis.md) §1・§8、[07](07-performance.md)） | 値の正本は [perf/slo.yaml](../perf/slo.yaml)。実測は想定ピークの 40 倍でも目標の 2% |
 | Q-08 | セキュリティ: critical・high の**未解決 0 件**（`security-result`）。medium は修正するか、期限（90 日以内）つきで受容 | gate は成功。medium は受容 2 件（FND-002・FND-003 の zlib、AR-001、期限 2027-01-09） | `security/README.md` の重大度ポリシー |
 | Q-09 | API 契約: 破壊的変更 0、redocly lint の error 0、契約適合テスト 8 件が合格 | contract 8/8 合格（Release v1.0.0 本文） | RISK-008 |
 | Q-10 | 追跡性: 要求 34 件がすべて観点に紐づく（100%）、適用観点 57 行がすべてケースに紐づく（100%）、未解決の ID 参照 0 | 要求→観点 100%、適用観点→ケース 100%（[02 の 1.3](02-test-perspectives.md)・[03 の 1.1](03-test-spec.md)）。未解決参照は `docs-check` が CI で止める | 計画の漏れの検出 |
@@ -298,7 +298,7 @@
 |---|---|---|---|
 | 1 | **本番環境が無い**。実利用者・実データ・実ホストが無い | 実トラフィックでの挙動、本番固有の設定差、運用の実績が確認できない | リリース済みイメージ（digest）を runner で起動して外形監視（MON-001〜MON-013）。**リリース後に本番を持つとき**は health の version・commit が期待と一致すること（TC-075・TC-076、デプロイマーカー）を最初に確認する |
 | 2 | **TLS・DNS が無い**（HTTP のみ、localhost） | 証明書の失効、ハンドシェイクの遅延、名前解決の失敗、HSTS が未検証。表示完了 54.6ms は本番では数百 ms になりうる（未測定） | MON-011（証明書期限）・MON-012（DNS）を定義済み（**無効**）。本番ドメインを持つときに有効化。CSP などのヘッダは MON-001 で確認 |
-| 3 | **runner と開発機の差**（Apple M5 Pro の速い CPU・Docker Desktop の VM と、4 vCPU の x86・ネイティブ Docker） | 性能の絶対値（限界 req/s）は開発機で過大。runner は共有で揺れる（#25・#37） | baseline は `env_class` が同じ run 同士でだけ比較。runner での初回実測は `perf.yml` の実行結果を baseline に追記して作る（**v1.0.0 時点で未取得。実行中**）。機能層は番兵（ADR-0005） |
+| 3 | **runner と開発機の差**（Apple M5 Pro の速い CPU・Docker Desktop の VM と、4 vCPU の x86・ネイティブ Docker） | 性能の絶対値（限界 req/s）は開発機で過大。runner は共有で揺れる（#25・#37） | baseline は `env_class` が同じ run 同士でだけ比較。runner での初回実測（run 38152548008）を baseline に追記して作った（PR #61。`github-hosted:ubuntu24:X64`、`v1.0.0`。1 回の run から作ったため、run 間のノイズは分からない）。機能層は番兵（ADR-0005） |
 | 4 | **Firefox は開発機で動かず、Linux の CI で実行** | 開発機だけでは 3 ブラウザの確認が完結しない | CI の e2e（firefox project）を必須の層とし、PR ごとに実行。リリース判定は CI の結果 |
 | 5 | **実機・スクリーンリーダー未実施** | 実機の WebKit・IME・読み上げの不具合を見逃しうる（RISK-007・RISK-014） | 手動ケース TC-071・TC-072 を 2026-10-31 までに実施（担当 QA 担当）。未実施のままのリリースは plan-12 の残存リスクとして受容 |
 | 6 | **リソース上限が想定本番と同じではない**（backend 1 vCPU・512 MiB の cgroup 上限は揃えたが、速度は揃わない。想定本番は 1 vCPU・1 GiB の小さな VM） | CPU 律速の限界が本番では低い可能性が高い | スケール条件（CPU p95 > 70% など）を `perf/analysis.md` に定義し、本番を持った時点で実測 |
@@ -411,7 +411,7 @@
 | 必須ケース | **0 件**（未実施は許さない） | 例外なし |
 | 任意・探索のケース | 理由・担当・実施予定日を `docs/evidence/manual-plan.yaml` に残せば許容 | 件数は**探索 2 件以内**（実機の 2 件）。それを超える未実施は、理由の再承認が要る |
 | 実施予定日を過ぎた未実施 | 許容しない | 過ぎたら再度の承認（期限の更新）か、実施 |
-| 検査（performance の長時間 soak、runner での perf baseline） | 未実施のまま許容するが、残存リスクの表（下）に載せ、期限を決める | 「未実施」を「問題なし」と書かない |
+| 検査（performance の長時間 soak。runner の perf baseline は PR #61 で 1 回の run から作成済みで、run 間のノイズは未確認） | 未実施のまま許容するが、残存リスクの表（下）に載せ、期限を決める | 「未実施」を「問題なし」と書かない |
 
 **残存リスクの受容基準（residual_risk）**
 
@@ -429,11 +429,11 @@
 |---|---|---|
 | 必須 66/66 合格 | 全層で失敗 0（compose 4・contract 8・e2e 43・unit 143・api 74。Release v1.0.0 本文。対象 commit 5fcf40a） | 満たす |
 | critical・major 0 | open の defect は #25・#31・#33（すべて minor）。major の #5・#6 は修正済み | 満たす |
-| minor 5 件以下・Issue と期限つき | 3 件（#25 期限 2026-11-10 の隔離、#31 改善案 A〜D、#33 は受容 AR-002・AR-003）。**#31 は、ACT-006 に期限（2026-12-15）があり、Issue #31 にもコメントで担当・期限・回避策を追記済み**（2026-10-12 00:59 JST。ただしコメントの期限は 2026-12-31 で、ACT-006 と一致しない。以前の「#31 に期限が無い」は、Issue 本文に無かったことを指す） | **一部満たさない**: 期限が 2 つある。一本化する（担当バックエンド担当、UNK-002 の回答と合わせて 2026-10-16 までに） |
+| minor 5 件以下・Issue と期限つき | 3 件（#25 期限 2026-11-10 の隔離、#31 改善案 A〜D、#33 は受容 AR-002・AR-003）。**#31 は、Issue #31 にコメントで担当・期限 2026-12-31・回避策を追記済み**（2026-10-12 00:59 JST。プロダクトオーナーの決定。ACT-006 の期限も 2026-12-31 に揃えた。以前の「#31 に期限が無い」は、Issue 本文に無かったことを指す） | **満たす**（期限は 2026-12-31 に一本化。担当バックエンド担当） |
 | 必須の未実施 0 | 0 件 | 満たす |
 | 探索の未実施 | TC-071・TC-072 が not_run（実施予定 2026-10-31） | 許容（探索 2 件以内） |
 | セキュリティ gate | `security-result` 成功（Security 2026-10-12 00:39 の run） | 満たす |
-| 残存リスクの受容 | 下表 | 受容（#31 の期限の一本化を除く） |
+| 残存リスクの受容 | 下表 | 受容 |
 
 | 受容した残存リスク | 責任ロール | 期限・再検査 | 追跡 |
 |---|---|---|---|
@@ -475,7 +475,7 @@
 | 版 | 日付 | 内容 | 作成 | レビュー | 承認 |
 |---|---|---|---|---|---|
 | 1.0 | 2026-10-12 | 初版（フェーズ1。v1.0.0 のリリース後に成文化。ADR-0002〜ADR-0006 を同時に追加） | QA リード（ロール） | 未実施（作成者と同じ主体の兼務。第二の目は無い） | プロダクトオーナー（PR #41 のマージ＝承認の代行。オーナーの確認は未実施。draft） |
-| 1.1 | 2026-10-12 | 横断整合: 成果物の一覧に 04〜06・08〜13 のリンクを追加（07 は作成中）、plan-12 の #31 の期限を事実どおりに修正、plan-03 の見直し日と `ai-context.yaml` を一致させた、状態・承認の書き方を 01〜13 で統一 | QA リード（ロール。実作業は AI エージェント） | 未実施（第二の目は無い） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |
+| 1.1 | 2026-10-12 | 横断整合: 成果物の一覧に 04〜06・08〜13 のリンクを追加（07 は PR #62 の取り込み後にリンク）、plan-12 の #31 の期限を事実どおりに修正、plan-03 の見直し日と `ai-context.yaml` を一致させた、状態・承認の書き方を 01〜13 で統一 | QA リード（ロール。実作業は AI エージェント） | 未実施（第二の目は無い） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |
 
 状態が draft の間は、オーナーの確認（人のレビュー）が未実施である。オーナーが確認したら、この表に日付と結果を追記し、状態を reviewed へ変える。
 
@@ -490,7 +490,7 @@
 | 回帰 | **実施** | 変更のたびに保存・検証・表示が壊れていないことを確かめる（RISK-001・RISK-003。J-01〜J-05） | `quality/regression-suite.csv`、`quality/impact-map.yaml`、`quality/journeys.yaml`、`quality/flaky-ledger.yaml`、`quality/known-gaps.yaml`、`.github/workflows/ci.yml`・`nightly.yml`・`release.yml`、`docs/04-regression.md` | QA 担当（保守）、変更を入れる人 | 必須 66 件の全件回帰が緑（`ci-result`）が plan-12 の必須基準。flaky の隔離は期限つきで数える | 日次・週次の定期実行は、履歴が短い（nightly の schedule は 2 回）。選択実行の漏れは日次で検証 |
 | 自動 | **実施** | 回帰を毎回同じ手順で、証拠つきで回す（自動化率 97.4%） | `backend/test/`、`frontend/test/unit/`、`e2e/tests/`、`e2e/compose/`、`docs/data/cases.csv`（`automation_layer`）、`docs/05-automation.md` | バックエンド担当・フロントエンド担当（実装）、QA 担当（ケース） | カバレッジ 90%（Q-05）、flaky 0（Q-06）、自動化率（Q-11） | 手動 2 件（TC-071・TC-072）は未実施 |
 | API | **実施** | 契約先行の API で、ステータス・エラー・スキーマ・検証順を機械で検査（RISK-008） | `backend/openapi.yaml`、`backend/test/api/`、`backend/test/api/contract.test.js`、`scripts/ci/redocly.yaml`、`scripts/ci/oasdiff-breaking.sh`、`docs/06-api-test.md` | バックエンド担当 | 契約 8/8、破壊的変更 0、redocly の error 0（Q-09） | 認証・認可・ページングは対象外（api-02・api-08） |
-| 負荷 | **実施** | 件数増加と過負荷での限界を測り、SLO を判定（RISK-010）。k6（load・stress・spike・soak・capacity）と画面計測 | `perf/slo.yaml`、`perf/workload.yaml`、`perf/analysis.md`、`perf/results/`、`perf/baseline.json`、`.github/workflows/perf.yml`、`docs/07-performance.md` | バックエンド担当（API）、フロントエンド担当（画面） | SLO（perf/analysis.md §1 の 8 行）の達成（Q-07）。機能層の TC-073・TC-074 は任意（番兵） | **長時間 soak（2 時間以上）は未実施**。**runner での baseline は未取得**（実行中）。絶対値は本番の予測値ではない |
+| 負荷 | **実施** | 件数増加と過負荷での限界を測り、SLO を判定（RISK-010）。k6（load・stress・spike・soak・capacity）と画面計測 | `perf/slo.yaml`、`perf/workload.yaml`、`perf/analysis.md`、`perf/results/`、`perf/baseline.json`、`.github/workflows/perf.yml`、`docs/07-performance.md` | バックエンド担当（API）、フロントエンド担当（画面） | SLO（perf/analysis.md §1 の 8 行）の達成（Q-07）。機能層の TC-073・TC-074 は任意（番兵） | **長時間 soak（2 時間以上）は未実施**。**runner の baseline は 1 回の run から作った**（PR #61。run 間のノイズは分からない）。絶対値は本番の予測値ではない |
 | 外形監視 | **実施** | 本番が無いので、リリース済みイメージを runner で起動し、主要ジャーニーと health を 30 分間隔で見る（RISK-011） | `monitoring/monitors.yaml`、`monitoring/alert-routes.yaml`、`monitoring/runbooks/`、`monitoring/alert-tests.md`、`e2e/synthetic/`、`.github/workflows/synthetic.yml`、`docs/11-monitoring.md` | 運用（SRE）担当 | 監視の失敗（sev1・sev2）の未解決はリリース不可の材料。稼働率（Q-12）は**評価できない**ため判定に使わない | 本番の可用性ではない。TLS・DNS は無効（定義のみ）。定期実行の履歴はまだ無く、通知試験（drill）の記録のみ |
 | 脆弱性検査 | **実施** | 依存・イメージ・コード・秘密情報・ライセンス・ワークフロー・DAST を継続的に検査（RISK-009・RISK-005） | `security/`（`README.md`、`triage.yaml`、`accepted-risks.yaml` ほか）、`.github/workflows/security.yml`、`docs/data/findings.csv`、`docs/evidence/security/`、`docs/08-inspection.md` | セキュリティ担当 | `security-result`（critical・high の未解決 0）が必須。medium の受容は期限つきで plan-12 の残存リスクに載せる | 認証付き走査は対象外。実在の第三者による診断（ペネトレーションテスト）は未実施 |
 

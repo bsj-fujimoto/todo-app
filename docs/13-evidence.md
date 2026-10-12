@@ -101,7 +101,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 - レビュー記録のファイルが無い（上の形は提案）。置き場は `docs/evidence/reviews/<review_id>.yaml` を提案する（`docs/evidence/` は証跡担当の管理のため、依頼として最終報告に書く）。
 - 旧 run（`runs/38128562945`、PR #26 の CI、対象 52da4aa）の 121 ファイルは manifest に残る（削除しない＝履歴）。**`SOURCE.json` の `superseded_by` と manifest の項目の `superseded_by: "38152472087"` で、置き換え済み（実施表・証拠索引の根拠ではない）と読める**ようにした（様式は [scripts/evidence/README.md](../scripts/evidence/README.md)）。ただし証拠索引の旧 run の 6 行は、EV の ID を変えないため主張の文面を書き換えていない（主張に対象 SHA 52da4aa が書いてある）。「別の版の証跡が混ざっていない」とは言えないが、混ざっている旨は機械で読める。
-- manifest のセキュリティ 33 件は、`head_sha` が X なのに `version` が `pre-1.0.0` と付いていた（取り込み時に版を渡さず既定値になっていた）。**2026-10-12 に `security/SOURCE.json` の `version` を 1.0.0 に訂正し**（`corrections` に変更前・後・理由を記録）、`fetch-run.mjs` は以後 run の ref から版を決める。**同じ問題が、PR #61 で取り込まれた性能の証跡 88 ファイルにも残っている**（`perf/SOURCE.json` の `version` が `pre-1.0.0` で `head_sha` は X。取得元の run 38152548008 はタグ v1.0.0 上。成果物 07 の担当が取り込み直すか訂正する）。**対象版は `head_sha` を正とする**。
+- manifest のセキュリティ 33 件は、`head_sha` が X なのに `version` が `pre-1.0.0` と付いていた（取り込み時に版を渡さず既定値になっていた）。**2026-10-12 に `security/SOURCE.json` の `version` を 1.0.0 に訂正し**（`corrections` に変更前・後・理由を記録）、`fetch-run.mjs` は以後 run の ref から版を決める。**PR #61 で取り込まれた性能の証跡 88 ファイルにも同じ問題があったので、`perf/SOURCE.json` も同様に 1.0.0 へ訂正した**（取得元の run 38152548008 はタグ v1.0.0 上。`corrections` に記録）。**対象版は `head_sha` を正とする**。
 - `SOURCE.json` の `run_started_at`（2026-10-11T15:45:50Z）は ci-summary の開始時刻で、GitHub の run 作成時刻（15:43:26Z）とは異なる。**意味を [docs/evidence/README.md](evidence/README.md) と [scripts/evidence/README.md](../scripts/evidence/README.md) に注記した**（項目名は変えていない）。
 - タグが未署名・未保護のため、タグの付け替えは**検知はできる**（実施表の SHA・digest・署名検証と食い違う）が**防止はできない**（ACT-008）。
 
@@ -417,7 +417,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 | 1 | main・タグの Ruleset が未適用。履歴の書換え・タグの付け替えを防止できない | 適用し、スナップショットを `docs/evidence/github/` に保存（プロダクトオーナー。evidence-11） | ACT-008（期限 2026-10-16） |
 | 2 | 人による確認が未実施（正本の真正性・抽出の内容 parity・秘密の最終確認・改変防止の実効性） | 各章の確認欄に確認者・日付を記録（QA リード、セキュリティ担当） | 未起票 |
 | 3 | ~~成果物台帳が古い・ART-58 の `approved_by` が誤り~~ | **解消**（版 1.1: 再生成して `--strict-artifacts` が PASS。ヘッダ解析を修正）。文書を更新したら再生成を続ける | — |
-| 4 | レビュー記録のファイルが無い（review ID の記録先）。~~旧 run の整理~~は印を付けて解消（`superseded_by`）。性能の証跡 88 ファイルの `version` が `pre-1.0.0` | `docs/evidence/reviews/` を作る。性能の `SOURCE.json` を訂正する（成果物 07 の担当） | 未起票 |
+| 4 | レビュー記録のファイルが無い（review ID の記録先）。~~旧 run の整理~~は印を付けて解消（`superseded_by`）。性能の `SOURCE.json` の `version` も訂正済み | `docs/evidence/reviews/` を作る | 未起票 |
 | 5 | 墨消し前の値が Git 履歴に残る（履歴は書き換えない）。~~Release の添付に残る・README の記述が実態と異なる~~は解消（添付は 2026-10-12 に差し替え、README は実態に直した） | 履歴の扱いは方針どおり（force push 禁止）。差し替えた添付の人の確認（evidence-09） | — |
 | 6 | 統制の主張（Ruleset 未適用ほか）を裏付けるスナップショットが無い | `snapshot-github.sh` の出力を取り込み、証拠索引に載せる（証跡担当） | ACT-008 に含める |
 | 7 | ~~FND-012 の owner・期限が `findings.csv` で空~~ | **解消**（版 1.1: `triage.yaml` に追記して再生成。status は run の時点の untriaged のまま。効果の確認は ACT-010） | ACT-010 |
