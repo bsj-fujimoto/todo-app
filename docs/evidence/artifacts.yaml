@@ -894,14 +894,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:99d38c9"
+    version: "git:0e60369"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T18:28:20+09:00"
+    updated_at: "2026-10-12T18:29:02+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T18:29:02+09:00"
+        by: maintainer
+        change: "fix(evidence): API 結果表の実装の版の確認を作業ツリーと対象 commit の比較にする"
+        commit: "0e60369"
       - at: "2026-10-12T18:28:20+09:00"
         by: maintainer
         change: "feat(evidence): 性能層の実施行・run の役割台帳・逸脱表・API 結果表を機械生成する"
@@ -918,7 +922,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "2c7c559079db19d01c02b12864764ca0f5dba0e6aacd6b733ca8beb3bbc86add"
+    source_sha256: "00a6e9f2e1f2c9f38c963c61fcde40369cfbccb94008c6d64c7b82b93cb8158a"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
