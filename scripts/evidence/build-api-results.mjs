@@ -55,11 +55,14 @@ for (const p of mappingProblems(mapping, new Set(cases.map((c) => c.test_case_id
 for (const p of uncoveredCases(cases, mapping)) report.error(p);
 
 // 実装（backend の本体・テスト・契約）が、結果を取った commit から変わっていないこと（変わっていれば、読んだテストの実装と
-// JUnit の結果が別の版になる）。作業ツリーと比べる（api-tags.yaml は対象に含めない。結果の版に属さない対応表）
+// JUnit の結果が別の版になる）。作業ツリーと比べる。対象に含めないもの: api-tags.yaml（結果の版に属さない対応表）、
+// helpers/contract.js（X の後に `export` を足しただけ。契約検証の中身が content-type を見ることは harnessProblems で確かめる）、
+// helpers の新しい補助（api テストが使わないもの）。
 const IMPLEMENTATION = [
   "backend/src",
   "backend/test/api",
-  "backend/test/helpers",
+  "backend/test/helpers/harness.js",
+  "backend/test/helpers/assertions.js",
   "backend/test-support",
   "backend/openapi.yaml",
 ];
