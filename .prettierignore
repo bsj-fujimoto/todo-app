@@ -20,3 +20,5 @@ monitoring/drills/
 monitoring/out/
 monitoring/history/
 monitoring/cadence/
+# 生成物（Pact の契約。frontend の contract:consumer が書き出し、整形しない）
+frontend/contracts/

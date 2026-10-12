@@ -1,4 +1,5 @@
 // ci-summary.json の組み立て（純粋関数。時刻・環境変数・ファイル読込は呼び出し側から注入する）。
+import { renderConsumerContractLines } from "./consumer-contract.mjs";
 import { countBy, layerOf, tcIdsOf } from "./junit.mjs";
 
 export const LAYERS = ["unit", "api", "contract", "e2e", "compose"];
@@ -64,7 +65,7 @@ function tcResults(byLayer) {
 }
 
 /** layerSpecs: [{ layer, cases, files }] */
-export function buildSummary({ env, nowIso, layerSpecs, artifacts = [] }) {
+export function buildSummary({ env, nowIso, layerSpecs, artifacts = [], consumerContracts = [] }) {
   const byLayer = groupByLayer(layerSpecs);
   const layers = {};
   for (const l of LAYERS) if (byLayer[l]) layers[l] = countBy(byLayer[l]);
@@ -74,6 +75,7 @@ export function buildSummary({ env, nowIso, layerSpecs, artifacts = [] }) {
     test_cases: tcResults(byLayer),
     junit_files: layerSpecs.flatMap((s) => s.files).sort(),
     artifacts,
+    consumer_contracts: consumerContracts,
   };
 }
 
@@ -112,6 +114,7 @@ export function mergeSummaries({ env, nowIso, summaries, jobResults = {} }) {
     gate: Object.values(jobResults).every((r) => r === "success") ? "pass" : "fail",
     junit_files: summaries.flatMap((s) => s.junit_files ?? []).sort(),
     artifacts: summaries.flatMap((s) => s.artifacts ?? []),
+    consumer_contracts: summaries.flatMap((s) => s.consumer_contracts ?? []),
     parts: summaries.map((s) => ({ job: s.job, layers: Object.keys(s.layers ?? {}) })),
   };
 }
@@ -140,6 +143,7 @@ export function renderMarkdown(summary, title = "CI サマリ") {
       `${n}: ${c.error ?? `lines ${c.lines}% / branches ${c.branches}% / functions ${c.functions}%`}`,
   );
   if (cov.length) lines.push("", `カバレッジ: ${cov.join(" ; ")}`);
+  lines.push(...renderConsumerContractLines(summary.consumer_contracts));
   if (summary.jobs) {
     const jobRows = Object.entries(summary.jobs).map(([j, r]) => `| ${j} | ${r} |`);
     lines.push("", "| ジョブ | 結果 |", "|---|---|", ...jobRows);

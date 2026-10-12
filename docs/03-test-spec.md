@@ -314,6 +314,7 @@ high / medium / low。**ケースに紐づくリスクの priority の最大値*
 | unit | `frontend/test/unit/render-task.test.js` | TC-062 | happy-dom（または jsdom）で一覧描画関数を検査する |
 | api | `backend/test/api/create-validation.test.js` | TC-030〜TC-036 | POST /api/v1/tasks の入力検証 |
 | api | `backend/test/api/contract.test.js` | TC-037, TC-075 | openapi.yaml のスキーマで応答を検証する |
+| api | `frontend/test/contract/api-client.pact.test.js`（記録）、`backend/test/contract/consumer-contract.test.js`（provider 検証） | TC-037 | consumer contract（Pact）: frontend の api-client が頼る呼び出しと応答の項目を `frontend/contracts/frontend-backend.json` に記録し、backend が本物の SQLite で検証する。記録は openapi.yaml とも突き合わせる（docs/06 の api-11）。実行は `npm run contract:consumer`（CI の contract ジョブ） |
 | api | `backend/test/api/list-order.test.js` | TC-038, TC-039 | seedTasks() で SQLite へ直接投入する |
 | api | `backend/test/api/update-delete.test.js` | TC-009〜TC-012, TC-015 | 状態遷移表 §8.2 の API 側 |
 | api | `backend/test/api/persistence.test.js` | TC-042 | 同じ DB ファイルで backend を再起動する |

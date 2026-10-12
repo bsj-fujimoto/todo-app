@@ -1,0 +1,636 @@
+{
+  "consumer": {
+    "name": "frontend"
+  },
+  "interactions": [
+    {
+      "description": "タイトルが規則に違反している（TITLE_MULTILINE）",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "title": "a\nb"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "TITLE_MULTILINE"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 422
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "タイトルが規則に違反している（TITLE_REQUIRED）",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "title": ""
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "TITLE_REQUIRED"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 422
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "タイトルが規則に違反している（TITLE_TOO_LONG）",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "title": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "TITLE_TOO_LONG"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 422
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "タスクが 0 件のときの一覧を取得する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "tasks": []
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "タスクを削除する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "tasks exist"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v1/tasks/5f1b0c1e-1111-4a11-8a11-000000000001"
+      },
+      "response": {
+        "status": 204
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "タスクを追加する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "title": "牛乳を買う"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "completed": false,
+            "id": "5f1b0c1e-1111-4a11-8a11-000000000001",
+            "title": "牛乳を買う"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.completed": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 201
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "一覧を取得する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "tasks exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "tasks": [
+              {
+                "completed": false,
+                "id": "5f1b0c1e-1111-4a11-8a11-000000000001",
+                "title": "牛乳を買う"
+              }
+            ]
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.tasks": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.tasks[*].completed": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.tasks[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.tasks[*].title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "保存できないときにタスクを削除する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the data store cannot be written"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v1/tasks/5f1b0c1e-1111-4a11-8a11-000000000001"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "STORAGE_FAILURE"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 503
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "保存できないときにタスクを追加する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the data store cannot be written"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "title": "牛乳を買う"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "STORAGE_FAILURE"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 503
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "保存できないときに完了状態を切り替える",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the data store cannot be written"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "completed": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/v1/tasks/5f1b0c1e-1111-4a11-8a11-000000000001"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "STORAGE_FAILURE"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 503
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "保存データが壊れているときの一覧を取得する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "stored data is corrupt"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/tasks"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "DATA_CORRUPT"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 500
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "存在しないタスクの完了状態を切り替える",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "completed": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/v1/tasks/00000000-0000-4000-8000-000000000000"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "TASK_NOT_FOUND"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "存在しないタスクを削除する",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no tasks exist"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v1/tasks/00000000-0000-4000-8000-000000000000"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": {
+              "code": "TASK_NOT_FOUND"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "完了状態を切り替える",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "tasks exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "completed": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/v1/tasks/5f1b0c1e-1111-4a11-8a11-000000000001"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "completed": true,
+            "id": "5f1b0c1e-1111-4a11-8a11-000000000001",
+            "title": "牛乳を買う"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.completed": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "17.1.4"
+    },
+    "pactRust": {
+      "ffi": "0.5.8",
+      "models": "1.3.16"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "backend"
+  }
+}
