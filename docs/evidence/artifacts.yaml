@@ -127,10 +127,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:12:40+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:12:40+09:00"
+        by: maintainer
+        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
+        commit: "4c56a92"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -139,7 +143,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 04 リグレッションテスト成果物・05 自動テスト成果物 (#53)"
         commit: d2ea4ad
-    source_sha256: "361dbb927bf4161edd3c5af73ebf21dc395950f4a5ac2d7e6cf52537a4fe5c7e"
+    source_sha256: "18d62b6e255794f0917195827465a326b5b275a7c950ced4a6646963e7ab8fdb"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-04
@@ -175,10 +179,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:12:40+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:12:40+09:00"
+        by: maintainer
+        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
+        commit: "4c56a92"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -187,7 +195,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 06 API テスト成果物（13 観点・網羅表・対象外・改善計画） (#46)"
         commit: "91aeb73"
-    source_sha256: "4eed59de25dee912fd4f498441296e9ec0759d91b3a17c311cdd0354ffdcc2ac"
+    source_sha256: "91cddff156303c15973b33b41bb2a33a863c2e3dc3964dd5cba9cf37fb7cf4cb"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-06
@@ -199,10 +207,14 @@ artifacts:
     status: draft
     owner_role: "セキュリティ担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:12:40+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:12:40+09:00"
+        by: maintainer
+        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
+        commit: "4c56a92"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -211,7 +223,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 08 テスト対象の検査結果レポート（inspection-01〜23） (#52)"
         commit: f74fc80
-    source_sha256: "47fd8f0d15e46c5a481bb348e49e9dad4563c3b0ed69ef35ec09483dd3b570cc"
+    source_sha256: "52ae25a4ca62c266c6eae8583a01a99b14b11f36e42ff3d2ccad2fd55843eeac"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-08
@@ -271,10 +283,14 @@ artifacts:
     status: draft
     owner_role: "運用"
     approved_by: null
-    updated_at: "2026-10-12T17:06:10+09:00"
+    updated_at: "2026-10-12T17:12:40+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:12:40+09:00"
+        by: maintainer
+        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
+        commit: "4c56a92"
       - at: "2026-10-12T17:06:10+09:00"
         by: maintainer
         change: "docs: 成果物 01〜13 の横断的な不整合を直す（時点依存の記述・状態と承認の書き方・リンク・数字）"
@@ -283,7 +299,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 11 外形監視・運用品質成果物（docs/11-monitoring.md） (#43)"
         commit: f4c59fd
-    source_sha256: "3fd8daf9440e1f546a563122d836ac8de7635af42fa2d555b6bd2d0dd00044e5"
+    source_sha256: "8b737877119f033d4f3a7b8b1579d2323e94d5f4095133c6158bc18da25f2440"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-11
@@ -753,14 +769,18 @@ artifacts:
     path: docs/evidence/README.md
     type: document
     title: "証跡（Evidence）"
-    version: "git:2d8056b"
+    version: "git:4c56a92"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:06:17+09:00"
+    updated_at: "2026-10-12T17:12:40+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:12:40+09:00"
+        by: maintainer
+        change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
+        commit: "4c56a92"
       - at: "2026-10-12T17:06:17+09:00"
         by: maintainer
         change: "docs(evidence): 旧 run に superseded の印、security の版の訂正、Release 添付の差し替えの記録、README の実態との食い違いを直す"
@@ -773,7 +793,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "6d2da84136f6d38ba760f7ee901abbd8cc0bc0d01a0300e86eb1571eb9f883e4"
+    source_sha256: "6bf82b94b0417617ce0d32c8fa2ec55873627c6d9f7b4c535dd85d76e6d4803f"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-18
