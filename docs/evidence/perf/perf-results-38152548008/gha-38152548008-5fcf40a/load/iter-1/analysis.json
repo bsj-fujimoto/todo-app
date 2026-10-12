@@ -1,0 +1,157 @@
+{
+ "scenario": "load",
+ "segments": {
+  "main": {
+   "window": {
+    "start_ms": 1791733562303,
+    "end_ms": 1791733862254,
+    "start": "2026-10-11T15:46:02.303Z",
+    "end": "2026-10-11T15:51:02.254Z",
+    "seconds": 299.95
+   },
+   "requests": 6203,
+   "endpoints": {
+    "list": {
+     "n": 3600,
+     "dropped_outliers": 4,
+     "p50": 12.852,
+     "p90": 16.951,
+     "p95": 19.364,
+     "p99": 49.965,
+     "max": 114.645,
+     "raw_p95": 19.503,
+     "raw_p99": 52.633,
+     "raw_p999": 71.276
+    },
+    "create": {
+     "n": 1705,
+     "dropped_outliers": 2,
+     "p50": 11.015,
+     "p90": 15.223,
+     "p95": 18.661,
+     "p99": 47.71,
+     "max": 93.805,
+     "raw_p95": 18.859,
+     "raw_p99": 50.111,
+     "raw_p999": 81.744
+    },
+    "toggle": {
+     "n": 598,
+     "dropped_outliers": 1,
+     "p50": 11.317,
+     "p90": 14.412,
+     "p95": 15.834,
+     "p99": 34.955,
+     "max": 60.529,
+     "raw_p95": 15.893,
+     "raw_p99": 50.189,
+     "raw_p999": 59.326
+    },
+    "delete": {
+     "n": 300,
+     "dropped_outliers": 1,
+     "p50": 10.165,
+     "p90": 13.567,
+     "p95": 14.226,
+     "p99": 23.44,
+     "max": 88.727,
+     "raw_p95": 14.245,
+     "raw_p99": 38.701,
+     "raw_p999": 80.936
+    }
+   },
+   "error_rate": 0,
+   "check_fail_rate": 0,
+   "iterations": 6000,
+   "dropped_iterations": 0,
+   "achieved_rps": 20.003,
+   "groups": {},
+   "throughput_ratio": 1,
+   "k6_window": {
+    "start_ms": 1791733562264,
+    "end_ms": 1791733862295,
+    "duration_ms": 300031
+   },
+   "thresholds_failed": [],
+   "env": {
+    "BASE_URL": "http://frontend:8080",
+    "MIX": null,
+    "RATE": 20,
+    "DURATION_SEC": 300,
+    "MIN_TASKS": 1000
+   }
+  }
+ },
+ "main_alias": "main",
+ "observe": {
+  "window_samples": 1495,
+  "services": {
+   "backend": {
+    "cpu_pct": {
+     "n": 299,
+     "mean": 36.178,
+     "p95": 57.473,
+     "max": 67.93
+    },
+    "memory": {
+     "start_mib": 39.177,
+     "end_mib": 40.087,
+     "max_mib": 58.13,
+     "growth_ratio": 1.0232,
+     "slope_mib_per_min": 0.2632
+    }
+   },
+   "frontend": {
+    "cpu_pct": {
+     "n": 299,
+     "mean": 2.106,
+     "p95": 4.481,
+     "max": 5.35
+    },
+    "memory": {
+     "start_mib": 6.173,
+     "end_mib": 6.036,
+     "max_mib": 14.6,
+     "growth_ratio": 0.9778,
+     "slope_mib_per_min": -0.0404
+    }
+   },
+   "k6": {
+    "cpu_pct": {
+     "n": 298,
+     "mean": 11.448,
+     "p95": 14.894,
+     "max": 16.3
+    },
+    "memory": {
+     "start_mib": 32.488,
+     "end_mib": 64.028,
+     "max_mib": 66.55,
+     "growth_ratio": 1.9708,
+     "slope_mib_per_min": 6.9818
+    }
+   }
+  },
+  "health": {
+   "n": 299,
+   "ok": 299,
+   "p50_ms": 10.537,
+   "p95_ms": 30.814,
+   "p99_ms": 45.553,
+   "max_ms": 78.925
+  },
+  "db": {
+   "start_bytes": 155648,
+   "end_bytes": 389120,
+   "max_bytes": 389120,
+   "growth_bytes": 233472
+  }
+ },
+ "time_alignment": {
+  "k6_start": "2026-10-11T15:46:02.303Z",
+  "k6_end": "2026-10-11T15:51:02.254Z",
+  "window_sec": 300,
+  "docker_stats_samples": 896,
+  "samples_per_sec_per_service": 0.996
+ }
+}

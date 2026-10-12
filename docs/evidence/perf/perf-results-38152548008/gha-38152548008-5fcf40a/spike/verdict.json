@@ -1,0 +1,146 @@
+{
+ "scenario": "spike",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "recovery": {
+  "list_p95_ms": {
+   "metric": "api_list_p95_ms",
+   "operator": "<=",
+   "target": 500,
+   "unit": "ms",
+   "values": [
+    20.158,
+    24.903,
+    22.707
+   ],
+   "mean": 22.589333,
+   "sd": 2.374687,
+   "ci95": [
+    16.689807,
+    28.48886
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  "error_rate": {
+   "metric": "error_rate",
+   "operator": "<",
+   "target": 0.01,
+   "unit": "ratio",
+   "values": [
+    0,
+    0,
+    0
+   ],
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  "time_to_recover_sec": 18.333333333333332,
+  "budget_sec": 30
+ },
+ "during_spike": {
+  "list_p95_ms_mean": 15810.978,
+  "error_rate_mean": 0.539045,
+  "achieved_rps_mean": 76.33,
+  "dropped_iterations_mean": 16465.333333333332
+ },
+ "before_spike_list_p95_ms_mean": 9.676,
+ "series": {
+  "time_to_recover_sec": [
+   20,
+   15,
+   20
+  ],
+  "recovery_tail.list_p95_ms": [
+   20.158,
+   24.903,
+   22.707
+  ],
+  "recovery_phase.list_p95_ms": [
+   8419.921,
+   8777.015,
+   8761.936
+  ],
+  "spike.list_p95_ms": [
+   16251.833,
+   15729.764,
+   15451.337
+  ],
+  "base.list_p95_ms": [
+   8.427,
+   10.66,
+   9.941
+  ],
+  "spike.error_rate": [
+   0.536329,
+   0.530879,
+   0.549926
+  ]
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "time_to_recover_sec": {
+   "n": 3,
+   "mean": 18.3333,
+   "sd": 2.8868,
+   "ci95": [
+    11.1617,
+    25.505
+   ]
+  },
+  "recovery_tail.list_p95_ms": {
+   "n": 3,
+   "mean": 22.5893,
+   "sd": 2.3747,
+   "ci95": [
+    16.6898,
+    28.4889
+   ]
+  },
+  "recovery_phase.list_p95_ms": {
+   "n": 3,
+   "mean": 8652.9573,
+   "sd": 201.9562,
+   "ci95": [
+    8151.2299,
+    9154.6848
+   ]
+  },
+  "spike.list_p95_ms": {
+   "n": 3,
+   "mean": 15810.978,
+   "sd": 406.3807,
+   "ci95": [
+    14801.391,
+    16820.565
+   ]
+  },
+  "base.list_p95_ms": {
+   "n": 3,
+   "mean": 9.676,
+   "sd": 1.1398,
+   "ci95": [
+    6.8442,
+    12.5078
+   ]
+  },
+  "spike.error_rate": {
+   "n": 3,
+   "mean": 0.539,
+   "sd": 0.0098,
+   "ci95": [
+    0.5147,
+    0.5634
+   ]
+  }
+ },
+ "variance_stats_text": "time_to_recover_sec: n=3 mean=18.3333 sd=2.8868 ci95=[11.1617, 25.505]; recovery_tail.list_p95_ms: n=3 mean=22.5893 sd=2.3747 ci95=[16.6898, 28.4889]; recovery_phase.list_p95_ms: n=3 mean=8652.9573 sd=201.9562 ci95=[8151.2299, 9154.6848]; spike.list_p95_ms: n=3 mean=15810.978 sd=406.3807 ci95=[14801.391, 16820.565]; base.list_p95_ms: n=3 mean=9.676 sd=1.1398 ci95=[6.8442, 12.5078]; spike.error_rate: n=3 mean=0.539 sd=0.0098 ci95=[0.5147, 0.5634]"
+}

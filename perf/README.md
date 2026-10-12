@@ -114,5 +114,5 @@ queue・外部依存は**無い**ため取得していない（SQLite は同期�
 - **本番が無く、実測ログも無い**。ワークロードは想定で、絶対値は本番の予測値ではない。外挿の限界・残存リスクは [`analysis.md`](analysis.md)。
 - **DS-006 の `createdAt` は 1 秒間隔にできない**。API 経由の投入では backend が作成時刻で採番する（投入は数秒で終わる）。`seedTasks()`（一括 INSERT）は backend 内部の関数で、負荷試験は API だけを使う。
 - 長時間 soak（2 時間以上）は今回**実施していない**（CI 短縮版 10 分のみ）。stress・spike の balanced は、soak で見つけた件数増加の不備を直した後の版（プール上限）では再実測していない（60〜180 秒と短く、影響は小さいと見ているが未評価）。`SOAK_DURATION_SEC` で実行できる。
-- 開発機（Apple Silicon の Docker Desktop）と GitHub-hosted runner（Linux ネイティブ）は性能特性が違う。baseline は**同じ環境の区分の run 同士**でだけ比べる（`env_class`）。runner の baseline は、初回の `perf.yml` 実行結果を `--update-baseline` で追記して作る（今回は実行できていない）。
+- 開発機（Apple Silicon の Docker Desktop）と GitHub-hosted runner（Linux ネイティブ）は性能特性が違う。baseline は**同じ環境の区分の run 同士**でだけ比べる（`env_class`）。runner の baseline は、タグ v1.0.0 上の `perf.yml`（profile=ci、run 38152548008）の結果から作った（`perf/baseline.json` の `v1.0.0`）。baseline が無い区分の run は失敗にせず、作り方を出力する。
 - queue・外部依存の観測は、アーキテクチャに存在しないため取得していない。

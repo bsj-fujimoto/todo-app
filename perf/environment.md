@@ -36,20 +36,25 @@
 | データの分布                                                         | 連番の短いタイトル（11 文字前後）。実利用の長いタイトルではレスポンスが大きくなる（一覧の転送量・JSON の生成が増える）                                                                                                              |
 | 利用者数                                                             | 1 人の操作を、安全率 40 の到着率で再現。複数の利用者・端末の同時利用は対象外（1 人用）                                                                                                                                              |
 
-## GitHub-hosted runner との差
+## GitHub-hosted runner の実測環境と開発機との差
 
-`perf.yml` は GitHub-hosted runner（`ubuntu-24.04`、公開リポジトリの標準 runner: 4 vCPU・16 GiB・Linux ネイティブの Docker）で動く。開発機とは**性能特性が異なり、同じ値にならない**。
+`perf.yml` は GitHub-hosted runner（`ubuntu-24.04`、公開リポジトリの標準 runner）で動く。**タグ v1.0.0 上の run 38152548008（profile=ci、全シナリオ 3 反復）で実測した**
+（結果: `docs/evidence/perf/perf-results-38152548008/`、`run.json`・`verdict.json`・`perf-runs.json`。対象 SHA は v1.0.0 の製品 commit `5fcf40a7e58dc253e53ff56860d0669a69abda26`）。
 
-| 項目        | 開発機（今回）                              | GitHub-hosted runner                                                                                            |
-| ----------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| OS / Docker | macOS + Docker Desktop（Linux VM）          | Ubuntu 24.04 + ネイティブ Docker（VM なし）                                                                     |
-| CPU         | Apple M5 Pro（Arm）15 コア（VM に 15 vCPU） | x86_64 の汎用 vCPU（4）。世代・共有の度合いは run ごとに変わりうる                                              |
-| メモリ      | VM 7.75 GiB                                 | 16 GiB                                                                                                          |
-| 負荷の同居  | k6 と被試験が同じ VM                        | k6 と被試験が同じ 4 vCPU を共有（k6 の負荷生成が被試験の CPU を奪いやすい。上限 `cpus` で被試験の取り分は固定） |
-| 揺れ        | 手元の他プロセス・電源・熱の影響            | 他のジョブ（同じホストの隣人）の影響。run ごとに揺れる                                                          |
+| 項目                | 開発機（`run 20261011T082949Z-f948648`）                          | GitHub-hosted runner（`run gha-38152548008-5fcf40a`）                                                                |
+| ------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 区分（`env_class`） | `local:darwin-arm64`                                              | `github-hosted:ubuntu24:X64`                                                                                         |
+| OS / カーネル       | macOS 27.0.1 + Docker Desktop（Linux VM、kernel 7.0.14-linuxkit） | Ubuntu 24.04.5 LTS（イメージ ubuntu24 20261004.327.1、kernel 6.17.0-1022-azure）、ネイティブ Docker（VM なし）       |
+| Docker / compose    | Docker 29.8.2 / compose v5.5.1                                    | Docker 28.0.4 / compose 2.38.2                                                                                       |
+| CPU                 | Apple M5 Pro（Arm）15 コア（VM に 15 vCPU）                       | **AMD EPYC 7763（x86_64）4 vCPU**                                                                                    |
+| メモリ              | ホスト 48 GiB、VM 7.75 GiB                                        | 15.6 GiB（16 GiB）                                                                                                   |
+| 負荷の同居          | k6 と被試験が同じ VM（15 vCPU）                                   | k6 と被試験が同じ **4 vCPU** を共有。被試験の取り分は `cpus` 上限（backend 1.0 / frontend 0.5）で固定、k6 は上限なし |
+| k6 / Node           | k6 v2.3.0（linux/arm64）                                          | k6 v2.3.0（linux/amd64、同じ digest）                                                                                |
+| 実行時間            | 約 2 時間（全シナリオ）                                           | 約 2 時間 23 分（15:44〜18:07 UTC。timeout は 330 分）                                                               |
 
-- baseline は**環境の区分（`env_class`）が同じ run 同士**でだけ比べる（`compare.mjs`）。runner の区分は `github-hosted:<ImageOS>:<RUNNER_ARCH>`。
-- **runner での実測は今回できていない**（`perf.yml` は main にマージされるまで Actions から実行できない）。runner の baseline は、初回の `perf.yml` 実行結果を `--update-baseline` で追記して作る。
+- 同じ commit・同じ設定・同じ k6 イメージ（digest）・同じ `perf/compose.perf.yml`（backend 1 vCPU / 512 MiB）。違いは CPU・OS・Docker・VM の有無だけ。
+- 実測で見えた差の大きさは `analysis.md` §8（runner は開発機より、同じ負荷でおおよそ 1.3〜1.8 倍遅く、10,000 件のような重い条件では桁が変わる）。
+- baseline は**環境の区分（`env_class`）が同じ run 同士**でだけ比べる（`compare.mjs`）。`perf/baseline.json` に両区分の baseline を持つ（`initial-main-6e5d2db` = 開発機、`v1.0.0` = runner。後者はこの run の値から作った）。
 - runner の CPU・メモリ・ランナーイメージの版は、実行のたびに `perf.yml` が step summary と `run.json`（`runner`、`host`）に記録する。
 
 ## 測定の揺れの要因（読み方）

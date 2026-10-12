@@ -1,0 +1,50 @@
+{
+ "status": "pass",
+ "reasons": [],
+ "warnings": [
+  "capacity: 7500 件で SLO の目標を超える: list p95 5454.524666666666ms > 500ms, create p95 5395.3ms > 300ms, toggle p95 5335.574333333333ms > 300ms, delete p95 5513.578666666667ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）",
+  "capacity: 10000 件で SLO の目標を超える: list p95 7875.528666666666ms > 500ms, create p95 7803.405666666667ms > 300ms, toggle p95 7821.623666666666ms > 300ms, delete p95 7839.097000000001ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）"
+ ],
+ "verdict_rule": {
+  "statistic": "p95（レイテンシ。p99 は SLO にあるものだけ）。エラーは rate、スループットは目標到着率に対する達成率。平均のみでは判定しない",
+  "outlier_policy": "warm-up 30 秒を別実行として除外。seed / setup の要求を除外。各エンドポイントの応答時間は上位 0.1%（n ≥ 100 のとき ceil）を除いて p95 / p99 を計算（除外前は raw_* に併記）",
+  "error_threshold": "エラー率 = max(http_req_failed 率, checks 失敗率) < 1%（perf/slo.yaml の error_rate）",
+  "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
+  "slo_ref": "perf/slo.yaml"
+ },
+ "scenarios": {
+  "load": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": []
+  },
+  "stress": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": []
+  },
+  "spike": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": []
+  },
+  "soak": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": []
+  },
+  "capacity": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": [
+    "7500 件で SLO の目標を超える: list p95 5454.524666666666ms > 500ms, create p95 5395.3ms > 300ms, toggle p95 5335.574333333333ms > 300ms, delete p95 5513.578666666667ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）",
+    "10000 件で SLO の目標を超える: list p95 7875.528666666666ms > 500ms, create p95 7803.405666666667ms > 300ms, toggle p95 7821.623666666666ms > 300ms, delete p95 7839.097000000001ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）"
+   ]
+  },
+  "screen": {
+   "status": "pass",
+   "reasons": [],
+   "warnings": []
+  }
+ }
+}
