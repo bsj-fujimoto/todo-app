@@ -4,6 +4,15 @@ import { globToRegExp, isFile, readText } from "../../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
 
 export const TRIAGE_STATES = ["tp", "fp", "na", "dup"];
+// 検出ごとの台帳に必須の項目。recommendation は修正方法、修正しないなら「修正しない理由と代替統制」。due は期限（na・fp は再確認の期日）
+export const REQUIRED_FIELDS = [
+  "reason",
+  "recommendation",
+  "alternative",
+  "owner",
+  "due",
+  "reverify_condition",
+];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DAY = 86_400_000;
 export const MAX_ACCEPT_DAYS = { critical: 0, high: 30, medium: 90, low: 180, info: 365 };
@@ -39,9 +48,8 @@ function triageProblems(e, label) {
   if (!TRIAGE_STATES.includes(e.status))
     out.push(`${label}: status は ${TRIAGE_STATES.join("/")} のいずれか（accepted は accepted-risks.yaml）`);
   if (!e.fingerprint && !e.match) out.push(`${label}: match か fingerprint が無い`);
-  const need =
-    e.status === "tp" ? ["reason", "recommendation", "owner", "due", "reverify_condition"] : ["reason"];
-  const miss = missing(e, need);
+  // すべての状態（tp・fp・na・dup）に、理由・修正方法（または修正しない理由と代替統制）・代替案・owner・期限・再検査条件を求める
+  const miss = missing(e, REQUIRED_FIELDS);
   if (miss.length) out.push(`${label}: ${miss.join(",")} が無い`);
   return out;
 }
@@ -52,7 +60,16 @@ export function validateTriage(entries) {
 
 function acceptedProblems(e, today) {
   const label = e.id ?? "(id なし)";
-  const miss = missing(e, ["id", "reason", "owner", "accepted_at", "expires_at", "reverify_condition"]);
+  const miss = missing(e, [
+    "id",
+    "reason",
+    "recommendation",
+    "alternative",
+    "owner",
+    "accepted_at",
+    "expires_at",
+    "reverify_condition",
+  ]);
   if (miss.length) return [`${label}: ${miss.join(",")} が無い`];
   if (!e.fingerprint && !e.match) return [`${label}: match か fingerprint が無い`];
   if (![e.accepted_at, e.expires_at].every((d) => DATE_RE.test(String(d))))

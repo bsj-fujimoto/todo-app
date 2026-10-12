@@ -164,10 +164,23 @@ describe("triage（台帳の適用・重複排除・差分・ゲート）", () =
 });
 
 describe("ledger（台帳の検証と突合）", () => {
-  it("tp には是正案・owner・期限・再検査条件が必須", () => {
-    assert.equal(validateTriage([{ match: { tool: "x" }, status: "tp", reason: "r" }]).length, 1);
-    assert.deepEqual(validateTriage([{ match: { tool: "x" }, status: "fp", reason: "r" }]), []);
-    assert.equal(validateTriage([{ match: { tool: "x" }, status: "accepted", reason: "r" }]).length, 1);
+  it("すべての状態に、理由・修正方法・代替案・owner・期限・再検査条件が必須", () => {
+    const full = {
+      reason: "r",
+      recommendation: "修正方法（または修正しない理由と代替統制）",
+      alternative: "代替案",
+      owner: "o",
+      due: "2027-01-09",
+      reverify_condition: "c",
+    };
+    for (const status of ["tp", "fp", "na", "dup"]) {
+      assert.equal(validateTriage([{ match: { tool: "x" }, status, reason: "r" }]).length, 1, status);
+      assert.deepEqual(validateTriage([{ match: { tool: "x" }, status, ...full }]), [], status);
+    }
+    const missing = validateTriage([{ match: { tool: "x" }, status: "fp", reason: "r" }])[0];
+    for (const k of ["recommendation", "alternative", "owner", "due", "reverify_condition"])
+      assert.ok(missing.includes(k), k);
+    assert.equal(validateTriage([{ match: { tool: "x" }, status: "accepted", ...full }]).length, 1);
   });
 
   it("受容は理由・owner・期限が必須で、期限切れは問題", () => {
@@ -176,11 +189,18 @@ describe("ledger（台帳の検証と突合）", () => {
       id: "A",
       match: { tool: "x" },
       reason: "r",
+      recommendation: "修正方法",
+      alternative: "代替案",
       owner: "o",
       accepted_at: "2026-10-01",
       expires_at: "2026-10-20",
       reverify_condition: "c",
     };
+    // 修正方法・代替案が無い受容は台帳として不完全
+    assert.equal(
+      validateAccepted([{ ...ok, recommendation: "", alternative: undefined }], "2026-10-11").length,
+      1,
+    );
     assert.deepEqual(validateAccepted([ok], "2026-10-11"), []);
     assert.equal(validateAccepted([ok], "2026-11-01").length, 1);
     assert.ok(acceptanceWithinLimit(ok, "high"));

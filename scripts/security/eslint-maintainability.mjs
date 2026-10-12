@@ -1,17 +1,21 @@
 #!/usr/bin/env node
-// 保守性の検査（ESLint の複雑度・大きさ・引数・ネスト・純粋性）を実行し、SARIF と閾値の記録を書く。
-//   node scripts/security/eslint-maintainability.mjs --out-dir security-results/maintainability
-// lint ジョブ（ci.yml の `eslint .`）と同じ設定（eslint.config.js）を使う。保守性ルールの違反があれば exit 1。
-// 出力: eslint-maintainability.sarif（結果）、thresholds.json（ルールごとの閾値・分類）、summary.json（件数）。
+// ESLint の規約ルールの検査（保守性 / 性能）を実行し、SARIF と閾値の記録を書く。
+//   node scripts/security/eslint-maintainability.mjs --out-dir security-results/maintainability [--profile maintainability|performance]
+// 保守性: 複雑度・大きさ・引数・ネスト・純粋性。性能: ループ内の逐次 await・ループ内の関数生成・競合する更新・不要なコピー。
+// lint ジョブ（ci.yml の `eslint .`）と同じ設定（eslint.config.js）を使う。そのプロファイルのルールの違反があれば exit 1。
+// 出力: eslint-<profile>.sarif（結果）、thresholds.json（ルールごとの閾値・分類）、summary.json（件数）。
 import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
-import { ruleClasses, summarize, thresholdsFrom, toSarif } from "./lib/maintainability.mjs";
+import { PROFILES, ruleClasses, summarize, thresholdsFrom, toSarif } from "./lib/maintainability.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 const root = resolve(args.root ?? ".");
-const outDir = resolve(args["out-dir"] ?? "security-results/maintainability");
+const profileName = args.profile ?? "maintainability";
+const profile = PROFILES[profileName];
+if (!profile) throw new Error(`未知の profile: ${profileName}（${Object.keys(PROFILES).join(" / ")}）`);
+const outDir = resolve(args["out-dir"] ?? `security-results/${profileName}`);
 const probe = args.probe ?? "backend/src/app.js";
 const eslint = join(root, "node_modules/eslint/bin/eslint.js");
 
@@ -29,20 +33,26 @@ function runEslint(eslintArgs) {
 }
 
 const results = JSON.parse(runEslint([".", "--format", "json"]));
-const thresholds = thresholdsFrom(JSON.parse(runEslint(["--print-config", probe])));
+const thresholds = thresholdsFrom(JSON.parse(runEslint(["--print-config", probe])), profile.classes);
 const version = runEslint(["--version"]).trim().replace(/^v/, "");
-const summary = summarize(results);
+const summary = summarize(results, profile.classes);
 const total = Object.values(summary.violations).reduce((a, b) => a + b, 0);
 
 mkdirSync(outDir, { recursive: true });
 const write = (name, doc) => writeFileSync(join(outDir, name), `${JSON.stringify(doc, null, 2)}\n`);
-write("eslint-maintainability.sarif", toSarif(results, { version, thresholds, root }));
+write(`eslint-${profileName}.sarif`, toSarif(results, { version, thresholds, root, profile }));
 write("thresholds.json", thresholds);
-write("summary.json", { eslint_version: version, rule_classes: ruleClasses(), ...summary, total });
+write("summary.json", {
+  profile: profileName,
+  eslint_version: version,
+  rule_classes: ruleClasses(profile.classes),
+  ...summary,
+  total,
+});
 
 process.stdout.write(
-  `保守性（ESLint ${version}）: ${summary.files} ファイル、違反 ${total} 件 ${JSON.stringify(summary.violations)}\n` +
-    `閾値: ${Object.entries(thresholds)
+  `${profile.label}（ESLint ${version}）: ${summary.files} ファイル、違反 ${total} 件 ${JSON.stringify(summary.violations)}\n` +
+    `閾値・設定: ${Object.entries(thresholds)
       .map(([id, t]) => `${id}=${JSON.stringify(t.value)}`)
       .join(", ")}\n`,
 );

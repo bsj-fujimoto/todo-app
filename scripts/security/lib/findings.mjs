@@ -11,7 +11,7 @@ const LEVEL_DEFAULT = { error: "high", warning: "medium", note: "low", none: "in
 const LEVEL_BY_TOOL = {
   hadolint: { error: "medium", warning: "low", note: "info", style: "info", info: "info" },
 };
-const TAG_CATEGORY = { vulnerability: "sca", misconfiguration: "config", secret: "secret" };
+const TAG_CATEGORY = { vulnerability: "sca", misconfiguration: "iac", secret: "secret" };
 
 // ツール名は SARIF の driver.name（"CodeQL"・"OWASP ZAP" など）を小文字・ハイフン区切りにそろえて台帳や指紋に使う。
 export const slug = (name) => String(name).trim().toLowerCase().replace(/\s+/g, "-");

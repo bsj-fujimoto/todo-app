@@ -12,6 +12,7 @@ import { collectScans } from "./lib/collect.mjs";
 import { buildDocument } from "./lib/document.mjs";
 import { loadFindingIds } from "./lib/finding-ids.mjs";
 import { loadEntries } from "./lib/ledger.mjs";
+import { ledgersApplied } from "./lib/ledger-record.mjs";
 import { renderSummary } from "./lib/triage.mjs";
 
 const args = parseArgs(process.argv.slice(2));
@@ -44,6 +45,9 @@ const doc = buildDocument({
       : null,
   },
 });
+
+// どの時点の台帳（triage・受容・安定 ID・期待する検査）を適用した結果かを残す
+doc.ledgers_applied = ledgersApplied(root, { commit: doc.target.commit_sha, appliedAt: now.toISOString() });
 
 mkdirSync(args.out, { recursive: true });
 writeFileSync(join(args.out, "findings.json"), `${JSON.stringify(doc, null, 2)}\n`);
