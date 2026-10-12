@@ -1,6 +1,6 @@
 // 証拠索引・manifest（改変検知）・追跡表・アクション表・パリティ・秘密情報の検査・成果物台帳・取り込み規則。一時ディレクトリと合成データで確かめる。
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, it } from "node:test";
@@ -150,6 +150,24 @@ describe("manifest（改変検知）", () => {
     assert.match(problems, /サイズ不一致: runs\/1\/ci-summary.json/);
     assert.match(problems, /未登録: runs\/1\/new.json/);
     assert.match(problems, /欠落: security\/security-scan-sast\/codeql\/scan-run.json/);
+  });
+
+  it("後の run に置き換えられた run（SOURCE.json の superseded_by）の項目は、置き換えた run の id を持つ", () => {
+    const root = evidenceTree();
+    const source = JSON.parse(readFileSync(join(root, "runs/1/SOURCE.json"), "utf8"));
+    put(
+      root,
+      "runs/1/SOURCE.json",
+      JSON.stringify({
+        ...source,
+        superseded_by: { run_id: "9", reason: "版の取替", marked_at: "2026-10-12" },
+      }),
+    );
+    const files = buildManifestFiles(root);
+    const by = new Map(files.map((f) => [f.path, f.superseded_by]));
+    assert.equal(by.get("runs/1/ci-summary.json"), "9");
+    assert.equal(by.get("runs/1/SOURCE.json"), "9");
+    assert.equal(by.get("security/SOURCE.json"), undefined);
   });
 
   it("取得元（SOURCE.json）の無いファイルは管理対象にできない", () => {
@@ -355,6 +373,47 @@ describe("追跡表・アクション表・検出表", () => {
   });
 });
 
+describe("検出表の owner・due の補完", () => {
+  const finding = {
+    finding_id: "FND-012",
+    fingerprint: "ccc",
+    severity: "medium",
+    status: "untriaged",
+    tool: "gitleaks",
+    rule_id: "sourcegraph-access-token",
+    location: "docs/evidence/security/x.sarif:1351",
+  };
+  const triage = [
+    {
+      match: { tool: "gitleaks", rule_id: "sourcegraph-access-token", location: "docs/**" },
+      status: "fp",
+      owner: "セキュリティ担当",
+      due: "2026-10-19",
+    },
+    { match: { tool: "owasp-zap", rule_id: "100001" }, status: "na" },
+  ];
+
+  it("run の出力に owner・due が無く、現在の台帳に同じ検出の記載があれば補う。status など run の判定は変えない", () => {
+    const [row] = findingRows({ findings: [finding] }, new Map(), triage);
+    assert.deepEqual([row.owner, row.due, row.status], ["セキュリティ担当", "2026-10-19", "untriaged"]);
+  });
+
+  it("run の出力に値があれば上書きしない。台帳に owner・due が無ければ空のまま（作り話を足さない）", () => {
+    const [kept] = findingRows(
+      { findings: [{ ...finding, owner: "バックエンド担当", due: "2026-12-31" }] },
+      new Map(),
+      triage,
+    );
+    assert.deepEqual([kept.owner, kept.due], ["バックエンド担当", "2026-12-31"]);
+    const [blank] = findingRows(
+      { findings: [{ ...finding, fingerprint: "ddd", tool: "owasp-zap", rule_id: "100001", location: "u" }] },
+      new Map(),
+      triage,
+    );
+    assert.deepEqual([blank.owner, blank.due], ["", ""]);
+  });
+});
+
 describe("検出の仮 ID の解決", () => {
   const doc = {
     findings: [
@@ -469,6 +528,33 @@ describe("成果物台帳・正本の所在地・YAML", () => {
       ["approved", "プロダクトオーナー", "プロダクトオーナー"],
     );
     assert.equal(statusFrom("レビュー済"), "reviewed");
+  });
+
+  it("ADR は本文の表（規則・値）の「承認」行を承認者と取り違えず、決定者（箇条書き）から読む", () => {
+    const adr = [
+      "# ADR-0004: 単独メンテナ運用の統制",
+      "",
+      "- 状態: 採用（定義は 2026-10-11）",
+      "- 決定者: プロダクトオーナー（PR #20 のマージをもって承認。フェーズ1は AI が代行マージ）",
+      "",
+      "## 決定",
+      "",
+      "| 規則 | 値 |",
+      "|---|---|",
+      "| 承認 | 1 件 + **code owner review**（`.github/CODEOWNERS`） |",
+      "",
+    ].join("\n");
+    assert.deepEqual(parseDocHeader(adr), {});
+    const info = describeContent("docs/adr/0004-x.md", adr, "adr");
+    assert.deepEqual(
+      [info.status, info.approved_by, info.owner_role],
+      ["approved", "プロダクトオーナー", "プロダクトオーナー"],
+    );
+  });
+
+  it("ヘッダ表の後ろにある別の表の行は、ヘッダの値を上書きしない", () => {
+    const md = `${HEADER}\n## 章\n\n| 項目 | 内容 |\n|---|---|\n| 承認 | 別の表の値 |\n`;
+    assert.equal(parseDocHeader(md)["承認"], "プロダクトオーナー（ロール。PR 承認で確定）");
   });
 
   it("台帳の項目: 履歴は git log から（人名は書かず maintainer）、sha256・保存期間・immutable_store", () => {

@@ -90,7 +90,7 @@ function runView() {
   const repoArgs = args.repo ? ["--repo", args.repo] : [];
   const out = spawnSync(
     "gh",
-    ["run", "view", String(runId), ...repoArgs, "--json", "headSha,url,workflowName,event"],
+    ["run", "view", String(runId), ...repoArgs, "--json", "headSha,url,workflowName,event,headBranch"],
     { encoding: "utf8" },
   );
   if (out.status !== 0)
@@ -120,7 +120,9 @@ function fetchKind(rawDir, files) {
     captured_at: nowIso,
     source_url: view.url,
     head_sha: view.headSha,
-    version: args.version ?? "pre-1.0.0",
+    // 版は、ci の取り込みと同じく run の ref（タグ v1.2.3 なら 1.2.3）から決める。--sha と --url で gh を使わないときは --version を渡す
+    version: args.version ?? versionOf(view.headBranch),
+    ref: view.headBranch ?? null,
     run_id: String(runId),
     workflow: view.workflowName ?? null,
     event: view.event ?? null,

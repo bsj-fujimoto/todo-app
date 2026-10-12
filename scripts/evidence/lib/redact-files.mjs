@@ -31,7 +31,7 @@ export function redactFiles(destDir, relPaths, owners = []) {
 export const redactionSection = (records) => ({
   redactions: records,
   redaction_note: records.length
-    ? "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル。元の取得物は GitHub Actions の artifact（90 日）にだけある（original_sha256 で対応が追える）"
+    ? "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル（original_sha256 で対応が追える）。元の取得物は GitHub Actions の artifact（90 日）に残る。Git 履歴には、墨消し方針より前に取り込んだ版の墨消し前のファイルが残りうる（docs/evidence/README.md「既知の制約」）"
     : "墨消しした箇所は無い",
 });
 

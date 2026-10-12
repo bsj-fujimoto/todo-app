@@ -32,8 +32,13 @@ export function entryFor(evidenceDir, rel) {
     version: source.version,
     head_sha: source.head_sha,
     ...redactedFrom(redactionOf(source, rel)),
+    ...supersededFrom(source),
   };
 }
+
+/** 後の run に置き換えられた証跡（SOURCE.json の superseded_by）は、置き換えた run の id を持つ（実施表の根拠ではない印）。 */
+const supersededFrom = (source) =>
+  source.superseded_by?.run_id ? { superseded_by: String(source.superseded_by.run_id) } : {};
 
 /** 墨消しした項目は、元ファイルの sha256 を持つ（manifest の sha256 は墨消し後。元との対応が追える）。 */
 const redactedFrom = (r) => (r ? { redacted: true, original_sha256: r.original_sha256 } : {});

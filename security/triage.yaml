@@ -116,5 +116,7 @@ entries:
     asset_impact: なし
     compensating_controls: security/gitleaks.toml の allowlist は理由つきで、ルールとパスを限定している。他のルール（aws・github トークンなど）は docs/ にも適用している
     reverify_condition: gitleaks のルールが変わったとき、または証跡の形式（docs/evidence・docs/data）が変わったとき
+    owner: セキュリティ担当 # ACT-010 の owner と同じ（fp は owner・due 必須ではないが、確認の担当と期限を台帳に持たせる）
+    due: 2026-10-19 # ACT-010 の期限と同じ（allowlist の効果をマージ後の security.yml で確かめる日）
     decided_by: セキュリティ担当
     decided_at: 2026-10-12

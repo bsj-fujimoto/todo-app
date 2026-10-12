@@ -36,12 +36,20 @@ const OWNER_RULES = [
   [/^security\//, "セキュリティ担当"],
 ];
 
-/** md の先頭のヘッダ表（| 項目 | 内容 |）→ { 文書ID, 版, 状態, 作成, 承認, ... }。 */
+/**
+ * md のヘッダ表（`| 項目 | 内容 |` で始まる表）→ { 文書ID, 版, 状態, 作成, 承認, ... }。
+ * ヘッダ表の行だけを読む。本文中の別の表（例: ADR の「承認 | 1 件 + code owner review」という規則の表）の行を、
+ * 文書の承認者などと取り違えない。ヘッダ表が無い文書（ADR は箇条書き）は空を返す。
+ */
 export function parseDocHeader(md) {
   const out = {};
-  for (const line of md.split("\n").slice(0, 30)) {
+  const lines = md.split("\n");
+  const start = lines.findIndex((line) => /^\|\s*項目\s*\|\s*内容\s*\|\s*$/.test(line));
+  if (start === -1) return out;
+  for (const line of lines.slice(start + 1)) {
+    if (!line.startsWith("|")) break; // 表の終わり
     const m = /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|$/.exec(line);
-    if (m && !/^[-:\s]+$/.test(m[1]) && m[1] !== "項目") out[m[1]] = m[2];
+    if (m && !/^[-:\s]+$/.test(m[1])) out[m[1]] = m[2];
   }
   return out;
 }
