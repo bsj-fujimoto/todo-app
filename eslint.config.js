@@ -40,6 +40,14 @@ export default [
           message: "現在時刻は clock として注入する",
         },
       ],
+      // 性能（security/README.md「性能の静的検査」。別の scan-run として記録する）: ループの中の逐次 await は、本番コード（backend/src・frontend/src）では禁止。
+      // 逐次が仕様の道具・テストは下の override で外す。ほかのルールは全ファイルに適用する。
+      "no-await-in-loop": "error",
+      "no-loop-func": "error",
+      "no-unmodified-loop-condition": "error",
+      "require-atomic-updates": "error",
+      "no-promise-executor-return": "error",
+      "prefer-object-spread": "error",
       eqeqeq: "error",
       "no-var": "error",
       "prefer-const": "error",
@@ -51,9 +59,22 @@ export default [
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // composition root: 副作用の実体を束ねる唯一の場所
+    // composition root: 副作用の実体を束ねる唯一の場所。起動に失敗したときの終了コード（process.exitCode）は、await の後に 1 回だけ書く
+    // （プロセスの入口で並行に呼ばれないので競合しない。require-atomic-updates を外す）。
     files: ["backend/src/main.js", "frontend/src/main.js"],
-    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-syntax": "off",
+      "no-console": "off",
+      "require-atomic-updates": "off",
+    },
+  },
+  {
+    // backend のテスト基盤（子プロセスの exit を待つ Promise の書き方）。API 結果表（docs/data/api-results.csv）は、backend/test-support を含む実装が
+    // 結果を取った commit（release.json）から変わっていないことを前提にしている（scripts/evidence/build-api-results.mjs）。
+    // 結果を取り直すまでは、この領域のコードは書き換えずに、規約の側で例外にする（次のリリースで書き換えて、この override を外す）。
+    files: ["backend/test-support/**"],
+    rules: { "no-promise-executor-return": "off" },
   },
   {
     // scripts/<領域>/*.mjs は CLI の入口（composition root）。時刻・環境変数・標準出力をここで束ねる。
@@ -77,6 +98,20 @@ export default [
     // 画面計測は page.evaluate の中でブラウザのグローバルを使う
     files: ["perf/screen/measure.mjs"],
     languageOptions: { globals: { ...globals.browser } },
+  },
+  {
+    // 逐次が仕様のコード（リトライ・ポーリング・順序を保つ API 呼び出し・計測の逐次サンプル・監視の順次実行）は、ループ内の await を許す。
+    // 並列にすると結果の意味が変わる（計測が互いに干渉する・順序の検証が崩れる）ため。本番コード（backend/src・frontend/src）には適用したまま。
+    files: [
+      "scripts/**",
+      "perf/**",
+      "monitoring/**",
+      "e2e/**",
+      "**/test/**",
+      "backend/test-support/**",
+      "backend/scripts/**",
+    ],
+    rules: { "no-await-in-loop": "off" },
   },
   {
     // テストは describe/it の入れ子で関数が長くなるため行数のみ緩める（複雑度・引数は本番と同じ）

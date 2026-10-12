@@ -11,6 +11,7 @@ import { join, resolve } from "node:path";
 import { parse } from "yaml";
 import { parseArgs } from "../lib/cli.mjs";
 import { runMonitor, severityOf, withDefaults } from "./lib/runner.mjs";
+import { scrub } from "./lib/scrub.mjs";
 import { renderSummary } from "./lib/summary.mjs";
 
 const readYaml = (p) => parse(readFileSync(p, "utf8"));
@@ -65,7 +66,8 @@ function targetInfo(args) {
 function writeOutputs(out, outcome, skipped, names) {
   const { run, records } = outcome;
   const results = records.map((r) => ({ ...r, ...names[r.monitor_id] }));
-  writeFileSync(join(out, "results.json"), `${JSON.stringify({ run, results, skipped }, null, 2)}\n`);
+  // 測定対象の応答に由来する文字列（failure_detail など）は、検証・正規化してから書く（lib/scrub.mjs）
+  writeFileSync(join(out, "results.json"), `${JSON.stringify(scrub({ run, results, skipped }), null, 2)}\n`);
   const summary = renderSummary(run, results, skipped);
   writeFileSync(join(out, "summary.md"), summary);
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
@@ -77,7 +79,10 @@ function buildDeps() {
     fetchFn: fetch,
     now: () => performance.now(),
     wallMs: () => Date.now(),
-    sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+    sleep: (ms) =>
+      new Promise((r) => {
+        setTimeout(r, ms);
+      }),
     spawnFn,
   };
 }

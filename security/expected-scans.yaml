@@ -16,19 +16,27 @@ scans:
     kind: sca
   - name: trivy-fs
     kind: sca
+  - name: trivy-iac
+    kind: iac
+  - name: trivy-secret
+    kind: secret
   - name: trivy-image-backend
     kind: container
   - name: trivy-image-frontend
     kind: container
   - name: hadolint
-    kind: container
+    kind: iac
   - name: compose-check
-    kind: config
+    kind: iac
   - name: license
     kind: license
   - name: maintainability
     kind: maintainability
+  - name: performance
+    kind: performance
+  - name: framework
+    kind: framework
   - name: architecture
-    kind: architecture
+    kind: other
   - name: zap
     kind: dast

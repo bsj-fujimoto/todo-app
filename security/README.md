@@ -5,21 +5,23 @@
 
 ## 検査の一覧
 
-| 検査           | ツール（版は `tools.env` で digest 固定）                                           | 設定ファイル                                        | 出力（artifact に 90 日保存）                  | 失敗の条件                                                    |
-| -------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------- |
-| SAST           | CodeQL（javascript-typescript、security-extended）                                  | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）        | triage のゲート                                               |
-| Secret         | gitleaks（git 履歴全体）                                                            | `gitleaks.toml`                                     | SARIF（値は伏字）                              | triage のゲート。履歴を 1 commit も読めなければ失敗           |
-| SCA            | npm audit（`--omit=dev` と全体）、osv-scanner                                       | —                                                   | JSON / SARIF                                   | triage のゲート                                               |
-| SBOM           | `npm sbom`（npm 組み込み）、trivy（イメージ）                                       | —                                                   | CycloneDX JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                          |
-| Container/IaC  | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check              | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                   | triage のゲート                                               |
-| License        | 自前の評価（`license-check.mjs`。lock と node_modules の license を読む。依存ゼロ） | `license-policy.yaml`                               | JSON                                           | 許可リスト外が 1 つでもあれば失敗（deny by default）          |
-| DAST           | OWASP ZAP（baseline + API 走査。認証なし）                                          | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                 | triage のゲート                                               |
-| ワークフロー   | actionlint、`check-workflows.mjs`（W1〜W10）                                        | `workflow-policy.yaml`                              | JSON                                           | 逸脱があれば失敗                                              |
-| 保守性         | ESLint（複雑度・大きさ・引数・ネスト・純粋性。`eslint-maintainability.mjs`）        | `eslint.config.js`                                  | SARIF・thresholds.json・summary.json           | 規約違反が 1 件でもあれば失敗（`maintainability` ジョブ）     |
-| アーキテクチャ | `check-arch.mjs`（import 文からレイヤー依存・循環を検査。依存ゼロ）                 | `architecture.yaml`                                 | arch.json                                      | 向きの違反・許可外の依存・未分類のファイル・循環があれば失敗  |
-| 公開物の検査   | trivy（release.yml が公開した digest に対して。脆弱性 + 設定）                      | `tools.env`                                         | JSON / SARIF（digest 入りの scan-run.json）    | 公開物の critical / high の未解決は失敗（Release を作らない） |
-| 依存レビュー   | actions/dependency-review-action（PR のみ）                                         | `security.yml` の `allow-licenses`（方針の写し）    | PR の依存差分                                  | high 以上・方針外ライセンス                                   |
-| Scorecard      | OpenSSF Scorecard（週次のみ）                                                       | —                                                   | SARIF                                          | 情報提供のみ（ゲートに含めない）                              |
+| 検査           | ツール（版は `tools.env` で digest 固定）                                           | 設定ファイル                                        | 出力（artifact に 90 日保存）                  | 失敗の条件                                                                       |
+| -------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| SAST           | CodeQL（javascript-typescript、security-extended）                                  | `codeql-config.yml`                                 | SARIF（Code Scanning にもアップロード）        | triage のゲート                                                                  |
+| Secret         | gitleaks（git 履歴全体）                                                            | `gitleaks.toml`                                     | SARIF（値は伏字）                              | triage のゲート。履歴を 1 commit も読めなければ失敗                              |
+| SCA            | npm audit（`--omit=dev` と全体）、osv-scanner                                       | —                                                   | JSON / SARIF                                   | triage のゲート                                                                  |
+| SBOM           | `npm sbom`（npm 組み込み）、trivy（イメージ）                                       | —                                                   | CycloneDX JSON（実行時依存 / 全体 / イメージ） | 生成できなければ失敗                                                             |
+| Container/IaC  | trivy（fs: vuln,misconfig,secret / image ×2）、hadolint、compose-check              | `hadolint.yaml`、`scripts/security/lib/compose.mjs` | JSON / SARIF                                   | triage のゲート                                                                  |
+| License        | 自前の評価（`license-check.mjs`。lock と node_modules の license を読む。依存ゼロ） | `license-policy.yaml`                               | JSON                                           | 許可リスト外が 1 つでもあれば失敗（deny by default）                             |
+| DAST           | OWASP ZAP（baseline + API 走査。認証なし）                                          | `zap-rules.tsv`                                     | JSON / SARIF / HTML / Markdown                 | triage のゲート                                                                  |
+| ワークフロー   | actionlint、`check-workflows.mjs`（W1〜W10）                                        | `workflow-policy.yaml`                              | JSON                                           | 逸脱があれば失敗                                                                 |
+| 保守性         | ESLint（複雑度・大きさ・引数・ネスト・純粋性。`eslint-maintainability.mjs`）        | `eslint.config.js`                                  | SARIF・thresholds.json・summary.json           | 規約違反が 1 件でもあれば失敗（`maintainability` ジョブ）                        |
+| アーキテクチャ | `check-arch.mjs`（import 文からレイヤー依存・循環を検査。依存ゼロ）                 | `architecture.yaml`                                 | arch.json                                      | 向きの違反・許可外の依存・未分類のファイル・循環があれば失敗                     |
+| 公開物の検査   | trivy（release.yml が公開した digest に対して。脆弱性 + 設定）                      | `tools.env`                                         | JSON / SARIF（digest 入りの scan-run.json）    | 公開物の critical / high の未解決は失敗（Release を作らない）                    |
+| 性能           | ESLint（ループ内の逐次 await・ループ内の関数生成・競合する更新・不要なコピー）      | `eslint.config.js`                                  | SARIF・thresholds.json・summary.json           | 違反が 1 件でもあれば失敗（`maintainability` ジョブ。`check_kind: performance`） |
+| フレームワーク | `check-framework.mjs`（Fastify の規約 FW-001〜004）                                 | `scripts/security/lib/framework.mjs`                | SARIF                                          | 違反が 1 件でもあれば失敗（`check_kind: framework`）                             |
+| 依存レビュー   |
+| Scorecard      | OpenSSF Scorecard（週次のみ）                                                       | —                                                   | SARIF                                          | 情報提供のみ（ゲートに含めない）                                                 |
 
 どの検査も `scripts/security/scan.sh <検査名>` で **CI とローカルが同じコマンド**を実行する（再現できる）。出力は `security-results/<検査名>/` に置かれ、
 検査ごとに `scan-run.json`（対象リポジトリ・branch・commit SHA・イメージ digest・実行日時・ツール名と版・コマンド・設定ファイル・走査範囲と除外・しきい値・出力ファイルの sha256）を残す。
@@ -63,6 +65,48 @@ hadolint（Dockerfile の書き方）は脆弱性ではないので 1 段下げ�
 
 `security.yml` の `file-security-issues` ジョブは、PR 以外（main push・週次・手動）で動く。以前は main push のたびに skipped だった: `inputs.create_issues` は `workflow_call` のときだけ値を持ち、push・schedule では空文字で、`'' != false` は両辺が数値 0 に変換されて偽になるため。現在の条件は `format('{0}', inputs.create_issues) != 'false'`（release.yml が `create_issues: false` を渡したときだけ止まる）。
 起票は指紋（fingerprint）単位で重複しない: 同じ指紋の open Issue があれば新規には作らず、週次の run だけ経過をコメントに追記する。同じ指紋の closed Issue があるのに検出が再発したときは、新規ではなく reopen してコメントする。
+
+## 検査の分類（check_kind）
+
+scan-run.json の `check_kind` は、実際に何を検査したかに合わせる（qc の ScanCategory: sast / dast / sca / secret / container / iac / config / license / seo / maintainability / performance / framework / other）。
+
+| scan                                           | check_kind      | 検査の内容                                                         |
+| ---------------------------------------------- | --------------- | ------------------------------------------------------------------ |
+| codeql                                         | sast            | JavaScript のソース                                                |
+| zap                                            | dast            | 動いている compose スタック                                        |
+| trivy-fs・npm-audit-*・osv-scanner・sbom       | sca             | 依存（脆弱性・SBOM）                                               |
+| gitleaks・trivy-secret                         | secret          | git 履歴・ファイル内容の秘密情報                                   |
+| trivy-image-_・trivy-published-_               | container       | イメージの OS パッケージ・設定                                     |
+| trivy-iac・hadolint・compose-check・actionlint | iac             | Dockerfile・docker-compose.yml・GitHub Actions workflow の構成誤り |
+| workflow-governance                            | config          | ワークフロー統制 W1〜W10 と方針ファイル（期限・形式）              |
+| license                                        | license         | ライセンス方針                                                     |
+| maintainability                                | maintainability | 複雑度・大きさ・引数・ネスト・純粋性                               |
+| performance                                    | performance     | ループ内の逐次 await など                                          |
+| framework                                      | framework       | Fastify の規約                                                     |
+| architecture                                   | other           | レイヤー依存・循環（qc の語彙に専用の値が無い）                    |
+
+trivy fs は検査の種類ごとに別の scan-run（trivy-fs = 脆弱性 / trivy-iac = 設定誤り / trivy-secret = 秘密情報）で実行する。1 回の実行に混ぜると、設定誤りの検査が sca と記録されるなど、check_kind が実際の検査内容と合わなくなるため。検出の `category` も、trivy の misconfiguration は `iac`（以前は `config`）。
+全 scan-run の完全性（tool・version・config / rules・exclusions・thresholds・command・output_location・coverage・target.commit_sha・イメージ検査の target.image_digest・check_kind の語彙）は `check-scan-runs.mjs` が triage ジョブで検査し、足りなければ失敗する。
+
+## 台帳を適用した検出（triaged）と生の検査出力
+
+- 生の検査出力（SARIF・JSON）は `security-scan-*` artifact、台帳（triage.yaml・accepted-risks.yaml・finding-ids.yaml）を適用した検出は `security-findings/findings.json`（triaged）。**別物**で、後者は台帳が変わると同じ検出の状態（untriaged / fp / accepted など）が変わる。
+- findings.json の `ledgers_applied` に、どの時点の台帳を適用したか（各台帳の sha256・件数・対象 commit・適用時刻）を残す。証跡の取り込み（`fetch-run.mjs --kind security`）は、これを SOURCE.json の `triage` に写す。**最新の security run（台帳が最新の main の run）から取り込めば、台帳の更新後の状態（例: FND-012 が fp）が証跡に載る**。古い run から取り込むと、その run の時点の状態（v1.0.0 の run では FND-012 は untriaged）のまま。
+- 台帳（triage.yaml・accepted-risks.yaml）の全エントリに、理由・修正方法（または「修正しない理由と代替統制」）・代替案・owner（ロール）・期限（na・fp は再確認の期日、受容は expires_at）・再検査条件を書く（`check-policy` が必須として検査）。受容（accepted）は qc では「未解決」に数えられるので、直せるものは直して台帳から外す（zlib は両 Dockerfile で修正版に上げて AR-001 を外した）。
+
+## qc の内蔵検査（long-function / long-file）の扱い
+
+qc の `inspect`（内蔵）は、長い関数・長いファイルを low で指摘する。テストは eslint の行数規約（max-lines-per-function・max-lines）を緩めているので、指摘のうち実際に分けられるものは分けた: e2e/fixtures/stack.js（createStack）・frontend/test/unit/app.test.js（describe を分割・setup から makeApi）・scripts/evidence/test/ledgers.test.mjs（733 行 → 3 ファイル + 共有の helpers。テスト件数は同じ）。
+**残しているもの**: backend/test/helpers/harness.js の createHarness。API 結果表（docs/data/api-results.csv）は、backend/src・backend/test/api・helpers/harness.js・test-support・openapi.yaml が「結果を取った commit（release.json）から変わっていないこと」を前提にしており（build-api-results.mjs）、書き換えると v1.0.0 の API 結果の証跡が別の版になる。次に API の結果を取り直すとき（release.json の更新時）に分ける。triage.yaml に tp（期限つき）で記録した。同じ理由で、backend/src/main.js の require-atomic-updates と backend/test-support の no-promise-executor-return は、コードを直さず eslint.config.js の override（理由つき）で例外にしている。
+
+## フレームワークの規約（Fastify）
+
+Fastify 専用の lint プラグインは無い。ソースから確実に判定できる規約だけを `check-framework.mjs` で検査する: FW-001 ルートと openapi.yaml の対応、FW-002 reply の扱い（async ハンドラで reply.send() を return しない・reply と別の値の混在）、FW-003 アプリの土台（setErrorHandler・setNotFoundHandler・bodyLimit・logger）、FW-004 routes/ の register 関数が app.js で 1 回ずつ呼ばれること。
+**検査していないこと（作れない・作らない理由）**: 「全ルートに Fastify の schema がある」は検査しない。このアプリは、契約どおりのエラーコード（TITLE_INVALID など）を返すために、検証を schema ではなくドメイン関数（`http/request.js`・`domain/title.js`）で行う設計で、契約への適合は `contract:check`（実装 × openapi.yaml）が見る。プラグインの登録順序も、静的には判定できない（実行時の encapsulation による）。frontend は React・Vue などを使わない素の ES モジュールで、該当する規約が無い。
+
+## 性能の静的検査
+
+保守性と同じ `eslint.config.js` のうち、性能に効くルール（no-await-in-loop・no-loop-func・no-unmodified-loop-condition・require-atomic-updates・no-promise-executor-return・prefer-object-spread）を、別の scan-run（`performance`、`check_kind: performance`、`rule_classes`: loop / concurrency / allocation）として記録する。no-await-in-loop は本番コード（backend/src・frontend/src）にだけ適用し、逐次が仕様のコード（リトライ・ポーリング・順序を保つ呼び出し・計測の逐次サンプル・監視の順次実行・テスト）は eslint.config.js の override で外している（並列にすると意味が変わるため）。実行時間・負荷の実測は perf.yml（k6・画面計測）が別に担う。
 
 ## 保守性とアーキテクチャの記録
 

@@ -173,7 +173,7 @@ jobs:
           path: .cache/trivy
           key: trivy-db-${{ runner.os }}-${{ github.run_id }}
           restore-keys: trivy-db-${{ runner.os }}-
-      - name: trivy fs（vuln, misconfig, secret。Dockerfile・workflow 以外の設定も含む）
+      - name: trivy fs（脆弱性 = sca・設定誤り = iac・秘密情報 = secret を、種類ごとに別の scan-run として実行）
         run: bash scripts/security/scan.sh trivy-fs
       - name: hadolint（Dockerfile）
         run: bash scripts/security/scan.sh hadolint
@@ -193,6 +193,12 @@ jobs:
         with:
           sarif_file: security-results/trivy-fs/trivy-fs.sarif
           category: trivy-fs
+      - name: Code Scanning に SARIF を上げる（trivy iac。Dockerfile・compose・workflow の設定誤り）
+        if: github.event.pull_request.head.repo.fork != true
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: security-results/trivy-iac/trivy-iac.sarif
+          category: trivy-iac
       - name: Code Scanning に SARIF を上げる（hadolint）
         if: github.event.pull_request.head.repo.fork != true
         uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
@@ -242,6 +248,10 @@ jobs:
       - uses: ./.github/actions/setup-node-npm
       - name: 保守性（ESLint。閾値は eslint.config.js。違反があれば失敗）
         run: bash scripts/security/scan.sh maintainability
+      - name: 性能（ESLint のループ内 await・競合する更新など。保守性とは別の scan-run。違反があれば失敗）
+        run: bash scripts/security/scan.sh performance
+      - name: フレームワーク（Fastify の規約 FW-001〜004。違反があれば失敗）
+        run: bash scripts/security/scan.sh framework
       - name: アーキテクチャ（security/architecture.yaml。レイヤーの向き・許可外の依存・循環があれば失敗）
         run: bash scripts/security/scan.sh arch
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -329,6 +339,7 @@ jobs:
           node scripts/security/scan-run.mjs --scan scorecard --kind config --tool scorecard --informational \
             --command "ossf/scorecard-action（results_format=sarif, publish_results=false）" \
             --started "$SCAN_STARTED_AT" --exit-code 0 --ok-codes 0 --coverage-path "リポジトリの設定・運用（GitHub API）" \
+            --rules "OpenSSF Scorecard の組み込みのチェック（Branch-Protection・Code-Review・Pinned-Dependencies など）" --threshold "ゲートに含めない（情報提供）" \
             --note "情報提供（リポジトリ運用の成熟度）。コードの脆弱性ではないのでゲートには含めない" --out-dir security-results/scorecard
       - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
@@ -381,11 +392,13 @@ jobs:
           fi
       - name: トリアージ（security/triage.yaml・accepted-risks.yaml を適用。critical/high の未解決は失敗）
         run: node scripts/security/triage.mjs --results security-results --out security-findings --previous previous/findings.json
+      - name: scan-run の完全性（tool・版・設定 / 規則・除外・閾値・command・出力先・対象範囲・commit・イメージ digest・check_kind の語彙）
+        run: node scripts/security/check-scan-runs.mjs --results security-results --out security-findings/scan-run-check.json
       - name: Code Scanning のアラートと台帳（accepted-risks.yaml）のずれの検査（GitHub 側の dismissed と AR-ID の突き合わせ）
         if: github.event.pull_request.head.repo.fork != true
         env:
           REPO: ${{ github.repository }}
-        run: node scripts/security/check-code-scanning.mjs --repo "$REPO" --out security-findings/code-scanning-check.json
+        run: node scripts/security/check-code-scanning.mjs --repo "$REPO" --out security-findings/code-scanning-check.json --sarif security-results/codeql/javascript.sarif
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

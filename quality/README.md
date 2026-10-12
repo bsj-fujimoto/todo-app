@@ -21,6 +21,10 @@
 | 週次         | `schedule` 日曜 UTC 20:00（`nightly.yml`） | 全件を **3 回**（unit/api は 3 周、e2e は `--repeat-each=3`）                          | 不安定さ（flaky）の検出                                        |
 | リリース前   | タグ `v*.*.*` / 手動（`release.yml`）      | 全件 + compose + セキュリティ（+ 性能があれば）                                        | 失敗したらリリースしない                                       |
 
+### API テストの置き場（api-test.yml）
+
+backend の API 層・unit と API 契約（redocly lint・oasdiff・契約適合）は、独立したワークフロー `.github/workflows/api-test.yml` にある。PR・main では `ci.yml` の `api-test` ジョブが呼ぶので、結果は `ci-result`（Ruleset の required check）の needs に入り、API テストが落ちれば `ci-result` も落ちる（選択実行の結果は `select` から渡す）。毎日（UTC 18:30）・手動では単独で全件を流す（成否は `api-result`）。PR・push でこのファイル自身を起動しないのは、`ci.yml` からの呼び出しと二重に動くだけになるため。frontend の unit は `ci.yml` の `unit` ジョブ。機械可読の結果は `ci-summary-api`・`ci-summary-contract`・`ci-summary-unit`（対象 SHA を含む）、失敗の証拠は JUnit・標準出力・oasdiff の差分（90 日保存）。
+
 ### 選択実行の考え方（リスクベース）
 
 - `scripts/regression/select.mjs` が `git diff --name-only <base>...HEAD` から、impact-map の glob に当たったエントリの `case_ids` と smoke を選ぶ。
@@ -29,23 +33,25 @@
 - マップの陳腐化は `scripts/regression/impact-check.mjs` が CI で止める: 追跡ファイルが当たらない / どこからも選ばれない自動化ケースがある / 存在しない TC-ID を参照する。
 - 各エントリには変更の種類 `change_kind`（`code` / `config` / `db` / `api` / `infra` / `docs`）を付ける（backend の store・migration は `db`、`backend/openapi.yaml` は `api`、compose・Dockerfile・CI・監視・性能の道具は `infra`）。全エントリで必須で、語彙は `impact-check` が検査する。選択結果（`regression-selection.json`）に、当たったエントリの `change_kinds` が載る。
 - tier が `smoke` のケースは「PR 層」として扱う（PR のたびに必ず動く。`journeys.yaml` の冒頭にも書いた）。
-- 選択ロジックそのものの漏れは、日次の全件回帰で検証する（`verify-selection.mjs`。全件で落ちたのに、直近の変更から選択されていなかったケースを `selection-audit.json` に残す）。
+- 選択ロジックそのものの漏れは、日次・週次の全件回帰で検証する（`verify-selection.mjs`。全件で落ちたのに、直近の変更から選択されていなかったケースを `selection-audit.json` に残す）。**記録先と頻度**: `nightly.yml` の report ジョブが、毎日（UTC 18:00）と毎週（日曜 UTC 20:00）の run ごとに、artifact `nightly-report-daily` / `nightly-report-weekly` の `selection-audit.json`（と Step Summary）へ書く（90 日保存）。結果は `no_leak_detected`（漏れなし）/ `leak_detected`（漏れあり。その run の summary に漏れたケースを出す）。直近の変更が全件にフォールバックする内容だったときは、検証対象外と記録する。履歴は run を遡って読む（長期の推移は健全性トレンドと同じく artifact の保存期間に従う）。
 
 ## 台帳の列（regression-suite.csv）
 
-| 列                                                                             | 由来                                                                                      |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| `case_id` `requirement_ids` `perspective_ids` `automated` `manual_reason`      | `docs/data/cases.csv`                                                                     |
-| `tier`（smoke / pr / daily / manual）                                          | `cases.csv` の priority と automation_layer、`impact-map.yaml` の `smoke_case_ids`        |
-| `journey_id`                                                                   | `journeys.yaml`                                                                           |
-| `defect_ids`                                                                   | `docs/data/defects.csv`                                                                   |
-| `status`（active / quarantined / manual。**運用上の状態**）                    | `flaky-ledger.yaml`（隔離中か）と automation_layer                                        |
-| `last_run_at`                                                                  | `docs/data/executions.csv` の、そのケースの最新の実施（`not_run` を除く）の `executed_at` |
-| `last_run_ids`                                                                 | 同じ実施履歴の `run_ref`（新しい順に最大 3 件。`gh-run-<run id>`）                        |
-| `environment`                                                                  | 最新の run の `environment`（project 名までに短縮。複数ならセミコロン区切り）             |
-| `steps_hash`                                                                   | `cases.csv` の `action`（手順）の SHA-256 の先頭 12 桁。手順が変わると値が変わる          |
-| `last_result`（pass / fail / blocked / skipped / not_run。**最新の実施結果**） | 最新の run の `status`（複数環境で 1 つでも fail なら fail）                              |
+| 列                                                                             | 由来                                                                                               |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `case_id` `requirement_ids` `perspective_ids` `automated` `manual_reason`      | `docs/data/cases.csv`                                                                              |
+| `tier`（smoke / pr / daily / manual）                                          | `cases.csv` の priority と automation_layer、`impact-map.yaml` の `smoke_case_ids`                 |
+| `journey_id`                                                                   | `journeys.yaml`                                                                                    |
+| `defect_ids`                                                                   | `docs/data/defects.csv`                                                                            |
+| `tiers`（`;` 区切り。pr / main / daily / weekly / release / manual）           | ワークフローのトリガーから導出（`scripts/regression/lib/tiers.mjs`）。**そのケースが実際に動く層** |
+| `status`（active / quarantined / manual。**運用上の状態**）                    | `flaky-ledger.yaml`（隔離中か）と automation_layer                                                 |
+| `last_run_at`                                                                  | `docs/data/executions.csv` の、そのケースの最新の実施（`not_run` を除く）の `executed_at`          |
+| `last_run_ids`                                                                 | 同じ実施履歴の `run_ref`（新しい順に最大 3 件。`gh-run-<run id>`）                                 |
+| `environment`                                                                  | 最新の run の `environment`（project 名までに短縮。複数ならセミコロン区切り）                      |
+| `steps_hash`                                                                   | `cases.csv` の `action`（手順）の SHA-256 の先頭 12 桁。手順が変わると値が変わる                   |
+| `last_result`（pass / fail / blocked / skipped / not_run。**最新の実施結果**） | 最新の run の `status`（複数環境で 1 つでも fail なら fail）                                       |
 
+- `tier`（smoke / pr / daily / manual）は優先度による分類で、**どの層で動くか**は `tiers`。`tiers` は、`ci.yml` の `pull_request`（pr）・`push: main`（main）、`nightly.yml` の毎日の cron（daily）・曜日指定の cron（weekly）、`release.yml` のタグ `v*.*.*`（release）から作る。pr は変更影響で選ぶ層なので、impact-map（または smoke）に載っている自動化ケースだけが pr を持つ。main・daily・weekly・release は**全件の層**で、選択実行の対象かどうかに関わらず全自動化ケースが動く。手動ケースは `manual` だけ。
 - 実施履歴（`executions.csv`）が無い、またはそのケースの実施が無ければ、`last_*` と `environment` は空、`last_result` は `not_run`。
 - `executions.csv` や `cases.csv` が変わったら `build-suite.mjs` で再生成する（CI の `--check` が止める）。手順（`action`）を直したのに `steps_hash` を見ずに古い実施結果を信じない、という使い方を想定している。
 
@@ -59,6 +65,8 @@
 | 連続失敗                      | 2 回まで                                                      | 運用方針                                                                                                                |
 | 所要時間 p95（既定）          | **600 秒（10 分）**                                           | `docs/ai-context.yaml` の `maximum_feedback_minutes: 10` に合わせる。実測: ci.yml の成功 run は 2.4〜4.4 分（push・PR） |
 | 所要時間 p95（`nightly.yml`） | **1800 秒（30 分）**（`per_workflow_p95_sec` で個別に上書き） | 全件回帰を全ブラウザで回す日次・週次（3 周）は、PR のフィードバックとは別物。dry-run でも 2.9〜5.7 分かかる             |
+
+所要の定義は ci-summary の `run_duration_sec` と同じ（run の開始〜終了の wall-clock。`scripts/ci/lib/timing.mjs`）。ci-summary には、層ごとの所要（その層を流したジョブの開始〜終了。e2e の matrix は最長のもの）が `layers.<layer>.duration_sec`、JUnit のテスト時間の合計が `layers.<layer>.test_time_sec` に入る。
 
 以前は p95 の上限が 1800 秒の 1 本で、宣言値（10 分）と食い違っていた。上限は「フィードバックの速さ」を守る値にそろえ、所要が長いのが前提の nightly だけを例外として明示した。
 

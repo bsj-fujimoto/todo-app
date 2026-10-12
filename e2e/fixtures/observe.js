@@ -50,7 +50,9 @@ function readScreen(limits) {
 
 async function captureScreen(page) {
   if (page.isClosed() || page.url() === "about:blank") return null;
-  const timeout = new Promise((resolve) => setTimeout(() => resolve(null), CAPTURE_TIMEOUT_MS));
+  const timeout = new Promise((resolve) => {
+    setTimeout(() => resolve(null), CAPTURE_TIMEOUT_MS);
+  });
   try {
     return await Promise.race([page.evaluate(readScreen, LIMITS), timeout]);
   } catch {

@@ -21,6 +21,13 @@ const RULES = [
     "observations/$1/$2",
   ],
   [/^junit-coverage-unit-api\/(backend|frontend)\/test-results\/coverage-summary\.json$/, "coverage-$1.json"],
+  // api-test.yml（v1.0.0 より後）: backend は junit-coverage-api、frontend は junit-coverage-unit。artifact の中身は単一パスなので、test-results/ の下がそのまま入る
+  [/^junit-coverage-api\/all\.xml$/, "junit/backend-junit.xml"],
+  [/^junit-coverage-api\/observations\/([^/]+\.json)$/, "observations/backend/$1"],
+  [/^junit-coverage-api\/coverage-summary\.json$/, "coverage-backend.json"],
+  [/^junit-coverage-unit\/junit\.xml$/, "junit/frontend-junit.xml"],
+  [/^junit-coverage-unit\/observations\/([^/]+\.json)$/, "observations/frontend/$1"],
+  [/^junit-coverage-unit\/coverage-summary\.json$/, "coverage-frontend.json"],
   [/^contract-report\/backend\/test-results\/contract\.xml$/, "junit/contract-junit.xml"],
 ];
 

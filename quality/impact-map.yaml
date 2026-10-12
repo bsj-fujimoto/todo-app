@@ -6,6 +6,8 @@
 #     ことを CI で検査する（マップの陳腐化を防ぐ）。
 # change_kind: 変更の種類（code / config / db / api / infra / docs）。backend の store・migration は db、backend/openapi.yaml は api、
 #   compose・Dockerfile・CI・監視・性能の道具は infra。全エントリに必須（impact-check が語彙を検査）。選択結果（select.mjs の出力）に change_kinds として載る。
+# 古い glob は置かない（impact-check が「どの追跡ファイルにも当たらない glob」を警告する）。将来 LICENSE や .gitleaks* などを足したら、足した PR で該当エントリに書く
+#   （マップに当たらない追跡ファイルは impact-check が失敗にし、選択実行では全件にフォールバックする。安全側）。
 # 保守ルール: ファイル・機能を足す PR で、この表も更新する。迷ったら広く書く（選びすぎは安全、外しすぎは漏れ）。
 #   excluded_risk には「このエントリだけで選んだときに検証されなくなるもの」を書く（選択実行の限界を明示する）。
 #   ケースの対応は docs/03-test-spec.md §13.3（テストコードの置き場所）と §14.3（変更時の影響ケースの特定）に従う。
@@ -574,6 +576,7 @@ entries:
     change_kind: infra
     paths:
       - ".github/workflows/ci.yml"
+      - ".github/workflows/api-test.yml"
       - ".github/workflows/nightly.yml"
       - ".github/workflows/release.yml"
       - ".github/actions/**"
@@ -606,7 +609,6 @@ entries:
       - "scripts/security/**"
       - ".github/dependabot.yml"
       - ".github/settings/**"
-      - ".gitleaks*"
     case_ids: []
     excluded_risk: "アプリの振る舞い（設定変更ではアプリは変わらない。smoke のみ実行）"
 
@@ -633,4 +635,3 @@ no_test_impact:
       - ".github/PULL_REQUEST_TEMPLATE.md"
       - ".editorconfig"
       - ".gitignore"
-      - "LICENSE"

@@ -12,7 +12,7 @@ export const KINDS = {
   security: {
     dir: "security",
     artifact: /^security-/,
-    file: /(\.sarif|\.cdx\.json|(^|\/)sbom[^/]*\.json|(^|\/)scan-run\.json|(^|\/)findings\.json|(^|\/)gate\.json|(^|\/)triage-summary\.md)$/,
+    file: /(\.sarif|\.cdx\.json|(^|\/)sbom[^/]*\.json|(^|\/)scan-run\.json|(^|\/)findings\.json|(^|\/)gate\.json|(^|\/)triage-summary\.md|(^|\/)arch\.json|(^|\/)scan-run-check\.json|(^|\/)code-scanning-check\.json)$/,
   },
   perf: { dir: "perf", artifact: /^perf/, file: /\.(json|jsonl|md)$/ },
   monitoring: {

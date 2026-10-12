@@ -14,6 +14,7 @@ import { EVIDENCE_DIR, readJson, toPosix, writeJson } from "./lib/common.mjs";
 import { KINDS, planKindFiles } from "./lib/kinds.mjs";
 import { ownersOf, redactFiles, redactionSection } from "./lib/redact-files.mjs";
 import { artifactNames, buildRunSource, planRunFiles, versionOf } from "./lib/run-layout.mjs";
+import { triageSource } from "./lib/triage-source.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 const root = resolve(args.root ?? ".");
@@ -98,6 +99,12 @@ function runView() {
   return JSON.parse(out.stdout);
 }
 
+/** 台帳を適用した findings.json（triaged）があれば、どの時点の台帳を適用したかを SOURCE.json に写す（生の検査出力とは別物であることの記録）。 */
+const triageSection = (dest) => {
+  const file = join(dest, "security-findings", "findings.json");
+  return existsSync(file) ? triageSource(readJson(file)) : {};
+};
+
 function fetchKind(rawDir, files) {
   const sizeOf = (rel) => statSync(join(rawDir, rel)).size;
   const { plan, skipped } = planKindFiles(kind, files, sizeOf);
@@ -128,6 +135,7 @@ function fetchKind(rawDir, files) {
     event: view.event ?? null,
     artifacts: artifactNames(files),
     skipped_large_files: skipped,
+    ...(kind === "security" ? triageSection(dest) : {}),
     ...redactionSection(records),
     collected_by: "scripts/evidence/fetch-run.mjs",
   });

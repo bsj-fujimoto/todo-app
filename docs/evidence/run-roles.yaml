@@ -82,6 +82,14 @@ runs:
     environment: "local:darwin-arm64"
     role: history
     reason: "対象版 5fcf40a と別の commit（191a25b）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
+  - run_ref: perf-screen-observe-check-local
+    kind: perf
+    workflow: null
+    commit_sha: "2eb62aaea46269ace1294d666fb3596d777bf59f"
+    evidence: perf/results/screen-observe-check-local
+    environment: "local:darwin-arm64"
+    role: history
+    reason: "対象版 5fcf40a と別の commit（2eb62aa）。作業ツリーに未コミットの変更を含む（実験・調整）。開発機（local:darwin-arm64）での実行で、CI の環境と別。対象版の試験結果ではない"
   - run_ref: perf-soak-r2-20261011T112525Z-191a25b
     kind: perf
     workflow: null

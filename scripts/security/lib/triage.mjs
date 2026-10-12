@@ -59,7 +59,8 @@ function statusFor(f, { triage, accepted, today }) {
 }
 
 function acceptedStatus(f, acc, today) {
-  const context = { ...emptyContext(), ...pickContext(acc) };
+  // 受容の期限（expires_at）が、その検出の期限（due）
+  const context = { ...emptyContext(), ...pickContext(acc), due: acc.due ?? acc.expires_at };
   if (isExpired(acc, today))
     return {
       status: "untriaged",

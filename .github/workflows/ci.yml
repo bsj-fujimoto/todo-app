@@ -88,111 +88,52 @@ jobs:
       - name: 証跡の道具（実施表・不具合表・証拠索引・台帳の生成と検査）のテスト
         run: npm run evidence:test
 
-  # ---- unit / api（backend + frontend）-----------------------------------------------------
-  unit-api:
-    name: unit-api
-    needs: [select]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.TARGET_SHA }}
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-npm
-      - name: backend（unit + api。JUnit・標準出力・カバレッジ表は backend/test-results）
-        env:
-          MODE: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
-          NAME_PATTERN: ${{ needs.select.outputs.name_pattern }}
-        run: bash scripts/ci/run-node-tests.sh backend "$MODE" "$NAME_PATTERN"
-      - name: frontend（unit。JUnit は frontend/test-results。小さく速いので選択せず常に全件）
-        run: bash scripts/ci/run-node-tests.sh frontend full
-      - name: 結果を ci-summary にまとめる
-        if: always()
-        run: |
-          node scripts/ci/summarize-junit.mjs --title "unit / api" --out ci-summary-unit-api.json \
-            --layer api=backend/test-results --layer unit=frontend/test-results \
-            --coverage backend=backend/test-results/coverage-summary.json \
-            --coverage frontend=frontend/test-results/coverage-summary.json \
-            --artifact backend-test-results=backend/test-results --artifact frontend-test-results=frontend/test-results
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: ci-summary-unit-api
-          path: ci-summary-unit-api.json
-          retention-days: 90
-          if-no-files-found: error
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: junit-coverage-unit-api
-          path: |
-            backend/test-results
-            frontend/test-results
-          retention-days: 90
-          if-no-files-found: error
-
-  # ---- API 契約 ----------------------------------------------------------------------------
-  contract:
-    name: contract
+  # ---- unit（frontend）。backend の unit・API 層・API 契約は api-test.yml（下の api-test ジョブが呼ぶ）-------------
+  unit:
+    name: unit
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.TARGET_SHA }}
-          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup-node-npm
-      - name: redocly lint（設定と、外したルールの理由は scripts/ci/redocly.yaml）
-        run: npm run contract:lint
-      - name: 破壊的変更の検出（oasdiff。base の openapi.yaml と比較し、ERR があれば失敗）
-        env:
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PUSH_BEFORE: ${{ github.event.before }}
-        run: bash scripts/ci/oasdiff-breaking.sh
-      - name: 契約適合の検査（実装が openapi.yaml に従っているか。JUnit は backend/test-results/contract.xml）
-        if: always()
-        run: npm run contract:check -w backend
-      - name: consumer contract（frontend の期待を Pact に記録 → 生成物がコミット済みと一致 → 本物の backend で provider 検証。api-11）
-        if: always()
-        env:
-          PACT_DO_NOT_TRACK: "true"
-        run: |
-          npm run contract:consumer -w frontend
-          # 記録（frontend/contracts）がコミット済みと違えば失敗。frontend の期待を変えたら、再生成した契約もコミットする
-          if [ -n "$(git status --porcelain -- frontend/contracts)" ]; then
-            git status --short -- frontend/contracts
-            echo "::error::frontend/contracts が最新でない。npm run contract:consumer -w frontend で再生成してコミットする"
-            exit 1
-          fi
-          npm run contract:consumer -w backend
+      - name: frontend（unit。JUnit は frontend/test-results。小さく速いので選択せず常に全件）
+        run: bash scripts/ci/run-node-tests.sh frontend full
       - name: 結果を ci-summary にまとめる
         if: always()
         run: |
-          node scripts/ci/summarize-junit.mjs --title "contract" --out ci-summary-contract.json \
-            --layer contract=backend/test-results/contract.xml,backend/test-results/consumer-contract.xml,frontend/test-results/consumer-contract.xml \
-            --consumer-contract backend/test-results/consumer-contract.json --artifact contract-report=contract-report
+          node scripts/ci/summarize-junit.mjs --title "unit" --out ci-summary-unit.json \
+            --layer unit=frontend/test-results \
+            --coverage frontend=frontend/test-results/coverage-summary.json \
+            --artifact frontend-test-results=frontend/test-results
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: ci-summary-contract
-          path: ci-summary-contract.json
+          name: ci-summary-unit
+          path: ci-summary-unit.json
           retention-days: 90
           if-no-files-found: error
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: contract-report
-          path: |
-            contract-report
-            backend/test-results/contract.xml
-            backend/test-results/consumer-contract.xml
-            backend/test-results/consumer-contract.json
-            frontend/test-results/consumer-contract.xml
-            frontend/contracts
+          name: junit-coverage-unit
+          path: frontend/test-results
           retention-days: 90
-          if-no-files-found: warn
+          if-no-files-found: error
+
+  # ---- API テスト（backend の API 層・unit、API 契約）。独立したワークフロー .github/workflows/api-test.yml ----------
+  # ここで呼ぶので、ci-result の needs に入り、API テストが落ちれば ci-result も落ちる。選択実行の結果は select から渡す。
+  api-test:
+    name: api-test
+    needs: [select]
+    uses: ./.github/workflows/api-test.yml
+    permissions:
+      contents: read
+    with:
+      mode: ${{ needs.select.outputs.mode == 'selected' && 'selected' || 'full' }}
+      name_pattern: ${{ needs.select.outputs.name_pattern }}
 
   # ---- E2E（4 project × 全ブラウザ。retry は使わない）-------------------------------------
   e2e:
@@ -402,9 +343,12 @@ jobs:
   ci-result:
     name: ci-result
     if: always()
-    needs: [select, lint, unit-api, contract, e2e, compose, images, docs-check]
+    needs: [select, lint, unit, api-test, e2e, compose, images, docs-check]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read # run のジョブごとの開始・終了時刻を読む（ci-summary の run_duration_sec と層別の所要）
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -419,13 +363,22 @@ jobs:
           pattern: ci-summary-*
           path: summaries
           merge-multiple: true
+      - name: run の開始時刻と、ジョブごとの開始・終了時刻を取る（run 全体と層別の所要の実測。取れなければ空にして、JUnit の時間で代える）
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          # github.run_started_at は式では使えない（REST API の値）。run 全体の所要の起点にする
+          echo "RUN_STARTED_AT=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID" --jq '.run_started_at' || true)" >> "$GITHUB_ENV"
+          gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100" --paginate --jq '.jobs[]' | jq -s '.' > run-jobs.json || echo '[]' > run-jobs.json
       - name: 層別の結果を ci-summary.json に集約する
         if: always()
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
           mkdir -p summaries
-          node scripts/ci/summarize-junit.mjs --title "CI 全体" --merge summaries --out ci-summary.json
+          node scripts/ci/summarize-junit.mjs --title "CI 全体" --merge summaries --out ci-summary.json --jobs-json run-jobs.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

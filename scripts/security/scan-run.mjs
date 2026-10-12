@@ -74,7 +74,7 @@ const record = {
   accepted_exit_codes: okCodes,
   config_ref: args.config ?? null,
   rules_ref: args.rules ?? null,
-  exclusions: asList(args.exclusion),
+  exclusions: asList(args.exclusion).length ? asList(args.exclusion) : ["除外なし（対象の全体を検査した）"],
   // --thresholds-json: ルールごとの閾値などの構造化した値（ファイルから読む）。無ければ --threshold の文字列
   thresholds: args["thresholds-json"]
     ? JSON.parse(readFileSync(args["thresholds-json"], "utf8"))

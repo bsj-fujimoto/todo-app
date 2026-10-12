@@ -27,8 +27,11 @@ COPY backend/package.json backend/
 COPY backend/src backend/src
 # 実行時に npm・corepack・yarn は使わない。ベースイメージに同梱された npm の依存（brace-expansion・undici・tar など）に
 # 勧告が出ても本アプリの攻撃面にならないよう、実行イメージから取り除く（trivy image が検出した high 8 件・medium 12 件・low 1 件が消える）。
+# zlib は Alpine の修正版（1.3.2-r1。CVE-2026-85091）に上げる。固定したベースイメージの digest（2026-10-12 時点の最新）はまだ r0 のため、
+# ここで apk upgrade する（ベースイメージが r1 以上になれば何も変わらない no-op。ベースイメージ更新時に見直す）。
 # /data は非 root（node ユーザー）が書ける。VOLUME の前に作って所有者を合わせる（名前付きボリュームに引き継がれる）
-RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-* \
+RUN apk upgrade --no-cache zlib \
+ && rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-* \
  && mkdir -p /data && chown node:node /data
 # 数値で指定する（hadolint DL3066。node ユーザーは uid 1000）
 USER 1000

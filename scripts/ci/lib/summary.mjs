@@ -1,6 +1,7 @@
 // ci-summary.json の組み立て（純粋関数。時刻・環境変数・ファイル読込は呼び出し側から注入する）。
 import { renderConsumerContractLines } from "./consumer-contract.mjs";
 import { countBy, layerOf, tcIdsOf } from "./junit.mjs";
+import { elapsedSec, jobTimings, layerTimings } from "./timing.mjs";
 
 export const LAYERS = ["unit", "api", "contract", "e2e", "compose"];
 const emptyCounts = () => ({
@@ -30,7 +31,11 @@ export function runInfo(env, nowIso) {
     job: e("GITHUB_JOB"),
     started_at: started,
     finished_at: nowIso,
+    // この記録を作ったジョブ自身の所要（集約ジョブなら数秒）。run 全体の所要は run_duration_sec
     duration_sec: durationSec,
+    // run 全体の所要（wall-clock）: run の開始（github.run_started_at）から、この記録を作った時点まで
+    run_started_at: env.RUN_STARTED_AT || null,
+    run_duration_sec: elapsedSec(env.RUN_STARTED_AT, nowIso),
   };
 }
 
@@ -97,17 +102,47 @@ function mergeTestCases(target, source) {
   }
 }
 
-/** 層・ジョブ別の ci-summary を 1 つにまとめる。jobResults は needs.*.result。 */
-export function mergeSummaries({ env, nowIso, summaries, jobResults = {} }) {
+/**
+ * 層ごとの所要を、その層を流したジョブの実測（開始〜終了）にする。実測が無ければ JUnit のテスト時間のまま（duration_source: junit）。
+ * test_time_sec は JUnit のテスト時間の合計（並列のジョブの分も足す）。
+ */
+function withLayerTimings(layers, timings) {
+  const byLayer = layerTimings(timings);
+  return Object.fromEntries(
+    Object.entries(layers).map(([layer, counts]) => {
+      const t = byLayer[layer];
+      return [
+        layer,
+        {
+          ...counts,
+          test_time_sec: counts.duration_sec,
+          duration_sec: t ? t.duration_sec : counts.duration_sec,
+          duration_source: t ? "job" : "junit",
+          jobs: t?.jobs ?? [],
+        },
+      ];
+    }),
+  );
+}
+
+function mergeLayersAndCases(summaries) {
   const layers = {};
   const testCases = {};
   for (const s of summaries) {
     for (const [l, c] of Object.entries(s.layers ?? {})) layers[l] = sumLayer(layers[l] ?? emptyCounts(), c);
     mergeTestCases(testCases, s.test_cases ?? {});
   }
+  return { layers, testCases };
+}
+
+/** 層・ジョブ別の ci-summary を 1 つにまとめる。jobResults は needs.*.result。jobs は GitHub API の run のジョブ一覧（任意）。 */
+export function mergeSummaries({ env, nowIso, summaries, jobResults = {}, jobs = [] }) {
+  const { layers, testCases } = mergeLayersAndCases(summaries);
+  const timings = jobTimings(jobs);
   return {
     ...runInfo(env, nowIso),
-    layers,
+    layers: withLayerTimings(layers, timings),
+    job_timings: timings,
     test_cases: testCases,
     coverage: Object.assign({}, ...summaries.map((s) => s.coverage ?? {})),
     jobs: jobResults,
@@ -122,6 +157,19 @@ export function mergeSummaries({ env, nowIso, summaries, jobResults = {} }) {
 const layerRow = ([l, c]) =>
   `| ${l} | ${c.total} | ${c.passed} | ${c.failed} | ${c.skipped} | ${c.retried_success} | ${c.duration_sec}s |`;
 
+function footerLines(summary) {
+  const cov = Object.entries(summary.coverage ?? {}).map(
+    ([n, c]) =>
+      `${n}: ${c.error ?? `lines ${c.lines}% / branches ${c.branches}% / functions ${c.functions}%`}`,
+  );
+  const jobRows = Object.entries(summary.jobs ?? {}).map(([j, r]) => `| ${j} | ${r} |`);
+  return [
+    ...(cov.length ? ["", `カバレッジ: ${cov.join(" ; ")}`] : []),
+    ...renderConsumerContractLines(summary.consumer_contracts),
+    ...(jobRows.length ? ["", "| ジョブ | 結果 |", "|---|---|", ...jobRows] : []),
+  ];
+}
+
 export function renderMarkdown(summary, title = "CI サマリ") {
   const rows = Object.entries(summary.layers).map(layerRow);
   const failed = Object.entries(summary.test_cases).filter(([, r]) => r.status === "failed");
@@ -129,7 +177,7 @@ export function renderMarkdown(summary, title = "CI サマリ") {
     `### ${title}`,
     "",
     `- 対象 SHA: \`${summary.commit_sha}\`（run ${summary.run_id} / attempt ${summary.run_attempt} / ${summary.event}）`,
-    `- 開始 ${summary.started_at} / 所要 ${summary.duration_sec}s`,
+    `- 開始 ${summary.run_started_at ?? summary.started_at} / 所要 ${summary.run_duration_sec ?? summary.duration_sec}s（run 全体）`,
     "",
     "| レイヤー | 合計 | 成功 | 失敗 | スキップ | retry 後成功 | 時間 |",
     "|---|---:|---:|---:|---:|---:|---:|",
@@ -138,15 +186,6 @@ export function renderMarkdown(summary, title = "CI サマリ") {
     `TC-ID 付きの結果: ${Object.keys(summary.test_cases).length} 件（失敗 ${failed.length} 件）`,
   ];
   if (failed.length) lines.push("", `失敗した TC: ${failed.map(([id]) => id).join(", ")}`);
-  const cov = Object.entries(summary.coverage ?? {}).map(
-    ([n, c]) =>
-      `${n}: ${c.error ?? `lines ${c.lines}% / branches ${c.branches}% / functions ${c.functions}%`}`,
-  );
-  if (cov.length) lines.push("", `カバレッジ: ${cov.join(" ; ")}`);
-  lines.push(...renderConsumerContractLines(summary.consumer_contracts));
-  if (summary.jobs) {
-    const jobRows = Object.entries(summary.jobs).map(([j, r]) => `| ${j} | ${r} |`);
-    lines.push("", "| ジョブ | 結果 |", "|---|---|", ...jobRows);
-  }
+  lines.push(...footerLines(summary));
   return `${lines.join("\n")}\n`;
 }

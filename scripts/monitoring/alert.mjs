@@ -47,9 +47,10 @@ async function attachDeployment(ctx, args, out) {
   const markers = args.markers || join(out, "deployment-markers.jsonl");
   const deps = makeDeploymentDeps(ctx.repo, markers);
   const d = await resolveDeployment(deps, { fromLastRun: Boolean(args.meta) });
-  ctx.marker = d.marker;
-  ctx.deploymentText = describeDeployment({ ...d, run: ctx.run });
-  console.log(`[alert] deployment_ref: ${ctx.deploymentText}`);
+  // await の後に、ctx の 2 つの項目を 1 回の代入でまとめて書く（ESLint require-atomic-updates）
+  const deploymentText = describeDeployment({ ...d, run: ctx.run });
+  Object.assign(ctx, { marker: d.marker, deploymentText });
+  console.log(`[alert] deployment_ref: ${deploymentText}`);
 }
 
 function recordEvents(out, events, drill) {

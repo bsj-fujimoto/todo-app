@@ -108,13 +108,14 @@ describe("consumer contract: frontend の期待を backend が満たす（Pact�
     assert.equal(pact.provider.name, "backend");
   });
 
-  for (const interaction of pact.interactions) {
+  // for ループの中で関数（it のコールバック）を作らない（ESLint no-loop-func）。forEach の各回が自分の interaction を持つ
+  pact.interactions.forEach((interaction) => {
     it(`[TC-037] ${interaction.description}（${interaction.request.method} ${interaction.request.path} → ${interaction.response.status}）`, () => {
       if (failure) assert.fail(`provider 検証が動かなかった:\n${failure.message}`);
       const mismatches = mismatchesOf(verified.errors, interaction.description);
       assert.equal(verified.results[interaction.description], "OK", mismatches.join("\n"));
     });
-  }
+  });
 
   it("[TC-037] 期待が openapi.yaml と整合している（operation・リクエスト本文・ステータス・使う項目の必須性と型・error.code の列挙）", () => {
     assert.deepEqual(checkPactAgainstOpenApi(pact), []);

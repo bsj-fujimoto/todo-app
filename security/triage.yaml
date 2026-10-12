@@ -49,6 +49,11 @@ entries:
     compensating_controls: 入力検証（TC-010〜012・TC-030〜036）と 404 の応答（TC-011）がテストで固定されている
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（脆弱性ではなく、ZAP の探索リクエストを backend が仕様どおり 4xx で拒否した事実の記録）。代替統制は、入力検証と 404 の応答をテストで固定していること（TC-010〜012・TC-030〜036）
+    alternative: security/zap-rules.tsv で IGNORE（理由・owner・期限つき）にして、ノイズとして出さない。ただし拒否が働いていることの記録も消えるので、台帳（na）での扱いを優先している
+    owner: セキュリティ担当
+    due: 2027-01-09
+    reverify_condition: ZAP のバージョンを上げたとき / API のエラー応答（openapi.yaml の Error・TitleInvalid）を変えたとき / 期限
   - match:
       tool: owasp-zap
       rule_id: "100001"
@@ -60,6 +65,11 @@ entries:
     compensating_controls: nginx は server_tokens off。404 は入力を反映しない。API のエラーは JSON（openapi.yaml の Error スキーマ）
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（/api 以外の存在しないパスの 404 は nginx の既定の HTML で、入力を反映しない。攻撃面にならない）。代替統制は server_tokens off と、404 の本文が固定であること
+    alternative: frontend/nginx.conf に error_page 404 を JSON で返す location を足し、Content-Type を API とそろえる（HTML 画面の 404 の見た目は変わる。画面側の 404 表示は現状無い）
+    owner: フロントエンド担当
+    due: 2027-01-09
+    reverify_condition: nginx.conf の error_page・location を変えたとき / ZAP のバージョンを上げたとき / 期限
   - match:
       tool: owasp-zap
       rule_id: "10109"
@@ -71,6 +81,11 @@ entries:
     compensating_controls: 該当しない
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（脆弱性ではなく、ZAP が AJAX スパイダーの利用を勧める情報の通知）。代替統制は、API 走査（openapi.yaml の全 operation）で API 側の面を網羅していること
+    alternative: ZAP の AJAX スパイダーを追加して画面側の走査範囲を広げる（画面は 1 ページで、得られる情報は少ない。実行時間は増える）
+    owner: セキュリティ担当
+    due: 2027-01-09
+    reverify_condition: 画面のページ数・機能が増えたとき / ZAP のバージョンを上げたとき / 期限
   - match:
       tool: compose-check
       rule_id: COMPOSE-006
@@ -83,6 +98,10 @@ entries:
     reverify_condition: 本番環境に出すとき（その時点で、公開範囲・認証・TLS を設計する）
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（ローカル・社内の検証用の意図した公開。本番環境は無い）。公開先を絞りたい端末では、compose の ports を 127.0.0.1:8080:8080 にする。代替統制は非 root・cap_drop ALL・セキュリティヘッダ・入力検証
+    alternative: docker-compose.yml の ports を `127.0.0.1:${FRONTEND_PORT:-8080}:8080` にする（同じ端末からだけ確認できる。社内の別端末からは見えなくなる）
+    owner: セキュリティ担当
+    due: 2027-01-09
   - match:
       tool: owasp-zap
       rule_id: "10049-1"
@@ -94,6 +113,11 @@ entries:
     compensating_controls: 該当しない
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（POST・PATCH・DELETE の応答が共有キャッシュに保存されないという望ましい状態の通知で、脆弱性ではない）
+    alternative: ZAP のルール 10049 の一部を zap-rules.tsv で IGNORE にする（同じ 10049 の 10049-3 は実際の指摘なので、ルール全体は無効にしない）
+    owner: セキュリティ担当
+    due: 2027-01-09
+    reverify_condition: backend の Cache-Control の方針を変えたとき（10049-3 の是正時に再確認）/ 期限
   - match:
       tool: owasp-zap
       rule_id: "10049-2"
@@ -105,6 +129,11 @@ entries:
     compensating_controls: 静的ファイルは expires -1 で毎回再検証
     decided_by: セキュリティ担当
     decided_at: 2026-10-11
+    recommendation: 修正しない（静的ファイルと 404 は機密を含まず、expires -1 で毎回再検証させている。保存はできても再利用されない）
+    alternative: nginx で静的ファイルに Cache-Control に no-cache を明示する（現状の expires -1 でも再検証は効いている。ヘッダが増える）
+    owner: セキュリティ担当
+    due: 2027-01-09
+    reverify_condition: nginx.conf のキャッシュ設定を変えたとき / ZAP のバージョンを上げたとき / 期限
   - match:
       tool: gitleaks
       rule_id: sourcegraph-access-token
@@ -118,5 +147,24 @@ entries:
     reverify_condition: gitleaks のルールが変わったとき、または証跡の形式（docs/evidence・docs/data）が変わったとき
     owner: セキュリティ担当 # ACT-010 の owner と同じ（fp は owner・due 必須ではないが、確認の担当と期限を台帳に持たせる）
     due: 2026-10-19 # ACT-010 の期限と同じ（allowlist の効果をマージ後の security.yml で確かめる日）
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-12
+    recommendation: 是正は不要（誤検出）。再発を避けるため、security/gitleaks.toml の allowlist（targetRules を sourcegraph-access-token に限定、paths は docs/）を理由つきで維持する。他のルールは docs/ にも適用したまま
+    alternative: docs/ の SHA 表記を、キーワード（sourcegraph）と同じファイルに置かない書き方に直す（文書の自然な記述を変えることになり、ルールの性質上、自己参照的に当たるものは残る）
+  - match:
+      tool: qc-inspect
+      rule_id: long-function
+      location: "backend/test/helpers/harness.js"
+    status: tp
+    reason: qc の内蔵検査（inspect）が createHarness（約 60 行）を long-function（low）として指摘している。事実として長い。テストの行数の規約（max-lines-per-function）はテストで緩めているが、それとは別に、分けたほうが読みやすい。直さずに残している理由は、API 結果表（docs/data/api-results.csv）が backend/test/helpers/harness.js を含む実装を「結果を取った commit（docs/evidence/release.json の v1.0.0）から変わっていないこと」を前提にしており（scripts/evidence/build-api-results.mjs の IMPLEMENTATION）、いま書き換えると v1.0.0 の API 結果の証跡が別の版になって docs-check が失敗するため。
+    reachability: 該当しない（テスト基盤の読みやすさの指摘。製品の動作に影響しない）
+    exposure: 該当しない
+    asset_impact: 低（保守性）
+    compensating_controls: ESLint の complexity ≤ 8・引数 ≤ 4・ネスト ≤ 3 は適用済み。createHarness の各メソッドは単一の責務（sandbox・start・cleanup）
+    recommendation: 次のリリースで API の結果を取り直すとき（release.json を更新するとき）に、createHarness から start の中身（startApp）を切り出して 40 行以内にする。同時に eslint.config.js の backend/test-support の override（no-promise-executor-return）も外す
+    alternative: qc の指摘を受け入れず、テストの行数の緩和を恒久の規約として残す（テストは describe/it の入れ子で長くなりやすい。ただし harness は入れ子ではなく実際に分けられるので、採らない）
+    owner: バックエンド担当
+    due: 2027-01-09
+    reverify_condition: docs/evidence/release.json を更新する（API の結果を取り直す）とき / 期限
     decided_by: セキュリティ担当
     decided_at: 2026-10-12

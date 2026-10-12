@@ -102,6 +102,10 @@ npm run evidence:build && npm run evidence:check   # release.json があるの�
 - CI の docs-check は、PR のたびに `check-evidence.mjs` と `npm run evidence:test` を回す。
 - **成果物台帳の古さは、通常の CI では警告**。文書 PR を並列で出すと、`docs/*.md` を足すたびに台帳（`artifacts.yaml`）・manifest・追跡表などの生成物が古くなり、全 PR が再生成で衝突するため。台帳は最後に 1 回 `npm run evidence:build` で再生成し、`--strict-artifacts` で確かめる。まだ台帳に無い文書（main に入ったばかりの `docs/README.md` など）は警告になる（それで正しい）。
 
+### security 証跡の「台帳を適用した検出（triaged）」と生の検査出力
+
+`fetch-run.mjs --kind security` は、生の検査出力（`security-scan-*/` の SARIF・JSON・scan-run.json・arch.json）と、台帳を適用した検出（`security-findings/findings.json`・gate.json・triage-summary.md）を別々に取り込む。後者は台帳（triage.yaml・accepted-risks.yaml・finding-ids.yaml）が変わると同じ検出の状態が変わる（例: FND-012 は v1.0.0 の run では untriaged、台帳に fp を書いた後の run では fp）。そこで findings.json の `ledgers_applied`（台帳ごとの sha256・件数・対象 commit・適用時刻）を、SOURCE.json の `triage.ledgers_applied` に写す。**台帳の更新後の状態を証跡に載せるには、更新後の main の security run（最新の run）から取り込む**。
+
 ### リリースの release-evidence.zip の墨消しと差し替え
 
 GitHub Release に添付する `release-evidence.zip` も、証跡の取り込みと**同じ墨消し**（`scripts/evidence/lib/redact.mjs`・`redact-rules.mjs`・`sensitive.mjs` を共有）を通す。

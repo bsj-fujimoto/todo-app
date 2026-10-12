@@ -7,7 +7,7 @@
 #   npm-audit                         npm audit（--omit=dev と全体の 2 本）
 #   osv                               osv-scanner（package-lock.json）
 #   sbom                              CycloneDX SBOM（実行時依存・全体）
-#   trivy-fs                          trivy fs（vuln,misconfig,secret）
+#   trivy-fs                          trivy fs を検査の種類ごとに 3 回（trivy-fs = 脆弱性 / trivy-iac = 設定誤り / trivy-secret = 秘密情報）
 #   trivy-image <backend|frontend> <image-ref>   ビルド済みイメージ（docker save → trivy --input）+ イメージ SBOM
 #   trivy-published <backend|frontend> <ref|oci.tar> <digest> [digest-kind]
 #                                     release.yml が公開した digest（dry-run は OCI アーカイブ）に対する trivy（vuln + misconfig）。
@@ -19,6 +19,8 @@
 #   actionlint                        ワークフローの静的検査（違反があれば非 0）
 #   workflows                         ワークフロー統制 W1〜W10 と方針ファイルの検査（違反があれば非 0）
 #   maintainability                   保守性（ESLint: 複雑度・大きさ・引数・ネスト・純粋性）の SARIF・閾値の記録（違反があれば非 0）
+#   performance                       性能（ESLint: ループ内の逐次 await・競合する更新など）の SARIF・閾値の記録（違反があれば非 0）
+#   framework                         Fastify の規約（ルートと OpenAPI の対応・reply の扱いなど）の静的検査（違反があれば非 0）
 #   arch                              レイヤー依存・循環の検査（security/architecture.yaml。違反があれば非 0）
 # 環境変数: SECURITY_RESULTS（既定 security-results）、TRIVY_CACHE_DIR（既定 .cache/trivy）、
 #           ZAP_TARGET（既定 http://localhost:8080）、ZAP_NETWORK（既定 host。Docker Desktop の macOS では bridge + host.docker.internal を使う）
@@ -83,7 +85,7 @@ scan_osv() {
   dk "$OSV_IMAGE" scan source -L package-lock.json --format json --output-file "$out/osv-scanner.json"; code2=$?
   record osv-scanner sca osv-scanner "$OSV_VERSION" "$OSV_IMAGE" "" "$((code1 > code2 ? code1 : code2))" 0,1 "$started" \
     "docker run $OSV_IMAGE scan source -L package-lock.json --format sarif|json" --coverage-path "package-lock.json（直接・推移依存。OSV / deps.dev）" \
-    --threshold "high 以上は triage.mjs で失敗"
+    --rules "OSV データベース（deps.dev・各 ecosystem の勧告）。規則の設定ファイルは持たない" --threshold "high 以上は triage.mjs で失敗"
 }
 
 scan_sbom() {
@@ -93,21 +95,32 @@ scan_sbom() {
   npm sbom --sbom-format cyclonedx --package-lock-only --omit dev > "$out/sbom-runtime.cdx.json"; code=$?
   if [ "$code" -eq 0 ]; then npm sbom --sbom-format cyclonedx --package-lock-only > "$out/sbom.cdx.json"; code=$?; fi
   record sbom sca npm-sbom "$(npm --version)" "" package-lock.json "$code" 0 "$started" \
-    "npm sbom --sbom-format cyclonedx --package-lock-only [--omit dev]" --coverage-path "package-lock.json（直接・推移依存の全体 / 実行時依存のみの 2 本）"
+    "npm sbom --sbom-format cyclonedx --package-lock-only [--omit dev]" --coverage-path "package-lock.json（直接・推移依存の全体 / 実行時依存のみの 2 本）" \
+    --threshold "検出の判定は無い（生成できなければ失敗）"
 }
 
-scan_trivy_fs() {
-  local out="$OUT_BASE/trivy-fs" started code cmd
+# trivy fs は、検査の種類（脆弱性 = sca / 設定誤り = iac / 秘密情報 = secret）ごとに別の scan-run として実行・記録する。
+# 1 回の実行に混ぜると、scan-run の check_kind が実際の検査内容と合わなくなる（例: 設定誤りの検査が sca と記録される）。
+# trivy_fs <検査名> <scanners> <check_kind> <対象の説明>
+trivy_fs() {
+  local name="$1" scanners="$2" kind="$3" what="$4" out="$OUT_BASE/$1" started code cmd
   mkdir -p "$out"; started="$(now)"
-  cmd="fs --scanners vuln,misconfig,secret --include-dev-deps --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --skip-dirs node_modules,.cache,security-results,.git --exit-code 0 --no-progress --format json --output $out/trivy-fs.json ."
+  cmd="fs --scanners $scanners --include-dev-deps --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --skip-dirs node_modules,.cache,security-results,.git --exit-code 0 --no-progress --format json --output $out/$name.json ."
   # shellcheck disable=SC2086
   dk -e TRIVY_CACHE_DIR=/cache -e TRIVY_SKIP_VERSION_CHECK=true -v "$TRIVY_CACHE:/cache" "$TRIVY_IMAGE" $cmd; code=$?
   if [ "$code" -eq 0 ]; then
-    dk -e TRIVY_CACHE_DIR=/cache -e TRIVY_SKIP_VERSION_CHECK=true -v "$TRIVY_CACHE:/cache" "$TRIVY_IMAGE" convert --format sarif --output "$out/trivy-fs.sarif" "$out/trivy-fs.json"; code=$?
+    dk -e TRIVY_CACHE_DIR=/cache -e TRIVY_SKIP_VERSION_CHECK=true -v "$TRIVY_CACHE:/cache" "$TRIVY_IMAGE" convert --format sarif --output "$out/$name.sarif" "$out/$name.json"; code=$?
   fi
-  record trivy-fs sca trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" "docker run $TRIVY_IMAGE trivy $cmd" \
-    --coverage-path "リポジトリ全体（package-lock.json・Dockerfile・workflow・設定ファイル）" --exclusion "node_modules, .cache, security-results, .git" \
+  record "$name" "$kind" trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" "docker run $TRIVY_IMAGE trivy $cmd" \
+    --rules "trivy の組み込みの検査規則（脆弱性 DB・trivy-checks。版は trivy イメージ $TRIVY_VERSION に同梱）" \
+    --coverage-path "$what" --exclusion "node_modules, .cache, security-results, .git" \
     --threshold "high 以上は triage.mjs で失敗"
+}
+
+scan_trivy_fs() {
+  trivy_fs trivy-fs vuln sca "package-lock.json（開発依存を含む直接・推移依存の脆弱性）"
+  trivy_fs trivy-iac misconfig iac "Dockerfile・docker-compose.yml・.github/workflows の設定誤り（IaC の構成検査）"
+  trivy_fs trivy-secret secret secret "リポジトリのファイル内容の秘密情報（git 履歴は gitleaks）"
 }
 
 image_id() { docker image inspect --format '{{.Id}}' "$1" 2>/dev/null; }
@@ -129,7 +142,8 @@ scan_trivy_image() {
   record "$name" container trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" \
     "docker save $ref; docker run $TRIVY_IMAGE trivy image --input <tar> --format json → convert sarif|cyclonedx" \
     --image-digest "$id" --image-digest-kind "ローカルイメージ ID（config digest。レジストリ digest は release.yml で push 後に記録）" \
-    --coverage-image "$ref" --threshold "high 以上は triage.mjs で失敗"
+    --coverage-image "$ref" --rules "trivy の組み込みの検査規則（脆弱性 DB。版は trivy イメージ $TRIVY_VERSION に同梱）" \
+    --exclusion "除外なし（イメージの全レイヤー）" --threshold "high 以上は triage.mjs で失敗"
 }
 
 # 公開した digest の検査（release.yml）: :ci のローカルビルドではなく、GHCR に push した digest（dry-run は OCI アーカイブ）そのものを検査する。
@@ -155,6 +169,7 @@ scan_trivy_published() {
   record "$name" container trivy "$TRIVY_VERSION" "$TRIVY_IMAGE" "" "$code" 0 "$started" \
     "(docker pull + docker save | tar -x OCI アーカイブ) → docker run $TRIVY_IMAGE trivy image --input <入力> --scanners vuln,misconfig --format json → convert sarif" \
     --image-digest "$digest" --image-digest-kind "$kind" --coverage-image "$src" \
+    --rules "trivy の組み込みの検査規則（脆弱性 DB・trivy-checks。版は trivy イメージ $TRIVY_VERSION に同梱）" \
     --threshold "high 以上は triage.mjs で失敗（release.yml が published-scans を triage する）"
 }
 
@@ -164,20 +179,22 @@ scan_hadolint() {
   files="$(find . -name 'Dockerfile*' -not -path './node_modules/*' -not -path './.cache/*' | sed 's|^\./||' | sort | tr '\n' ' ')"
   # shellcheck disable=SC2086
   dk "$HADOLINT_IMAGE" hadolint --config security/hadolint.yaml --format sarif $files > "$out/hadolint.sarif"; code=$?
-  record hadolint container hadolint "$HADOLINT_VERSION" "$HADOLINT_IMAGE" security/hadolint.yaml "$code" 0,1 "$started" \
-    "docker run $HADOLINT_IMAGE hadolint --config security/hadolint.yaml --format sarif $files" --coverage-path "$files"
+  record hadolint iac hadolint "$HADOLINT_VERSION" "$HADOLINT_IMAGE" security/hadolint.yaml "$code" 0,1 "$started" \
+    "docker run $HADOLINT_IMAGE hadolint --config security/hadolint.yaml --format sarif $files" --coverage-path "$files" \
+    --exclusion "security/hadolint.yaml の ignored（理由つき）" --threshold "検出は triage.mjs で判定。hadolint の level は 1 段下げて扱う（Dockerfile の書き方の指摘で、脆弱性ではない）"
 }
 
 scan_compose_check() {
   local out="$OUT_BASE/compose-check" started code
   mkdir -p "$out"; started="$(now)"
   if [ ! -f docker-compose.yml ]; then
-    record compose-check config compose-check 1.0.0 "" "" 0 0 "$started" "scripts/security/check-compose.mjs" --skipped --note "docker-compose.yml がまだ無い"
+    record compose-check iac compose-check 1.0.0 "" "" 0 0 "$started" "scripts/security/check-compose.mjs" --skipped --note "docker-compose.yml がまだ無い"
     return 0
   fi
   docker compose -f docker-compose.yml config --format json | node scripts/security/check-compose.mjs --file docker-compose.yml --out "$out/compose-check.sarif"; code=${PIPESTATUS[1]}
-  record compose-check config compose-check 1.0.0 "" "" "$code" 0 "$started" \
-    "docker compose -f docker-compose.yml config --format json | node scripts/security/check-compose.mjs" --coverage-path docker-compose.yml
+  record compose-check iac compose-check 1.0.0 "" "" "$code" 0 "$started" \
+    "docker compose -f docker-compose.yml config --format json | node scripts/security/check-compose.mjs" --coverage-path docker-compose.yml \
+    --rules "scripts/security/lib/compose.mjs（COMPOSE-001 以降の規則。docker compose config の展開結果に適用）" --threshold "検出は triage.mjs で判定"
 }
 
 scan_license() {
@@ -194,8 +211,9 @@ scan_actionlint() {
   local out="$OUT_BASE/actionlint" started code
   mkdir -p "$out"; started="$(now)"
   dk "$ACTIONLINT_IMAGE" -format '{{json .}}' > "$out/actionlint.json"; code=$?
-  record actionlint config actionlint "$ACTIONLINT_VERSION" "$ACTIONLINT_IMAGE" "" "$code" 0,1 "$started" \
-    "docker run $ACTIONLINT_IMAGE actionlint -format '{{json .}}'" --coverage-path ".github/workflows/*.yml"
+  record actionlint iac actionlint "$ACTIONLINT_VERSION" "$ACTIONLINT_IMAGE" "" "$code" 0,1 "$started" \
+    "docker run $ACTIONLINT_IMAGE actionlint -format '{{json .}}'" --coverage-path ".github/workflows/*.yml" \
+    --rules "actionlint の組み込みの規則（構文・式・shellcheck 連携）。設定ファイルは持たない" --threshold "違反が 1 件でもあれば失敗"
   return "$code"
 }
 
@@ -207,7 +225,7 @@ scan_workflows() {
   node scripts/security/check-policy.mjs | tee "$out/policy-check.txt"; code2=${PIPESTATUS[0]}
   record workflow-governance config check-workflows 1.0.0 "" "" "$((code1 > code2 ? code1 : code2))" 0,1 "$started" \
     "node scripts/security/check-workflows.mjs; node scripts/security/check-policy.mjs" --rules security/workflow-policy.yaml \
-    --coverage-path ".github/workflows/*.yml, .github/actions/*/action.yml, security/*（方針ファイル）" --note "逸脱があれば失敗（ゲートとは別に、このジョブ自体が落ちる）"
+    --coverage-path ".github/workflows/*.yml, .github/actions/*/action.yml, security/*（方針ファイル）" --threshold "逸脱が 1 件でもあれば失敗（ゲートとは別に、このジョブ自体が落ちる）" --note "ワークフロー統制 W1〜W10 と方針ファイルの期限・形式"
   [ "$code1" -eq 0 ] && [ "$code2" -eq 0 ]
 }
 
@@ -227,12 +245,41 @@ scan_maintainability() {
   return "$code"
 }
 
+# 性能: 保守性と同じ eslint.config.js のうち、性能に効くルール（ループ内の逐次 await・ループ内の関数生成・競合する更新・不要なコピー）だけを、別の scan-run として記録する。
+scan_performance() {
+  local out="$OUT_BASE/performance" started code
+  mkdir -p "$out"; started="$(now)"
+  node scripts/security/eslint-maintainability.mjs --profile performance --out-dir "$out"; code=$?
+  record performance performance eslint "$(node node_modules/eslint/bin/eslint.js --version | tr -d v)" "" eslint.config.js "$code" 0 "$started" \
+    "node scripts/security/eslint-maintainability.mjs --profile performance（eslint . --format json → 性能ルールだけを SARIF に変換。設定は eslint --print-config backend/src/app.js から読む）" \
+    --rule-class loop --rule-class concurrency --rule-class allocation --thresholds-json "$out/thresholds.json" \
+    --coverage-path "リポジトリ全体の JavaScript（backend・frontend・e2e・perf・scripts・monitoring）" \
+    --exclusion "eslint.config.js の ignores（node_modules・dist・coverage・test-results・playwright-report・.cache・security-results・security-findings・reports）" \
+    --exclusion "no-await-in-loop は backend/src・frontend/src だけに適用（scripts・perf・monitoring・e2e・テストは逐次が仕様のため off。eslint.config.js の override に理由）" \
+    --threshold "性能ルールの違反が 1 件でもあれば失敗（ci.yml の lint と同じ基準）。実行時間・負荷の実測は perf.yml（k6・画面計測）が別に担う"
+  return "$code"
+}
+
+# フレームワーク: Fastify 専用の lint プラグインは無いので、規約のうちソースから確実に判定できるもの（FW-001〜004）を check-framework.mjs で検査する。
+scan_framework() {
+  local out="$OUT_BASE/framework" started code
+  mkdir -p "$out"; started="$(now)"
+  node scripts/security/check-framework.mjs --out "$out/framework.sarif"; code=$?
+  record framework framework check-framework.mjs 1.0.0 "" scripts/security/lib/framework.mjs "$code" 0 "$started" \
+    "node scripts/security/check-framework.mjs（backend/src/routes と app.js のソースを静的に検査）" \
+    --rules "scripts/security/lib/framework.mjs の FW-001〜FW-004（ルートと OpenAPI の対応・reply の扱い・アプリの土台・ルート登録）" \
+    --coverage-language javascript --coverage-path "backend/src/routes, backend/src/app.js, backend/openapi.yaml（Fastify 5）" \
+    --exclusion "frontend は React・Vue などのフレームワークを使わない（素の ES モジュール）ので対象外" \
+    --threshold "違反が 1 件でもあれば失敗" --note "Fastify 専用の lint プラグインは無い。ソースから確実に判定できる規約だけを検査する（動的に組み立てたパスは扱えない）"
+  return "$code"
+}
+
 # アーキテクチャ: security/architecture.yaml の宣言（レイヤーの依存の向き・許可する外部依存）と import 文を突き合わせる。arch.json を残す。
 scan_arch() {
   local out="$OUT_BASE/architecture" started code
   mkdir -p "$out"; started="$(now)"
   node scripts/security/check-arch.mjs --out "$out/arch.json"; code=$?
-  record architecture architecture check-arch.mjs 1.0.0 "" security/architecture.yaml "$code" 0 "$started" \
+  record architecture other check-arch.mjs 1.0.0 "" security/architecture.yaml "$code" 0 "$started" \
     "node scripts/security/check-arch.mjs（import 文からファイル間の依存を取り、レイヤーの向き・許可外の外部依存・未分類のファイル・循環を検査）" --rules security/architecture.yaml \
     --coverage-path "backend/src, frontend/src" --threshold "違反・循環は 0 件（1 件でも失敗）"
   return "$code"
@@ -284,5 +331,7 @@ case "$cmd" in
   workflows) scan_workflows ;;
   maintainability) scan_maintainability ;;
   arch) scan_arch ;;
-  *) sed -n '2,27p' "${BASH_SOURCE[0]}"; exit 2 ;;
+  performance) scan_performance ;;
+  framework) scan_framework ;;
+  *) sed -n '2,29p' "${BASH_SOURCE[0]}"; exit 2 ;;
 esac

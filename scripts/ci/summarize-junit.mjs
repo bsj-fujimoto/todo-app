@@ -2,10 +2,11 @@
 // JUnit XML 群 → ci-summary.json（と $GITHUB_STEP_SUMMARY の表）。依存ゼロ。
 //   層ごと : node scripts/ci/summarize-junit.mjs --layer unit=backend/test-results --out ci-summary-unit.json
 //   カバレッジを載せる: --coverage backend=backend/test-results/coverage-summary.json（coverage-summary.mjs の出力）
+//   集約   : node scripts/ci/summarize-junit.mjs --merge <summaries のディレクトリ> --out ci-summary.json --job lint=success [--jobs-json run-jobs.json]
+//            環境変数 RUN_STARTED_AT（run の開始時刻。REST API の run_started_at）で run 全体の所要（run_duration_sec）、--jobs-json（run のジョブ一覧）で層ごとの所要を実測にする
 //   consumer contract: --consumer-contract backend/test-results/consumer-contract.json（検証結果。ci-summary の consumer_contracts に載る）
-//   集約   : node scripts/ci/summarize-junit.mjs --merge <summaries のディレクトリ> --out ci-summary.json --job lint=success
 // composition root: 時刻・環境変数・ファイルをここで束ねる（純粋なロジックは lib/ に置く）。
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { asList, parseArgs } from "./lib/args.mjs";
 import { describeArtifact } from "./lib/artifacts.mjs";
@@ -15,6 +16,13 @@ import { buildSummary, mergeSummaries, renderMarkdown } from "./lib/summary.mjs"
 
 const args = parseArgs(process.argv.slice(2), { flags: ["strict"] });
 const nowIso = new Date().toISOString();
+const readJsonOr = (path, fallback) => {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return fallback;
+  }
+};
 
 function layerSpecs() {
   return asList(args.layer).map((spec) => {
@@ -33,7 +41,9 @@ function build() {
       ...Object.fromEntries(asList(args.job).map((j) => j.split("="))),
     };
     const summaries = readSummaries(listJsonFiles(args.merge));
-    return mergeSummaries({ env: process.env, nowIso, summaries, jobResults });
+    // --jobs-json: GitHub API の run のジョブ一覧（無い・読めなければ空。層ごとの所要は JUnit のテスト時間のままになる）
+    const jobs = args["jobs-json"] && existsSync(args["jobs-json"]) ? readJsonOr(args["jobs-json"], []) : [];
+    return mergeSummaries({ env: process.env, nowIso, summaries, jobResults, jobs });
   }
   const artifacts = asList(args.artifact).map(describeArtifact);
   // --consumer-contract <結果 JSON>: consumer contract の検証結果。verified_at は検証直後のこの時刻、対象 SHA は TARGET_SHA
