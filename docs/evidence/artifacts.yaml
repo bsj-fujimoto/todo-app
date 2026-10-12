@@ -379,10 +379,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:18:51+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:18:51+09:00"
+        by: maintainer
+        change: "docs(13): 07 取り込み後の件数に数え直し"
+        commit: f9a20a6
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -395,7 +399,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 13 品質証跡・AIコンテキスト（evidence-01〜11） (#55)"
         commit: ba2d2bd
-    source_sha256: f6139787e35194e088c7d5e82135cb57ff450e602713a4ba32af8f37d4948faa
+    source_sha256: "28a601107bbd1820fc075fea3d3c080f6ae5a474db6a9daa5cf179d4f15c3820"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-13
