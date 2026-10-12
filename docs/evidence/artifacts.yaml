@@ -633,14 +633,18 @@ artifacts:
     path: docs/data/evidence-index.csv
     type: "table:evidence-index"
     title: docs/data/evidence-index.csv
-    version: "git:02ea43b"
+    version: "git:9ff7f55"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:07:14+09:00"
+    updated_at: "2026-10-12T17:18:24+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:18:24+09:00"
+        by: maintainer
+        change: "chore(evidence): 再生成（07 取り込み後）"
+        commit: "9ff7f55"
       - at: "2026-10-12T17:07:14+09:00"
         by: maintainer
         change: "chore(evidence): 再生成（成果物台帳・証拠索引・検出表・manifest）。ADR の承認者を『承認』と書かれたロールから読む"

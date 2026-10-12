@@ -24,9 +24,9 @@
 - **人が確認していないこと（上限が掛かる観点）**: 正本の真正性（evidence-03）、抽出の内容 parity（evidence-07）、秘密・個人情報の最終確認（evidence-09）、改変防止の実効性（evidence-11）。**いずれも確認者・確認日の記録は無い**（未実施）。
 - **「改変防止された保管先」と言えるのは、署名済みイメージ（digest・cosign・provenance・Rekor）だけ**。Git 履歴と hash 台帳は**改変を検知できる**が、**防止は main の Ruleset が未適用**（`gh api repos/bsj-fujimoto/todo-app/rulesets` が空。ACT-008、期限 2026-10-16）のため管理者の履歴書換えを止められない。CI の artifact（90 日、2027-01-09 まで）と Release の添付は削除・差し替えができる（evidence-11）。
 - **秘密・個人情報**: 取り込み時に墨消し（5 ファイル 103 箇所、元と墨消し後の sha256 を記録）。**ただし墨消し前の値は、Git 履歴（b800097 の `docs/evidence/security/`、メール形式 44 件）に残っている**。履歴からは消せない（evidence-09）。**公開 Release の `release-evidence.zip`（初版の時点では墨消し前の 4 ファイル・メール形式 46 件を含んでいた）は、2026-10-12 に墨消し済みの版へ差し替えた**（sha256 `75d2fa5c9b741efa24c40bf96a73b9331b7d9aae6da80f7c817cda02ec97021e`、墨消し 584 箇所・11 ファイル。元の版は削除した。[docs/evidence/README.md](evidence/README.md) の「リリースの添付」）。
-- **追跡**: REQ 34・RISK 16・TC 77・EXEC 111・DEF 10・ACT 22 は追跡表にすべて載る。VIEW は 69 件中 12 件、FND は 12 件中 6 件が載らない（前者は全件が対象外、後者は対応不要。理由は evidence-04）。接続の欠落（gaps）は 10 行（evidence-04。以前は 7 行で、ACT-013〜015 の追加で増えた）。
-- **承認・履歴**: 成果物台帳 71 件（approved 6・reviewed 53・draft 12）。PR 41 件（マージ 36）のうち GitHub 上の Review 記録は 6 PR に計 11 件で**すべて COMMENTED、APPROVED は 0**。承認は「オーナーが PR をマージした時点（フェーズ1は AI の代行）」で、第二の目は無い（evidence-10）。文書 01〜06・08〜13 の状態は、オーナーの確認が済むまで `draft` のまま（reviewed・approved にしない）。
-- **成果物台帳は再生成済み**（版 1.1）: 71 件すべての sha256 が現物と一致し、`--strict-artifacts` が PASS（初版の時点では文書 9 件が未登録・sha256 不一致 7 件だった）。文書を更新したら、コミット後に `npm run evidence:build` で再生成する運用は変わらない（evidence-02・10）。`docs/README.md`・`docs/ai-context.yaml` は台帳の種別規則（`typeOf`）に無く、台帳には載らない（evidence-02）。
+- **追跡**: REQ 34・RISK 16・TC 77・EXEC 111・DEF 10・ACT 26 は追跡表にすべて載る。VIEW は 69 件中 12 件、FND は 12 件中 6 件が載らない（前者は全件が対象外、後者は対応不要。理由は evidence-04）。接続の欠落（gaps）は 13 行（evidence-04。以前は 7 行で、ACT-013〜015・023〜025 の追加で増えた）。
+- **承認・履歴**: 成果物台帳 72 件（approved 6・reviewed 53・draft 13）。PR 41 件（マージ 36）のうち GitHub 上の Review 記録は 6 PR に計 11 件で**すべて COMMENTED、APPROVED は 0**。承認は「オーナーが PR をマージした時点（フェーズ1は AI の代行）」で、第二の目は無い（evidence-10）。文書 01〜06・08〜13 の状態は、オーナーの確認が済むまで `draft` のまま（reviewed・approved にしない）。
+- **成果物台帳は再生成済み**（版 1.1）: 72 件すべての sha256 が現物と一致し、`--strict-artifacts` が PASS（初版の時点では文書 9 件が未登録・sha256 不一致 7 件だった）。文書を更新したら、コミット後に `npm run evidence:build` で再生成する運用は変わらない（evidence-02・10）。`docs/README.md`・`docs/ai-context.yaml` は台帳の種別規則（`typeOf`）に無く、台帳には載らない（evidence-02）。
 
 ## evidence-01 Review identity・対象版
 
@@ -107,7 +107,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 ## evidence-02 Artifact provenance・Hash
 
-**結論**: 成果物台帳 71 件のすべてに sha256・版・更新日時・変更履歴・保存方針があり、証拠索引 373 件と manifest 365 件は sha256 つき。台帳の sha256 は 71 件すべてが現物と一致する（初版の時点では 60 件中 53 件で、7 件は台帳が古かった。版 1.1 で再生成した）。本リポジトリの原本はテキスト（Git 管理）で、変換元と変換先の対応は**生成スクリプトと元ファイルの sha256**で取る。
+**結論**: 成果物台帳 72 件のすべてに sha256・版・更新日時・変更履歴・保存方針があり、証拠索引 373 件と manifest 365 件は sha256 つき。台帳の sha256 は 71 件すべてが現物と一致する（初版の時点では 60 件中 53 件で、7 件は台帳が古かった。版 1.1 で再生成した）。本リポジトリの原本はテキスト（Git 管理）で、変換元と変換先の対応は**生成スクリプトと元ファイルの sha256**で取る。
 
 **原本と整理済みファイルの対応**
 
@@ -120,15 +120,15 @@ docs_commit: null        # 採点開始時の main の HEAD
 | セキュリティの CI artifact（SARIF・SBOM・`findings.json`） | `docs/evidence/security/`、`findings.csv` | `fetch-run.mjs --kind security` → `build-findings.mjs` | `SOURCE.json`。**墨消しした 5 ファイルは `original_sha256`（元）と `redacted_sha256`（後）を両方記録** |
 | 文書・設定ファイル（Git） | 成果物台帳 `artifacts.yaml` | `build-artifacts.mjs`（ヘッダ表と `git log` から生成） | 台帳の `source_sha256`・`version`・`history`（commit つき） |
 
-**成果物台帳の集計**（[artifacts.yaml](evidence/artifacts.yaml)、71 件）
+**成果物台帳の集計**（[artifacts.yaml](evidence/artifacts.yaml)、72 件）
 
 | 項目 | 件数 | 補足 |
 |---|---|---|
-| `source_sha256`（64 桁） | 71 / 71 | 現物と一致 71、不一致 0（初版の時点では不一致 7 だった。再生成で解消） |
-| `version` | 71 / 71 | 文書ヘッダの版、`openapi.yaml` の `info.version`、ほかは `git:<短縮 SHA>`（56 件） |
-| `updated_at`・`history` | 71 / 71 | `history` は計 146 件（1 件あたり 1〜5 件）。commit つき、`by` は役割（`maintainer`） |
-| `retention_policy`・`immutable_store` | 71 / 71 | `immutable_store: true` は 71 件。**「Git 履歴は永続」の意味であり、Ruleset が未適用の間は強制されていない**（evidence-11） |
-| `normalized_format` | 71 / 71 | md 27・yaml 24・csv 13・yml 2・html 2・toml 1・env 1・tsv 1 |
+| `source_sha256`（64 桁） | 72 / 72 | 現物と一致 72、不一致 0（初版の時点では不一致 7 だった。再生成で解消） |
+| `version` | 72 / 72 | 文書ヘッダの版、`openapi.yaml` の `info.version`、ほかは `git:<短縮 SHA>`（56 件） |
+| `updated_at`・`history` | 72 / 72 | `history` は計 167 件（1 件あたり 1〜5 件）。commit つき、`by` は役割（`maintainer`） |
+| `retention_policy`・`immutable_store` | 72 / 72 | `immutable_store: true` は 72 件。**「Git 履歴は永続」の意味であり、Ruleset が未適用の間は強制されていない**（evidence-11） |
+| `normalized_format` | 72 / 72 | md 28・yaml 24・csv 13・yml 2・html 2・toml 1・env 1・tsv 1 |
 | `snapshot_*`・`normalized_*`・`parity` | 0 | 原本が Git 上のテキストで、**原本 = 整理済みファイル**（変換していない）。取得時刻の代わりに `updated_at`（commit 時刻）を使う |
 
 **台帳に載っていないもの**: 初版の時点では、成果物 04・05・06・08・09・11・本書が台帳の生成後に main へ入ったため未登録だった（再生成で載った）。**現在も載らないのは `docs/README.md` と `docs/ai-context.yaml`**（台帳の種別規則 `typeOf` に無い。台帳の欠落ではなく規則の範囲。`ai-context.yaml` は AI 向けの正本なので、台帳に載せるかは判断が要る＝依頼）。再生成までの間は `check-evidence.mjs` が「成果物台帳が最新でない」と警告する（`--strict-artifacts` なら失敗）。
@@ -166,7 +166,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 ## evidence-04 ID・Traceability
 
-**結論**: 要求 → リスク → 観点 → ケース → 実施 → 不具合 → 検出 → アクションが ID で接続され、**参照 3,485 件の未解決は 0**（2026-10-12 17:00 JST）。接続の欠落は 10 行（gaps）で、理由つきで残している（初版の時点では 7 行。ACT-013〜015 が追加されたため増えた）。
+**結論**: 要求 → リスク → 観点 → ケース → 実施 → 不具合 → 検出 → アクションが ID で接続され、**参照 3,485 件の未解決は 0**（2026-10-12 17:00 JST）。接続の欠落は 13 行（gaps）で、理由つきで残している（初版の時点では 7 行。ACT-013〜015・023〜025 が追加されたため増えた）。
 
 **チェーン**: `REQ` → `RISK` → `VIEW` → `TC` → `EXEC` → `DEF` → `FND` → `ACT`（`EV` が主張ごとに証拠へ紐づく）。形は固定（`REQ-001`・`EXEC-0001`・`DEF-005`＝Issue 番号 3 桁・`FND-001`・`EV-0001`・`ART-01`。[docs/README.md](README.md) 4 章、[ai-context.yaml](ai-context.yaml) の `identifiers`）。
 
@@ -179,14 +179,14 @@ docs_commit: null        # 採点開始時の main の HEAD
 | EXEC（`executions.csv`） | 111 | 111 | なし |
 | DEF（`defects.csv`） | 10 | 10 | なし |
 | FND（`findings.csv`） | 12 | 6 | 6 件（FND-001・004・005・006・008・009）。いずれも `status: na`（info・low で対応不要と判断した検出。アクションに結び付けていない） |
-| ACT（`actions.csv`） | 22 | 22 | なし |
+| ACT（`actions.csv`） | 26 | 26 | なし |
 
-**追跡表**（[traceability.csv](data/traceability.csv)）は 91 行 = ケース 77 行（TR-001〜077）+ ケースに結び付かないもの 14 行（TR-078〜091）。
+**追跡表**（[traceability.csv](data/traceability.csv)）は 91 行 = ケース 77 行（TR-001〜077）+ ケースに結び付かないもの 17 行（TR-078〜094）。
 
 | 種別 | 行 | 内容 |
 |---|---|---|
-| 接続の欠落（gaps） | 10 行 | TR-071・TR-072（手動ケース `not_run`。pass の実施行なし）、TR-078（RISK-009）・TR-079（RISK-012）（対応するケースがない）、TR-080（DEF-033。review で見つけた不具合で関連ケースがない）、TR-081（ACT-008）・TR-082（ACT-009）・TR-083（ACT-013）・TR-084（ACT-014）・TR-085（ACT-015）（ケース・検出・不具合に結び付かないアクション） |
-| 検出 → アクション | 6 行 | TR-086〜091（FND-010・011・012・002・003・007 とアクション） |
+| 接続の欠落（gaps） | 13 行 | TR-071・TR-072（手動ケース `not_run`。pass の実施行なし）、TR-078（RISK-009）・TR-079（RISK-012）（対応するケースがない）、TR-080（DEF-033。review で見つけた不具合で関連ケースがない）、TR-081（ACT-008）・TR-082（ACT-009）・TR-083（ACT-013）・TR-084（ACT-014）・TR-085（ACT-015）・TR-086〜088（ACT-023〜025。成果物 07 が追加）（ケース・検出・不具合に結び付かないアクション） |
+| 検出 → アクション | 6 行 | TR-089〜094（FND-010・011・012・002・003・007 とアクション） |
 | 追跡できるチェーンの例 | — | REQ-021・REQ-003・REQ-019・REQ-026 → RISK-003・RISK-006 → VIEW-018・003・008 → TC-008 → EXEC-0011・0012 → DEF-011・DEF-036 → ACT-011 |
 
 欠落のうち、ケースを足すか対象外にするかは ACT-011（QA リード、期限 2026-11-15）、Ruleset は ACT-008（期限 2026-10-16）、性能 baseline は ACT-009（期限 2026-10-19）で追っている。
@@ -274,7 +274,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 | flaky の隔離 | [quality/flaky-ledger.yaml](../quality/flaky-ledger.yaml) | 2（TC-073・TC-074） | `cause` | `owner` | `expires_at` 2026-11-10（`since` から 30 日以内） | Issue #25・#37。ACT-002・ACT-012 | 0（期限が切れると CI の docs-check が失敗） |
 | 自動化の穴 | [quality/known-gaps.yaml](../quality/known-gaps.yaml) | 0 | — | — | — | — | 0 |
 | 手動ケースの未実施 | [manual-plan.yaml](evidence/manual-plan.yaml)、実施表 | 2（TC-071・TC-072。`not_run`） | `reason`（実機でしか判定できない） | QA 担当 | `retest_due` 2026-10-31（**暫定**） | **対象外ではなく未実施**。ACT-004。承認された対象外として扱わない | 0 |
-| アクション（ACT） | [actions.csv](data/actions.csv) | 22（open 16・in_progress 3・accepted 2・done 1） | `what` | `owner` | `due` | — | 0（最も早い期限は ACT-008 の 2026-10-16） |
+| アクション（ACT） | [actions.csv](data/actions.csv) | 26（open 18・in_progress 3・accepted 2・done 3。ACT-009・014 は版 1.1 で done、ACT-023〜026 は成果物 07 が追加） | `what` | `owner` | `due` | — | 0（最も早い期限は ACT-008 の 2026-10-16） |
 
 **例外と未決が「期限内に解消されている」とは言えない点**: UNK-002（タスク件数の上限）と ACT-008（Ruleset の適用）は期限（2026-10-16）前の open。TC-071・072 は未実施のまま。受容 3 件・隔離 2 件は期限内に残っている（解消ではなく期限つきの保留）。
 
@@ -341,22 +341,22 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 ## evidence-10 Approval・Change history
 
-**結論**: 成果物 71 件のすべてに状態・更新日時・変更履歴（commit つき）があり、PR の履歴（41 件）から版の差分が追える。**承認は「オーナーが PR をマージした時点（フェーズ1は AI が代行）」で、第二の目による承認は無い**。
+**結論**: 成果物 72 件のすべてに状態・更新日時・変更履歴（commit つき）があり、PR の履歴（41 件）から版の差分が追える。**承認は「オーナーが PR をマージした時点（フェーズ1は AI が代行）」で、第二の目による承認は無い**。
 
 **承認と状態の定義**（`docs/README.md` 5 章）: 状態は `draft` / `reviewed` / `approved` / `obsolete`。**承認が実際に無いものを `approved` にしない**。承認者の記録は `approved_by`（無ければ `null`）。ロール名で書く（人名・アカウント名は書かない）。
 
-| 状態 | 件数（成果物台帳 71 件） | 意味・根拠 |
+| 状態 | 件数（成果物台帳 72 件） | 意味・根拠 |
 |---|---|---|
 | approved | 6 | ADR-0001〜0006（文書に「決定者」を書いたもの） |
 | reviewed | 53 | 文書ヘッダの「状態」が無いファイル。PR を経てマージされ CI を通っているが、承認の記録は無い（`approved_by: null`） |
-| draft | 12 | 文書 01〜06・08〜13（ヘッダが `draft（オーナーの確認待ち。PR マージ＝承認の代行）`）。**マージ済みでも、オーナーの確認が済むまで draft のまま**（reviewed・approved にしない）。07 は未作成 |
+| draft | 13 | 文書 01〜13（ヘッダが `draft（オーナーの確認待ち。PR マージ＝承認の代行）`）。**マージ済みでも、オーナーの確認が済むまで draft のまま**（reviewed・approved にしない） |
 | obsolete | 0 | 旧版として廃止した成果物は現在ない |
 
 **履歴の取り方**
 
 | 見るもの | 場所 | 内容 |
 |---|---|---|
-| 成果物の変更履歴 | [artifacts.yaml](evidence/artifacts.yaml) の `history` | `git log` 由来（日時・役割・変更・commit）。計 146 件。commit の件名に PR 番号（`(#42)`）が入るので PR に辿れる |
+| 成果物の変更履歴 | [artifacts.yaml](evidence/artifacts.yaml) の `history` | `git log` 由来（日時・役割・変更・commit）。計 167 件。commit の件名に PR 番号（`(#42)`）が入るので PR に辿れる |
 | 版 | 同 `version` | 文書の版、API の `info.version`、ほかは `git:<短縮 SHA>` |
 | PR のマージ履歴 | `gh pr list --state all` | 41 件（マージ 36・マージせず閉じたもの 4: #24 は確認用、#27 と #58 は Dependabot の node 25 への提案の不採用、#29 は同題の #32 がマージ）。squash マージのみ（`allow_merge_commit`・`allow_rebase_merge` は false）。main の 37 commit のうち 36 は GitHub の署名が valid、1 件（初回の取り込み）は未署名 |
 | レビュー | GitHub の Review 記録 | 6 PR（#19・#23・#26・#29・#32・#57）に計 11 件、**すべて COMMENTED。APPROVED は 0 件**（`reviewDecision` が空） |
@@ -373,7 +373,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 ## evidence-11 Retention・Integrity
 
-**結論**: 保存期間・hash・取得時刻は管理している（hash 71 / 71・取得時刻 373 / 373 など）。**改変を防止できている保管先は、署名済みイメージ（digest・cosign・provenance・Rekor）だけ**で、Git 履歴は改変を**検知**できるが**防止**は Ruleset の適用待ち、CI の artifact と Release の添付は防止も外部検知も無い。**改変防止の実効性を人が確認した記録は無い**。
+**結論**: 保存期間・hash・取得時刻は管理している（hash 72 / 72・取得時刻 373 / 373 など）。**改変を防止できている保管先は、署名済みイメージ（digest・cosign・provenance・Rekor）だけ**で、Git 履歴は改変を**検知**できるが**防止**は Ruleset の適用待ち、CI の artifact と Release の添付は防止も外部検知も無い。**改変防止の実効性を人が確認した記録は無い**。
 
 **保管先ごとの保存期間と保証**
 
@@ -397,8 +397,8 @@ docs_commit: null        # 採点開始時の main の HEAD
 
 | 項目 | 実態 |
 |---|---|
-| hash | 成果物台帳 71 / 71（`source_sha256`。現物と一致 71）、manifest 365 / 365、証拠索引 373 / 373、Release の zip 内 manifest 83 / 83、墨消し 5 ファイル（取り込み時）と 11 ファイル（Release の zip。差し替え後）は元と墨消し後の両方 |
-| 取得時刻 | manifest の `captured_at` 365 / 365、証拠索引の `captured_at` 373 / 373、各ディレクトリの `SOURCE.json`。原本が Git のものは commit 時刻（台帳の `updated_at` 71 / 71）。**時刻は取得元の記録を使い、独立した時刻証明（タイムスタンプ局）は使っていない**（イメージの署名だけ Rekor が時刻を持つ） |
+| hash | 成果物台帳 72 / 72（`source_sha256`。現物と一致 72）、manifest 365 / 365、証拠索引 373 / 373、Release の zip 内 manifest 83 / 83、墨消し 5 ファイル（取り込み時）と 11 ファイル（Release の zip。差し替え後）は元と墨消し後の両方 |
+| 取得時刻 | manifest の `captured_at` 365 / 365、証拠索引の `captured_at` 373 / 373、各ディレクトリの `SOURCE.json`。原本が Git のものは commit 時刻（台帳の `updated_at` 72 / 72）。**時刻は取得元の記録を使い、独立した時刻証明（タイムスタンプ局）は使っていない**（イメージの署名だけ Rekor が時刻を持つ） |
 
 **人による実効性の確認（上限 3）**: 次の手順を人が実施し、確認者（ロール）・日付・結果を書く。**現在は未実施**。2026-10-12 に AI が行った機械的な検証は、独立した第三者の確認ではない。
 
@@ -430,7 +430,7 @@ docs_commit: null        # 採点開始時の main の HEAD
 | リリース（新しいタグ）を作った | `release.json` → 取り込み（`scripts/evidence/README.md` の手順）→ 本書の evidence-01・02・05・11 の値と review ID の例 |
 | Ruleset を適用した | evidence-09・11 の「適用は未」、できていないこと 1、`docs/README.md` 5 章、`ai-context.yaml` の `repository.expected_controls` |
 | 人が確認した | 該当章の確認欄（確認者のロール・日付・結果） |
-| 台帳・証跡を再生成した | 本書の件数（71・365・373・91）を `check-evidence.mjs` の出力で数え直す |
+| 台帳・証跡を再生成した | 本書の件数（72・365・373・94）を `check-evidence.mjs` の出力で数え直す |
 | 保管先・保存期間を変えた | evidence-11 の表と `artifacts.yaml` の `retention_policy` |
 
 ## 付録 確認に使うコマンド
@@ -459,4 +459,4 @@ cosign verify ghcr.io/bsj-fujimoto/todo-app-backend@sha256:87addb2e3998f9c793e1c
 | 版 | 日付 | 内容 | 作成 | レビュー | 承認 |
 |---|---|---|---|---|---|
 | 1.0 | 2026-10-12 | 初版（品質証跡の設計・運用・実態） | QA リード（ロール。実作業は AI エージェント） | QA リード（未実施。第二の目は無い） | プロダクトオーナー（PR #55 のマージ＝承認の代行。オーナーの確認は未実施） |
-| 1.1 | 2026-10-12 | 横断整合: 台帳・証拠索引・manifest の再生成と数え直し（71・373・365・追跡表 91 行）、ART-58 の `approved_by` の修正、旧 run の `superseded` 印、security 33 件の版の訂正、Release 添付の差し替えの記録、FND-012 の owner・due、`ai-context.yaml` の C-001 解消 | QA リード（ロール。実作業は AI エージェント） | QA リード（未実施。第二の目は無い） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |
+| 1.1 | 2026-10-12 | 横断整合: 台帳・証拠索引・manifest の再生成と数え直し（72・373・365・追跡表 94 行）、ART-58 の `approved_by` の修正、旧 run の `superseded` 印、security 33 件の版の訂正、Release 添付の差し替えの記録、FND-012 の owner・due、`ai-context.yaml` の C-001 解消 | QA リード（ロール。実作業は AI エージェント） | QA リード（未実施。第二の目は無い） | プロダクトオーナー（PR のマージ＝承認の代行。オーナーの確認は未実施） |
