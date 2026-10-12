@@ -16,7 +16,7 @@
 設定そのもの（変更影響マップ・ジャーニー・スイート台帳・flaky 台帳）は `quality/` が正本で、ケースの行は `docs/data/cases.csv`、実施の行は `docs/data/executions.csv` が正本である。本書は読み方と判断を書く（二重管理しない）。
 **数字はすべて出典（パス・Issue・PR・run）を付けた。** run の件数は 2026-10-11 16:12 UTC（= 2026-10-12 01:12 JST）に、実施表・不具合表・回帰スイート台帳・影響マップの件数は 2026-10-12 に main（c14d39a）の現物から数え直した。時間とともに変わる値は出典で数え直す。
 
-実施表・不具合表（`docs/data/executions.csv`・`defects.csv`）は、v1.0.0 の run（Release run 38152472087）から再生成され、**PR #42 が 2026-10-11T16:30:20Z に main へマージ済み**である。**本書の実施・不具合の数字は、main の CSV から数え直した値**（実施表 111 行はすべて `gh-run-38152472087`・commit 5fcf40a…）で、`docs/evidence/runs/38152472087/` も main にある。旧 run（38128562945、対象 52da4aa）の証跡は `superseded` の印を付けて履歴として残している（[scripts/evidence/README.md](../scripts/evidence/README.md)）。
+実施表・不具合表（`docs/data/executions.csv`・`defects.csv`）は、v1.0.0 の run（Release run 38152472087）から再生成され、**PR #42 が 2026-10-11T16:30:20Z に main へマージ済み**である。**本書の実施・不具合の数字は、main の CSV から数え直した値**（実施表のうち全件回帰の 111 行〔regression 109・manual 2〕はすべて `gh-run-38152472087`・commit 5fcf40a…。ほかに性能 run `gh-run-38152548008` の kind=performance 2 行が同じ commit で加わり、計 113 行）で、`docs/evidence/runs/38152472087/` も main にある。旧 run（38128562945、対象 52da4aa）の証跡は `superseded` の印を付けて履歴として残している（[scripts/evidence/README.md](../scripts/evidence/README.md)）。
 
 ## 結論
 
@@ -160,7 +160,7 @@ PR 層の「常時」の意味を正確に書く。**毎回の PR で必ず動�
 | 紐づき | 件数 | 出典 |
 |---|---|---|
 | 要求（REQ）または観点（VIEW） | 77 / 77 | `quality/regression-suite.csv`の `requirement_ids`・`perspective_ids` |
-| 実施履歴（EXEC） | 77 / 77（EXEC 111 行。pass 109・not_run 2。すべて run 38152472087 の commit 5fcf40a…） | `docs/data/executions.csv` |
+| 実施履歴（EXEC） | 77 / 77（EXEC 113 行。pass 111・not_run 2。regression 109・manual 2 は run 38152472087、performance 2 は perf run 38152548008。すべて commit 5fcf40a…） | `docs/data/executions.csv` |
 | 欠陥（DEF） | 11 行（TC-008・020・031・046・050・061・063・073・074・075・076） | `quality/regression-suite.csv` の `defect_ids`（`docs/data/defects.csv` から生成） |
 | ジャーニー（J-xx） | 37 / 77 | `quality/journeys.yaml` |
 | リスク（RISK） | 77 / 77（`cases.csv` の `risk_ids`） | `docs/data/cases.csv` |
@@ -343,7 +343,7 @@ PR 層の「常時」の意味を正確に書く。**毎回の PR で必ず動�
 
 **実施したもの（executed）**
 
-- v1.0.0 の全件回帰（Release run 38152472087、commit 5fcf40a…、2026-10-11）: compose 4・contract 8・e2e 43（4 project の実行の合計）・unit 143・api 74、**失敗 0・skipped 0・再試行成功 0**。実施表は 111 行（pass 109・not_run 2）、77 ケースすべてに 1 行以上（`docs/data/executions.csv`）。
+- v1.0.0 の全件回帰（Release run 38152472087、commit 5fcf40a…、2026-10-11）: compose 4・contract 8・e2e 43（4 project の実行の合計）・unit 143・api 74、**失敗 0・skipped 0・再試行成功 0**。実施表は 113 行（pass 111・not_run 2。うち全件回帰の行は 111 = regression 109・manual 2、性能 2）、77 ケースすべてに 1 行以上（`docs/data/executions.csv`）。
 - カバレッジ（行）: backend 99.69%・frontend 100%（しきい値 90%）。リスク・要求との対応は [05 の automation-08](05-automation.md)。
 - PR 層: run ごとに `regression-selection.json`（選んだ TC・選択理由・外したリスク）を 90 日保持する。
 

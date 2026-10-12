@@ -27,8 +27,10 @@
     "evidence:manifest:verify": "node scripts/evidence/verify-manifest.mjs",
     "evidence:parity": "node scripts/evidence/check-parity.mjs",
     "evidence:executions": "node scripts/evidence/build-executions.mjs",
+    "evidence:api-results": "node scripts/evidence/build-api-results.mjs",
+    "evidence:deviations": "node scripts/evidence/build-deviations.mjs",
     "evidence:defects": "node scripts/evidence/build-defects.mjs",
-    "evidence:build": "node scripts/evidence/build-defects.mjs --offline && node scripts/evidence/build-findings.mjs && node scripts/evidence/build-evidence-index.mjs && node scripts/evidence/build-traceability.mjs && node scripts/evidence/build-manifest.mjs && node scripts/evidence/build-artifacts.mjs"
+    "evidence:build": "node scripts/evidence/build-defects.mjs --offline && node scripts/evidence/build-findings.mjs && node scripts/evidence/build-perf-executions.mjs && node scripts/evidence/build-deviations.mjs && node scripts/evidence/build-api-results.mjs && node scripts/evidence/build-run-roles.mjs && node scripts/evidence/build-evidence-index.mjs && node scripts/evidence/build-traceability.mjs && node scripts/evidence/build-manifest.mjs && node scripts/evidence/build-artifacts.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

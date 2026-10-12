@@ -14,21 +14,24 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { parseCsvObjects } from "../ci/lib/csv.mjs";
+import { parseYaml } from "../ci/lib/yaml-lite.mjs";
 import { DATA_DIR, EVIDENCE_DIR, createReport, toPosix } from "./lib/common.mjs";
 import {
   actions,
+  apiResults,
   artifactsResult,
   defects,
   executions,
   idReferences,
   parity,
+  runRoles,
   sensitive,
   summarizeChecks,
   traceability,
 } from "./lib/check-all.mjs";
 import { checkEvidenceIndex } from "./lib/evidence-checks.mjs";
 import { readManifest, verifyManifest } from "./lib/manifest.mjs";
-import { readReleaseRecord, releasePlan, releaseRecordCheck } from "./lib/release-record.mjs";
+import { RELEASE_RECORD, readReleaseRecord, releasePlan, releaseRecordCheck } from "./lib/release-record.mjs";
 
 const args = parseArgs(process.argv.slice(2), {
   flags: ["allow-mixed-versions", "strict", "strict-artifacts", "structure-only"],
@@ -149,6 +152,34 @@ function artifactsCheck() {
   return artifactsResult({ stale, strictArtifacts: Boolean(args["strict-artifacts"]), message });
 }
 
+function runRolesCheck(bundle) {
+  if (args["structure-only"])
+    return runRoles({ skip: "構造検査のみ（--structure-only）。run の役割は見ない" });
+  if (!record.exists) return runRoles({ skip: `${RELEASE_RECORD} が無い（対象版が決まらないのでスキップ）` });
+  const file = join(root, EVIDENCE_DIR, "run-roles.yaml");
+  const roles = existsSync(file) ? (parseYaml(readFileSync(file, "utf8")).runs ?? []) : null;
+  const run = spawnSync(
+    process.execPath,
+    [fileURLToPath(new URL("./build-run-roles.mjs", import.meta.url)), "--check", "--root", root],
+    { cwd: root, encoding: "utf8" },
+  );
+  return runRoles({ rows: bundle.tables.executions?.rows ?? [], roles, stale: run.status !== 0 });
+}
+
+function apiResultsCheck(bundle) {
+  const hasMapping = existsSync(join(root, "backend/test/api-tags.yaml"));
+  // 生成結果との一致は、release.json（対象の run）があり、構造検査でないときに確かめる（backend/test と run の証跡が要る）
+  const regenerate = hasMapping && record.exists && !args["structure-only"];
+  const run = regenerate
+    ? spawnSync(
+        process.execPath,
+        [fileURLToPath(new URL("./build-api-results.mjs", import.meta.url)), "--check", "--root", root],
+        { cwd: root, encoding: "utf8" },
+      )
+    : null;
+  return apiResults(bundle, { hasMapping, stale: run ? run.status !== 0 : null });
+}
+
 const bundle = loadBundle();
 const checks = [
   manifestCheck(),
@@ -163,6 +194,8 @@ const checks = [
   actions(bundle),
   traceabilityCheck(bundle),
   artifactsCheck(),
+  runRolesCheck(bundle),
+  apiResultsCheck(bundle),
   sensitive(bundle),
   releaseRecordCheck(record, plan, args["structure-only"]),
 ];

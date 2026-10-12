@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { readJson, sha256 } from "./common.mjs";
-import { listManagedFiles, sourceOf } from "./evidence-files.mjs";
+import { DERIVED_TABLES, listManagedFiles, sourceOf } from "./evidence-files.mjs";
 
 export const MANIFEST_FILE = "manifest.json";
 
@@ -47,7 +47,18 @@ export function buildManifestFiles(evidenceDir) {
   return listManagedFiles(evidenceDir).map((rel) => entryFor(evidenceDir, rel));
 }
 
-export function buildManifest(files, nowIso) {
+/**
+ * 機械生成の表（docs/data/api-results.csv・deviations.csv）の記録。取得した証跡ではなく派生物なので files には入れず、別に持つ。
+ * path は repo ルートからの相対。生成元のスクリプトと sha256 を残し、表を手で書き換えたことを検知できるようにする。
+ */
+export function buildDerived(root) {
+  return DERIVED_TABLES.filter((t) => existsSync(join(root, t.path))).map((t) => {
+    const buffer = readFileSync(join(root, t.path));
+    return { path: t.path, sha256: sha256(buffer), size: buffer.length, generated_by: t.by };
+  });
+}
+
+export function buildManifest(files, nowIso, derived = []) {
   return {
     schema_version: 1,
     generated_at: nowIso,
@@ -55,6 +66,7 @@ export function buildManifest(files, nowIso) {
     algorithm: "sha256",
     count: files.length,
     files,
+    derived,
   };
 }
 
@@ -76,15 +88,30 @@ function entryProblems(evidenceDir, e) {
   ];
 }
 
-export function verifyManifest(evidenceDir, manifest) {
+/** 機械生成の表が、記録した sha256 のままか。root は repo ルート。 */
+function derivedProblems(root, manifest) {
+  return (manifest.derived ?? []).flatMap((d) => {
+    const file = join(root, d.path);
+    if (!existsSync(file)) return [`欠落（派生表）: ${d.path}`];
+    return sha256(readFileSync(file)) === d.sha256
+      ? []
+      : [`sha256 不一致（派生表。${d.generated_by} で再生成したか、手で書き換えたか）: ${d.path}`];
+  });
+}
+
+export function verifyManifest(evidenceDir, manifest, root = join(evidenceDir, "..", "..")) {
   const entries = manifest.files ?? [];
   const registered = new Set(entries.map((e) => e.path));
   const unregistered = listManagedFiles(evidenceDir).filter((r) => !registered.has(r));
   return [
     ...entries.flatMap((e) => entryProblems(evidenceDir, e)),
     ...unregistered.map((rel) => `未登録: ${rel}`),
+    ...derivedProblems(root, manifest),
   ];
 }
 
 /** 内容（files）が同じか。同じなら manifest を書き換えない（generated_at を動かさない＝冪等）。 */
-export const sameFiles = (a, b) => Boolean(a) && JSON.stringify(a.files) === JSON.stringify(b);
+export const sameFiles = (a, b, derived = []) =>
+  Boolean(a) &&
+  JSON.stringify(a.files) === JSON.stringify(b) &&
+  JSON.stringify(a.derived ?? []) === JSON.stringify(derived);

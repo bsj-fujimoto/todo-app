@@ -8,6 +8,7 @@ import { parseArgs } from "../ci/lib/args.mjs";
 import { EVIDENCE_DIR, writeJson } from "./lib/common.mjs";
 import {
   MANIFEST_FILE,
+  buildDerived,
   buildManifest,
   buildManifestFiles,
   readManifest,
@@ -19,10 +20,11 @@ const root = resolve(args.root ?? ".");
 const evidenceDir = join(root, EVIDENCE_DIR);
 
 const files = buildManifestFiles(evidenceDir);
+const derived = buildDerived(root);
 const previous = readManifest(evidenceDir);
-if (sameFiles(previous, files)) {
-  process.stdout.write(`manifest.json: 変更なし（${files.length} ファイル）\n`);
+if (sameFiles(previous, files, derived)) {
+  process.stdout.write(`manifest.json: 変更なし（${files.length} ファイル、派生表 ${derived.length}）\n`);
 } else {
-  writeJson(join(evidenceDir, MANIFEST_FILE), buildManifest(files, new Date().toISOString()));
-  process.stdout.write(`manifest.json: ${files.length} ファイルを記録した\n`);
+  writeJson(join(evidenceDir, MANIFEST_FILE), buildManifest(files, new Date().toISOString(), derived));
+  process.stdout.write(`manifest.json: ${files.length} ファイル、派生表 ${derived.length} を記録した\n`);
 }

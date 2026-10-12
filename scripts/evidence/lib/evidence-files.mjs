@@ -151,25 +151,64 @@ function findingEntries(evidenceDir, rel, source, ledger) {
   }));
 }
 
+/** 1 ファイル（docs/evidence からの相対パス）→ 証拠索引の項目。索引に載せないファイルは null。 */
+export function fileEntry(evidenceDir, rel) {
+  const info = describeFile(rel);
+  if (!info) return null;
+  const source = sourceOf(evidenceDir, rel);
+  return {
+    claim: claimFor(rel, info.what, source),
+    ref: refFor(rel),
+    domain: info.domain,
+    criterion_id: info.criterion_id,
+    type: info.type,
+    sha256: sha256(readFileSync(join(evidenceDir, rel))),
+    captured_at: source?.captured_at ?? null,
+    head_sha: source?.head_sha ?? null,
+  };
+}
+
 /** docs/evidence の全ファイル → 証拠索引の項目（実施表の行ごとの証拠を除く）。 */
 export function collectEvidenceEntries(evidenceDir, ledger) {
   const entries = [];
   for (const rel of listManagedFiles(evidenceDir)) {
-    const info = describeFile(rel);
-    if (!info) continue;
-    const source = sourceOf(evidenceDir, rel);
-    entries.push({
-      claim: claimFor(rel, info.what, source),
-      ref: refFor(rel),
-      domain: info.domain,
-      criterion_id: info.criterion_id,
-      type: info.type,
-      sha256: sha256(readFileSync(join(evidenceDir, rel))),
-      captured_at: source?.captured_at ?? null,
-      head_sha: source?.head_sha ?? null,
-    });
+    const entry = fileEntry(evidenceDir, rel);
+    if (!entry) continue;
+    entries.push(entry);
     if (/security\/.*findings\.json$/.test(rel))
-      entries.push(...findingEntries(evidenceDir, rel, source, ledger));
+      entries.push(...findingEntries(evidenceDir, rel, sourceOf(evidenceDir, rel), ledger));
   }
   return entries;
+}
+
+/** docs/data の機械生成の表（証跡ではなく、証跡と文書から作った派生物）。証拠索引にも載せ、sha256 で改変を検知する。 */
+export const DERIVED_TABLES = [
+  {
+    path: "docs/data/api-results.csv",
+    what: "API テストの結果（endpoint・method・タグ・アサートの機械可読な表。api-tags.yaml と JUnit・観察値から生成）",
+    domain: "api",
+    criterion_id: "api-04",
+    by: "scripts/evidence/build-api-results.mjs",
+  },
+  {
+    path: "docs/data/deviations.csv",
+    what: "手順からの逸脱（docs/09 の DEV 表から生成。承認の根拠は表のとおり）",
+    domain: "execution",
+    criterion_id: "execution-03",
+    by: "scripts/evidence/build-deviations.mjs",
+  },
+];
+
+/** 派生表の索引の項目（ファイルがあるものだけ）。headSha は対象版の commit（無ければ null）。 */
+export function derivedEntries(root, headSha) {
+  return DERIVED_TABLES.filter((t) => existsSync(join(root, t.path))).map((t) => ({
+    claim: t.what,
+    ref: `./${t.path}`,
+    domain: t.domain,
+    criterion_id: t.criterion_id,
+    type: "csv",
+    sha256: sha256(readFileSync(join(root, t.path))),
+    captured_at: null,
+    head_sha: headSha ?? null,
+  }));
 }

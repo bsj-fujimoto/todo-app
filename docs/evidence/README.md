@@ -12,6 +12,7 @@ docs/evidence/
   artifacts.yaml         成果物台帳（文書ごとの版・状態・承認・履歴・sha256・保存方針）。build-artifacts.mjs が生成
   source-of-truth.yaml   正本の所在地（要求・UI・API・アーキテクチャ・セキュリティ要求・SLO・観点・ケース・不具合）。生成
   manual-plan.yaml       手動ケースの実施計画（未実施の理由・owner・実施予定日）。実施表の not_run 行の元
+  run-roles.yaml         run の役割台帳（target = 対象版の結果 / history = 履歴）。build-run-roles.mjs が生成
   runs/<run-id>/         CI の 1 回の実行の小さな成果物
     SOURCE.json          取得時刻・取得元 run の URL・対象 SHA・版・取り込んだ artifact の名前。`run_started_at` は ci-summary.json の開始時刻（`started_at`。集計ジョブの開始）で、GitHub の run の作成時刻ではない（例: run 38152472087 は run の作成 15:43:26Z、`run_started_at` 15:45:50Z）。後の run に置き換えられた run は `superseded_by`（置き換えた run・理由・日付）を持つ
     ci-summary.json      層ごとの結果・ジョブの結果・カバレッジ（scripts/ci/summarize-junit.mjs の出力）
@@ -32,13 +33,39 @@ docs/evidence/
 
 | 形式           | ファイル                                                                                                                                                                                                                                                        |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CSV            | `docs/data/` の `requirements` `risks` `perspectives` `cases` `datasets` `unknowns`（テスト設計）、`executions`（実施表）、`defects`（不具合表）、`findings`（セキュリティ検出）、`actions`（アクション）、`evidence-index`（証拠索引）、`traceability`（追跡表） |
-| YAML           | `artifacts.yaml` `source-of-truth.yaml` `manual-plan.yaml`、`backend/openapi.yaml`（API 契約）、`quality/*.yaml`、`security/*.yaml`                                                                                                                              |
+| CSV            | `docs/data/` の `requirements` `risks` `perspectives` `cases` `datasets` `unknowns`（テスト設計）、`executions`（実施表）、`deviations`（手順からの逸脱）、`api-results`（API テストの結果）、`defects`（不具合表）、`findings`（セキュリティ検出）、`actions`（アクション）、`evidence-index`（証拠索引）、`traceability`（追跡表） |
+| YAML           | `artifacts.yaml` `source-of-truth.yaml` `manual-plan.yaml` `run-roles.yaml`、`backend/openapi.yaml`（API 契約）、`backend/test/api-tags.yaml`（API テストの対応表）、`quality/*.yaml`、`security/*.yaml`                                                                                                                              |
 | JSON           | `manifest.json`、`runs/*/ci-summary.json` `regression-selection.json` `SOURCE.json`、`security/**/findings.json` `gate.json` `scan-run.json`、`github/defect-issues.json`、`runs/*/observations/**`                                                             |
 | JUnit XML      | `runs/*/junit/*.xml`                                                                                                                                                                                                                                            |
 | SARIF          | `security/**/*.sarif`（CodeQL・gitleaks・trivy・hadolint・ZAP・osv-scanner・compose-check）                                                                                                                                                                     |
 | CycloneDX JSON | `security/**/*.cdx.json`（実行時依存 / 全体 / 各イメージの SBOM）                                                                                                                                                                                               |
 | Markdown       | `docs/NN-*.md`（文書。表は CSV から機械生成した写しで、食い違うときは CSV が正）、`docs/adr/*.md`、この文書                                                                                                                                                     |
+
+## 実施表の kind と、対象版でない run（履歴）
+
+実施表（`executions.csv`）は **1 行 = 1 ケース × 1 実行環境 × 1 run**。対象版（`release.json` の `commit_sha` = X）の run の結果だけを入れる。
+
+| kind | 何の結果か | 行を作るもの | 証拠 |
+| --- | --- | --- | --- |
+| `regression` | push・タグの全件回帰（自動の unit・api・contract・e2e・compose） | `build-executions.mjs --run <id>`（JUnit と観察値） | JUnit のそのケース・観察値 |
+| `automated` | pull_request の CI の run | 同上 | 同上 |
+| `manual` | 手動ケース。実施していなければ `not_run`（理由・owner・retest_due 付き） | 同上（`manual-plan.yaml`） | なし（実施していない） |
+| `performance` | perf 層（k6 の load・画面計測）の SLO 判定。結び付けは `perf/slo.yaml` の `test_cases`（TC-073・TC-074 の本判定は perf 層。ADR-0005） | `build-perf-executions.mjs`（取り込み済みの `perf/` の `verdict.json`） | perf の `load/verdict.json`・`screen/verdict.json`・`run.json` |
+
+- **`monitoring`（外形監視）と `security`（検査）は kind にしない。** 実施表の行はケース（TC）に結び付く結果で、外形監視の monitor（MON-xxx）・セキュリティの検査の結果には結び付くケースが無い。ケースの無い行を足すと「全ケースに行がある」「追跡表で TC から実施に至る」という表の意味が崩れる。外形監視の結果は `docs/evidence/monitoring/`（`fetch-run.mjs --kind monitoring`）、セキュリティの検出は `findings.csv` と `security/` に置く。
+- **対象版でない run は履歴。** `run-roles.yaml` が、取り込んだ run（各 `SOURCE.json`）と、開発機などで実行した性能試験（`perf/results/*/run.json`）を、`role: target`（対象版 X の実行）か `role: history`（別の commit・未コミットの変更を含む実験・開発機での実行・置き換えられた旧 run）に分け、理由を残す。役割は commit と実行の状態から**機械的に決まる**（人が付け替えない）。履歴の run の証跡は残す（削除しない）が、**実施表・証拠索引の根拠にしない**（実施表が履歴の run・台帳に無い run を参照していたら `check-evidence.mjs` が失敗にする）。取り込んでいない GitHub 上のほかの run は台帳に載らない（取り込んだ時点で決まる）。
+
+## 機械生成の表（deviations.csv・api-results.csv）
+
+どちらも、手で書き換えない**派生物**。元から作り直せ、`manifest.json` の `derived` に sha256 を記録し、証拠索引（`EV-xxxx`）にも載る。
+
+- **`docs/data/deviations.csv`**（手順からの逸脱）: 列は `deviation_id, execution_id, steps, reason, approved_by`。**正本は `docs/09-test-execution.md` の DEV 表**で、`build-deviations.mjs` が表から作る。承認の根拠は DEV 表に書かれたとおり（プロダクトオーナー。PR のマージをもって承認し、フェーズ1は AI が代行マージ。独立した第二の承認者はいない）で、ここで足したり省いたりしない。`execution_id` は対象の実施 ID の先頭の 1 つ（qc の Deviation は 1 つの文字列）。複数の行にまたがる逸脱は、対象の全文（実施 ID・ケース）を `steps` の先頭に「対象: …」として残す。表と CSV のずれは `check-parity.mjs`（と `check-evidence.mjs`）が検知する。
+- **`docs/data/api-results.csv`**（API テストの結果）: 列は `test_id, endpoint, method, tags, status, schema_validated, asserts_status, asserts_header, asserts_content_type, evidence_ref, run_id`。1 行 = ケース ID（`[TC-xxx]`）付きの API テスト 1 件 × endpoint × method（27 件・40 行）。複数のタグは `;` 区切り（語彙は qc の api 観点: `validation:*`・`error:*`・`idempotency`・`concurrency`・`retry`・`business`・`schema` など）。
+  - 人が決めるのは **`backend/test/api-tags.yaml`**（TC → endpoint・method・タグ）だけ。`status` は JUnit、`evidence_ref` は観察値のファイル、`schema_validated`・`asserts_*` は**テストの実装から機械的に読む**（`contract: false` を渡していないか、`status`・`headers.get(...)` を検査しているか。テスト単位で、同じ TC の複数の endpoint の行は同じ値）。
+  - **宣言したタグは観察値で裏付けを取る**（`error:4xx` ならその endpoint で 4xx を実際に観察している、`retry` なら失敗の後に成功を観察している、など）。裏付けの無いタグ・観察値に無い endpoint・対応表に無い API 層のケースがあれば、生成は何も書かずに失敗する。
+  - **付けていないタグ**: `auth:*`（認証が無い設計で承認済み。TC-059 は「認証なしで通る」確認で認証の検証ではない）、`paging`（ページング無し）、`timeout`・`rate_limit`（テストが無い。rate limit は未実装）、`compat`・`tenant_isolation`（テストが無い）。
+  - **含めないテスト**: `[補助]` 30 件・`[契約]` 6 件。観察値を残すのは TC 付きのテストだけで、endpoint・status を実測と突き合わせられないため（docs/06 の「できていないこと」）。
+  - 生成: `node scripts/evidence/build-api-results.mjs`（`--check` で一致の確認）。
 
 ## 主張から証拠へ
 
