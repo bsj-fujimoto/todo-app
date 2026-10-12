@@ -226,7 +226,7 @@ describe("incident 台帳（incidents.csv・drill-issues.csv）", () => {
   });
   it("drill は incident の台帳に混ぜず別の台帳に置く（還流の対象外と明記）", () => {
     const drills = parseCsv(real().drillCsv).map((d) => d.issue_number);
-    assert.deepEqual(drills, ["13", "14", "17", "18", "44", "45", "48", "49", "50", "63"]);
+    assert.deepEqual(drills, ["13", "14", "17", "18", "44", "45", "48", "49", "50", "63", "67", "68"]);
     assert.ok(parseCsv(real().drillCsv).every((d) => /対象外/.test(d.feedback)));
   });
 });

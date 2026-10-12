@@ -226,7 +226,7 @@ incident が「どのデプロイの後に起きたか」と「真因がどの�
 | 外部の常駐監視（SaaS・クラスタ内プローブ）                    | 見送り | 本番も外部サービスの契約も無い。残存リスクとして書く（制約表）。本番を持ったら 1〜5 分間隔にする                                                                                                                                      |
 
 - **過剰実行・無限ループの防止**: `concurrency: synthetic`（`cancel-in-progress: false`）で同時実行は 1 本、待ちは最新の 1 本に置き換わる（連続マージでも待ちは 1 本。置き換えられた待ちは cancelled で、watchdog は数えない）。`synthetic.yml` は push もリリースも作らない（Issue と artifact だけ）ので、自分自身を起動しない。
-- **実測の限界**: `push` と `workflow_run` は main にマージされるまで動かない（`workflow_run` は既定ブランチのワークフローだけが動く）。マージ前は `workflow_dispatch` で定義の動作（`if` 条件・summary）まで確認でき、実際の契機での起動は**マージ後の最初の push で確認する**。Release の `workflow_run` は次のリリース（タグ push）まで未確認。
+- **実測の確認と限界**: `push` と `workflow_run` は main にマージされるまで動かない（`workflow_run` は既定ブランチのワークフローだけが動く）。**`push: main` は PR #65 のマージで実際に動いた**: マージ commit（6a07b95、2026-10-12T08:23:59Z）の 3 秒後に run 38223329956（event: push）が起動して成功し、以後のマージでも起動した（38224186009、38229510488）。Release の `workflow_run` は、Release が PR（pull_request）の dry-run で成功したとき 2 回起動して**条件（push のタグで成功）に合わず skipped**になった（38223404423、38223934317。条件の除外が働いた確認）。**タグ push の Release が成功した後に synthetic が動く経路は、次のリリースまで未確認**。skipped の run は watchdog が「動いた」に数えない（`lastRanRun`）。
 
 ### 可用性 SLO との整合
 
