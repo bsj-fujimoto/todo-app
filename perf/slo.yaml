@@ -106,7 +106,7 @@ slos:
     basis: assumed
     user_impact: 負荷中でも死活判定が遅れない。遅いと外形監視が誤報（遅延＝停止と誤認）する。
   - metric: availability_synthetic_ratio
-    description: 外形監視（30 分間隔）の成功率。監視が成功した実行の割合
+    description: 外形監視（宣言 30 分間隔。schedule の実効は実測で 3.4〜6.7 時間。monitoring/README.md）の成功率。監視が成功した実行の割合
     operator: ">="
     target: 0.99
     unit: ratio

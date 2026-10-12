@@ -13,6 +13,7 @@ const problems = checkConfig({
   runbooksDoc: readYaml("monitoring/runbooks/index.yaml"),
   slo: readYaml("perf/slo.yaml"),
   journeys: JOURNEYS,
+  workflowDoc: readYaml(".github/workflows/synthetic.yml"),
   read: (p) => (existsSync(p) ? readFileSync(p, "utf8") : null),
 });
 

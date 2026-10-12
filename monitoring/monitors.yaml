@@ -6,16 +6,27 @@
 #     リリースがまだ無いときは docker compose up --build（main の HEAD）にフォールバックし、run の summary に明記する。
 #   - 認証なし（1 人用）。資格情報は使わない。合成データだけを使い、ジャーニーが作ったタスクは必ず削除する。
 #   - regions は実行環境（GitHub-hosted runner。リージョン非固定）を正直に書く。多地点監視はできない。
-#   - interval_sec は schedule の実態（1800 秒 = 30 分）。GitHub の cron は最短 5 分で、遅延・欠落しうるため実際の間隔はこれより長くなりうる。
-#     MTTD の目標は 30 分 + retry 時間（monitoring/README.md「実行間隔と検知時間」。monitors の既定の上限 300 秒は満たさない）。
+#   - interval_sec は「宣言 = 設計目標」（1800 秒 = 30 分。cron `7,37 * * * *`）。実際の間隔は GitHub の schedule が遅延・欠落させるためこれより長い。
+#     実測は observed_interval_sec（中央値）・observed_interval_max_sec（最大）として別に持つ（scripts/monitoring/cadence.mjs の出力。monitoring/cadence/）。
+#     MTTD は「実測の実効間隔 + retry 時間」で見る（monitoring/README.md「実行間隔と検知時間」。monitors の既定の上限 300 秒は満たさない）。
+#   - watchdog.threshold_hours は observed_interval_max_sec から決める（check-config.mjs が「最大実測間隔 + 余裕 1 時間以上」を検査する）。
 version: 1
 service: todo-app
+# 監視の死活監視（monitoring-watchdog.yml → scripts/monitoring/watchdog.mjs）のしきい値。synthetic.yml の最終実行がこれより古いと
+# `[sev3][MON-META]` を起票する。ワークフローには書かず、ここだけを正本にする。
+watchdog:
+  threshold_hours: 8
+  basis: "synthetic.yml の schedule の最大実測間隔 6.7 時間（monitoring/cadence/cadence-20261012T0803Z.json）を切り上げて 7 時間 + 余裕 1 時間。標本は間隔 3 件と少ない（再測定で最大が増えたら見直す）"
 base_url_env: BASE_URL # 既定 http://localhost:8080（run-monitors.mjs の --base-url / 環境変数 BASE_URL）
 defaults:
   service: todo-app
   regions: ["github-hosted-runner（リージョン非固定）"]
   locations: 1
-  interval_sec: 1800
+  interval_sec: 1800 # 宣言（設計目標）。cron `7,37 * * * *`
+  observed_interval_sec: 13826 # 実測の実効間隔（synthetic.yml の schedule の中央値。3.8 時間）
+  observed_interval_max_sec: 24031 # 同、最大（6.7 時間）
+  observed_at: "2026-10-12T08:03Z" # 実測の時点（標本: schedule の実行 4 回 = 間隔 3 件）
+  observed_source: monitoring/cadence/cadence-20261012T0803Z.json
   auth:
     method: none
     inline_credentials: false
