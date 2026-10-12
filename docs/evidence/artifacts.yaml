@@ -215,10 +215,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当・運用"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:19:16+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:19:16+09:00"
+        by: maintainer
+        change: "docs(07): 見直し日を ACT-006 の期限（2026-12-31）に合わせる"
+        commit: dc3ecbc
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -227,7 +231,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
         commit: "2d33827"
-    source_sha256: "84acaf4e751ebf8fc99f44bddafc8dea2ce1c73de7caf8087e66dd51a9841045"
+    source_sha256: "9b00ded6cd85fa26ae6832bfb1bad4d08d0f2f4c5f0b492991b2ef8e499785e7"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-07
