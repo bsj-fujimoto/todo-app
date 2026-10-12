@@ -39,6 +39,43 @@
       },
       "note": "load・stress・spike・capacity・screen は run_id の run、soak は soak-r2-20261011T112525Z-191a25b（最初の soak は件数が一定でなく fail。perf/analysis.md §4）",
       "soak_run_id": "soak-r2-20261011T112525Z-191a25b"
+    },
+    {
+      "release": "v1.0.0",
+      "commit_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+      "run_id": "gha-38152548008-5fcf40a",
+      "measured_at": "2026-10-11T15:45:08.498Z",
+      "env_class": "github-hosted:ubuntu24:X64",
+      "environment": "GitHub-hosted runner (ubuntu24 20261004.327.1) / AMD EPYC 7763 64-Core Processor 4 cores / Docker 28.0.4 VM 4 vCPU 15.6 GiB",
+      "metrics": {
+        "load.api_list_p95_ms": 19.500333,
+        "load.api_list_p99_ms": 47.948667,
+        "load.api_create_p95_ms": 18.380333,
+        "load.api_update_p95_ms": 15.882667,
+        "load.api_delete_p95_ms": 14.088667,
+        "load.error_rate": 0,
+        "load.throughput_rps": 1.000133,
+        "load.health_p95_ms": 29.695,
+        "stress.max_sustained_rps": 100,
+        "spike.recovery_tail_list_p95_ms": 22.589333,
+        "spike.recovery_tail_error_rate": 0,
+        "spike.time_to_recover_sec": 18.333333,
+        "spike.during_list_p95_ms": 15810.978,
+        "soak.api_list_p95_ms": 10.632333,
+        "soak.error_rate": 0,
+        "capacity.max_tasks_within_slo": 5000,
+        "capacity.list_p95_ms_at_1000": 13.009,
+        "capacity.create_p95_ms_at_1000": 10.02,
+        "capacity.list_p95_ms_at_2500": 28.582,
+        "capacity.create_p95_ms_at_2500": 27.271,
+        "capacity.list_p95_ms_at_5000": 184.835,
+        "capacity.create_p95_ms_at_5000": 169.471,
+        "capacity.list_p95_ms_at_7500": 5454.525,
+        "capacity.create_p95_ms_at_7500": 5395.3,
+        "capacity.list_p95_ms_at_10000": 7875.529,
+        "capacity.create_p95_ms_at_10000": 7803.406,
+        "screen.screen_ready_ms": 158.1
+      }
     }
   ]
 }

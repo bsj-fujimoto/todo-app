@@ -1,0 +1,241 @@
+{
+ "scenario": "load",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [],
+ "slo_judgements": [
+  {
+   "metric": "api_list_p95_ms",
+   "operator": "<=",
+   "target": 500,
+   "unit": "ms",
+   "values": [
+    19.364,
+    19.534,
+    19.603
+   ],
+   "mean": 19.500333,
+   "sd": 0.123005,
+   "ci95": [
+    19.194746,
+    19.80592
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_list_p99_ms",
+   "operator": "<=",
+   "target": 1000,
+   "unit": "ms",
+   "values": [
+    49.965,
+    40.073,
+    53.808
+   ],
+   "mean": 47.948667,
+   "sd": 7.086025,
+   "ci95": [
+    30.344583,
+    65.55275
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_create_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    18.661,
+    18.21,
+    18.27
+   ],
+   "mean": 18.380333,
+   "sd": 0.244909,
+   "ci95": [
+    17.771897,
+    18.98877
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_update_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    15.834,
+    15.686,
+    16.128
+   ],
+   "mean": 15.882667,
+   "sd": 0.224983,
+   "ci95": [
+    15.323733,
+    16.4416
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "api_delete_p95_ms",
+   "operator": "<=",
+   "target": 300,
+   "unit": "ms",
+   "values": [
+    14.226,
+    14.05,
+    13.99
+   ],
+   "mean": 14.088667,
+   "sd": 0.122659,
+   "ci95": [
+    13.783939,
+    14.393394
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "error_rate",
+   "operator": "<",
+   "target": 0.01,
+   "unit": "ratio",
+   "values": [
+    0,
+    0,
+    0
+   ],
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "throughput_rps",
+   "operator": ">=",
+   "target": 0.95,
+   "unit": "ratio_of_target_rate",
+   "values": [
+    1,
+    1.0002,
+    1.0002
+   ],
+   "mean": 1.000133,
+   "sd": 0.000115,
+   "ci95": [
+    0.999846,
+    1.00042
+   ],
+   "pass": true,
+   "warnings": []
+  },
+  {
+   "metric": "health_p95_ms",
+   "operator": "<=",
+   "target": 200,
+   "unit": "ms",
+   "values": [
+    30.814,
+    29.492,
+    28.779
+   ],
+   "mean": 29.695,
+   "sd": 1.032576,
+   "ci95": [
+    27.129732,
+    32.260268
+   ],
+   "pass": true,
+   "warnings": []
+  }
+ ],
+ "not_judged_here": [
+  "screen_ready_ms",
+  "availability_synthetic_ratio"
+ ],
+ "variance_stats": {
+  "api_list_p95_ms": {
+   "n": 3,
+   "mean": 19.500333,
+   "sd": 0.123005,
+   "ci95": [
+    19.194746,
+    19.80592
+   ]
+  },
+  "api_list_p99_ms": {
+   "n": 3,
+   "mean": 47.948667,
+   "sd": 7.086025,
+   "ci95": [
+    30.344583,
+    65.55275
+   ]
+  },
+  "api_create_p95_ms": {
+   "n": 3,
+   "mean": 18.380333,
+   "sd": 0.244909,
+   "ci95": [
+    17.771897,
+    18.98877
+   ]
+  },
+  "api_update_p95_ms": {
+   "n": 3,
+   "mean": 15.882667,
+   "sd": 0.224983,
+   "ci95": [
+    15.323733,
+    16.4416
+   ]
+  },
+  "api_delete_p95_ms": {
+   "n": 3,
+   "mean": 14.088667,
+   "sd": 0.122659,
+   "ci95": [
+    13.783939,
+    14.393394
+   ]
+  },
+  "error_rate": {
+   "n": 3,
+   "mean": 0,
+   "sd": 0,
+   "ci95": [
+    0,
+    0
+   ]
+  },
+  "throughput_rps": {
+   "n": 3,
+   "mean": 1.000133,
+   "sd": 0.000115,
+   "ci95": [
+    0.999846,
+    1.00042
+   ]
+  },
+  "health_p95_ms": {
+   "n": 3,
+   "mean": 29.695,
+   "sd": 1.032576,
+   "ci95": [
+    27.129732,
+    32.260268
+   ]
+  }
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats_text": "api_list_p95_ms: n=3 mean=19.500333 sd=0.123005 ci95=[19.194746, 19.80592]; api_list_p99_ms: n=3 mean=47.948667 sd=7.086025 ci95=[30.344583, 65.55275]; api_create_p95_ms: n=3 mean=18.380333 sd=0.244909 ci95=[17.771897, 18.98877]; api_update_p95_ms: n=3 mean=15.882667 sd=0.224983 ci95=[15.323733, 16.4416]; api_delete_p95_ms: n=3 mean=14.088667 sd=0.122659 ci95=[13.783939, 14.393394]; error_rate: n=3 mean=0 sd=0 ci95=[0, 0]; throughput_rps: n=3 mean=1.000133 sd=0.000115 ci95=[0.999846, 1.00042]; health_p95_ms: n=3 mean=29.695 sd=1.032576 ci95=[27.129732, 32.260268]"
+}

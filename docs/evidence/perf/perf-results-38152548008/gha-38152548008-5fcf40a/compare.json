@@ -1,0 +1,5 @@
+{
+ "baseline": null,
+ "note": "この環境の区分（github-hosted:ubuntu24:X64）の基準が perf/baseline.json に無い。比較せず、退行は判定しない（失敗にしない）。この環境の基準を作るには、この run の結果（artifact）を取得し、「node scripts/perf/compare.mjs --run-dir <結果のディレクトリ> --update-baseline --release <名前>」で perf/baseline.json に追記して PR にする。",
+ "regressions": []
+}
