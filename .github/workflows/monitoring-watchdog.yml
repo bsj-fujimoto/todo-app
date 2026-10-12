@@ -1,5 +1,8 @@
-# 監視の死活監視（監視基盤自身の沈黙の検知）。synthetic.yml の最終実行が 3 時間以上前なら、incident Issue
-# `[sev3][MON-META] 外形監視が 3 時間以上実行されていない` を起票する（RB-005）。synthetic.yml が回復して成功すると、そちらの alert ジョブが close する。
+# 監視の死活監視（監視基盤自身の沈黙の検知）。synthetic.yml の最終実行がしきい値より前なら、incident Issue
+# `[sev3][MON-META] 外形監視が <しきい値> 時間以上実行されていない` を起票する（RB-005）。synthetic.yml が回復して成功すると、そちらの alert ジョブが close する。
+# しきい値は monitoring/monitors.yaml の watchdog.threshold_hours（実測の実効間隔から決める。現在 8 時間。根拠は monitoring/README.md）。
+# 当初の 3 時間は、宣言（30 分）に合わせた値で、実効間隔（3.4〜6.7 時間）に対して誤報になる見込みだった（#59。fp-fn-log.md）。
+# このワークフロー自身の schedule も遅れる（宣言 3 時間に対して実測 8.1 時間）。実測は scripts/monitoring/cadence.mjs（実行のたびに summary へ出す）。
 # 制約: これも GitHub の schedule で動く。schedule 自体が無効化（60 日無活動）されたり GitHub 側が止まったりすると、この監視も一緒に止まる
 # （同じ基盤の死活は同じ基盤では監視できない）。その残存リスクは monitoring/README.md に書いた。
 name: monitoring-watchdog
@@ -8,6 +11,11 @@ on:
   schedule:
     - cron: "47 */3 * * *" # 3 時間ごと（遅延しうる）
   workflow_dispatch:
+    inputs:
+      drill_threshold_hours:
+        description: "通知試験: しきい値をこの時間（例 0.01）に下げて、停止の検知 → [drill][sev3][MON-META] の起票 → close の経路を実際に通す（drill ラベル。自動で close）"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -32,17 +40,35 @@ jobs:
         with:
           install_args: node
       - run: mise x -- npm ci
-      - name: "synthetic.yml の最終実行を確かめる（3 時間以内か）"
+      - name: "synthetic.yml の最終実行を確かめる（しきい値は monitors.yaml の watchdog.threshold_hours）"
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
-        run: mise x -- node scripts/monitoring/watchdog.mjs --hours 3
+          DRILL_HOURS: ${{ inputs.drill_threshold_hours }}
+        run: |
+          if [ -n "$DRILL_HOURS" ]; then
+            mise x -- node scripts/monitoring/watchdog.mjs --hours "$DRILL_HOURS"
+          else
+            mise x -- node scripts/monitoring/watchdog.mjs
+          fi
       - name: "停止していたら incident を起票する"
         if: steps.check.outputs.stale == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DETAIL: ${{ steps.check.outputs.detail }}
+          TITLE: ${{ steps.check.outputs.title }}
+          DRILL_HOURS: ${{ inputs.drill_threshold_hours }}
         run: |
-          mise x -- node scripts/monitoring/alert.mjs --meta fail --out monitoring/out \
-            --title "外形監視が 3 時間以上実行されていない" --detail "$DETAIL" \
-            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          drill=""
+          if [ -n "$DRILL_HOURS" ]; then drill="--drill"; fi
+          mise x -- node scripts/monitoring/alert.mjs --meta fail $drill --out monitoring/out \
+            --title "$TITLE" --detail "$DETAIL" --run-url "$url"
+          if [ -n "$DRILL_HOURS" ]; then
+            sleep 20 # 作成直後の Issue が一覧に載るのを待つ
+            mise x -- node scripts/monitoring/alert.mjs --meta ok --drill --out monitoring/out --run-url "$url"
+          fi
+      - name: "schedule の実行間隔の実測を記録する（宣言と実測。summary に出す。gh api の読み取りのみ）"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: mise x -- node scripts/monitoring/cadence.mjs

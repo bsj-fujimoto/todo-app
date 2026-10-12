@@ -1,6 +1,8 @@
 // 監視設定（Monitoring as Code）の整合性検査。純関数。問題を文字列の配列で返す（空なら OK）。
 // 検査: 必須項目、slo_ref が perf/slo.yaml に存在、通知経路が全監視を覆う、重要ジャーニーが http/api/browser で守られている、
 //       runbook が重要監視を覆い 4 節（一次対応・切り分け・rollback・連絡経路）がある、無効な監視に理由がある。
+import { THRESHOLD_MARGIN_HOURS, intervalsSec, slotsOfAll, stats } from "./cadence.mjs";
+
 const REQUIRED = [
   "monitor_id",
   "name",
@@ -114,7 +116,62 @@ function checkLimits(monitors, read) {
     .flatMap((m) => checkMonitorLimits(m, spec));
 }
 
-export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, read }) {
+// 実行間隔: 宣言（interval_sec = 設計目標）・実測（observed_*）・watchdog のしきい値・workflow の cron が食い違っていないか。
+const HOUR_SEC = 3600;
+const WEEK_MS = 7 * 86400000;
+const positive = (v) => typeof v === "number" && Number.isFinite(v) && v > 0;
+
+function cronIntervalSec(workflowDoc) {
+  const crons = ((workflowDoc.on || {}).schedule || []).map((x) => x.cron);
+  const slots = slotsOfAll(crons, 0, WEEK_MS);
+  return slots.length > 1 ? stats(intervalsSec(slots)).median : null;
+}
+
+function checkObserved(d, read) {
+  const rules = [
+    [
+      !positive(d.observed_interval_sec),
+      "defaults.observed_interval_sec（実測の実効間隔）が無い、または正の数でない",
+    ],
+    [
+      !positive(d.observed_interval_max_sec),
+      "defaults.observed_interval_max_sec（実測の最大間隔）が無い、または正の数でない",
+    ],
+    [
+      d.observed_interval_max_sec < d.observed_interval_sec,
+      "observed_interval_max_sec が observed_interval_sec より小さい",
+    ],
+    [isBlank(d.observed_at), "defaults.observed_at（実測の時点）が無い"],
+    [
+      isBlank(d.observed_source) || read(d.observed_source) === null,
+      "defaults.observed_source（実測の記録）のファイルが無い",
+    ],
+  ];
+  return rules.filter(([bad]) => bad).map(([, msg]) => `cadence: ${msg}`);
+}
+
+function checkWatchdog(doc) {
+  const d = doc.defaults || {};
+  const hours = (doc.watchdog || {}).threshold_hours;
+  if (!positive(hours)) return ["cadence: watchdog.threshold_hours が無い、または正の数でない"];
+  const need = d.observed_interval_max_sec / HOUR_SEC + THRESHOLD_MARGIN_HOURS;
+  return hours >= need
+    ? []
+    : [
+        `cadence: watchdog.threshold_hours ${hours} が、最大実測間隔 + 余裕 ${THRESHOLD_MARGIN_HOURS} 時間（${need.toFixed(1)}）に足りない（誤報を量産する）`,
+      ];
+}
+
+function checkCadence(monitorsDoc, workflowDoc, read) {
+  const problems = [...checkObserved(monitorsDoc.defaults || {}, read), ...checkWatchdog(monitorsDoc)];
+  const declared = (monitorsDoc.defaults || {}).interval_sec;
+  const fromCron = workflowDoc ? cronIntervalSec(workflowDoc) : declared;
+  if (fromCron !== declared)
+    problems.push(`cadence: interval_sec ${declared} が synthetic.yml の cron の間隔 ${fromCron} 秒と違う`);
+  return problems;
+}
+
+export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, read, workflowDoc }) {
   const sloNames = new Set(slo.slos.map((s) => s.metric));
   const monitors = monitorsDoc.monitors.map((m) => ({ ...monitorsDoc.defaults, ...m }));
   const problems = monitors.flatMap((m) => checkMonitor(m, sloNames));
@@ -123,6 +180,7 @@ export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, r
     ...checkJourneys(monitors, journeys),
     ...checkRunbooks(monitors, runbooksDoc.runbooks, read),
     ...checkLimits(monitors, read),
+    ...checkCadence(monitorsDoc, workflowDoc, read),
   );
   return problems;
 }
