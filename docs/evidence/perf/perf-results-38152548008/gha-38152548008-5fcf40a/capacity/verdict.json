@@ -1,0 +1,175 @@
+{
+ "scenario": "capacity",
+ "status": "pass",
+ "reasons": [],
+ "warnings": [
+  "7500 件で SLO の目標を超える: list p95 5454.524666666666ms > 500ms, create p95 5395.3ms > 300ms, toggle p95 5335.574333333333ms > 300ms, delete p95 5513.578666666667ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）",
+  "10000 件で SLO の目標を超える: list p95 7875.528666666666ms > 500ms, create p95 7803.405666666667ms > 300ms, toggle p95 7821.623666666666ms > 300ms, delete p95 7839.097000000001ms > 300ms（SLO の適用範囲 1000 件を超える。容量計画の指標）"
+ ],
+ "steps": [
+  {
+   "tasks": 1000,
+   "iterations": 3,
+   "list_p95_ms": 13.009,
+   "create_p95_ms": 10.02,
+   "toggle_p95_ms": 10.663,
+   "delete_p95_ms": 8.96,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    13.023,
+    13.834,
+    12.169
+   ]
+  },
+  {
+   "tasks": 2500,
+   "iterations": 3,
+   "list_p95_ms": 28.582,
+   "create_p95_ms": 27.271,
+   "toggle_p95_ms": 19.139,
+   "delete_p95_ms": 30.743,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    22.427,
+    30.492,
+    32.826
+   ]
+  },
+  {
+   "tasks": 5000,
+   "iterations": 3,
+   "list_p95_ms": 184.835,
+   "create_p95_ms": 169.471,
+   "toggle_p95_ms": 165.989,
+   "delete_p95_ms": 177.772,
+   "error_rate": 0,
+   "violations": [],
+   "list_p95_per_iteration": [
+    187.685,
+    187.856,
+    178.964
+   ]
+  },
+  {
+   "tasks": 7500,
+   "iterations": 3,
+   "list_p95_ms": 5454.525,
+   "create_p95_ms": 5395.3,
+   "toggle_p95_ms": 5335.574,
+   "delete_p95_ms": 5513.579,
+   "error_rate": 0,
+   "violations": [
+    "list p95 5454.524666666666ms > 500ms",
+    "create p95 5395.3ms > 300ms",
+    "toggle p95 5335.574333333333ms > 300ms",
+    "delete p95 5513.578666666667ms > 300ms"
+   ],
+   "list_p95_per_iteration": [
+    5143.838,
+    6068.96,
+    5150.776
+   ]
+  },
+  {
+   "tasks": 10000,
+   "iterations": 3,
+   "list_p95_ms": 7875.529,
+   "create_p95_ms": 7803.406,
+   "toggle_p95_ms": 7821.624,
+   "delete_p95_ms": 7839.097,
+   "error_rate": 0,
+   "violations": [
+    "list p95 7875.528666666666ms > 500ms",
+    "create p95 7803.405666666667ms > 300ms",
+    "toggle p95 7821.623666666666ms > 300ms",
+    "delete p95 7839.097000000001ms > 300ms"
+   ],
+   "list_p95_per_iteration": [
+    7850.269,
+    7919.68,
+    7856.637
+   ]
+  }
+ ],
+ "scope_tasks": 1000,
+ "max_tasks_within_slo": 5000,
+ "series": {
+  "list_p95_ms@1000tasks": [
+   13.023,
+   13.834,
+   12.169
+  ],
+  "list_p95_ms@2500tasks": [
+   22.427,
+   30.492,
+   32.826
+  ],
+  "list_p95_ms@5000tasks": [
+   187.685,
+   187.856,
+   178.964
+  ],
+  "list_p95_ms@7500tasks": [
+   5143.838,
+   6068.96,
+   5150.776
+  ],
+  "list_p95_ms@10000tasks": [
+   7850.269,
+   7919.68,
+   7856.637
+  ]
+ },
+ "iterations": 3,
+ "warmup_sec": 30,
+ "variance_stats": {
+  "list_p95_ms@1000tasks": {
+   "n": 3,
+   "mean": 13.0087,
+   "sd": 0.8326,
+   "ci95": [
+    10.9402,
+    15.0771
+   ]
+  },
+  "list_p95_ms@2500tasks": {
+   "n": 3,
+   "mean": 28.5817,
+   "sd": 5.4564,
+   "ci95": [
+    15.0262,
+    42.1371
+   ]
+  },
+  "list_p95_ms@5000tasks": {
+   "n": 3,
+   "mean": 184.835,
+   "sd": 5.0852,
+   "ci95": [
+    172.2018,
+    197.4682
+   ]
+  },
+  "list_p95_ms@7500tasks": {
+   "n": 3,
+   "mean": 5454.5247,
+   "sd": 532.1279,
+   "ci95": [
+    4132.539,
+    6776.5104
+   ]
+  },
+  "list_p95_ms@10000tasks": {
+   "n": 3,
+   "mean": 7875.5287,
+   "sd": 38.3685,
+   "ci95": [
+    7780.2083,
+    7970.849
+   ]
+  }
+ },
+ "variance_stats_text": "list_p95_ms@1000tasks: n=3 mean=13.0087 sd=0.8326 ci95=[10.9402, 15.0771]; list_p95_ms@2500tasks: n=3 mean=28.5817 sd=5.4564 ci95=[15.0262, 42.1371]; list_p95_ms@5000tasks: n=3 mean=184.835 sd=5.0852 ci95=[172.2018, 197.4682]; list_p95_ms@7500tasks: n=3 mean=5454.5247 sd=532.1279 ci95=[4132.539, 6776.5104]; list_p95_ms@10000tasks: n=3 mean=7875.5287 sd=38.3685 ci95=[7780.2083, 7970.849]"
+}
