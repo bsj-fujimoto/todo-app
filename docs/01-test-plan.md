@@ -35,7 +35,7 @@
 | DOC-04 | リグレッションテスト成果物 | `docs/04-regression.md` | この版で main に無い |
 | DOC-05 | 自動テスト成果物 | `docs/05-automation.md` | この版で main に無い |
 | DOC-06 | API テスト成果物 | `docs/06-api-test.md` | この版で main に無い |
-| DOC-07 | 負荷・性能試験成果物 | `docs/07-performance.md` | この版で main に無い |
+| DOC-07 | 負荷・性能試験成果物 | [docs/07-performance.md](07-performance.md) | draft（SLO 10・試験種別 6・観点 13 章） |
 | DOC-08 | テスト対象の検査結果レポート | `docs/08-inspection.md` | この版で main に無い |
 | DOC-09 | テスト実施・結果記載 | `docs/09-test-execution.md` | この版で main に無い |
 | DOC-10 | テスト品質報告書 | `docs/10-quality-report.md` | この版で main に無い |
