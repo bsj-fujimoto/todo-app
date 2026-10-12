@@ -1,0 +1,190 @@
+{
+  "generated_at": "2026-10-12T08:03:33.011Z",
+  "repo": "bsj-fujimoto/todo-app",
+  "workflows": [
+    {
+      "file": "synthetic.yml",
+      "declared": {
+        "crons": [
+          "7,37 * * * *"
+        ],
+        "interval_sec": 1800,
+        "slots_in_window": 39
+      },
+      "window": {
+        "start": "2026-10-11T12:36:39.000Z",
+        "end": "2026-10-12T08:03:33.011Z"
+      },
+      "runs_times": [
+        "2026-10-11T18:01:35Z",
+        "2026-10-11T21:52:01Z",
+        "2026-10-12T01:16:32Z",
+        "2026-10-12T07:57:03Z"
+      ],
+      "schedule": {
+        "runs": 4,
+        "first": "2026-10-11T18:01:35Z",
+        "last": "2026-10-12T07:57:03Z",
+        "first_delay_sec": 19496,
+        "since_last_sec": 390,
+        "missing": 35,
+        "intervals_sec": [
+          13826,
+          12271,
+          24031
+        ],
+        "interval_stats_sec": {
+          "n": 3,
+          "min": 12271,
+          "median": 13826,
+          "mean": 16709.333333333332,
+          "p90": 21990,
+          "max": 24031
+        },
+        "delays_sec": []
+      },
+      "all_events": {
+        "runs": 9,
+        "by_event": {
+          "schedule": 4,
+          "workflow_dispatch": 5
+        },
+        "by_conclusion": {
+          "success": 6,
+          "failure": 3
+        },
+        "interval_stats_sec": {
+          "n": 8,
+          "min": 5,
+          "median": 8982.5,
+          "mean": 8659.5,
+          "p90": 16887.5,
+          "max": 24031
+        }
+      }
+    },
+    {
+      "file": "nightly.yml",
+      "declared": {
+        "crons": [
+          "0 18 * * *",
+          "0 20 * * 0"
+        ],
+        "interval_sec": 86400,
+        "slots_in_window": 2
+      },
+      "window": {
+        "start": "2026-10-11T08:37:22.000Z",
+        "end": "2026-10-12T08:03:33.011Z"
+      },
+      "runs_times": [
+        "2026-10-11T21:25:56Z",
+        "2026-10-11T23:20:01Z"
+      ],
+      "schedule": {
+        "runs": 2,
+        "first": "2026-10-11T21:25:56Z",
+        "last": "2026-10-11T23:20:01Z",
+        "first_delay_sec": 46114,
+        "since_last_sec": 31412,
+        "missing": 0,
+        "intervals_sec": [
+          6845
+        ],
+        "interval_stats_sec": {
+          "n": 1,
+          "min": 6845,
+          "median": 6845,
+          "mean": 6845,
+          "p90": 6845,
+          "max": 6845
+        },
+        "delays_sec": [
+          12356,
+          12001
+        ]
+      },
+      "all_events": {
+        "runs": 27,
+        "by_event": {
+          "schedule": 2,
+          "pull_request": 25
+        },
+        "by_conclusion": {
+          "success": 23,
+          "failure": 3,
+          "cancelled": 1
+        },
+        "interval_stats_sec": {
+          "n": 25,
+          "min": 4,
+          "median": 350,
+          "mean": 2374.6,
+          "p90": 5431.800000000005,
+          "max": 24896
+        }
+      }
+    },
+    {
+      "file": "monitoring-watchdog.yml",
+      "declared": {
+        "crons": [
+          "47 */3 * * *"
+        ],
+        "interval_sec": 10800,
+        "slots_in_window": 5
+      },
+      "window": {
+        "start": "2026-10-11T16:30:05.000Z",
+        "end": "2026-10-12T08:03:33.011Z"
+      },
+      "runs_times": [
+        "2026-10-11T22:29:56Z",
+        "2026-10-12T06:35:42Z"
+      ],
+      "schedule": {
+        "runs": 2,
+        "first": "2026-10-11T22:29:56Z",
+        "last": "2026-10-12T06:35:42Z",
+        "first_delay_sec": 21591,
+        "since_last_sec": 5271,
+        "missing": 3,
+        "intervals_sec": [
+          29146
+        ],
+        "interval_stats_sec": {
+          "n": 1,
+          "min": 29146,
+          "median": 29146,
+          "mean": 29146,
+          "p90": 29146,
+          "max": 29146
+        },
+        "delays_sec": []
+      },
+      "all_events": {
+        "runs": 2,
+        "by_event": {
+          "schedule": 2
+        },
+        "by_conclusion": {
+          "success": 2
+        },
+        "interval_stats_sec": {
+          "n": 1,
+          "min": 29146,
+          "median": 29146,
+          "mean": 29146,
+          "p90": 29146,
+          "max": 29146
+        }
+      }
+    }
+  ],
+  "recommendation": {
+    "workflow": "synthetic.yml",
+    "max_interval_sec": 24031,
+    "hours": 8,
+    "basis": "最大実測間隔 6.7 時間を切り上げて 7 時間 + 余裕 1 時間"
+  }
+}

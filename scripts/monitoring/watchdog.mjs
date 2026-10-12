@@ -1,14 +1,17 @@
-// 監視の死活監視（CLI, composition root）。synthetic.yml の最終実行の時刻を確かめ、しきい値（既定 3 時間）より古ければ stale を出力する。
-// 出力: 標準出力と $GITHUB_OUTPUT（stale=true|false、detail=…）。stale のときの Issue 起票は alert.mjs --meta fail（monitoring-watchdog.yml）。
-// 使い方: node scripts/monitoring/watchdog.mjs [--repo owner/name] [--hours 3]
+// 監視の死活監視（CLI, composition root）。synthetic.yml の最終実行の時刻を確かめ、しきい値より古ければ stale を出力する。
+// しきい値は monitoring/monitors.yaml の watchdog.threshold_hours（実測の実効間隔から決めた値）。--hours で上書きできる。
+// 出力: 標準出力と $GITHUB_OUTPUT（stale=true|false、detail=…、title=…）。stale のときの Issue 起票は alert.mjs --meta fail（monitoring-watchdog.yml）。
+// 使い方: node scripts/monitoring/watchdog.mjs [--repo owner/name] [--hours 8]
 import { execFile } from "node:child_process";
-import { appendFileSync } from "node:fs";
+import { appendFileSync, readFileSync } from "node:fs";
 import { promisify } from "node:util";
+import { parse } from "yaml";
 import { parseArgs } from "../lib/cli.mjs";
-import { staleness } from "./lib/watchdog.mjs";
+import { lastRanRun, staleTitle, staleness } from "./lib/watchdog.mjs";
 
 const exec = promisify(execFile);
 
+// 直近 20 件から、実際に動いた run（skipped / cancelled を除く）の最新を取る
 async function lastRun(repo) {
   const fields = "createdAt,status,conclusion,url";
   const args = [
@@ -19,12 +22,16 @@ async function lastRun(repo) {
     "--workflow",
     "synthetic.yml",
     "--limit",
-    "1",
+    "20",
     "--json",
     fields,
   ];
-  const runs = JSON.parse((await exec("gh", args)).stdout);
-  return runs.length ? runs[0] : null;
+  return lastRanRun(JSON.parse((await exec("gh", args)).stdout));
+}
+
+function thresholdHours(args) {
+  if (args.hours) return Number(args.hours);
+  return Number(parse(readFileSync("monitoring/monitors.yaml", "utf8")).watchdog.threshold_hours);
 }
 
 async function main() {
@@ -32,10 +39,12 @@ async function main() {
   const repo = args.repo || process.env.GITHUB_REPOSITORY || "bsj-fujimoto/todo-app";
   const run = await lastRun(repo);
   const lastCreatedAt = run ? run.createdAt : null;
-  const result = staleness({ lastCreatedAt, nowMs: Date.now(), thresholdHours: Number(args.hours || 3) });
+  const hours = thresholdHours(args);
+  const result = staleness({ lastCreatedAt, nowMs: Date.now(), thresholdHours: hours });
   console.log(`[watchdog] stale=${result.stale} ${result.detail}`);
   if (process.env.GITHUB_OUTPUT) {
-    appendFileSync(process.env.GITHUB_OUTPUT, `stale=${result.stale}\ndetail=${result.detail}\n`);
+    const lines = `stale=${result.stale}\ndetail=${result.detail}\ntitle=${staleTitle(hours)}\n`;
+    appendFileSync(process.env.GITHUB_OUTPUT, lines);
   }
 }
 

@@ -1,8 +1,13 @@
 # 外形監視（synthetic）。監視定義は monitoring/monitors.yaml（正本）。実行は scripts/monitoring/run-monitors.mjs。
 #   対象: 最新の GHCR リリースイメージ（digest 固定で pull）を compose 起動して localhost に対して実行する。
 #         リリースが無い・引けないときは docker compose up --build（main の HEAD）にフォールバックし、run の summary に明記する。
-#   起動: 30 分ごと（schedule）と手動（workflow_dispatch）。GitHub の cron は遅延・欠落しうるため、実際の間隔は 30 分より長くなりうる
+#   起動: 30 分ごと（schedule。宣言 = 設計目標）、main への push（マージ直後）、リリース（Release ワークフロー）の成功後、手動（workflow_dispatch）。
+#         GitHub の cron は遅延・欠落しうる。実測（scripts/monitoring/cadence.mjs。monitoring/cadence/）では実効間隔は 3.4〜6.7 時間で、30 分は守れていない。
+#         そこで「マージ直後・リリース直後に必ず 1 回動く」契機を足し、MTTD を補う（schedule を置き換えるものではない）。
 #         （60 日リポジトリに活動が無いと schedule は無効化される。RB-005 参照）。
+#   過剰実行・ループの防止: concurrency group `synthetic`（cancel-in-progress: false）で同時に 1 本だけ動かし、待ちは最新の 1 本に置き換わる
+#         （連続マージでも待ちは 1 本）。このワークフローは push もリリースも作らない（Issue・artifact だけ）ので、自分自身を起動しない。
+#         workflow_run は Release ワークフローの「push（タグ）で動いて成功した」ときだけ（dry-run・PR は条件で除く）。
 #   通知: 失敗は alert ジョブ（issues: write はこのジョブだけ）が incident Issue にする。回復したらコメントして close。
 #   通知試験: drill=true で backend コンテナを意図的に止め、アラート経路（Issue 作成・assignee・回復・close）を実際に通す。
 #   制約: runner 内の localhost は HTTP のみ。DNS・TLS の実証明書は検証できない（monitoring/README.md、MON-011/012 は enabled: false）。
@@ -10,7 +15,12 @@ name: synthetic
 
 on:
   schedule:
-    - cron: "7,37 * * * *" # 30 分ごと（遅延しうる）
+    - cron: "7,37 * * * *" # 30 分ごと（宣言。実効は 3.4〜6.7 時間。monitoring/README.md）
+  push:
+    branches: [main] # マージ直後に 1 回（schedule の遅延・欠落の補完）
+  workflow_run:
+    workflows: ["Release"] # リリース直後に 1 回（新しいイメージ・Release が監視対象になる）
+    types: [completed]
   workflow_dispatch:
     inputs:
       drill:
@@ -40,6 +50,8 @@ env:
 
 jobs:
   synthetic:
+    # workflow_run は Release が「タグの push で動いて成功した」ときだけ（dry-run・PR・失敗を除く）。他の契機は常に動く
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -73,6 +85,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: "起動の契機を記録する（schedule / push / workflow_run / 手動）"
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          {
+            echo "### 起動の契機"
+            echo "- イベント: \`$EVENT_NAME\`（schedule は GitHub の都合で遅延・欠落する。push・workflow_run・手動は契機そのもの）"
+            if [ -n "$TRIGGER_RUN_URL" ]; then echo "- きっかけの run: $TRIGGER_RUN_URL"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: "監視対象を決める（最新リリースのイメージ / フォールバック）"
         id: target
         env:
