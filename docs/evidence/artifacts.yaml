@@ -35,10 +35,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:27:41+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:27:41+09:00"
+        by: maintainer
+        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
+        commit: "1d6a247"
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -55,7 +59,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 01 テスト計画書と ADR-0002〜0006 (#41)"
         commit: eb8c753
-    source_sha256: "901eec6475173af9d3c8533931e85f977bbc1bf5d23325d5b881a9e2ff7db008"
+    source_sha256: c1790aeed9feecb3afa70eceaab138fc04f3fc3d44c515eb4410e02af1ea3fc7
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-01
@@ -271,10 +275,14 @@ artifacts:
     status: draft
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:27:41+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:27:41+09:00"
+        by: maintainer
+        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
+        commit: "1d6a247"
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -287,7 +295,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 09 テスト実施・結果記載（execution-01〜14） (#47)"
         commit: "901e458"
-    source_sha256: "5a47509e3ebdf619b43349dd06e96375c8c5ac0589f33ea4b809a1b78af709cd"
+    source_sha256: b05d8cca613c2c94ce581ac42432b63657ca6e30115c7edae2cfc7d2f524e33f
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-09
@@ -299,10 +307,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:27:41+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:27:41+09:00"
+        by: maintainer
+        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
+        commit: "1d6a247"
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -315,7 +327,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 10 テスト品質報告書（quality-01〜14） (#54)"
         commit: a1cb9ae
-    source_sha256: "5f6bee4ca3f7e9501d655f9598e18dbe6909bb04a8eba627529a8418119cb041"
+    source_sha256: "138d203c1217f2fac63ea400f325fc34ee63e09daeb771d11c7d91a1c38c6900"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-10
@@ -327,10 +339,14 @@ artifacts:
     status: draft
     owner_role: "運用"
     approved_by: null
-    updated_at: "2026-10-12T17:12:40+09:00"
+    updated_at: "2026-10-12T17:27:41+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:27:41+09:00"
+        by: maintainer
+        change: "Merge origin/main（PR #65: 監視の実効間隔・しきい値・契機）と、docs/11・10・01・ai-context の実績（実効間隔・MTTD・#59 は FP の見込み）への更新"
+        commit: "1d6a247"
       - at: "2026-10-12T17:12:40+09:00"
         by: maintainer
         change: "docs: 残りの時点依存・承認の書き方の揃え（08 の Dependabot 実績・保守性、04 の件数、承認根拠、evidence README の perf）"
@@ -343,7 +359,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 11 外形監視・運用品質成果物（docs/11-monitoring.md） (#43)"
         commit: f4c59fd
-    source_sha256: "8b737877119f033d4f3a7b8b1579d2323e94d5f4095133c6158bc18da25f2440"
+    source_sha256: "6ea8355c7b096302744aca54ce0a9d3a397ca09c2d1ef1298453f81f4f963349"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-11
@@ -525,14 +541,22 @@ artifacts:
     path: docs/data/actions.csv
     type: "table:actions"
     title: docs/data/actions.csv
-    version: "git:190de19"
+    version: "git:8eaacf1"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:25:40+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:25:40+09:00"
+        by: maintainer
+        change: "Merge remote-tracking branch 'origin/main' into docs/reconcile"
+        commit: "8eaacf1"
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -557,7 +581,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "4b04dbd86ac70a3ecb0e5a7df7c0e97d5e9617bbfeb788d8ac4e380345d8a80f"
+    source_sha256: "4d71aca1b665cf67a57d642a7a4f35b48a02bc5de5d01c0dcc910e17ca02a937"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-06
@@ -783,14 +807,18 @@ artifacts:
     path: docs/data/traceability.csv
     type: "table:traceability"
     title: docs/data/traceability.csv
-    version: "git:2d33827"
+    version: "git:6a07b95"
     status: reviewed
     owner_role: "QA 担当"
     approved_by: null
-    updated_at: "2026-10-12T17:14:35+09:00"
+    updated_at: "2026-10-12T17:23:59+09:00"
     authoritative: false
     normalized_format: csv
     history:
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T17:14:35+09:00"
         by: maintainer
         change: "docs: 成果物 07 負荷・性能試験成果物（performance-01〜13） (#62)"
@@ -811,7 +839,7 @@ artifacts:
         by: maintainer
         change: "evidence: 実施表・不具合表・証跡台帳を CI の実行結果から機械的に生成・検査する仕組み (#26)"
         commit: b800097
-    source_sha256: "826ede86ac49534ea1556303b402eac321003c006ce77bba493d74cd587fe0c0"
+    source_sha256: be34753f60a45b2ca8efc71ad92909d0cc8d5d6ef76dcd54ccf0c582a109affc
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-16
@@ -895,14 +923,18 @@ artifacts:
     path: monitoring/README.md
     type: monitoring_config
     title: "外形監視（Monitoring as Code）・runbook"
-    version: "git:5263ff6"
+    version: "git:6a07b95"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T01:30:05+09:00"
+    updated_at: "2026-10-12T17:23:59+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T01:30:05+09:00"
         by: maintainer
         change: "fix(monitoring): 応答時間を測れる形に、監視基盤の沈黙対策（MON-META・死活監視）、重大度の整理、Actions 上の drill で見つけた不具合 (#51)"
@@ -915,7 +947,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: a5a30e11d4b4b89dd7e9a0b91dbb69dfde833f1a8bd026996a510bc9a4f0949d
+    source_sha256: c5833ac22e61bcd338d3e0c9ae879f08ed711c15d3fca01945e8f79a6967a809
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-40
@@ -945,14 +977,18 @@ artifacts:
     path: monitoring/alert-tests.md
     type: monitoring_config
     title: "通知試験・runbook 訓練の記録"
-    version: "git:5263ff6"
+    version: "git:6a07b95"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T01:30:05+09:00"
+    updated_at: "2026-10-12T17:23:59+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T01:30:05+09:00"
         by: maintainer
         change: "fix(monitoring): 応答時間を測れる形に、監視基盤の沈黙対策（MON-META・死活監視）、重大度の整理、Actions 上の drill で見つけた不具合 (#51)"
@@ -961,21 +997,25 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: c9341b214e534c050bca6efda93310263ca878ac43d5aad62920b1e3e0281060
+    source_sha256: d27de4227c3d2b6419c421a6068ccedb25a684a613d4ca74224d0a4e213ae25d
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-42
     path: monitoring/fp-fn-log.md
     type: monitoring_config
     title: "誤検知（false positive）・見逃し（false negative）の記録"
-    version: "git:5263ff6"
+    version: "git:6a07b95"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T01:30:05+09:00"
+    updated_at: "2026-10-12T17:23:59+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T01:30:05+09:00"
         by: maintainer
         change: "fix(monitoring): 応答時間を測れる形に、監視基盤の沈黙対策（MON-META・死活監視）、重大度の整理、Actions 上の drill で見つけた不具合 (#51)"
@@ -988,7 +1028,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: "517b1979852e403b105ca5556f245da6dddbff5dad69c32efb5f106f688d1f4c"
+    source_sha256: "7f6bc963ad0345b81f78dff74cb8c690735f51ccbbbc7474790a69fa8f4c5cd4"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-43
@@ -1014,14 +1054,18 @@ artifacts:
     path: monitoring/monitors.yaml
     type: monitoring_config
     title: "外形監視の定義（Monitoring as Code の正本）。scripts/monitoring/run-monitors.mjs がこのファイルを読んで実行する。"
-    version: "git:5263ff6"
+    version: "git:6a07b95"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T01:30:05+09:00"
+    updated_at: "2026-10-12T17:23:59+09:00"
     authoritative: false
     normalized_format: yaml
     history:
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T01:30:05+09:00"
         by: maintainer
         change: "fix(monitoring): 応答時間を測れる形に、監視基盤の沈黙対策（MON-META・死活監視）、重大度の整理、Actions 上の drill で見つけた不具合 (#51)"
@@ -1030,7 +1074,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: f2c7cf159debd0224946d2edd44c0b7d5c8a8080ed2048791e02918aa57c0656
+    source_sha256: "19c77cf817604b863f2ac880a1659da4a6528bf30d50f0d08dc86d710b57f81e"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-45
@@ -1190,14 +1234,22 @@ artifacts:
     path: perf/slo.yaml
     type: slo
     title: "性能 SLO（機械可読の正本）。判定は scripts/perf/verdict.mjs、k6 の threshold、"
-    version: "git:190de19"
+    version: "git:8eaacf1"
     status: reviewed
     owner_role: "プロダクトオーナー"
     approved_by: null
-    updated_at: "2026-10-12T17:18:17+09:00"
+    updated_at: "2026-10-12T17:25:40+09:00"
     authoritative: true
     normalized_format: yaml
     history:
+      - at: "2026-10-12T17:25:40+09:00"
+        by: maintainer
+        change: "Merge remote-tracking branch 'origin/main' into docs/reconcile"
+        commit: "8eaacf1"
+      - at: "2026-10-12T17:23:59+09:00"
+        by: maintainer
+        change: "fix(monitoring): schedule の実効間隔を実測し、watchdog のしきい値と実行契機を見直す（#59） (#65)"
+        commit: "6a07b95"
       - at: "2026-10-12T17:18:17+09:00"
         by: maintainer
         change: "Merge origin/main（成果物 07・perf の取り込み）と、07 に関する記述の現状化・#31 の期限の一本化"
@@ -1210,7 +1262,7 @@ artifacts:
         by: maintainer
         change: "feat(ops): 負荷・性能試験（k6 / Lighthouse）と外形監視（Monitoring as Code）・runbook (#32)"
         commit: ffc2cdc
-    source_sha256: "76870d2069b670d6c09305cf58870896772688e740d4493a98e256fb9069f6f6"
+    source_sha256: "8b8c02f0fd7cb6b019a516d6a234648a7be324fed0efc8dc9b7d4eedf013d08e"
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
   - artifact_id: ART-53
