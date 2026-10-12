@@ -62,10 +62,11 @@ updates:
       time: "03:00"
       timezone: Asia/Tokyo
     open-pull-requests-limit: 5
-    # Node は LTS の 24 系に固定する（mise.toml と一致）。偶数 major（LTS）だけ追従し、奇数 major（25 など）は提案しない。
+    # Node は LTS の 24 系に固定する（mise.toml・ADR-0003 と一致）。minor / patch だけ追従し、major（25 など）は提案しない。
+    # 次の LTS（26 系）への移行は、日付を決めて手動で行う（versions 指定は docker の node に効かなかったため update-types で止める。#27・#58）。
     ignore:
       - dependency-name: "node"
-        versions: [">=25.0.0 <26.0.0", ">=27.0.0 <28.0.0"]
+        update-types: ["version-update:semver-major"]
     groups:
       docker-base-images:
         patterns: ["*"]
