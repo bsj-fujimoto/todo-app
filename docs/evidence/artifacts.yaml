@@ -315,19 +315,23 @@ artifacts:
     path: docs/13-evidence.md
     type: document
     title: "13 品質証跡・AIコンテキスト"
-    version: "1.0"
+    version: "1.1"
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T01:52:28+09:00"
+    updated_at: "2026-10-12T17:11:05+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:11:05+09:00"
+        by: maintainer
+        change: "docs: 13 の数え直し・旧 run/ART-58/Release 添付/FND-012 の解消の反映、schedule 実績（2026-10-12 17:00 JST）の反映"
+        commit: ac41baf
       - at: "2026-10-12T01:52:28+09:00"
         by: maintainer
         change: "docs: 成果物 13 品質証跡・AIコンテキスト（evidence-01〜11） (#55)"
         commit: ba2d2bd
-    source_sha256: ae4072573497767e13e1b9844c4b7c35a881940fe727c30f2229e8db1a915255
+    source_sha256: cd99f8f3daa3a3e158f649e9d3cc577ca9ecd7721185fa4226a8c49363531cf8
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-13
