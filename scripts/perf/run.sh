@@ -179,8 +179,12 @@ run_screen() {
     local out="$dir/tmp-$tasks"
     mkdir -p "$out"
     chmod a+rwx "$out" # 画面計測のコンテナは非 root（pwuser）で、このディレクトリへ書く
+    # サーバ側の観測（CPU・メモリ・health 応答時間・DB サイズ）を並走させる。窓は screen.json の started_at〜finished_at（verdict.mjs が時刻整合を記録）
+    mkdir -p "$dir/obs-$tasks"
+    start_observer "$dir/obs-$tasks"
     docker run --rm --network "$NETWORK" -v "$out:/out" -e "BASE_URL=http://frontend:8080" \
       -e "EXPECTED_ROWS=$tasks" -e "ROW_SELECTOR=${ROW_SELECTOR:-li.task}" -e "OUT_DIR=/out" "$SCREEN_IMAGE"
+    stop_observer
     if [ "$tasks" = "$NORMAL_TASKS" ]; then
       mv "$out/screen.json" "$dir/screen.json"
       mv "$out/lighthouse-report-1.json" "$dir/lighthouse-report-1.json"

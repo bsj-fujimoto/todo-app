@@ -17,7 +17,7 @@ ajv.addSchema({ ...spec, $id: ROOT_ID });
 
 const validators = new Map();
 
-function resolveRef(node) {
+export function resolveRef(node) {
   if (!node || typeof node.$ref !== "string") return node;
   const pointer = node.$ref.replace(/^#\//, "").split("/");
   return resolveRef(pointer.reduce((current, key) => current[key], spec));

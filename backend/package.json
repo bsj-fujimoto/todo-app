@@ -16,12 +16,14 @@
     "test": "node scripts/run-tests.js all",
     "test:unit": "node scripts/run-tests.js unit",
     "test:api": "node scripts/run-tests.js api",
-    "contract:check": "node scripts/run-tests.js contract"
+    "contract:check": "node scripts/run-tests.js contract",
+    "contract:consumer": "node scripts/run-tests.js consumer-contract"
   },
   "dependencies": {
     "fastify": "5.12.5"
   },
   "devDependencies": {
+    "@pact-foundation/pact": "17.1.4",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "yaml": "2.9.1"

@@ -120,9 +120,10 @@ async function collectSamples(browser) {
   const warmStart = performance.now();
   for (let i = 0; i < WARMUP_NAVIGATIONS; i += 1) await measureOnce(browser); // 判定から除外（nginx・backend・SQLite を温める）
   const warmupSeconds = Math.max(1, Math.ceil((performance.now() - warmStart) / 1000));
+  const measureStartedAt = new Date().toISOString();
   const samples = [];
   for (let i = 0; i < REPS; i += 1) samples.push(await measureOnce(browser));
-  return { samples, warmupSeconds };
+  return { samples, warmupSeconds, measureStartedAt };
 }
 
 function describeSamples(samples) {
@@ -145,12 +146,14 @@ async function main() {
   const startedAt = new Date().toISOString();
   const tasks = (await (await fetch(`${BASE_URL}/api/v1/tasks`)).json()).tasks.length;
   const browser = await chromium.launch();
-  const { samples, warmupSeconds } = await collectSamples(browser);
+  const { samples, warmupSeconds, measureStartedAt } = await collectSamples(browser);
   const chromiumVersion = browser.version();
   await browser.close();
   const lh = LH_RUNS > 0 ? await runLighthouse() : null;
   const out = {
     started_at: startedAt,
+    measure_started_at: measureStartedAt,
+    finished_at: new Date().toISOString(), // サーバ指標（observe.jsonl）の時刻整合の窓は started_at 〜 finished_at（warm-up・計測・Lighthouse すべて）
     base_url: BASE_URL,
     tasks,
     expected_rows: EXPECTED_ROWS,

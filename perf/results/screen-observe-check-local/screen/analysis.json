@@ -1,0 +1,180 @@
+{
+ "scenario": "screen",
+ "observe": {
+  "window_samples": 183,
+  "services": {
+   "backend": {
+    "cpu_pct": {
+     "n": 46,
+     "mean": 2.29,
+     "p95": 7.86,
+     "max": 8.67
+    },
+    "memory": {
+     "start_mib": 37.375,
+     "end_mib": 43.457,
+     "max_mib": 47.69,
+     "growth_ratio": 1.1627,
+     "slope_mib_per_min": 2.8884
+    }
+   },
+   "frontend": {
+    "cpu_pct": {
+     "n": 46,
+     "mean": 0.243,
+     "p95": 1.388,
+     "max": 2.75
+    },
+    "memory": {
+     "start_mib": 15.558,
+     "end_mib": 14.705,
+     "max_mib": 15.66,
+     "growth_ratio": 0.9452,
+     "slope_mib_per_min": -0.0256
+    }
+   }
+  },
+  "health": {
+   "n": 46,
+   "ok": 46,
+   "p50_ms": 6.691,
+   "p95_ms": 9.89,
+   "p99_ms": 10.88,
+   "max_ms": 11.213
+  },
+  "db": {
+   "start_bytes": 151552,
+   "end_bytes": 151552,
+   "max_bytes": 151552,
+   "growth_bytes": 0
+  }
+ },
+ "time_alignment": {
+  "k6_start": "2026-10-12T09:12:12.594Z",
+  "k6_end": "2026-10-12T09:12:58.170Z",
+  "window_definition": "screen.json の started_at〜finished_at",
+  "window_sec": 45.6,
+  "docker_stats_samples": 92,
+  "samples_per_sec_per_service": 1.009
+ },
+ "by_tasks": {
+  "1000": {
+   "observe": {
+    "window_samples": 183,
+    "services": {
+     "backend": {
+      "cpu_pct": {
+       "n": 46,
+       "mean": 2.29,
+       "p95": 7.86,
+       "max": 8.67
+      },
+      "memory": {
+       "start_mib": 37.375,
+       "end_mib": 43.457,
+       "max_mib": 47.69,
+       "growth_ratio": 1.1627,
+       "slope_mib_per_min": 2.8884
+      }
+     },
+     "frontend": {
+      "cpu_pct": {
+       "n": 46,
+       "mean": 0.243,
+       "p95": 1.388,
+       "max": 2.75
+      },
+      "memory": {
+       "start_mib": 15.558,
+       "end_mib": 14.705,
+       "max_mib": 15.66,
+       "growth_ratio": 0.9452,
+       "slope_mib_per_min": -0.0256
+      }
+     }
+    },
+    "health": {
+     "n": 46,
+     "ok": 46,
+     "p50_ms": 6.691,
+     "p95_ms": 9.89,
+     "p99_ms": 10.88,
+     "max_ms": 11.213
+    },
+    "db": {
+     "start_bytes": 151552,
+     "end_bytes": 151552,
+     "max_bytes": 151552,
+     "growth_bytes": 0
+    }
+   },
+   "time_alignment": {
+    "k6_start": "2026-10-12T09:12:12.594Z",
+    "k6_end": "2026-10-12T09:12:58.170Z",
+    "window_definition": "screen.json の started_at〜finished_at",
+    "window_sec": 45.6,
+    "docker_stats_samples": 92,
+    "samples_per_sec_per_service": 1.009
+   }
+  },
+  "10000": {
+   "observe": {
+    "window_samples": 262,
+    "services": {
+     "backend": {
+      "cpu_pct": {
+       "n": 66,
+       "mean": 3.25,
+       "p95": 13.67,
+       "max": 16.77
+      },
+      "memory": {
+       "start_mib": 74.438,
+       "end_mib": 70.525,
+       "max_mib": 90.63,
+       "growth_ratio": 0.9474,
+       "slope_mib_per_min": -2.4323
+      }
+     },
+     "frontend": {
+      "cpu_pct": {
+       "n": 66,
+       "mean": 0.458,
+       "p95": 3.128,
+       "max": 5.75
+      },
+      "memory": {
+       "start_mib": 18.305,
+       "end_mib": 14.51,
+       "max_mib": 23.06,
+       "growth_ratio": 0.7927,
+       "slope_mib_per_min": -4.1331
+      }
+     }
+    },
+    "health": {
+     "n": 65,
+     "ok": 65,
+     "p50_ms": 6.143,
+     "p95_ms": 10.682,
+     "p99_ms": 16.476,
+     "max_ms": 26.035
+    },
+    "db": {
+     "start_bytes": 1351680,
+     "end_bytes": 1351680,
+     "max_bytes": 1351680,
+     "growth_bytes": 0
+    }
+   },
+   "time_alignment": {
+    "k6_start": "2026-10-12T09:16:41.588Z",
+    "k6_end": "2026-10-12T09:17:46.517Z",
+    "window_definition": "screen.json の started_at〜finished_at",
+    "window_sec": 64.9,
+    "docker_stats_samples": 132,
+    "samples_per_sec_per_service": 1.016
+   }
+  }
+ }
+}

@@ -8,6 +8,7 @@ import { join } from "node:path";
 import { parse } from "yaml";
 import { parseArgs, requireArg } from "../lib/cli.mjs";
 import { analyzeIteration } from "./lib/iteration.mjs";
+import { analyzeScreenObserve } from "./lib/screen-observe.mjs";
 import {
   VERDICT_RULE,
   describeSeries,
@@ -98,6 +99,10 @@ async function screenVerdict(runDir, slo) {
       lighthouse: screen.lighthouse && screen.lighthouse.runs,
     },
   };
+  const observed = await analyzeScreenObserve(join(runDir, "screen"), ["backend", "frontend"]);
+  v.detail.server_observe = observed
+    ? { time_aligned_samples: observed.observe.window_samples, ref: "screen/analysis.json#observe" }
+    : null;
   const out = withVariance(v, screen.warmup.seconds);
   await writeJson(join(runDir, "screen", "verdict.json"), out);
   return out;

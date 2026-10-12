@@ -1,0 +1,83 @@
+{
+  "run_dir": "/Users/fujimoto/Documents/tmp/todo-app/.claude/worktrees/agent-a21985d6a4a1c9208/perf/results/screen-observe-check-local",
+  "files": [
+    {
+      "path": "metrics.json",
+      "bytes": 339,
+      "sha256": "3980c9552eff996078151ea0eab268650deed625e872eaa2215475f9a7bc6fef",
+      "committed": true
+    },
+    {
+      "path": "perf-runs.json",
+      "bytes": 6110,
+      "sha256": "a71cc971897beb61ffebe030bf48135461d69892c17966687b71341dc29472f8",
+      "committed": true
+    },
+    {
+      "path": "run.json",
+      "bytes": 3248,
+      "sha256": "2f02833bff9ddb74bcdd7e19d0795e206c4e1e8654c1a9ce6af31d94b03b51be",
+      "committed": true
+    },
+    {
+      "path": "screen/analysis.json",
+      "bytes": 3632,
+      "sha256": "c98f18473618793c5bfda043da5f542e7094f8564aea175e88ffd72ef972d56c",
+      "committed": true
+    },
+    {
+      "path": "screen/lighthouse-report-1.json",
+      "bytes": 576066,
+      "sha256": "c666d46a0c4eec35db0699a2668e2468485a269deb7963aadc2a56414df2ed1d",
+      "committed": true
+    },
+    {
+      "path": "screen/obs-1000/observe.jsonl",
+      "bytes": 36408,
+      "sha256": "ec68e7a086a8196d55518eedbbd26778105e26770661752a09b22d0fabdfc7de",
+      "committed": false
+    },
+    {
+      "path": "screen/obs-10000/observe.jsonl",
+      "bytes": 49069,
+      "sha256": "b693f5349384566d78a1eaedd5c8b9a558dc60f267db683a01d32af57e62e087",
+      "committed": false
+    },
+    {
+      "path": "screen/screen-10000.json",
+      "bytes": 3393,
+      "sha256": "c39bb06c287f0dac08062b43eff5d9802be4f0698e940831b5e0d4e1ef130611",
+      "committed": true
+    },
+    {
+      "path": "screen/screen.json",
+      "bytes": 3257,
+      "sha256": "6ae146ef9d9c298c166c2695caf8a85879776d3d5b6c41f304cae896fc4d582b",
+      "committed": true
+    },
+    {
+      "path": "screen/seed.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "committed": true
+    },
+    {
+      "path": "screen/seed.k6.log",
+      "bytes": 23,
+      "sha256": "aa34f753fb2b14787f45d63c7c9962416f95928e3846c6cea93d799979b9f89f",
+      "committed": true
+    },
+    {
+      "path": "screen/verdict.json",
+      "bytes": 1720,
+      "sha256": "6b93e95c8a183e8714c411a5f66a618fa21d9bcd6069a2c492deab2fe0771265",
+      "committed": true
+    },
+    {
+      "path": "verdict.json",
+      "bytes": 1025,
+      "sha256": "6d2ae4cff42c2bcfbe90d43c2f29fa22a2909f48cf8cfb752c913f9a18fd3c44",
+      "committed": true
+    }
+  ]
+}

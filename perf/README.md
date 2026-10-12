@@ -43,6 +43,7 @@ mise x -- node scripts/perf/verdict.mjs --run-dir perf/results/<run_id>   # 判�
 mise x -- node scripts/perf/record.mjs  --run-dir perf/results/<run_id>   # metrics.json / perf-runs.json / manifest.json
 mise x -- node scripts/perf/compare.mjs --run-dir perf/results/<run_id>   # 退行検出
 mise x -- node scripts/perf/compare.mjs --run-dir perf/results/<run_id> --update-baseline --release <タグ>   # baseline に追記
+mise x -- node scripts/perf/backfill-record.mjs [perf/results/<run_id> ...]   # 既存 run の perf-runs.json に env_class・比較条件・kind を足す（冪等）
 mise x -- node --test "scripts/perf/test/*.test.mjs"                       # 判定ロジックの単体テスト
 ```
 
@@ -63,19 +64,20 @@ mise x -- node --test "scripts/perf/test/*.test.mjs"                       # 判
 
 ## 結果ディレクトリの構成（`perf/results/<run_id>/`）
 
-| ファイル                                                                        | 内容                                                                                                                  | コミット                                              |
-| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `run.json`                                                                      | 測定環境（OS・CPU・メモリ・Docker・k6 の版、イメージ、commit、script / 設定の sha256、env_class、開始時刻）           | する                                                  |
-| `<scenario>/iter-N/main.summary.json`（capacity は `step-<件数>.summary.json`） | k6 `handleSummary` の JSON（thresholds・metrics・計測窓）                                                             | する                                                  |
-| `<scenario>/iter-N/analysis.json`                                               | 判定用の統計（エンドポイント別 p50/p90/p95/p99・外れ値除外前後・error・throughput・グループ別）と観測の要約・時刻整合 | する                                                  |
-| `<scenario>/iter-N/*.raw.json.gz`, `observe.jsonl`                              | k6 の生出力 / 観測サンプラーの生ログ（巨大）                                                                          | **しない**（`.gitignore`。sha256 は `manifest.json`） |
-| `<scenario>/verdict.json`                                                       | シナリオの判定（pass/fail・理由・警告・`variance_stats`）                                                             | する                                                  |
-| `screen/screen.json`                                                            | 表示完了 10 回・Lighthouse 3 回の値                                                                                   | する                                                  |
-| `verdict.json`                                                                  | 全体の判定と判定規則（`verdict_rule`）                                                                                | する                                                  |
-| `metrics.json`                                                                  | baseline 比較に使う指標（`<scenario>.<指標>`）                                                                        | する                                                  |
-| `perf-runs.json`                                                                | シナリオごとの記録（tool・版・script / 設定の sha・commit・warm-up・反復・分散・判定規則・server_metrics・verdict）   | する                                                  |
-| `compare.json`                                                                  | baseline との比較                                                                                                     | する                                                  |
-| `manifest.json`                                                                 | 全ファイルの sha256（生ログも含む）と、コミット対象か                                                                 | する                                                  |
+| ファイル                                                                        | 内容                                                                                                                                                                        | コミット                                              |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `run.json`                                                                      | 測定環境（OS・CPU・メモリ・Docker・k6 の版、イメージ、commit、script / 設定の sha256、env_class、開始時刻）                                                                 | する                                                  |
+| `<scenario>/iter-N/main.summary.json`（capacity は `step-<件数>.summary.json`） | k6 `handleSummary` の JSON（thresholds・metrics・計測窓）                                                                                                                   | する                                                  |
+| `<scenario>/iter-N/analysis.json`                                               | 判定用の統計（エンドポイント別 p50/p90/p95/p99・外れ値除外前後・error・throughput・グループ別）と観測の要約・時刻整合                                                       | する                                                  |
+| `<scenario>/iter-N/*.raw.json.gz`, `observe.jsonl`                              | k6 の生出力 / 観測サンプラーの生ログ（巨大）                                                                                                                                | **しない**（`.gitignore`。sha256 は `manifest.json`） |
+| `<scenario>/verdict.json`                                                       | シナリオの判定（pass/fail・理由・警告・`variance_stats`）                                                                                                                   | する                                                  |
+| `screen/screen.json`                                                            | 表示完了 10 回・Lighthouse 3 回の値                                                                                                                                         | する                                                  |
+| `screen/analysis.json`, `screen/obs-<件数>/observe.jsonl`                       | 画面計測と**時刻整合した**サーバ観測（CPU・メモリ・health 応答時間・DB サイズ）。窓は `screen.json` の `started_at`〜`finished_at`。生ログ（observe.jsonl）はコミットしない | する（analysis.json のみ）                            |
+| `verdict.json`                                                                  | 全体の判定と判定規則（`verdict_rule`）                                                                                                                                      | する                                                  |
+| `metrics.json`                                                                  | baseline 比較に使う指標（`<scenario>.<指標>`）                                                                                                                              | する                                                  |
+| `perf-runs.json`                                                                | シナリオごとの記録（tool・版・script / 設定の sha・commit・warm-up・反復・分散・判定規則・server_metrics・verdict）                                                         | する                                                  |
+| `compare.json`                                                                  | baseline との比較                                                                                                                                                           | する                                                  |
+| `manifest.json`                                                                 | 全ファイルの sha256（生ログも含む）と、コミット対象か                                                                                                                       | する                                                  |
 
 ## 判定規則（`scripts/perf/lib/rules.mjs` に文書化したコードとして）
 
@@ -85,6 +87,7 @@ mise x -- node --test "scripts/perf/test/*.test.mjs"                       # 判
 - **SLO 違反**: 判定値 = 3 反復の平均。平均が `slo.yaml` の target を満たさなければ fail。反復の 1 つでも、または 95% 信頼区間の悪い側の端が満たさなければ warning を残す（pass のまま）。
 - **ばらつき**: 3 反復の平均・標準偏差・95% 信頼区間（t 分布）を `variance_stats` に出す。
 - **退行**: `compare.mjs`。同じ指標名・同じ環境の区分（`env_class`）の baseline と比べ、既定 +20% 超の悪化で失敗。数 ms の差などノイズは `min_abs_delta` で除く。
+- **比較条件（機械可読）**: 各 run の記録（`metrics.json`・`perf-runs.json` の各件）に `env_class` を持たせる。基準との比較は `comparison`（`perf-runs.json`・`compare.json`）に出す: `status`（`compared` / `not_compared`）・`env_class`（今回）・`baseline_env_class`・**`env_class_match`**（同じ区分なら `true`。区分の違う基準とは比べないので、比べたときは常に `true`）・`baseline_release`・`baseline_run_id`・`baseline_commit_sha`・`baseline_measured_at`。基準が無い区分は `not_compared`（`env_class_match: null`、理由に基準のある区分の一覧）で、失敗にしない。環境が 2 種（開発機・runner）あっても、比較は常に同じ区分どうし。
 
 ## 観測（`scripts/perf/observe.mjs`）
 
@@ -97,6 +100,19 @@ mise x -- node --test "scripts/perf/test/*.test.mjs"                       # 判
 | db           | `docker exec` で SQLite のファイルサイズ（`/data/*`。`-journal` を含む）                                |
 
 queue・外部依存は**無い**ため取得していない（SQLite は同期処理で、外部サービスは持たない）。
+
+**画面計測（screen）にも並走させる**: `run.sh` の `run_screen` は、表示完了時間 + Lighthouse のコンテナの実行中、同じ観測サンプラーを動かす（件数ごとに `screen/obs-<件数>/observe.jsonl`）。時刻整合の窓は `screen.json` の `started_at`〜`finished_at`（warm-up の読み込み・計測・Lighthouse をすべて含む）で、`verdict.mjs` が `screen/analysis.json`（`observe`・`time_alignment`・件数ごとの `by_tasks`）に要約する。これで `perf-runs.json` の screen の記録にも `server_metrics` が出る（以前の screen の run は観測なしで 0 本）。
+
+**測ったもの（`kind: measured`）と代用（`kind: proxy`）の区別**: `perf-runs.json` の `server_metrics[]` は `source`・`kind`・`what`・`time_aligned`・`ref` を持つ。
+
+| source | kind     | 何を測ったか（what）                                                                                        |
+| ------ | -------- | ----------------------------------------------------------------------------------------------------------- |
+| cpu    | measured | `docker stats --no-stream` の backend の CPU%（1 秒間隔）                                                   |
+| memory | measured | `docker stats` の backend のメモリ使用量（1 秒間隔）                                                        |
+| db     | proxy    | SQLite ファイル（-wal / -shm を含む）のサイズ。DB の処理時間・接続数・ロック待ちは取れない（DB 指標の代用） |
+| apm    | proxy    | health 応答時間（nginx 経由）。アプリ内の処理時間・イベントループ遅延を直接見る APM は未導入（APM の代用）  |
+
+取れないもの（`server_metrics_unavailable[]`、理由つき）: `apm_agent`（APM エージェント・トレース基盤は未導入。導入要否は ACT-025）、`db_query`（SQLite は組み込みで外から取れない）、`queue`（構成に無い）、`external_dependency`（無い）。代用を本物と言い換えない。
 
 ## 設計判断
 

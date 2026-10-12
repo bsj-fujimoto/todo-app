@@ -47,3 +47,36 @@ export function compareAll(baselineMetrics, currentMetrics, cfg) {
     rows,
   };
 }
+
+// 同じ環境の区分（env_class）の基準だけを使う。区分が違う値は比べない。release があればそのタグ。無ければ undefined
+export function pickBaseline(baselines, envClass, release) {
+  const same = baselines.filter((b) => b.env_class === envClass);
+  return release ? same.find((b) => b.release === release) : same.at(-1);
+}
+
+// 今回の run と基準の比較条件（機械可読）。env_class が一致した基準とだけ比べる。無いときは比べない（失敗にもしない）
+export function comparisonInfo(baselines, envClass, release) {
+  const entry = pickBaseline(baselines, envClass, release);
+  const classes = [...new Set(baselines.map((b) => b.env_class))];
+  if (!entry) {
+    return {
+      status: "not_compared",
+      env_class: envClass,
+      baseline_release: null,
+      baseline_env_class: null,
+      env_class_match: null,
+      reason: `env_class ${envClass} の基準が無い（基準がある区分: ${classes.join(", ") || "なし"}）。区分の違う基準とは比べない`,
+    };
+  }
+  return {
+    status: "compared",
+    env_class: envClass,
+    baseline_release: entry.release,
+    baseline_run_id: entry.run_id,
+    baseline_commit_sha: entry.commit_sha,
+    baseline_measured_at: entry.measured_at,
+    baseline_env_class: entry.env_class,
+    env_class_match: entry.env_class === envClass,
+    reason: "同じ env_class の基準と比べた",
+  };
+}

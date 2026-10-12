@@ -9,8 +9,8 @@
     },
     {
       "path": "perf-runs.json",
-      "bytes": 4370,
-      "sha256": "f02299c212188733bbdc5d0ac907593392fa44c55fdaf5d44dcb0d309200e506",
+      "bytes": 6288,
+      "sha256": "9cce858696d4f06460a3fd63ce667bfa646a169a0161e3df307739d2585e3113",
       "committed": true
     },
     {

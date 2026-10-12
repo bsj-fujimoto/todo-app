@@ -12,9 +12,11 @@ import {
   checkMarkdownLinks,
   checkTestCoverage,
 } from "../ci/lib/docs-checks.mjs";
+import { notRunConsumerContract, toConsumerContract } from "../ci/lib/consumer-contract.mjs";
 import { countBy, layerOf, parseJunit, tcIdsOf } from "../ci/lib/junit.mjs";
 import { globToRegExp } from "../ci/lib/repo-fs.mjs";
 import { buildSummary, mergeSummaries } from "../ci/lib/summary.mjs";
+import { readConsumerContracts } from "../ci/lib/summary-io.mjs";
 import { parseYaml } from "../ci/lib/yaml-lite.mjs";
 
 const tmp = () => mkdtempSync(join(tmpdir(), "ci-lib-"));
@@ -119,6 +121,57 @@ describe("junit / summary", () => {
     });
     assert.equal(merged.layers.api.total, 6);
     assert.equal(merged.gate, "fail");
+  });
+});
+
+describe("consumer contract の結果（ConsumerContract）", () => {
+  const ctx = { nowIso: "2026-10-12T00:00:00.000Z", commitSha: "abc123" };
+  const record = {
+    consumer: "frontend",
+    provider: "backend",
+    tool: { name: "pact", version: "17.1.4" },
+    pact_file: "frontend/contracts/frontend-backend.json",
+    pact_sha256: "f".repeat(64),
+    result: "passed",
+    interactions: [{ result: "passed" }, { result: "passed" }],
+  };
+
+  it("検証結果を consumer・tool・verified_at・result・対象 SHA の形にする", () => {
+    assert.deepEqual(toConsumerContract(record, ctx), {
+      consumer: "frontend",
+      provider: "backend",
+      tool: "pact",
+      tool_version: "17.1.4",
+      verified_at: "2026-10-12T00:00:00.000Z",
+      result: "passed",
+      commit_sha: "abc123",
+      pact_file: "frontend/contracts/frontend-backend.json",
+      pact_sha256: "f".repeat(64),
+      interactions: { total: 2, passed: 2, failed: 0 },
+    });
+  });
+
+  it("interaction が 1 件でも失敗していれば、記録の result が passed でも failed にする", () => {
+    const failed = { ...record, interactions: [{ result: "passed" }, { result: "failed" }] };
+    const c = toConsumerContract(failed, ctx);
+    assert.equal(c.result, "failed");
+    assert.deepEqual(c.interactions, { total: 2, passed: 1, failed: 1 });
+  });
+
+  it("結果ファイルが無ければ not_run（成功にしない）。ci-summary に載り、merge で引き継がれる", () => {
+    const dir = mkdtempSync(join(tmpdir(), "cc-"));
+    const file = join(dir, "consumer-contract.json");
+    const [missing] = readConsumerContracts([join(dir, "none.json")], ctx);
+    assert.equal(missing.result, "not_run");
+    assert.equal(notRunConsumerContract("x", ctx).result, "not_run");
+    writeFileSync(file, JSON.stringify(record));
+    const contracts = readConsumerContracts([file], ctx);
+    assert.equal(contracts[0].result, "passed");
+    const env = { TARGET_SHA: "head" };
+    const part = buildSummary({ env, nowIso: ctx.nowIso, layerSpecs: [], consumerContracts: contracts });
+    assert.equal(part.consumer_contracts.length, 1);
+    const merged = mergeSummaries({ env, nowIso: ctx.nowIso, summaries: [part], jobResults: {} });
+    assert.deepEqual(merged.consumer_contracts, contracts);
   });
 });
 
