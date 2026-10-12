@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { notRunConsumerContract, toConsumerContract } from "./consumer-contract.mjs";
 
 export function listJsonFiles(dir) {
   return readdirSync(dir).flatMap((n) => {
@@ -24,4 +25,13 @@ export function readCoverageSpecs(specs) {
     out[name] = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")).total : { error: `${path} が無い` };
   }
   return out;
+}
+
+/** consumer contract の結果 JSON（複数可）→ ConsumerContract[]。ファイルが無ければ not_run（成功にしない）。 */
+export function readConsumerContracts(paths, ctx) {
+  return paths.map((path) =>
+    existsSync(path)
+      ? toConsumerContract(JSON.parse(readFileSync(path, "utf8")), ctx)
+      : notRunConsumerContract(path, ctx),
+  );
 }

@@ -154,11 +154,25 @@ jobs:
       - name: 契約適合の検査（実装が openapi.yaml に従っているか。JUnit は backend/test-results/contract.xml）
         if: always()
         run: npm run contract:check -w backend
+      - name: consumer contract（frontend の期待を Pact に記録 → 生成物がコミット済みと一致 → 本物の backend で provider 検証。api-11）
+        if: always()
+        env:
+          PACT_DO_NOT_TRACK: "true"
+        run: |
+          npm run contract:consumer -w frontend
+          # 記録（frontend/contracts）がコミット済みと違えば失敗。frontend の期待を変えたら、再生成した契約もコミットする
+          if [ -n "$(git status --porcelain -- frontend/contracts)" ]; then
+            git status --short -- frontend/contracts
+            echo "::error::frontend/contracts が最新でない。npm run contract:consumer -w frontend で再生成してコミットする"
+            exit 1
+          fi
+          npm run contract:consumer -w backend
       - name: 結果を ci-summary にまとめる
         if: always()
         run: |
           node scripts/ci/summarize-junit.mjs --title "contract" --out ci-summary-contract.json \
-            --layer contract=backend/test-results/contract.xml --artifact contract-report=contract-report
+            --layer contract=backend/test-results/contract.xml,backend/test-results/consumer-contract.xml,frontend/test-results/consumer-contract.xml \
+            --consumer-contract backend/test-results/consumer-contract.json --artifact contract-report=contract-report
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -173,6 +187,10 @@ jobs:
           path: |
             contract-report
             backend/test-results/contract.xml
+            backend/test-results/consumer-contract.xml
+            backend/test-results/consumer-contract.json
+            frontend/test-results/consumer-contract.xml
+            frontend/contracts
           retention-days: 90
           if-no-files-found: warn
 

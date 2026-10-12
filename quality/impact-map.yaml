@@ -17,6 +17,8 @@ entries:
     change_kind: api
     paths:
       - "backend/openapi.yaml"
+      - "frontend/contracts/**" # consumer contract（frontend の期待。Pact）
+      - "frontend/test/contract/**"
     case_ids:
       [
         TC-009,
