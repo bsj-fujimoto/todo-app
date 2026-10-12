@@ -399,10 +399,14 @@ artifacts:
     status: draft
     owner_role: "QA リード"
     approved_by: null
-    updated_at: "2026-10-12T17:18:51+09:00"
+    updated_at: "2026-10-12T17:28:20+09:00"
     authoritative: false
     normalized_format: md
     history:
+      - at: "2026-10-12T17:28:20+09:00"
+        by: maintainer
+        change: "docs(13): PR #65 の後の件数に数え直し"
+        commit: "9c4c6ed"
       - at: "2026-10-12T17:18:51+09:00"
         by: maintainer
         change: "docs(13): 07 取り込み後の件数に数え直し"
@@ -419,7 +423,7 @@ artifacts:
         by: maintainer
         change: "docs: 成果物 13 品質証跡・AIコンテキスト（evidence-01〜11） (#55)"
         commit: ba2d2bd
-    source_sha256: "28a601107bbd1820fc075fea3d3c080f6ae5a474db6a9daa5cf179d4f15c3820"
+    source_sha256: c8c97e1df6e29250f339f2ab5ce17fef17e9c9c56486a0385f6bd8cc4efe7822
     retention_policy: "Git 履歴は永続。CI artifact は 90 日。リリース添付は永続"
     immutable_store: true
     doc_id: DOC-13
