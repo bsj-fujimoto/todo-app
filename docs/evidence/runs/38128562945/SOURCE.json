@@ -32,5 +32,11 @@
     "junit-coverage-unit-api",
     "regression-selection"
   ],
+  "superseded_by": {
+    "run_id": "38152472087",
+    "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
+    "reason": "実施表の基準を、この run（PR #26 の CI、対象 52da4aa、pre-1.0.0）から、v1.0.0 の Release run 38152472087（対象 5fcf40a）へ取り替えた（docs/09-test-execution.md の DEV-006。承認の根拠は PR #42 のマージ）。この run の証跡は実施表・証拠索引の根拠ではなく、履歴として残す（削除しない）。",
+    "marked_at": "2026-10-12"
+  },
   "collected_by": "scripts/evidence/fetch-run.mjs"
 }

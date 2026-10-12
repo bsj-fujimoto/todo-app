@@ -13,7 +13,7 @@ docs/evidence/
   source-of-truth.yaml   正本の所在地（要求・UI・API・アーキテクチャ・セキュリティ要求・SLO・観点・ケース・不具合）。生成
   manual-plan.yaml       手動ケースの実施計画（未実施の理由・owner・実施予定日）。実施表の not_run 行の元
   runs/<run-id>/         CI の 1 回の実行の小さな成果物
-    SOURCE.json          取得時刻・取得元 run の URL・対象 SHA・版・取り込んだ artifact の名前
+    SOURCE.json          取得時刻・取得元 run の URL・対象 SHA・版・取り込んだ artifact の名前。`run_started_at` は ci-summary.json の開始時刻（`started_at`。集計ジョブの開始）で、GitHub の run の作成時刻ではない（例: run 38152472087 は run の作成 15:43:26Z、`run_started_at` 15:45:50Z）。後の run に置き換えられた run は `superseded_by`（置き換えた run・理由・日付）を持つ
     ci-summary.json      層ごとの結果・ジョブの結果・カバレッジ（scripts/ci/summarize-junit.mjs の出力）
     regression-selection.json   回帰の選択（モード・選択理由・除外したリスク）
     docs-check-report.json  coverage-backend.json  coverage-frontend.json
@@ -60,7 +60,7 @@ ID の対応: `REQ` 要求 → `RISK` リスク → `VIEW` 観点 → `TC` ケ�
 
 ## 承認について（捏造しない）
 
-`artifacts.yaml` の `approved_by` は、文書が「承認済み」と書いているものだけ（ADR-0001 の決定者）。`draft` の文書は承認前なので `null`。
+`artifacts.yaml` の `approved_by` は、文書が「承認済み」と書いているものだけ（状態が「採用」の ADR の決定者。ADR は表でなく箇条書きの「状態」「決定者」から読む）。`draft` の文書（`docs/01〜13`）は承認前なので `null`。承認の根拠はどの文書も「PR のマージ（フェーズ1は AI が代行）」で、オーナーの確認が済むまで `reviewed`・`approved` にしない。
 成果物の `status` は、文書のヘッダ表の「状態」。ヘッダ表が無いファイルは、PR を経てマージされ CI を通っているが承認の記録が無いので `reviewed`（承認者なし）にしている。
 
 ## データ分類・アクセス・秘密情報
@@ -69,7 +69,7 @@ ID の対応: `REQ` 要求 → `RISK` リスク → `VIEW` 観点 → `TC` ケ�
 - **人の氏名・メールアドレス・アカウント名・秘密情報らしい値は、証跡に残さない。** 取り込み時（`fetch-run.mjs`・`build-defects.mjs`）に**墨消し**する（`scripts/evidence/lib/redact.mjs`）。
   - 対象: 個人情報のキー（`author`・`committer`・`email` など。gitleaks の SARIF の `partialFingerprints`、CycloneDX の author）の値、メールアドレス形式、「氏名 <メール>」の氏名、`Co-Authored-By` などの氏名、アカウントのメンション（`@` に続くアカウント名）、リポジトリのオーナー名（URL・`owner/repo` の形以外で書かれたもの）、トークン・`password=` などの代入・秘密鍵の形式。`[REDACTED:author]`・`[REDACTED:email]`・`[REDACTED:account]`・`[REDACTED:secret]` に置き換える。
   - 決定的（同じ入力は同じ出力）。置き換えが無いファイルは、バイト単位でそのまま。URL に含まれるオーナー名（`github.com/<owner>/…`・`ghcr.io/<owner>/…`）と npm のスコープ（`@fastify/…`）は技術的な参照なので残す。
-  - 記録: 墨消ししたファイルは `SOURCE.json` の `redactions` に、理由・規則ごとの件数・**元ファイルの sha256**・**墨消し後の sha256** を残す。`manifest.json` と証拠索引の sha256 は墨消し後のファイルで、manifest の項目に `original_sha256` と `redacted: true` が付く（元との対応が追える）。元の取得物は CI の artifact（90 日）にだけある。
+  - 記録: 墨消ししたファイルは `SOURCE.json` の `redactions` に、理由・規則ごとの件数・**元ファイルの sha256**・**墨消し後の sha256** を残す。`manifest.json` と証拠索引の sha256 は墨消し後のファイルで、manifest の項目に `original_sha256` と `redacted: true` が付く（元との対応が追える）。元の取得物は CI の artifact（90 日）に残る。Git 履歴には、墨消し方針より前に取り込んだ版の墨消し前のファイルが残りうる（下の「既知の制約」）。
 - 検査: `scripts/evidence/check-evidence.mjs` が、`docs/data/` と `docs/evidence/` の全テキストに、トークン形式（AWS・GitHub・Slack・JWT・秘密鍵・`password=` などの代入）・メール・メンション・オーナー名・電話番号・カード番号の正規表現と、JSON の個人情報のキー（墨消し済みでない `author`・`email` など）を当てる。**許可リストの例外は作らない**（見つかったら、取り込み時の墨消しで取り除く）。セキュリティ側の gitleaks（履歴全体）と併用する。
 - **正規表現は不在を証明しない。** 検出が 0 件でも、秘密情報・個人情報が無いとは言えない。最終確認は人が行う（観察値は短いので目視できる大きさにしてある）。
 - **internal**（社内限り）に当たるものは、このリポジトリには置かない。置く必要が出たら、別の非公開の保管先と、この README の分類を決めてから。
@@ -79,6 +79,17 @@ ID の対応: `REQ` 要求 → `RISK` リスク → `VIEW` 観点 → `TC` ケ�
 - 対象・理由: `sourcegraph-access-token`（キーワード `sourcegraph`・`sgp_` を含むファイルの中の 40 桁の 16 進に当たるルール）を、`docs/evidence/` と `docs/data/` からだけ除く（`targetRules` 指定。ほかのルールは `docs/` 以下にも適用したまま）。証跡・生成表は commit の SHA（40 桁の 16 進）を必ず含み、gitleaks 自身の検出の記録（キーワード `sourcegraph`）も含むので、自己参照的に当たる（FND-012）。トークンではない。
 - 確認: gitleaks 8.30.1（ピン留めの image）の dir モードを `docs/` に当てて 0 件（2026-10-12）。アクションは ACT-010。
 - 見直す条件: gitleaks のルールが変わったとき、または証跡の形式が変わったとき（`security/gitleaks.toml` の description にも書いてある）。
+
+## リリースの添付（release-evidence.zip）
+
+GitHub Release v1.0.0 の添付 `release-evidence.zip` は、**2026-10-12 に墨消し済みの版で差し替えた**（元の版は削除した）。
+
+| 項目 | 値 | 出典 |
+|---|---|---|
+| 現在の添付の sha256 | `75d2fa5c9b741efa24c40bf96a73b9331b7d9aae6da80f7c817cda02ec97021e` | `gh release view v1.0.0 --json assets`（`digest`。サイズ 436,272 バイト、更新 2026-10-11T17:16:30Z = 2026-10-12 02:16 JST） |
+| 墨消し | 584 箇所・11 ファイル。検査（`scripts/ci/check-release-evidence.mjs`）で個人情報の検出 0 件（元の zip は 502 件） | PR #57、[scripts/evidence/README.md](../../scripts/evidence/README.md) |
+| 差し替えの手順 | `scripts/ci/rebuild-release-evidence.mjs --run 38152472087` → `gh release upload v1.0.0 … --clobber` | [scripts/evidence/README.md](../../scripts/evidence/README.md) |
+| 元の値が残る場所 | Git 履歴（墨消し方針より前に取り込んだ gitleaks の SARIF など。下の「既知の制約」）と、CI の artifact（90 日。2027-01-09 まで）。**Release の添付からは消えた** | [docs/13-evidence.md](../13-evidence.md) の evidence-09 |
 
 ## 既知の制約
 
