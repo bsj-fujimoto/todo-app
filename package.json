@@ -21,6 +21,7 @@
     "e2e:compose": "npm run e2e:compose --workspace e2e",
     "test:scripts": "node --test \"scripts/test/*.test.mjs\"",
     "docs:check": "node scripts/ci/docs-check.mjs",
+    "contract:consumer": "npm run contract:consumer -w frontend && npm run contract:consumer -w backend",
     "contract:lint": "redocly lint backend/openapi.yaml --config scripts/ci/redocly.yaml",
     "evidence:test": "node --test \"scripts/evidence/test/*.test.mjs\"",
     "evidence:check": "node scripts/evidence/check-evidence.mjs",
@@ -29,6 +30,9 @@
     "evidence:executions": "node scripts/evidence/build-executions.mjs",
     "evidence:defects": "node scripts/evidence/build-defects.mjs",
     "evidence:build": "node scripts/evidence/build-defects.mjs --offline && node scripts/evidence/build-findings.mjs && node scripts/evidence/build-evidence-index.mjs && node scripts/evidence/build-traceability.mjs && node scripts/evidence/build-manifest.mjs && node scripts/evidence/build-artifacts.mjs"
+  },
+  "scarfSettings": {
+    "enabled": false
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

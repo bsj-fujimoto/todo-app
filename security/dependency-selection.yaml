@@ -55,6 +55,19 @@ dependencies:
     maintenance: 最新 3.0.1（2024-03-30 公開）で、2026-10-11 時点で約 2 年半更新が無い。リポジトリの最終 push は 2024-08-18、archived ではない、MIT。ajv 本体と同じ organization（ajv-validator）の公式拡張で、現行の ajv 8 系と組み合わせて動作し、勧告は無い。
     handling: 長期未更新だが継続利用と決めた。根拠は、テスト専用で本番に入らない・公式拡張・勧告なし・自前定義への置換が小さい（約 10 行）こと。再検討の条件は、勧告が出る・ajv の major 更新で非互換になる・さらに 12 か月更新が無い。そのときは ajv の formats オプションに uuid / date-time を自前定義して外す。
     last_checked: 2026-10-11
+  - name: "@pact-foundation/pact"
+    version: 17.1.4
+    workspace: frontend・backend
+    kind: test
+    reason: consumer contract（api-11）。frontend の api-client を Pact のモックサーバーに向けて、実際に頼る呼び出しと応答の項目を契約（frontend/contracts/frontend-backend.json）として記録し、backend が本物の SQLite で再生して検証する。利用側の期待そのものを提供側へ当てられ、期待が変わると契約ファイルの差分として現れる。
+    alternatives:
+      - "自作の簡易 consumer contract（frontend のテストが期待を JSON に書き出し、backend が Ajv で検証する。依存は増えないが、リクエスト・応答の照合・provider state・不一致の説明を自作することになる。docs/06-api-test.md の当初計画）"
+      - Spectral（OpenAPI の静的な lint。契約そのものの品質は見るが、frontend の期待は見ない。契約の lint は redocly で足りている）
+      - Dredd（契約を provider に当てる。利用側の期待を記録する仕組みが無く、provider 側の検証は api 層の Ajv 検証と重なる）
+      - Schemathesis（契約からプロパティベースでケースを生成する。Python が増え、利用側の期待は見ない。api-05 の将来案）
+    maintenance: 最新 17.1.4（2026-09-07 公開）、依存の pact-core は 20.2.0（2026-09-16 公開）。リポジトリ pact-foundation/pact-js の最終 push は 2026-10-12、star 約 1.8k、archived ではない。npm のライセンスは MIT（GitHub 上は NOASSERTION と表示されるが、パッケージ・pact-js-core は MIT）。GitHub Advisory Database に、17.1.4 と pact-core が影響を受ける勧告は無く、npm audit も 0 件。Node は 22 以上。
+    handling: 継続利用（開発依存のみ。Docker イメージには入らない）。①依存が重い（express・axios など約 40 パッケージ、約 40 MB。Rust 製のネイティブ部分は optionalDependencies のプラットフォーム別バイナリで、install スクリプトは不要。darwin-arm64・linux-arm64-musl・linux-x64-glibc で動作を確認）。②利用統計の送信を止める（Pact 本体は PACT_DO_NOT_TRACK=true を CI とテストコードで設定。依存の @scarf/scarf は install 時に統計を送るため、ルート package.json の scarfSettings.enabled=false で止める）。③provider 検証は OS の CA 証明書が無い最小イメージ（node:*-slim）では動かない（alpine・ubuntu・macOS は可）。再検討の条件は、勧告が出て修正が遅い・更新が 6 か月止まる・frontend と backend を別リポジトリ・別リリースにして Pact Broker 運用が必要になる（そのときは Broker への公開と can-i-deploy を検討する）。
+    last_checked: 2026-10-12
   - name: yaml
     version: 2.9.1
     workspace: root・backend
