@@ -6,6 +6,7 @@
 import { writeFileSync } from "node:fs";
 import { chromium } from "playwright-core";
 import lighthouse from "lighthouse";
+import { scrub } from "./scrub.mjs";
 
 const BASE_URL = process.env.BASE_URL || "http://frontend:8080";
 const EXPECTED_ROWS = parseInt(process.env.EXPECTED_ROWS || "1000", 10);
@@ -164,7 +165,8 @@ async function main() {
       chromium: chromiumVersion,
     },
   };
-  writeFileSync(`${OUT_DIR}/screen.json`, `${JSON.stringify(out, null, 2)}\n`);
+  // 外部の入力（ブラウザ・Lighthouse・応答）に由来する値は、検証・正規化してから書く（scrub.mjs）
+  writeFileSync(`${OUT_DIR}/screen.json`, `${JSON.stringify(scrub(out), null, 2)}\n`);
   const lhText = lh ? JSON.stringify(lh.runs.map((r) => [r.performance, r.accessibility])) : "skipped";
   console.log(
     `[screen] tasks=${tasks} ready_ms p95=${out.ready_ms.p95} (n=${out.ready_ms.n}) lighthouse=${lhText}`,
