@@ -102,7 +102,11 @@ slos:
     unit: ms
     statistic: p95
     source: "scripts/perf/observe.mjs の health_ms（負荷中。外形監視 monitors.yaml の応答時間 assertion でも使う）"
-    test_cases: [TC-075]
+    # 機能層のケース（TC-075）は health の内容（200・4 キー・version・commit・認証なし）を検査し、応答時間は判定しない。
+    # 応答時間 p95 の判定は perf 層（observe.mjs の health プローブを scripts/perf/verdict.mjs が判定）と、外形監視 MON-002 の応答時間 assertion が行う。
+    # TC-075 は @smoke（必須・毎回実行）で、共有ランナーの揺れで落とすと番兵の意味が変わる（TC-073・TC-074 の flaky の前例: Issue #25・#37）ため、時間の判定は足さない。
+    test_cases: []
+    judged_by: ["scripts/perf/observe.mjs", "scripts/perf/verdict.mjs", "monitoring/monitors.yaml#MON-002"]
     basis: assumed
     user_impact: 負荷中でも死活判定が遅れない。遅いと外形監視が誤報（遅延＝停止と誤認）する。
   - metric: availability_synthetic_ratio

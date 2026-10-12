@@ -3,35 +3,35 @@
 | 項目 | 内容 |
 |---|---|
 | 文書ID | DOC-INDEX（成果物 13 本の索引。番号付きの成果物ではない） |
-| 版 | 1.0 |
+| 版 | 1.1 |
 | 更新日 | 2026-10-12 |
-| 状態 | draft（マージ後に reviewed/approved へ） |
+| 状態 | draft（オーナーの確認待ち。PR マージ＝承認の代行） |
 | 対象 | todo-app 仕様書 v1.1、リリース v1.0.0（commit 5fcf40a7e58dc253e53ff56860d0669a69abda26） |
 | 作成 | ドキュメント管理担当（AI が作成） |
 | レビュー | QA リード（ロール。兼務） |
-| 承認 | プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ） |
+| 承認 | プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ。オーナーの確認が済むまで draft のまま） |
 | 正本 | この md と [ai-context.yaml](ai-context.yaml)（Git が版管理） |
 
 todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/QC 成果物 13 本**と、その元になる台帳・証跡の置き場を示す。
 **書いてある文書のリンクだけを張る。まだ無い文書は「作成中」とだけ書き、リンクにしない**（リンク切れを作らない。`node scripts/ci/docs-check.mjs` が検査する）。
-2026-10-12 時点で本文があるのは 02・03 の 2 本。残りは作成中で、できたらこの表を更新する（更新規則を参照）。
+2026-10-12 時点で本文があるのは 01〜06・08〜13 の 12 本（すべて draft。オーナーの確認待ち）。**07（性能）だけが作成中**（GitHub 上の性能の本計測の取り込み後に作成する）。できたらこの表を更新する（更新規則を参照）。
 
 ## 1 成果物の索引（13 本）
 
 | 番号 | 成果物 | 状態 | 行・値の正本（本文は方針・判断・読み方） |
 |---|---|---|---|
-| 01 | テスト計画書（plan） | 作成中 | `docs/data/risks.csv` ほか |
+| 01 | [テスト計画書（plan）](01-test-plan.md) | あり（draft） | `docs/data/risks.csv` ほか |
 | 02 | [テスト観点表（perspective）](02-test-perspectives.md) | あり（draft） | `docs/data/perspectives.csv`・`requirements.csv`・`risks.csv`・`unknowns.csv` |
 | 03 | [テスト仕様書（spec）](03-test-spec.md) | あり（draft） | `docs/data/cases.csv`・`datasets.csv` |
-| 04 | リグレッションテスト成果物（regression） | 作成中 | [quality/](../quality/README.md)（`journeys.yaml`・`impact-map.yaml`・`regression-suite.csv`・`flaky-ledger.yaml`） |
-| 05 | 自動テスト成果物（automation） | 作成中 | `.github/workflows/`・`quality/`・`e2e/`・`backend/test/`・`frontend/test/` |
-| 06 | APIテスト成果物（api） | 作成中 | `backend/openapi.yaml`・`backend/test/`・`scripts/ci/oasdiff-breaking.sh` |
-| 07 | 負荷・性能試験成果物（performance） | 作成中 | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`） |
-| 08 | テスト対象の検査結果レポート（inspection） | 作成中 | [security/](../security/README.md)・`docs/evidence/security/`・`docs/data/findings.csv` |
-| 09 | テスト実施・結果記載（execution） | 作成中 | `docs/data/executions.csv`・`defects.csv`・`docs/evidence/runs/` |
-| 10 | テスト品質報告書（quality） | 作成中 | `docs/data/` の各 CSV と `docs/evidence/` の集計 |
-| 11 | 外形監視・運用品質成果物（monitoring） | 作成中 | [monitoring/](../monitoring/README.md)（`monitors.yaml`・`runbooks/`・`fp-fn-log.md`） |
-| 12 | テスト結果分析レポート（analysis） | 作成中 | `docs/data/actions.csv`・`findings.csv`・`defects.csv` |
+| 04 | [リグレッションテスト成果物（regression）](04-regression.md) | あり（draft） | [quality/](../quality/README.md)（`journeys.yaml`・`impact-map.yaml`・`regression-suite.csv`・`flaky-ledger.yaml`） |
+| 05 | [自動テスト成果物（automation）](05-automation.md) | あり（draft） | `.github/workflows/`・`quality/`・`e2e/`・`backend/test/`・`frontend/test/` |
+| 06 | [APIテスト成果物（api）](06-api-test.md) | あり（draft） | `backend/openapi.yaml`・`backend/test/`・`scripts/ci/oasdiff-breaking.sh` |
+| 07 | 負荷・性能試験成果物（performance） | 作成中（性能の本計測の取り込み後。リンクなし） | [perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`baseline.json`・`k6/`） |
+| 08 | [テスト対象の検査結果レポート（inspection）](08-inspection.md) | あり（draft） | [security/](../security/README.md)・`docs/evidence/security/`・`docs/data/findings.csv` |
+| 09 | [テスト実施・結果記載（execution）](09-test-execution.md) | あり（draft） | `docs/data/executions.csv`・`defects.csv`・`docs/evidence/runs/` |
+| 10 | [テスト品質報告書（quality）](10-quality-report.md) | あり（draft） | `docs/data/` の各 CSV と `docs/evidence/` の集計 |
+| 11 | [外形監視・運用品質成果物（monitoring）](11-monitoring.md) | あり（draft） | [monitoring/](../monitoring/README.md)（`monitors.yaml`・`runbooks/`・`fp-fn-log.md`） |
+| 12 | [テスト結果分析レポート（analysis）](12-analysis.md) | あり（draft） | `docs/data/actions.csv`・`findings.csv`・`defects.csv` |
 | 13 | [品質証跡・AIコンテキスト（evidence）](13-evidence.md) | あり（draft。証跡の実体は[evidence/](evidence/README.md)、AI 向け文脈は[ai-context.yaml](ai-context.yaml)） | `docs/evidence/`・`docs/data/evidence-index.csv`・`traceability.csv` |
 
 ### 成果物に付随するもの
@@ -40,7 +40,7 @@ todo-app（frontend nginx + backend Fastify/SQLite、docker compose）の **QA/Q
 |---|---|
 | [ai-context.yaml](ai-context.yaml) | AI 向けプロダクト文脈（製品・リポジトリ・戦略・対象外・未決・食い違い・AI の使い方規則）。2 章 |
 | [data/](data/) | 表の正本（CSV）。要求・リスク・観点・ケース・未決・データセット（テスト設計）、実施・不具合・検出・アクション・証拠索引・追跡表（実施と証跡） |
-| [adr/](adr/0001-frontend-backend-split.md) | アーキテクチャ判断（ADR-0001: frontend / backend 分離と保存先の変更） |
+| [adr/](adr/0001-frontend-backend-split.md) | アーキテクチャ判断（ADR-0001〜0006。0001: frontend / backend 分離と保存先の変更、0004: [単独メンテナ運用の統制](adr/0004-single-maintainer-governance.md)ほか） |
 | [evidence/](evidence/README.md) | 実行結果から機械的に作る証跡（manifest・成果物台帳・正本の所在・run の成果物・セキュリティ検査の写し） |
 
 ## 2 AI 向け文脈 ai-context.yaml の位置づけ
@@ -126,7 +126,7 @@ scope・exceptions・unknowns・contradictions・ai_policy）に当たる情報�
 | API 契約 | `backend/openapi.yaml` | 契約先行。実装との差分は CI の contract で検出 |
 | アーキテクチャ | `docs/adr/` | |
 | セキュリティ要求・検査方針 | `security/README.md` | |
-| SLO | `perf/slo.yaml` | `evidence/source-of-truth.yaml` の SLO 欄は生成時点の古い内容が残る場合がある（ai-context.yaml の C-001） |
+| SLO | `perf/slo.yaml` | 機械可読。`evidence/source-of-truth.yaml` の SLO 欄も同じパス（`present`） |
 | 観点・ケース | `docs/data/perspectives.csv`・`cases.csv` | |
 | 不具合 | GitHub Issues（label: defect / flaky） | `docs/data/defects.csv` は写し。直接編集しない |
 | 回帰・ジャーニー | `quality/journeys.yaml`・`impact-map.yaml` | `regression-suite.csv` は生成物 |
