@@ -54,18 +54,22 @@ for (const p of harnessProblems(
 for (const p of mappingProblems(mapping, new Set(cases.map((c) => c.test_case_id)))) report.error(p);
 for (const p of uncoveredCases(cases, mapping)) report.error(p);
 
-// 実装（テスト・契約）が、結果を取った commit から変わっていないこと（変わっていれば、読んだ実装と JUnit の結果が別の版になる）
+// 実装（backend の本体・テスト・契約）が、結果を取った commit から変わっていないこと（変わっていれば、読んだテストの実装と
+// JUnit の結果が別の版になる）。作業ツリーと比べる（api-tags.yaml は対象に含めない。結果の版に属さない対応表）
+const IMPLEMENTATION = [
+  "backend/src",
+  "backend/test/api",
+  "backend/test/helpers",
+  "backend/test-support",
+  "backend/openapi.yaml",
+];
 if (release) {
-  const diff = spawnSync(
-    "git",
-    ["diff", "--quiet", release.commit_sha, "HEAD", "--", "backend/test", "backend/openapi.yaml"],
-    {
-      cwd: root,
-    },
-  );
+  const diff = spawnSync("git", ["diff", "--quiet", release.commit_sha, "--", ...IMPLEMENTATION], {
+    cwd: root,
+  });
   if (diff.status === 1)
     report.error(
-      `backend/test・openapi.yaml が対象 commit ${release.commit_sha.slice(0, 7)} から変わっている（結果と実装が別の版）`,
+      `backend の実装・テスト・契約が対象 commit ${release.commit_sha.slice(0, 7)} から変わっている（結果と実装が別の版）`,
     );
   else if (diff.status !== 0) report.warn("git で対象 commit との差分を確かめられなかった（履歴が無い環境）");
 }
