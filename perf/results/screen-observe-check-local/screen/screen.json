@@ -1,0 +1,175 @@
+{
+  "started_at": "2026-10-12T09:12:12.594Z",
+  "measure_started_at": "2026-10-12T09:12:12.976Z",
+  "finished_at": "2026-10-12T09:12:58.170Z",
+  "base_url": "http://frontend:8080",
+  "tasks": 1000,
+  "expected_rows": 1000,
+  "row_selector": "li.task",
+  "definition": "ready_ms = ナビゲーション開始から、一覧の行数が expected_rows に達し、その後 2 フレーム描画されるまでの時間（キャッシュなしの新規コンテキスト、デスクトップ 1280x800、スロットリングなし）。判定の前に WARMUP_NAVIGATIONS 回の読み込みを捨てる",
+  "warmup": {
+    "navigations": 3,
+    "seconds": 1
+  },
+  "ready_ms": {
+    "n": 10,
+    "values": [
+      50.9,
+      47.4,
+      46.4,
+      50.1,
+      52.4,
+      47.6,
+      51,
+      51.7,
+      51.8,
+      49.8
+    ],
+    "min": 46.400000005960464,
+    "mean": 49.9,
+    "p50": 50.5,
+    "p95": 52.1,
+    "max": 52.400000005960464
+  },
+  "dom_ready_ms": {
+    "n": 10,
+    "values": [
+      27.9,
+      24.5,
+      30.5,
+      27.2,
+      26.4,
+      25.1,
+      26.4,
+      25.1,
+      25.5,
+      24.5
+    ],
+    "min": 24.5,
+    "mean": 26.3,
+    "p50": 25.949999999254942,
+    "p95": 29.3,
+    "max": 30.5
+  },
+  "dom_content_loaded_ms": {
+    "n": 10,
+    "values": [
+      16,
+      12.7,
+      17.9,
+      15,
+      13.7,
+      13.5,
+      13.8,
+      12.9,
+      13,
+      12.7
+    ],
+    "min": 12.699999995529652,
+    "mean": 14.1,
+    "p50": 13.600000001490116,
+    "p95": 17,
+    "max": 17.900000005960464
+  },
+  "load_event_ms": {
+    "n": 10,
+    "values": [
+      16.1,
+      12.8,
+      18,
+      15.1,
+      13.7,
+      13.5,
+      13.9,
+      12.9,
+      13.1,
+      12.7
+    ],
+    "min": 12.699999995529652,
+    "mean": 14.2,
+    "p50": 13.600000001490116,
+    "p95": 17.1,
+    "max": 18
+  },
+  "first_contentful_paint_ms": {
+    "n": 10,
+    "values": [
+      20,
+      44,
+      44,
+      20,
+      24,
+      44,
+      24,
+      24,
+      24,
+      48
+    ],
+    "min": 20,
+    "mean": 31.6,
+    "p50": 24,
+    "p95": 46.2,
+    "max": 48
+  },
+  "api_list_ms": {
+    "n": 10,
+    "values": [
+      4.5,
+      4,
+      4.6,
+      4.3,
+      4.1,
+      4,
+      4.1,
+      4.3,
+      4,
+      4.1
+    ],
+    "min": 4,
+    "mean": 4.2,
+    "p50": 4.100000001490116,
+    "p95": 4.6,
+    "max": 4.5999999940395355
+  },
+  "api_list_bytes": 30520,
+  "lighthouse": {
+    "runs": [
+      {
+        "performance": 1,
+        "accessibility": 1,
+        "fcp_ms": 40.119,
+        "lcp_ms": 40.119,
+        "tbt_ms": 0,
+        "cls": 0,
+        "speed_index_ms": 45,
+        "accessibility_failed_audits": []
+      },
+      {
+        "performance": 1,
+        "accessibility": 1,
+        "fcp_ms": 17.928,
+        "lcp_ms": 17.928,
+        "tbt_ms": 0,
+        "cls": 0,
+        "speed_index_ms": 22,
+        "accessibility_failed_audits": []
+      },
+      {
+        "performance": 1,
+        "accessibility": 1,
+        "fcp_ms": 23.172,
+        "lcp_ms": 23.172,
+        "tbt_ms": 0,
+        "cls": 0,
+        "speed_index_ms": 27,
+        "accessibility_failed_audits": []
+      }
+    ],
+    "chromium": "156.0.8078.4"
+  },
+  "tool": {
+    "playwright_core": "1.64.0",
+    "lighthouse": "13.5.0",
+    "chromium": "156.0.8078.4"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "run_id": "screen-observe-check-local",
+  "commit_sha": "2eb62aaea46269ace1294d666fb3596d777bf59f",
+  "started_at": "2026-10-12T09:11:50.307Z",
+  "env_class": "local:darwin-arm64",
+  "environment": "local darwin arm64 / Apple M5 Pro 15 cores / Docker 29.8.2 VM 15 vCPU 7.7 GiB",
+  "metrics": {
+    "screen.screen_ready_ms": 52.1
+  }
+}
