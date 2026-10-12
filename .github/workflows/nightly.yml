@@ -252,12 +252,19 @@ jobs:
         with:
           pattern: junit-*
           path: junit
+      - name: run の開始時刻と、ジョブごとの開始・終了時刻を取る（run 全体と層別の所要の実測。取れなければ空にして、JUnit の時間で代える）
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p out
+          echo "RUN_STARTED_AT=$(gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID" --jq '.run_started_at' || true)" >> "$GITHUB_ENV"
+          gh api "repos/$REPO/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100" --paginate --jq '.jobs[]' | jq -s '.' > out/run-jobs.json || echo '[]' > out/run-jobs.json
       - name: 層別の結果を ci-summary.json に集約する
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
           mkdir -p out summaries
-          node scripts/ci/summarize-junit.mjs --title "nightly ($TIER)" --merge summaries --out out/ci-summary.json
+          node scripts/ci/summarize-junit.mjs --title "nightly ($TIER)" --merge summaries --out out/ci-summary.json --jobs-json out/run-jobs.json
       - name: flaky を検出する（同一 SHA・同一テストで pass/fail 混在）
         if: always()
         run: node scripts/regression/flaky-report.mjs --junit junit --out out/flaky-report.json

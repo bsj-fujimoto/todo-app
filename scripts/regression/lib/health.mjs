@@ -1,7 +1,8 @@
 // ワークフロー実行履歴 → 健全性の指標（成功率・所要時間・連続失敗）。入力は GitHub API の workflow runs。
+import { elapsedSec } from "../../ci/lib/timing.mjs";
 const DONE = new Set(["success", "failure", "cancelled", "timed_out", "startup_failure"]);
-const seconds = (r) =>
-  Math.max(0, Math.round((Date.parse(r.updated_at) - Date.parse(r.run_started_at ?? r.created_at)) / 1000));
+// 所要は ci-summary の run_duration_sec と同じ定義（run の開始〜終了の wall-clock。scripts/ci/lib/timing.mjs）
+const seconds = (r) => elapsedSec(r.run_started_at ?? r.created_at, r.updated_at) ?? 0;
 
 export function percentile(sorted, p) {
   if (sorted.length === 0) return null;

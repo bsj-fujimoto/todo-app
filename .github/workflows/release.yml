@@ -59,6 +59,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     permissions:
       contents: read
+      actions: read # ci.yml の ci-result が、run のジョブごとの開始・終了時刻を読む（ci-summary の run_duration_sec・層別の所要）
 
   security:
     name: security（SAST・Secret・SCA・Container・License・DAST・ワークフロー統制）

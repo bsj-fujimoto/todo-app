@@ -1,0 +1,134 @@
+name: API test
+
+# API テスト（backend の API 層・unit と、API 契約の検査）を ci.yml から切り出した独立のワークフロー。
+# 動き方:
+#   - PR・main への push: ci.yml の `api-test` ジョブがこのワークフローを呼ぶ（workflow_call）。結果は ci.yml の集約ジョブ `ci-result`
+#     （Ruleset の required check）の needs に入るので、API テストが落ちれば `ci-result` も落ちる。選択実行の結果（mode・name_pattern）は呼び出し側から渡す。
+#   - 毎日（schedule）・手動（workflow_dispatch）: 単独で全件を流す（変更の有無に関わらず API の契約が守られていることの確認）。
+#     PR・push でこのファイル自身を起動しない理由は、ci.yml からの呼び出しと二重に動いて、同じ検査を 2 回流すだけになるため。
+# 出力（機械可読）: JUnit XML（backend/test-results）・ci-summary-api.json（対象 SHA・層別の件数と時間）・カバレッジ表・契約検査の報告（contract-report）。
+# 失敗の証拠: テストの標準出力（test-output-*.txt）・JUnit・oasdiff の差分を artifact に 90 日保存（失敗時も保存する）。
+on:
+  workflow_call:
+    inputs:
+      mode:
+        description: "selected（変更影響で選んだ TC だけ）/ full（全件）。呼び出し元の select ジョブの結果"
+        type: string
+        default: full
+      name_pattern:
+        description: "mode=selected のときの node:test のテスト名パターン"
+        type: string
+        default: ""
+  schedule:
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-test-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # 対象 SHA を明示する。pull_request では merge commit ではなく PR の head をテストし、記録する。
+  TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CI: "true"
+
+jobs:
+  # ---- backend（API 層 + unit）。カバレッジのしきい値（行 90%）は unit と API の合算で強制する -------------
+  api:
+    name: api
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: backend（API 層 + unit。JUnit・標準出力・カバレッジ表は backend/test-results）
+        env:
+          MODE: ${{ inputs.mode == 'selected' && 'selected' || 'full' }}
+          NAME_PATTERN: ${{ inputs.name_pattern }}
+        run: bash scripts/ci/run-node-tests.sh backend "$MODE" "$NAME_PATTERN"
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "api" --out ci-summary-api.json \
+            --layer api=backend/test-results \
+            --coverage backend=backend/test-results/coverage-summary.json \
+            --artifact backend-test-results=backend/test-results
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-api
+          path: ci-summary-api.json
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: junit-coverage-api
+          path: backend/test-results
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---- API 契約（redocly lint・破壊的変更の検出・実装が契約に従っているか）--------------------------------
+  contract:
+    name: contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-npm
+      - name: redocly lint（設定と、外したルールの理由は scripts/ci/redocly.yaml）
+        run: npm run contract:lint
+      - name: 破壊的変更の検出（oasdiff。base の openapi.yaml と比較し、ERR があれば失敗）
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: bash scripts/ci/oasdiff-breaking.sh
+      - name: 契約適合の検査（実装が openapi.yaml に従っているか。JUnit は backend/test-results/contract.xml）
+        if: always()
+        run: npm run contract:check -w backend
+      - name: 結果を ci-summary にまとめる
+        if: always()
+        run: |
+          node scripts/ci/summarize-junit.mjs --title "contract" --out ci-summary-contract.json \
+            --layer contract=backend/test-results/contract.xml --artifact contract-report=contract-report
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ci-summary-contract
+          path: ci-summary-contract.json
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: contract-report
+          path: |
+            contract-report
+            backend/test-results/contract.xml
+          retention-days: 90
+          if-no-files-found: warn
+
+  # ---- ゲート（このワークフロー単独で動いたとき〔schedule・dispatch〕の成否。ci.yml からの呼び出しでは ci-result が見る）----
+  api-result:
+    name: api-result
+    if: always()
+    needs: [api, contract]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: ゲート判定（success 以外は失敗。skipped・cancelled も成功扱いにしない）
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_JSON" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS_JSON" | jq -e 'to_entries | all(.value.result == "success")' > /dev/null

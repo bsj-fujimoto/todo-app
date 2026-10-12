@@ -3,10 +3,12 @@ import { createHash } from "node:crypto";
 import { parseCsvObjects, toCsv } from "../../ci/lib/csv.mjs";
 import { isFile, readText } from "../../ci/lib/repo-fs.mjs";
 import { parseYaml } from "../../ci/lib/yaml-lite.mjs";
+import { tiersOf, workflowTiers } from "./tiers.mjs";
 
 export const HEADER = [
   "case_id",
   "tier",
+  "tiers",
   "journey_id",
   "requirement_ids",
   "perspective_ids",
@@ -96,12 +98,29 @@ function statusOf(c, quarantined) {
   return quarantined.has(c.test_case_id) ? "quarantined" : "active";
 }
 
-export function buildRows({ cases, journeys, smokeIds, quarantinedIds, defects, executions = new Map() }) {
+export function buildRows({
+  cases,
+  journeys,
+  smokeIds,
+  quarantinedIds,
+  defects,
+  executions = new Map(),
+  availableTiers = [],
+  selectableIds = new Set(),
+}) {
   const smoke = new Set(smokeIds);
   const byCase = journeyIndex(journeys);
   return cases.map((c) => ({
     case_id: c.test_case_id,
     tier: tierOf(c, smoke),
+    // 実行される層（;区切り）。pr は変更影響の選択の対象（impact-map・smoke）のときだけ。全件の層（main・daily・weekly・release）は全自動化ケース
+    tiers: tiersOf(
+      {
+        automated: c.automation_layer !== "manual",
+        selectable: smoke.has(c.test_case_id) || selectableIds.has(c.test_case_id),
+      },
+      availableTiers,
+    ).join(";"),
     journey_id: (byCase.get(c.test_case_id) ?? []).join(";"),
     requirement_ids: c.requirement_ids,
     perspective_ids: c.perspective_ids,
@@ -131,17 +150,34 @@ export function validateJourneys({ journeys, cases }) {
   return journeys.flatMap((j) => journeyProblems(j, byId));
 }
 
-export function loadInputs(root) {
-  const cases = parseCsvObjects(readText(root, "docs/data/cases.csv")).rows;
-  const journeys = optionalYaml(root, "quality/journeys.yaml")?.journeys ?? [];
-  const smokeIds = optionalYaml(root, "quality/impact-map.yaml")?.smoke_case_ids ?? [];
-  const ledger = optionalYaml(root, "quality/flaky-ledger.yaml")?.entries ?? [];
-  const quarantinedIds = new Set(ledger.flatMap((e) => String(e.test_id).match(TC) ?? []));
+/** 層の導出に使うワークフロー（トリガーを読む）。 */
+function loadWorkflows(root) {
+  const read = (n) =>
+    isFile(root, `.github/workflows/${n}`) ? readText(root, `.github/workflows/${n}`) : null;
+  return Object.fromEntries(["ci.yml", "nightly.yml", "release.yml"].map((n) => [n, read(n)]));
+}
+
+/** impact-map の smoke と、変更影響の選択の対象（どれかのエントリに載っているケース）。 */
+function loadImpact(root) {
+  const impact = optionalYaml(root, "quality/impact-map.yaml") ?? {};
   return {
-    cases,
-    journeys,
-    smokeIds,
-    quarantinedIds,
+    smokeIds: impact.smoke_case_ids ?? [],
+    selectableIds: new Set((impact.entries ?? []).flatMap((e) => e.case_ids ?? [])),
+  };
+}
+
+function loadQuarantined(root) {
+  const ledger = optionalYaml(root, "quality/flaky-ledger.yaml")?.entries ?? [];
+  return new Set(ledger.flatMap((e) => String(e.test_id).match(TC) ?? []));
+}
+
+export function loadInputs(root) {
+  return {
+    cases: parseCsvObjects(readText(root, "docs/data/cases.csv")).rows,
+    journeys: optionalYaml(root, "quality/journeys.yaml")?.journeys ?? [],
+    ...loadImpact(root),
+    quarantinedIds: loadQuarantined(root),
+    availableTiers: workflowTiers(loadWorkflows(root)),
     defects: loadDefectLinks(root),
     executions: loadExecutions(root),
   };
