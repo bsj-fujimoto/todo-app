@@ -89,9 +89,8 @@ const ROLES = [
 /** 決定者の欄から承認者を読む: 「ロール（…承認…）」の形で承認と書かれたロール。無ければ先頭のロール。 */
 function adrApprover(decidedLine) {
   const text = String(decidedLine ?? "");
-  const approver = new RegExp(
-    `(${ROLES.map((r) => r.replace(/[()（）]/g, "\\$&")).join("|")})（[^）]*承認`,
-  ).exec(text);
+  // ROLES は固定の語（正規表現の特殊文字を含まない）
+  const approver = new RegExp(`(${ROLES.join("|")})（[^）]*承認`).exec(text);
   return approver?.[1] ?? roleOf(text);
 }
 
