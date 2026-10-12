@@ -59,9 +59,22 @@ export default [
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // composition root: 副作用の実体を束ねる唯一の場所
+    // composition root: 副作用の実体を束ねる唯一の場所。起動に失敗したときの終了コード（process.exitCode）は、await の後に 1 回だけ書く
+    // （プロセスの入口で並行に呼ばれないので競合しない。require-atomic-updates を外す）。
     files: ["backend/src/main.js", "frontend/src/main.js"],
-    rules: { "no-restricted-properties": "off", "no-restricted-syntax": "off", "no-console": "off" },
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-syntax": "off",
+      "no-console": "off",
+      "require-atomic-updates": "off",
+    },
+  },
+  {
+    // backend のテスト基盤（子プロセスの exit を待つ Promise の書き方）。API 結果表（docs/data/api-results.csv）は、backend/test-support を含む実装が
+    // 結果を取った commit（release.json）から変わっていないことを前提にしている（scripts/evidence/build-api-results.mjs）。
+    // 結果を取り直すまでは、この領域のコードは書き換えずに、規約の側で例外にする（次のリリースで書き換えて、この override を外す）。
+    files: ["backend/test-support/**"],
+    rules: { "no-promise-executor-return": "off" },
   },
   {
     // scripts/<領域>/*.mjs は CLI の入口（composition root）。時刻・環境変数・標準出力をここで束ねる。

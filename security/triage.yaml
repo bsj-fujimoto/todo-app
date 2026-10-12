@@ -151,3 +151,20 @@ entries:
     decided_at: 2026-10-12
     recommendation: 是正は不要（誤検出）。再発を避けるため、security/gitleaks.toml の allowlist（targetRules を sourcegraph-access-token に限定、paths は docs/）を理由つきで維持する。他のルールは docs/ にも適用したまま
     alternative: docs/ の SHA 表記を、キーワード（sourcegraph）と同じファイルに置かない書き方に直す（文書の自然な記述を変えることになり、ルールの性質上、自己参照的に当たるものは残る）
+  - match:
+      tool: qc-inspect
+      rule_id: long-function
+      location: "backend/test/helpers/harness.js"
+    status: tp
+    reason: qc の内蔵検査（inspect）が createHarness（約 60 行）を long-function（low）として指摘している。事実として長い。テストの行数の規約（max-lines-per-function）はテストで緩めているが、それとは別に、分けたほうが読みやすい。直さずに残している理由は、API 結果表（docs/data/api-results.csv）が backend/test/helpers/harness.js を含む実装を「結果を取った commit（docs/evidence/release.json の v1.0.0）から変わっていないこと」を前提にしており（scripts/evidence/build-api-results.mjs の IMPLEMENTATION）、いま書き換えると v1.0.0 の API 結果の証跡が別の版になって docs-check が失敗するため。
+    reachability: 該当しない（テスト基盤の読みやすさの指摘。製品の動作に影響しない）
+    exposure: 該当しない
+    asset_impact: 低（保守性）
+    compensating_controls: ESLint の complexity ≤ 8・引数 ≤ 4・ネスト ≤ 3 は適用済み。createHarness の各メソッドは単一の責務（sandbox・start・cleanup）
+    recommendation: 次のリリースで API の結果を取り直すとき（release.json を更新するとき）に、createHarness から start の中身（startApp）を切り出して 40 行以内にする。同時に eslint.config.js の backend/test-support の override（no-promise-executor-return）も外す
+    alternative: qc の指摘を受け入れず、テストの行数の緩和を恒久の規約として残す（テストは describe/it の入れ子で長くなりやすい。ただし harness は入れ子ではなく実際に分けられるので、採らない）
+    owner: バックエンド担当
+    due: 2027-01-09
+    reverify_condition: docs/evidence/release.json を更新する（API の結果を取り直す）とき / 期限
+    decided_by: セキュリティ担当
+    decided_at: 2026-10-12

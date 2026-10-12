@@ -94,6 +94,11 @@ trivy fs は検査の種類ごとに別の scan-run（trivy-fs = 脆弱性 / tri
 - findings.json の `ledgers_applied` に、どの時点の台帳を適用したか（各台帳の sha256・件数・対象 commit・適用時刻）を残す。証跡の取り込み（`fetch-run.mjs --kind security`）は、これを SOURCE.json の `triage` に写す。**最新の security run（台帳が最新の main の run）から取り込めば、台帳の更新後の状態（例: FND-012 が fp）が証跡に載る**。古い run から取り込むと、その run の時点の状態（v1.0.0 の run では FND-012 は untriaged）のまま。
 - 台帳（triage.yaml・accepted-risks.yaml）の全エントリに、理由・修正方法（または「修正しない理由と代替統制」）・代替案・owner（ロール）・期限（na・fp は再確認の期日、受容は expires_at）・再検査条件を書く（`check-policy` が必須として検査）。受容（accepted）は qc では「未解決」に数えられるので、直せるものは直して台帳から外す（zlib は両 Dockerfile で修正版に上げて AR-001 を外した）。
 
+## qc の内蔵検査（long-function / long-file）の扱い
+
+qc の `inspect`（内蔵）は、長い関数・長いファイルを low で指摘する。テストは eslint の行数規約（max-lines-per-function・max-lines）を緩めているので、指摘のうち実際に分けられるものは分けた: e2e/fixtures/stack.js（createStack）・frontend/test/unit/app.test.js（describe を分割・setup から makeApi）・scripts/evidence/test/ledgers.test.mjs（733 行 → 3 ファイル + 共有の helpers。テスト件数は同じ）。
+**残しているもの**: backend/test/helpers/harness.js の createHarness。API 結果表（docs/data/api-results.csv）は、backend/src・backend/test/api・helpers/harness.js・test-support・openapi.yaml が「結果を取った commit（release.json）から変わっていないこと」を前提にしており（build-api-results.mjs）、書き換えると v1.0.0 の API 結果の証跡が別の版になる。次に API の結果を取り直すとき（release.json の更新時）に分ける。triage.yaml に tp（期限つき）で記録した。同じ理由で、backend/src/main.js の require-atomic-updates と backend/test-support の no-promise-executor-return は、コードを直さず eslint.config.js の override（理由つき）で例外にしている。
+
 ## フレームワークの規約（Fastify）
 
 Fastify 専用の lint プラグインは無い。ソースから確実に判定できる規約だけを `check-framework.mjs` で検査する: FW-001 ルートと openapi.yaml の対応、FW-002 reply の扱い（async ハンドラで reply.send() を return しない・reply と別の値の混在）、FW-003 アプリの土台（setErrorHandler・setNotFoundHandler・bodyLimit・logger）、FW-004 routes/ の register 関数が app.js で 1 回ずつ呼ばれること。

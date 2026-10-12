@@ -99,8 +99,6 @@ export function spawnBackend({ dbPath, env = {} }) {
     stdio: ["ignore", "pipe", "pipe"],
   });
   const collected = collectOutput(child);
-  const exited = new Promise((resolve) => {
-    child.once("exit", (code, signal) => resolve({ code, signal }));
-  });
+  const exited = new Promise((resolve) => child.once("exit", (code, signal) => resolve({ code, signal })));
   return untilListening(child, collected, exited);
 }
