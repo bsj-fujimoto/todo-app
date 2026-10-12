@@ -118,6 +118,21 @@ gh release upload v1.0.0 ~/tmp/release-v1.0.0/release-evidence.zip --clobber --r
 
 - `--from <dir>` を使うと、取得済みの artifact（`release-evidence.zip` を含むディレクトリ）から作り直せる。`<out>/original/` と `<out>/release-evidence/` に元の取得物（個人情報を含む）が残るので、commit せず、差し替え後に消す。
 - 元の値は、Git 履歴・Actions の artifact（90 日）には残る（`docs/evidence/README.md` の制約）。差し替えるのは Release の添付だけ。
+- **v1.0.0 の添付は 2026-10-12 に差し替え済み**（現在の sha256 `75d2fa5c9b741efa24c40bf96a73b9331b7d9aae6da80f7c817cda02ec97021e`、墨消し 584 箇所・11 ファイル。元の版は削除した。記録は `docs/evidence/README.md` の「リリースの添付」と `docs/13-evidence.md`）。
+
+### 古い run の証跡の扱い（superseded）
+
+実施表の基準を別の run に取り替えたあとも、前の run の証跡（`docs/evidence/runs/<run-id>/`）は履歴として残し、**消さずに印を付ける**。
+
+- 印: その run の `SOURCE.json` に `superseded_by` を書く（`run_id`＝置き換えた run、`head_sha`、`reason`＝取り替えた理由と承認の根拠、`marked_at`＝印を付けた日）。`fetch-run.mjs` は書かない（人が書く。同じ run を取り込み直すと消えるので、取り直したら書き直す）。
+- 反映: `build-manifest.mjs` が、その run の全ファイルの manifest の項目に `superseded_by: "<置き換えた run の id>"` を付ける。**実施表・証拠索引の根拠ではない**ことを機械で読める。証拠索引の既存の行（run 全体の証拠）は、主張の文面が対象 SHA を含むため書き換えない（EV の ID を変えない）。
+- 現在の印: `runs/38128562945`（PR #26 の CI、対象 52da4aa、`pre-1.0.0`）は、v1.0.0 の Release run `38152472087`（対象 5fcf40a）に置き換えた（実施表の基準の取替。`docs/09-test-execution.md` の DEV-006）。
+
+### SOURCE.json の読み方
+
+- `version`: タグの run なら版（`v1.0.0` → `1.0.0`）、そうでなければ `pre-1.0.0`。ci の取り込みは `ci-summary.json` の `ref` から、`--kind security` などの取り込みは `gh run view` の `headBranch` から決める（`--sha`・`--url` で gh を使わないときは `--version` を渡す）。取り込み時に版を取り違えた場合は、`corrections` に変更前・変更後・理由・日付を残して直す（例: `docs/evidence/security/SOURCE.json` は、取得元が v1.0.0 の run なのに `pre-1.0.0` になっていたのを 2026-10-12 に直した）。
+- `run_started_at`（`kind: ci`）: **`ci-summary.json` の `started_at`（集計ジョブの開始時刻）**で、GitHub の run の作成時刻（`gh run view` の `createdAt`）ではない。例: run 38152472087 は作成 15:43:26Z、`run_started_at` は 15:45:50Z（下流の集計ジョブが始まった時刻）。run 全体の開始・終了は `gh run view <id> --json createdAt,updatedAt` で見る。
+- `captured_at`: 取り込んだ（`fetch-run.mjs` を実行した）時刻。run の実行時刻ではない。
 - `attestations/` の SBOM・provenance は、レジストリに付いた署名済みの原本の**写し**で、墨消し後は原本と一致しない（原本は `docker buildx imagetools inspect <image>@<digest>` と `gh attestation verify` で取る）。
 
 ### 再生成の冪等性
@@ -129,19 +144,19 @@ gh release upload v1.0.0 ~/tmp/release-v1.0.0/release-evidence.zip --clobber --r
 
 ## 3. 各スクリプト
 
-| スクリプト                 | 役割                                                                                                                                                                                                                                                                 |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fetch-run.mjs`            | artifact を 1 つずつ取り（`*.dockerbuild` は除く）、小さな成果物だけを `docs/evidence/` へ。`SOURCE.json` を作る。`--kind ci / security / perf / monitoring / github`                                                                                                |
-| `build-executions.mjs`     | JUnit・観察値・`ci-summary.json`・`regression-selection.json` から実施表。1 行 = 1 ケース × 1 実行環境 × 1 run。全ケースに 1 行以上（無ければ `not_run` + 理由）。手動ケースは実施していなければ `not_run`（理由・owner・予定日は `docs/evidence/manual-plan.yaml`） |
-| `build-defects.mjs`        | Issue（`defect`・`flaky`）→ `defects.csv`。本文は `.github/ISSUE_TEMPLATE/defect.md` の見出しと「- キー: 値」を読む。語彙を統一し、欠けた項目は Issue 番号つきで指摘して失敗する（事実に基づいて Issue 本文を補筆してから再実行）                                    |
-| `build-findings.mjs`       | security の `findings.json` → `findings.csv`。finding_id は triage が振った安定 ID `FND-nnn`（FND を docs/data の中で定義する。未登録の仮 ID があれば失敗）                                                                                                          |
-| `build-evidence-index.mjs` | 証拠索引。run 全体・セキュリティ（検出 1 件ごと）・性能・監視・GitHub 統制の証拠を足し、全参照（ファイル・アンカー・sha256）を検査                                                                                                                                   |
-| `build-traceability.mjs`   | REQ → RISK → VIEW → TC → EXEC → DEF → FND → ACT。ケースに結び付かない要求・リスク・観点・検出・アクションは `gaps` つきの行で残す                                                                                                                                    |
-| `build-manifest.mjs`       | `docs/evidence/manifest.json`（path / sha256 / size / captured_at / source / version / head_sha）                                                                                                                                                                    |
-| `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                       |
-| `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                   |
-| `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                       |
-| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--strict-artifacts`（台帳の古さも失敗）・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`   |
+| スクリプト                 | 役割                                                                                                                                                                                                                                                                                                                                |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetch-run.mjs`            | artifact を 1 つずつ取り（`*.dockerbuild` は除く）、小さな成果物だけを `docs/evidence/` へ。`SOURCE.json` を作る。`--kind ci / security / perf / monitoring / github`                                                                                                                                                               |
+| `build-executions.mjs`     | JUnit・観察値・`ci-summary.json`・`regression-selection.json` から実施表。1 行 = 1 ケース × 1 実行環境 × 1 run。全ケースに 1 行以上（無ければ `not_run` + 理由）。手動ケースは実施していなければ `not_run`（理由・owner・予定日は `docs/evidence/manual-plan.yaml`）                                                                |
+| `build-defects.mjs`        | Issue（`defect`・`flaky`）→ `defects.csv`。本文は `.github/ISSUE_TEMPLATE/defect.md` の見出しと「- キー: 値」を読む。語彙を統一し、欠けた項目は Issue 番号つきで指摘して失敗する（事実に基づいて Issue 本文を補筆してから再実行）                                                                                                   |
+| `build-findings.mjs`       | security の `findings.json` → `findings.csv`。finding_id は triage が振った安定 ID `FND-nnn`（FND を docs/data の中で定義する。未登録の仮 ID があれば失敗）。run の出力に owner・due が無い検出は、現在の `security/triage.yaml` の同じ検出への記載から owner・due だけを補う（status など run の判定は変えない。台帳に無ければ空） |
+| `build-evidence-index.mjs` | 証拠索引。run 全体・セキュリティ（検出 1 件ごと）・性能・監視・GitHub 統制の証拠を足し、全参照（ファイル・アンカー・sha256）を検査                                                                                                                                                                                                  |
+| `build-traceability.mjs`   | REQ → RISK → VIEW → TC → EXEC → DEF → FND → ACT。ケースに結び付かない要求・リスク・観点・検出・アクションは `gaps` つきの行で残す                                                                                                                                                                                                   |
+| `build-manifest.mjs`       | `docs/evidence/manifest.json`（path / sha256 / size / captured_at / source / version / head_sha）                                                                                                                                                                                                                                   |
+| `verify-manifest.mjs`      | 全ファイルを再計算して、不一致・欠落・未登録を検出（改変検知）                                                                                                                                                                                                                                                                      |
+| `build-artifacts.mjs`      | `artifacts.yaml`（文書ごとの版・状態・承認・履歴・sha256・保存方針）と `source-of-truth.yaml`。文書のヘッダ表と `git log` から作る                                                                                                                                                                                                  |
+| `check-parity.mjs`         | md の「N 件（TC）」と表の行数、「`cases.csv` の列: …」と実際の列を突き合わせる                                                                                                                                                                                                                                                      |
+| `check-evidence.mjs`       | 上をまとめて検査（CI の docs-check 向け）。`--out report.json`・`--release <SHA>`・`--strict`・`--strict-artifacts`（台帳の古さも失敗）・`--structure-only`（release.json を見ない構造検査）。`docs/evidence/release.json` があれば X を `--release` に `--strict`                                                                  |
 
 ## 4. 設計判断と制約
 

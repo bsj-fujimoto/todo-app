@@ -4,7 +4,8 @@
   "captured_at": "2026-10-12T07:49:48.682Z",
   "source_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152548008",
   "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
-  "version": "pre-1.0.0",
+  "version": "1.0.0",
+  "ref": "v1.0.0",
   "run_id": "38152548008",
   "workflow": "perf",
   "event": "workflow_dispatch",
@@ -14,5 +15,14 @@
   "skipped_large_files": [],
   "redactions": [],
   "redaction_note": "墨消しした箇所は無い",
+  "corrections": [
+    {
+      "field": "version",
+      "from": "pre-1.0.0",
+      "to": "1.0.0",
+      "reason": "取り込み時に版を渡さず既定値（pre-1.0.0）になっていた。取得元の run 38152548008 はタグ v1.0.0 上で動かした perf.yml で、head_sha も v1.0.0 の commit。security/SOURCE.json と同じ訂正。fetch-run.mjs は以後 run の ref から版を決める。",
+      "corrected_at": "2026-10-12"
+    }
+  ],
   "collected_by": "scripts/evidence/fetch-run.mjs"
 }

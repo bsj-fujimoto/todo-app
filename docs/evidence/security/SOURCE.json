@@ -4,7 +4,8 @@
   "captured_at": "2026-10-11T16:15:54.625Z",
   "source_url": "https://github.com/bsj-fujimoto/todo-app/actions/runs/38152472087",
   "head_sha": "5fcf40a7e58dc253e53ff56860d0669a69abda26",
-  "version": "pre-1.0.0",
+  "version": "1.0.0",
+  "ref": "v1.0.0",
   "run_id": "38152472087",
   "workflow": "Release",
   "event": "push",
@@ -117,6 +118,15 @@
       "redacted_sha256": "48334e737eaa0a81479eee7073926dc98fcb842d98c20ebb0d50c0ba7669bec3"
     }
   ],
-  "redaction_note": "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル。元の取得物は GitHub Actions の artifact（90 日）にだけある（original_sha256 で対応が追える）",
+  "redaction_note": "取り込み時に墨消しした。manifest・証拠索引の sha256 は墨消し後のファイル（original_sha256 で対応が追える）。元の取得物は GitHub Actions の artifact（90 日）に残る。Git 履歴には、墨消し方針より前に取り込んだ版の墨消し前のファイルが残りうる（docs/evidence/README.md「既知の制約」）",
+  "corrections": [
+    {
+      "field": "version",
+      "from": "pre-1.0.0",
+      "to": "1.0.0",
+      "reason": "取り込み時に版を渡さず既定値（pre-1.0.0）になっていた。取得元の run 38152472087 は ref v1.0.0（同じ run の runs/38152472087/SOURCE.json は version 1.0.0）で、head_sha もタグ v1.0.0 の commit。fetch-run.mjs は以後、run の ref から版を決める。",
+      "corrected_at": "2026-10-12"
+    }
+  ],
   "collected_by": "scripts/evidence/fetch-run.mjs"
 }

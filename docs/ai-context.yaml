@@ -16,7 +16,7 @@
 #   - 変更は PR で行う（GitHub Flow）。CODEOWNERS により docs/ はプロダクトオーナーのレビュー対象。
 #   - 正本（quality/journeys.yaml・perf/slo.yaml・monitoring/monitors.yaml・.github/settings/・security/ など）を変えたら、
 #     同じ PR でこのファイルの対応する節を直す。リリースのたびに release・commit・as_of を見直す。
-#   - 状態: draft（このファイルは PR のマージをもって承認される。マージするまでは draft）。
+#   - 状態: draft（オーナーの確認待ち。PR マージ＝承認の代行。マージされても、オーナーの確認が済むまで reviewed・approved にしない）。
 #
 # 承認の扱い（正直に）
 #   リポジトリは単独のリポジトリオーナー + AI エージェントで運用している。ロールは兼務で、不在時の代理は置けない。
@@ -25,14 +25,14 @@
 version: 1
 document:
   id: DOC-AI-CONTEXT
-  version: "1.0"
+  version: "1.1"
   as_of: "2026-10-12"
-  status: draft
+  status: "draft（オーナーの確認待ち。PR マージ＝承認の代行）"
   target: "todo-app 仕様書 v1.1（spec/todo-phase1-spec.html）、リリース v1.0.0"
   target_commit: "5fcf40a7e58dc253e53ff56860d0669a69abda26" # タグ v1.0.0 の製品 commit
   authors: "ドキュメント管理担当（AI が作成）"
   reviewer: "QA リード（ロール。兼務）"
-  approval: "プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ）"
+  approval: "プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ。オーナーの確認が済むまで draft）"
   canonical_store: "Git（本リポジトリの main。履歴は永続。force push・ブランチ削除は Ruleset で禁止する設計だが、Ruleset は未適用: repository.expected_controls 参照）"
 
 # ---------------------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ strategy:
     layers: [unit, api, contract, e2e, compose] # e2e は chromium / firefox / webkit / chromium-mobile-360。性能・外形監視は別層（perf.yml・synthetic.yml）
     required_checks: [ci-result, security-result]
     required_checks_note: "集約ジョブ。個別ジョブは required にしない。ただし Ruleset は未適用なので、現状 GitHub 側で必須化はされていない"
-    maximum_feedback_minutes: 10 # PR のフィードバック時間の目標。本ファイルが初出の宣言値。実測は CI run の 2〜4 分（gh run list --workflow CI の直近 12 run のうち success 9 件は 2.4〜3.9 分）
+    maximum_feedback_minutes: 10 # PR のフィードバック時間の目標（= health-trend の p95 上限 600 秒。scripts/regression/health-trend.mjs・quality/README.md）。nightly.yml だけ 1800 秒（30 分。全件・全ブラウザの日次のため。per_workflow_p95_sec）で、PR の目標には含めない。実測は ci.yml の成功 run が 2.4〜4.4 分（PR #57 の本文）
     quarantine_policy: "quality/flaky-ledger.yaml に test_id・rate・cause・owner・since・expires_at（30 日以内）を書いた場合のみ隔離。期限切れは CI 失敗。retry による隠蔽は禁止"
     max_flaky_rate: 0.01 # 宣言値（本ファイルが初出）。quality/README.md は『台帳を空に保つのが目標』と書くのみで数値は無い。現状は 2 件の隔離がある
   api:
@@ -232,29 +232,27 @@ strategy:
     required_scenarios: [load, stress, spike, soak, capacity] # perf/workload.yaml の scenarios
     environments:
       - "local:darwin-arm64（開発機の Docker Desktop。baseline.json の env_class。初回実測）"
-      - "GitHub-hosted runner（perf.yml。Linux ネイティブ Docker。初回実行はまだ無く baseline は未作成: perf/README.md）"
+      - "GitHub-hosted runner（perf.yml。Linux ネイティブ Docker。v1.0.0 上の run 38152548008 で実測し、runner の baseline（v1.0.0、env_class github-hosted:ubuntu24:X64）を作成済み: PR #61、perf/README.md、docs/07-performance.md。1 回の run から作ったため run 間のノイズは分からない）"
     environments_note: "本番環境は無い（perf/environment.yaml の reference_production.exists=false）。絶対値は本番の予測ではなく、同じ環境の run 同士の相対比較に使う"
     workload_basis: "assumed（実測ではなく想定。導出は perf/workload.yaml#derivation）"
   monitoring:
     ref: monitoring/monitors.yaml
     critical_journeys: [J-01, J-02, J-03, J-04, J-05] # J-01〜J-04 は API と browser、J-05 は API（MON-013）。monitoring/monitors.yaml の journey_id
     regions: ["github-hosted-runner（リージョン非固定）"] # 多地点監視はできない（monitoring/README.md）
-    max_interval_sec: 1800 # 30 分（synthetic.yml の cron）。monitors の既定上限 300 秒は満たさない。理由は monitoring/README.md
+    max_interval_sec: 1800 # 30 分（synthetic.yml の cron の定義）。monitors の既定上限 300 秒は満たさない。理由は monitoring/README.md。**実績の schedule 間隔は 3.4〜6.7 時間（中央値 3.8 時間。宣言の枠 39 に対し 4 回。monitors.yaml の observed_interval_sec・monitoring/cadence/。MTTD は実効間隔 + retry で見る）**。watchdog のしきい値は 8 時間（PR #65）。docs/11 の monitoring-06
     max_retries: 2 # monitors.yaml の retries の最大値（MON-001・002・011・012 が 2、そのほかは 1）
     history_retention_days: 90 # GitHub Actions artifact の保持（synthetic.yml の retention-days）。Git に置く履歴（monitoring/history/）は永続だが保存例のみ
-    history_note: "運用期間はまだ短い（4 週間未満）。時間依存の傾向（FP/FN 率の推移など）は実績が足りない（monitoring/fp-fn-log.md）"
+    history_note: "運用期間はまだ短い（4 週間未満）。schedule 実行は 2026-10-12 17:00 JST 時点で synthetic 4 回・死活監視 2 回（うち 1 回は MON-META #59 を起票。しきい値 3 時間が実効間隔に合わない FP の見込みで、PR #65 で 8 時間に）・nightly 2 回（すべて成功）にとどまる。時間依存の傾向（FP/FN 率の推移・稼働率など）は実績が足りない（monitoring/fp-fn-log.md、docs/11 の monitoring-11）"
 
 # ---------------------------------------------------------------------------------------------
 inspection:
   ref: security/expected-scans.yaml
-  expected_checks: [sast, dast, sca, secret, container, config, license] # security/expected-scans.yaml の kind。実際に security.yml で走る検査と同じ
+  expected_checks: [sast, dast, sca, secret, container, config, license, maintainability] # 実際に security.yml で走る検査（security/expected-scans.yaml の kind）。maintainability は PR #57 から scan-run.json に記録している（docs/08 の inspection-19〜21）。expected-scans.yaml にはほかに kind: architecture（check-arch.mjs。docs/08 の inspection-11）があるが、qc の検査種別（ScanCategory）に値が無いのでここには書かない
   not_expected: # 期待しない検査と理由
     - kind: iac
       reason: "Terraform などの IaC ファイルが無い。Dockerfile は hadolint と trivy（container）、compose は compose-check（config）で扱う"
-    - kind: maintainability
-      reason: "ESLint は CI の lint ジョブ（ゲート）で実行するが、検査記録（SARIF 等）として保管していないので、検査結果の対象にしていない"
     - kind: framework
-      reason: "React・Next・Vue などのフレームワークを使っていない（frontend は静的 HTML / ES modules）"
+      reason: "frontend は React・Vue などを使わない静的 HTML / ES modules で該当する規約が無い。backend は Fastify 5 を使うが、Fastify 用の専用 lint・規約検査は入れていない（規約の一部はテストと契約検査で固定。docs/08 の inspection-22）。専用の検査が無いのは『できていないこと』で、承認された対象外ではない"
     - kind: seo
       reason: "対象外（exceptions の inspection-12。公開コンテンツサイトではない）"
   license_policy_ref: security/license-policy.yaml
@@ -309,43 +307,52 @@ exceptions:
     criterion_id: api-02
     reason: "認証なしの 1 人用で、認証が要る endpoint が無い（REQ-015。openapi.yaml に security scheme も 401/403 も無い）。認証・認可の API 試験は対象にならない"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
+    review_by: "2027-01-12" # docs/01 の plan-03（api-02）に合わせた見直し日
     review_trigger: "認証・認可を仕様に加えたとき"
   - exception_id: EXC-002
     criterion_id: api-08
     reason: "ページングを持つ endpoint が無い（GET /api/v1/tasks は全件返却。openapi.yaml に limit / offset / cursor が無い）。件数の上限は UNK-002（open）で未決"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
+    review_by: "2026-10-16（UNK-002 の回答期限）。件数が 5,000 を超えたら即時" # docs/01 の plan-03（api-08）に合わせた見直し日
     review_trigger: "ページングを導入したとき、または UNK-002 の決定で件数上限・ページングが決まったとき"
   - exception_id: EXC-003
     criterion_id: inspection-12
     reason: "公開コンテンツサイトではなく、SEO / AIO の対象外（個人用のログイン不要アプリ。検索エンジンに載せる目的が無い）"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
+    review_by: "2027-04-12" # docs/01 の plan-03（inspection-12）と同じ
     review_trigger: "公開 Web サイトとして外部へ公開するとき"
   - exception_id: EXC-004
     criterion_id: monitoring-05
     reason: "認証が無く、認証付き監視が存在しない。ただし書込みを伴う監視は専用の合成データで行い、作ったデータは必ず後始末する（書込みを伴う MON-003・004・005・007・008・009 の data_cleanup）"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
+    review_by: "2027-01-12" # docs/01 の plan-03（monitoring-05）に合わせた見直し日。api-02 の見直しと同時
     review_trigger: "認証を導入したとき"
   - exception_id: EXC-005
     criterion_id: regression-15
     reason: "外部連携が無く、frontend と backend は同一リリース単位（同じ commit・同じタグから両イメージを作る）。連携先との互換性回帰・バージョン組合せの回帰は要らない"
     approved_by: プロダクトオーナー
-    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。マージ前は draft"
+    approval_basis: "本ファイルを含む PR のマージをもって承認。フェーズ1は AI が代行マージ（オーナーの明示許可 2026-10-11）。オーナーの確認が済むまで draft"
     approved_at: "2026-10-12"
     expires_at: "2027-04-12"
+    review_by: "2026-12-31（または /api/v2 を出す判断のとき、どちらか早い方）" # docs/01 の plan-03（regression-15）に合わせた見直し日
     review_trigger: "外部連携を追加したとき、または frontend と backend を別リリースにするとき"
 exceptions_rule: "対象外には理由・承認者（ロール）・承認日・期限（見直し日）が必須。期限を過ぎたら見直す（延長も PR）。承認が実際に無いものを approved にしない"
+exceptions_dates_note: >-
+  expires_at と review_by は意味が違う。expires_at は承認の有効期限（これを過ぎると承認が失効し、対象外として扱わない。
+  qc-analyzer の exceptions[].expires_at）。review_by は見直し日（これまでに、前提が崩れていないかを確かめて判断を更新する。
+  docs/01 の plan-03 の「見直し日」と同じ値）。review_by は expires_at より前か同じ。plan-03 を正とし、食い違ったらここを直す。
 
 # ---------------------------------------------------------------------------------------------
 unknowns: # 未決の正本は CSV。ここは管理規則と、書いた日の要約だけ
@@ -378,26 +385,8 @@ contradictions: # 仕様と成果物の食い違いを実際に突き合わせ�
       openapi.yaml・errors.js・messages.js・index.html で完全一致。検証順（必須 → 長さ → 改行）は仕様書本文に明記が無く
       openapi.yaml の TitleInvalid が規定する（REQ-031。UNK-001 で確定済みで、食い違いではなく仕様の補完）。
       AC-01〜AC-07 はすべて要求と docs/03-test-spec.md §1.2 のケースに対応する。保存先のボリューム名 todo-data は docker-compose.yml と一致。
-    items_not_compared: "画面の見た目（色・位置）は仕様書に数値が無く比較していない。docs/01・04〜13 は作成中のため突き合わせていない"
+    items_not_compared: "画面の見た目（色・位置）は仕様書に数値が無く比較していない。docs/01〜13 は、横断整合の PR（2026-10-12）で件数・状態・承認の書き方・時点依存の記述を突き合わせた範囲に限る（全文の突き合わせではない）。docs/07（性能）は未作成で突き合わせていない"
   items:
-    - contradiction_id: C-001
-      kind: state_mismatch
-      summary: >-
-        docs/evidence/source-of-truth.yaml は SLO の正本を status: missing（『未作成』）としているが、perf/slo.yaml は既に存在する。
-        source-of-truth.yaml は scripts/evidence/build-artifacts.mjs が生成するファイルで、SLO 作成前に生成された内容が残っている。
-        再生成（npm run evidence:build）で解消する見込み。SLO の正本は perf/slo.yaml（source_of_truth の slo にもこれを書く）。
-      refs: [docs/evidence/source-of-truth.yaml#source_of_truth.slo, perf/slo.yaml]
-      criterion_ids: [evidence-03]
-      domains: [evidence, performance]
-    - contradiction_id: C-002
-      kind: missing_in_artifact
-      summary: >-
-        perf/slo.yaml の health_p95_ms（health の応答時間 p95 ≤ 200ms）は test_cases: [TC-075] に紐づくが、TC-075 の期待結果
-        （docs/data/cases.csv）に応答時間の判定は無い（200・4 キー・version・commit・認証なしの確認のみ）。
-        応答時間の判定は perf 層の observe.mjs と外形監視の assertion にあり、TC-075 は機能面の対応ケースにとどまる。
-        どちらかに合わせる（slo.yaml の test_cases を perf 側の参照に直すか、TC-075 に応答時間の期待を足す）必要がある。
-      refs: [perf/slo.yaml#health_p95_ms, docs/data/cases.csv#TC-075]
-      domains: [performance, spec]
     - contradiction_id: C-003
       kind: state_mismatch
       summary: >-
@@ -407,7 +396,28 @@ contradictions: # 仕様と成果物の食い違いを実際に突き合わせ�
         フェーズ2を含まない（対象外）ので v1.0.0 の成果物には影響しない。フェーズ2の着手時に解消する。
       refs: [spec/todo-phase2-spec.html#05, spec/todo-phase1-spec.html#09, docs/adr/0001-frontend-backend-split.md]
       domains: [spec]
-  none_found_note: "上記 3 件以外は、突き合わせた範囲（checked_scope）で食い違いを見つけていない。推測で矛盾を作っていない"
+  resolved: # 解消した食い違い（qc-analyzer の食い違いの一覧には含めない。経緯を残す）
+    - contradiction_id: C-001
+      resolved_at: "2026-10-12"
+      summary: >-
+        docs/evidence/source-of-truth.yaml が SLO の正本を status: missing としていたが perf/slo.yaml は存在した。
+      resolution: >-
+        `npm run evidence:build` の再生成で解消した。現在の source-of-truth.yaml の slo は path: perf/slo.yaml・artifact_id: ART-52・
+        status: present。
+      refs: [docs/evidence/source-of-truth.yaml#source_of_truth.slo, perf/slo.yaml]
+    - contradiction_id: C-002
+      resolved_at: "2026-10-12"
+      summary: >-
+        perf/slo.yaml の health_p95_ms（health の応答時間 p95 ≤ 200ms）が test_cases: [TC-075] に紐づくが、TC-075 の期待結果
+        （docs/data/cases.csv）に応答時間の判定が無かった。
+      resolution: >-
+        実態に合わせて slo.yaml 側を直した。TC-075 は @smoke（必須・毎回実行）で、health の内容（200・4 キー・version・commit・認証なし）
+        だけを検査している（backend/test/api/contract.test.js）。応答時間の p95 は perf 層（scripts/perf/observe.mjs の health プローブ
+        を scripts/perf/verdict.mjs が判定）と外形監視 MON-002 の応答時間 assertion が判定しているので、health_p95_ms の
+        test_cases を [] にし、judged_by にこの 3 つを書いた。TC-075 に時間の判定は足していない（共有ランナーの揺れで必須ケースが
+        落ちる恐れがあり、TC-073・TC-074 が flaky になった前例がある。Issue #25・#37）。
+      refs: [perf/slo.yaml#health_p95_ms, docs/data/cases.csv#TC-075]
+  none_found_note: "上記 1 件（C-003）以外は、突き合わせた範囲（checked_scope）で食い違いを見つけていない。推測で矛盾を作っていない"
 
 # ---------------------------------------------------------------------------------------------
 ai_policy: # AI が成果物を読む・使うときの規則
@@ -418,7 +428,7 @@ ai_policy: # AI が成果物を読む・使うときの規則
     - id: AI-02
       rule: "推測で埋めない。書かれていない値・決まっていないことは『不明』として UNK に起こす。空欄を『問題なし』『該当なし』と読まない"
     - id: AI-03
-      rule: "未収集・未実施・未適用は、そのまま未収集・未実施・未適用と書く（例: Ruleset は未適用、手動ケースは not_run、runner の性能 baseline は未作成）。成功に見せない"
+      rule: "未収集・未実施・未適用は、そのまま未収集・未実施・未適用と書く（例: Ruleset は未適用、手動ケースは not_run、runner の性能 baseline は 1 回の run から作ったのでノイズは不明）。成功に見せない"
     - id: AI-04
       rule: "原本（spec/・backend/openapi.yaml・docs/data/ の正本 CSV・docs/evidence/ の証跡）を AI が書き換えない。生成物（artifacts.yaml・source-of-truth.yaml・manifest.json・defects.csv など）は手で編集せず生成スクリプトで作り直す"
     - id: AI-05
@@ -448,7 +458,7 @@ source_of_truth: # 正本の所在。docs/evidence/source-of-truth.yaml（生成
     api_spec: { path: backend/openapi.yaml, note: "API 契約（契約先行）" }
     architecture: { path: docs/adr, note: "アーキテクチャ判断（ADR）" }
     security_requirements: { path: security/README.md, note: "検査の方針・重大度と SLA・トリアージ規則" }
-    slo: { path: perf/slo.yaml, note: "SLO（機械可読の正本）。source-of-truth.yaml 側の記載は未更新（C-001）" }
+    slo: { path: perf/slo.yaml, note: "SLO（機械可読の正本）。source-of-truth.yaml の slo も present（C-001 は解消済み）" }
     test_perspectives: { path: docs/data/perspectives.csv, note: "テスト観点（VIEW）" }
     test_cases: { path: docs/data/cases.csv, note: "テストケース（TC）" }
     defects: { path: "GitHub Issues（label: defect / flaky）", note: "不具合の正本は Issue。docs/data/defects.csv は写し（docs/evidence/github/defect-issues.json から再生成）" }

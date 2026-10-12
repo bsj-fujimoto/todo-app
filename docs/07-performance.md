@@ -5,11 +5,11 @@
 | 文書ID | DOC-07 |
 | 版 | 1.0 |
 | 更新日 | 2026-10-12 |
-| 状態 | draft（マージ後に reviewed へ。承認の扱いは下記） |
+| 状態 | draft（オーナーの確認待ち。PR マージ＝承認の代行） |
 | 対象 | todo-app 仕様書 v1.1（spec/todo-phase1-spec.html）、リリース v1.0.0（commit 5fcf40a7e58dc253e53ff56860d0669a69abda26） |
 | 作成 | QA 担当・運用（SRE）担当（ロール。実作業は AI エージェント） |
 | レビュー | QA リード（未実施。作成者と別ロールだが兼務で、第二の目は無い） |
-| 承認 | プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ。**マージ前は未承認**） |
+| 承認 | プロダクトオーナー（PR のマージをもって承認。フェーズ1は AI が代行マージ。オーナーの確認が済むまで draft のまま） |
 | 正本 | この md と、[perf/](../perf/README.md)（`slo.yaml`・`workload.yaml`・`environment.yaml`・`environment.md`・`analysis.md`・`baseline.json`・`regression-threshold.yaml`・`k6/`・`screen/`・`results/`・`experiments/`）、`scripts/perf/`、[.github/workflows/perf.yml](../.github/workflows/perf.yml)、[docs/evidence/perf/](evidence/perf/SOURCE.json)（Git が版管理） |
 
 本書は、todo-app の性能を**どの数字で合格と決め、どの負荷で測り、何が分かり、何が分からないか**をまとめる。
@@ -65,7 +65,7 @@
 
 - **値の由来**: `provisional-confirmed` 4 件は [02](02-test-perspectives.md)・[03](03-test-spec.md) の暫定しきい値を変えずに確定したもの、`assumed` 6 件は本ファイルで新設した**想定**（実利用の実測が無い）。想定の数字を実測のように扱わない。
 - **適用条件**: 1,000 件（DS-006）、単一インスタンス（compose）、認証なし。1,000 件を超える件数は capacity で別に測り、SLO の対象外（容量計画の指標。performance-11）。
-- **対象外（理由付き）**: 同時接続 100 以上（1 人用で同時利用者は 1〜3。stress で上限を見るだけ）、画面の Core Web Vitals の SLO（Lighthouse は観測値として記録し、合否は `screen_ready_ms`）。いずれも `slo.yaml` の `out_of_scope` に理由を書いて除外している。**承認者**: プロダクトオーナー（`slo.yaml` を入れた PR #32 のマージ 2026-10-11 をもって承認。フェーズ1は AI が代行マージ）、**見直し日**: 2026-12-15（ACT-006 の期限に合わせる。本書で設定）。見直し条件: UNK-002 の件数上限の決定。
+- **対象外（理由付き）**: 同時接続 100 以上（1 人用で同時利用者は 1〜3。stress で上限を見るだけ）、画面の Core Web Vitals の SLO（Lighthouse は観測値として記録し、合否は `screen_ready_ms`）。いずれも `slo.yaml` の `out_of_scope` に理由を書いて除外している。**承認者**: プロダクトオーナー（`slo.yaml` を入れた PR #32 のマージ 2026-10-11 をもって承認。フェーズ1は AI が代行マージ）、**見直し日**: 2026-12-31（ACT-006 の期限に合わせる。本書で設定。初版は 2026-12-15 で、ACT-006 の期限の一本化に合わせて直した）。見直し条件: UNK-002 の件数上限の決定。
 - **画面の判定値**: `slo.yaml` の description は「10 回計測の最大値で判定」と書くが、実装（`verdict.mjs`）は p95（線形補間）で判定している（本計測: p95 158.1ms、最大 177.9ms。どちらも目標 2,000ms 内）。記述の食い違いは直す対象（最終報告で依頼）。
 - **外形監視との接続**: 監視 monitors.yaml の各 SLI が `slo_ref` で `perf/slo.yaml` の metric を参照する（[11](11-monitoring.md)）。
 
@@ -295,7 +295,7 @@
 | D | nginx で過負荷時に速く失敗させる（`limit_req`・上流タイムアウト短縮） | 容量は増えないが、利用者が 30 秒待たされるのを防ぐ | なし（429・503 は契約に書く） |
 | E | CPU 上限を上げる | E2 のとおり 2 vCPU で +50% 止まり。複数プロセスは SQLite の単一ファイルでは書込みが競合する | なし |
 
-改善は [ACT-006](data/actions.csv)（バックエンド担当・期限 2026-12-15。案 A を実施し perf.yml の `compare.mjs` で確かめる）、不具合は Issue #31（minor・未修正・OPEN。期限 2026-12-31）。
+改善は [ACT-006](data/actions.csv)（バックエンド担当・期限 2026-12-31。案 A を実施し perf.yml の `compare.mjs` で確かめる）、不具合は Issue #31（minor・未修正・OPEN。期限 2026-12-31）。
 
 ## performance-11 容量・Headroom
 

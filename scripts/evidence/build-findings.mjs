@@ -8,6 +8,7 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { EVIDENCE_DIR, readJson } from "./lib/common.mjs";
 import { loadFindingLedger, writeTable } from "./lib/data-io.mjs";
+import { loadEntries } from "../security/lib/ledger.mjs";
 import { FINDING_COLUMNS, findingRows } from "./lib/findings-table.mjs";
 
 const args = parseArgs(process.argv.slice(2));
@@ -18,7 +19,11 @@ if (!existsSync(source)) {
     "findings.csv: 元の findings.json が無いので作らない（fetch-run.mjs --kind security で取り込む）\n",
   );
 } else {
-  const rows = findingRows(readJson(source), loadFindingLedger(root));
+  const rows = findingRows(
+    readJson(source),
+    loadFindingLedger(root),
+    loadEntries(root, "security/triage.yaml"),
+  );
   writeTable(root, "findings", FINDING_COLUMNS, rows);
   const byStatus = Object.entries(Object.groupBy(rows, (r) => r.status)).map(([k, v]) => `${k} ${v.length}`);
   process.stdout.write(`findings.csv: ${rows.length} 件（${byStatus.join(" / ")}）\n`);

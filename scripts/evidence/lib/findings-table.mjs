@@ -2,6 +2,7 @@
 // （実施表・不具合表・アクション表・追跡表が FND を参照しても、docs-check の ID 解決が通るように）。純粋関数。
 import { clipText } from "./observations.mjs";
 import { resolveFndId } from "./findings.mjs";
+import { matches } from "../../security/lib/ledger.mjs";
 
 export const FINDING_COLUMNS = [
   "finding_id",
@@ -27,8 +28,21 @@ export const FINDING_COLUMNS = [
 
 const text = (value) => (value === null || value === undefined ? "" : String(value));
 
+/**
+ * 検出の owner・due。findings.json（取り込んだ run の出力）に無いときだけ、現在のトリアージ台帳（security/triage.yaml）の
+ * 同じ検出への記載から補う。取り込んだ run の後に台帳へ書かれた担当・期限を表に反映するため。
+ * status・ledger_ref など run の判定は変えない（run の時点の結果を表に残す）。台帳に無ければ空のまま（作り話を足さない）。
+ */
+function ownerDueOf(f, triage) {
+  const own = { owner: text(f.owner), due: text(f.due ?? f.expires_at) };
+  if (own.owner || own.due) return own;
+  const target = { ...f, location: text(f.location) };
+  const entry = triage.find((e) => (e.owner || e.due) && matches(e, target));
+  return { owner: text(entry?.owner), due: text(entry?.due) };
+}
+
 /** findings.json（triage の出力）→ 表の行。finding_id は triage が fingerprint から決めた安定 ID（FND-nnn。台帳 security/finding-ids.yaml）。旧形式 F-001 は FND-001 に写す。 */
-export function findingRows(doc, ledger = new Map()) {
+export function findingRows(doc, ledger = new Map(), triage = []) {
   const unregistered = (doc?.findings ?? []).filter((f) => !resolveFndId(f, ledger));
   if (unregistered.length) {
     throw new Error(
@@ -36,25 +50,28 @@ export function findingRows(doc, ledger = new Map()) {
         "node scripts/security/assign-finding-ids.mjs --findings <findings.json> --write で security/finding-ids.yaml に振って commit してから、triage を再実行する",
     );
   }
-  return (doc?.findings ?? []).map((f) => ({
-    finding_id: resolveFndId(f, ledger),
-    source_finding_id: f.finding_id,
-    severity: f.severity,
-    status: f.status,
-    tool: f.tool,
-    scan: text(f.scan),
-    category: text(f.category),
-    rule_id: text(f.rule_id),
-    component: text(f.component),
-    location: text(f.location),
-    title: clipText(text(f.title).replace(/\s+/g, " "), 120),
-    owner: text(f.owner),
-    due: text(f.due ?? f.expires_at),
-    issue: text(f.issue),
-    ledger_ref: text(f.accepted_by ?? f.ledger),
-    fingerprint: text(f.fingerprint),
-    trend: text(f.trend),
-    run_url: text(doc.run_url),
-    head_sha: text(doc.target?.commit_sha),
-  }));
+  return (doc?.findings ?? []).map((f) => {
+    const { owner, due } = ownerDueOf(f, triage);
+    return {
+      finding_id: resolveFndId(f, ledger),
+      source_finding_id: f.finding_id,
+      severity: f.severity,
+      status: f.status,
+      tool: f.tool,
+      scan: text(f.scan),
+      category: text(f.category),
+      rule_id: text(f.rule_id),
+      component: text(f.component),
+      location: text(f.location),
+      title: clipText(text(f.title).replace(/\s+/g, " "), 120),
+      owner,
+      due,
+      issue: text(f.issue),
+      ledger_ref: text(f.accepted_by ?? f.ledger),
+      fingerprint: text(f.fingerprint),
+      trend: text(f.trend),
+      run_url: text(doc.run_url),
+      head_sha: text(doc.target?.commit_sha),
+    };
+  });
 }
