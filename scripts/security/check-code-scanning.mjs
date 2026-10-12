@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Code Scanning のアラート（GitHub 側）と、台帳 security/accepted-risks.yaml の受容のずれを検出する。ずれがあれば失敗する。
-//   node scripts/security/check-code-scanning.mjs --repo owner/name [--out reports/code-scanning-check.json]
+//   node scripts/security/check-code-scanning.mjs --repo owner/name [--out reports/code-scanning-check.json] [--sarif security-results/codeql/javascript.sarif]
 // gh api の read-only（GET）だけ。要: security-events: read（CI は triage ジョブ）。権限が無い・無効のときは、失敗にせず「確認できなかった」と明示して終了コード 0。
 import { execFileSync } from "node:child_process";
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "../ci/lib/args.mjs";
 import { compareAlerts } from "./lib/code-scanning.mjs";
@@ -30,9 +30,23 @@ function fetchAlerts() {
   }
 }
 
+function currentResults(path) {
+  if (!path || !existsSync(path)) return null;
+  const doc = JSON.parse(readFileSync(path, "utf8"));
+  return (doc.runs ?? []).flatMap((r) =>
+    (r.results ?? []).map((x) => ({
+      ruleId: x.ruleId,
+      uri: x.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "",
+    })),
+  );
+}
+
 const { alerts, error } = fetchAlerts();
 const accepted = loadEntries(root, "security/accepted-risks.yaml");
-const result = error ? { problems: [], warnings: [], stats: {} } : compareAlerts(alerts, accepted, today);
+// --sarif: このコミットの CodeQL の SARIF。台帳に無いアラートのうち、このコミットでは検出されないもの（修正済み）は警告にする
+const result = error
+  ? { problems: [], warnings: [], stats: {} }
+  : compareAlerts(alerts, accepted, today, currentResults(args.sarif));
 const report = {
   schema_version: 1,
   generated_at: new Date().toISOString(),

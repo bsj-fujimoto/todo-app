@@ -398,7 +398,7 @@ jobs:
         if: github.event.pull_request.head.repo.fork != true
         env:
           REPO: ${{ github.repository }}
-        run: node scripts/security/check-code-scanning.mjs --repo "$REPO" --out security-findings/code-scanning-check.json
+        run: node scripts/security/check-code-scanning.mjs --repo "$REPO" --out security-findings/code-scanning-check.json --sarif security-results/codeql/javascript.sarif
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

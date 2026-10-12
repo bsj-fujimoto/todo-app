@@ -50,23 +50,34 @@ function withEntry(alert, entry, today) {
   ].filter(Boolean);
 }
 
-const problemsFor = (alert, accepted, today) => {
+/** このコミットの CodeQL の結果（{ ruleId, uri }）に、そのアラートがまだ出ているか。current が無ければ（結果を渡さないとき）出ているものとして扱う。 */
+const stillPresent = (alert, current) =>
+  !current || current.some((r) => r.ruleId === alert.rule?.id && r.uri === pathOf(alert));
+
+const fixedHere = (alert) =>
+  `${label(alert)}: このコミットでは検出されない（修正済み）。GitHub 側のアラートはマージ後の main の解析で fixed になるので、台帳からは外してよい`;
+
+/** { problems, warnings }。台帳に無いアラートが、このコミットでは検出されない（修正済み）なら、問題ではなく警告にする。 */
+const judge = (alert, accepted, today, current) => {
   const entry = accepted.find((e) => ledgerMatches(e, alert));
-  return entry ? withEntry(alert, entry, today) : withoutEntry(alert);
+  if (entry) return { problems: withEntry(alert, entry, today), warnings: [] };
+  if (!stillPresent(alert, current)) return { problems: [], warnings: [fixedHere(alert)] };
+  return { problems: withoutEntry(alert), warnings: [] };
 };
 
 const count = (alerts, state) => alerts.filter((a) => a.state === state).length;
 
-export function compareAlerts(alerts, accepted, today) {
+export function compareAlerts(alerts, accepted, today, current = null) {
   const codeql = alerts.filter((a) => toolOf(a) === "codeql");
   const stale = accepted
     .filter(
       (e) => String(e.match?.tool).toLowerCase() === "codeql" && !codeql.some((a) => ledgerMatches(e, a)),
     )
     .map((e) => `${e.id}: 対応するアラートが無い（GitHub 側で fixed になったなら台帳から外す）`);
+  const judged = codeql.map((a) => judge(a, accepted, today, current));
   return {
-    problems: codeql.flatMap((a) => problemsFor(a, accepted, today)),
-    warnings: stale,
+    problems: judged.flatMap((j) => j.problems),
+    warnings: [...judged.flatMap((j) => j.warnings), ...stale],
     stats: { alerts: codeql.length, open: count(codeql, "open"), dismissed: count(codeql, "dismissed") },
   };
 }

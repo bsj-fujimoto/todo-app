@@ -19,6 +19,7 @@ import {
   routesOf,
   toOpenApiPath,
 } from "../security/lib/framework.mjs";
+import { compareAlerts } from "../security/lib/code-scanning.mjs";
 import { ledgersApplied } from "../security/lib/ledger-record.mjs";
 import {
   PERFORMANCE_RULE_CLASSES,
@@ -436,5 +437,28 @@ describe("性能ルールのプロファイル", () => {
         .class,
       "loop",
     );
+  });
+});
+
+describe("Code Scanning と台帳（このコミットで修正済みのアラート）", () => {
+  const alert = {
+    number: 14,
+    state: "dismissed",
+    dismissed_comment: "AR-003",
+    tool: { name: "CodeQL" },
+    rule: { id: "js/http-to-file-access" },
+    most_recent_instance: { location: { path: "perf/screen/measure.mjs", start_line: 170 } },
+  };
+
+  it("台帳に無い dismissed でも、このコミットの結果に出ていなければ（修正済み）警告にとどめる", () => {
+    const fixed = compareAlerts([alert], [], "2026-10-12", []);
+    assert.deepEqual(fixed.problems, []);
+    assert.match(fixed.warnings.join(), /このコミットでは検出されない/);
+  });
+
+  it("このコミットの結果にまだ出ている・結果を渡さないときは、従来どおり問題にする", () => {
+    const present = [{ ruleId: "js/http-to-file-access", uri: "perf/screen/measure.mjs" }];
+    assert.equal(compareAlerts([alert], [], "2026-10-12", present).problems.length, 1);
+    assert.equal(compareAlerts([alert], [], "2026-10-12").problems.length, 1);
   });
 });
