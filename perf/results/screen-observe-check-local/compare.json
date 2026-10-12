@@ -1,0 +1,65 @@
+{
+ "baseline": "initial-main-6e5d2db",
+ "comparison": {
+  "status": "compared",
+  "env_class": "local:darwin-arm64",
+  "baseline_release": "initial-main-6e5d2db",
+  "baseline_run_id": "20261011T082949Z-f948648",
+  "baseline_commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+  "baseline_measured_at": "2026-10-11T08:30:06.457Z",
+  "baseline_env_class": "local:darwin-arm64",
+  "env_class_match": true,
+  "reason": "同じ env_class の基準と比べた"
+ },
+ "config": {
+  "regression_threshold_pct": 20,
+  "min_abs_delta": {
+   "ms": 5,
+   "sec": 5,
+   "ratio": 0.001,
+   "other": 0
+  },
+  "metrics": {}
+ },
+ "compared": 1,
+ "only_in_baseline": [
+  "load.api_list_p95_ms",
+  "load.api_list_p99_ms",
+  "load.api_create_p95_ms",
+  "load.api_update_p95_ms",
+  "load.api_delete_p95_ms",
+  "load.error_rate",
+  "load.throughput_rps",
+  "load.health_p95_ms",
+  "stress.max_sustained_rps",
+  "spike.recovery_tail_list_p95_ms",
+  "spike.recovery_tail_error_rate",
+  "spike.time_to_recover_sec",
+  "spike.during_list_p95_ms",
+  "capacity.max_tasks_within_slo",
+  "capacity.list_p95_ms_at_1000",
+  "capacity.create_p95_ms_at_1000",
+  "capacity.list_p95_ms_at_2500",
+  "capacity.create_p95_ms_at_2500",
+  "capacity.list_p95_ms_at_5000",
+  "capacity.create_p95_ms_at_5000",
+  "capacity.list_p95_ms_at_7500",
+  "capacity.create_p95_ms_at_7500",
+  "capacity.list_p95_ms_at_10000",
+  "capacity.create_p95_ms_at_10000",
+  "soak.api_list_p95_ms",
+  "soak.error_rate"
+ ],
+ "only_in_current": [],
+ "regressions": [],
+ "rows": [
+  {
+   "key": "screen.screen_ready_ms",
+   "baseline": 54.6,
+   "current": 52.1,
+   "change_pct": -4.58,
+   "threshold_pct": 20,
+   "regressed": false
+  }
+ ]
+}

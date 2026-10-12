@@ -20,7 +20,15 @@ async function createIncident(ctx, result) {
   const route = routeFor(routes, result.monitor_id);
   const rb = (runbooks.runbooks || []).find((r) => r.monitor_ids.includes(result.monitor_id));
   const enriched = { ...result, runbook: rb ? rb.path : null };
-  const body = issueBody({ result: enriched, run, route, owner, marker, drill });
+  const body = issueBody({
+    result: enriched,
+    run,
+    route,
+    owner,
+    marker,
+    deploymentText: ctx.deploymentText,
+    drill,
+  });
   const issue = await gh.createIssue({
     title: issueTitle(result, drill),
     body,

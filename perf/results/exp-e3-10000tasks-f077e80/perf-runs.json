@@ -32,22 +32,30 @@
       {
         "source": "cpu",
         "time_aligned": true,
-        "ref": "stress/iter-N/analysis.json#observe"
+        "ref": "stress/iter-N/analysis.json#observe",
+        "kind": "measured",
+        "what": "docker stats --no-stream の backend コンテナの CPU%（1 秒間隔）"
       },
       {
         "source": "memory",
         "time_aligned": true,
-        "ref": "stress/iter-N/analysis.json#observe"
+        "ref": "stress/iter-N/analysis.json#observe",
+        "kind": "measured",
+        "what": "docker stats の backend コンテナのメモリ使用量（1 秒間隔）"
       },
       {
         "source": "db",
         "time_aligned": true,
-        "ref": "stress/iter-N/analysis.json#observe"
+        "ref": "stress/iter-N/analysis.json#observe",
+        "kind": "proxy",
+        "what": "SQLite ファイル（-wal / -shm を含む）のサイズ。DB の処理時間・接続数・ロック待ちは取れない（DB 指標の代用）"
       },
       {
         "source": "apm",
         "time_aligned": true,
-        "ref": "stress/iter-N/analysis.json#observe"
+        "ref": "stress/iter-N/analysis.json#observe",
+        "kind": "proxy",
+        "what": "health 応答時間（nginx 経由。1 秒間隔）。アプリ内の処理時間・イベントループ遅延を直接見る APM は未導入（APM の代用）"
       }
     ],
     "verdict": "pass",
@@ -58,6 +66,36 @@
       "slo_violation_rule": "判定値 = 3 反復の平均。平均が perf/slo.yaml の target を満たさなければ fail。反復のいずれか、または 95% 信頼区間の悪い側の端が満たさない場合は warning（pass のまま記録）",
       "slo_ref": "perf/slo.yaml"
     },
-    "started_at": "2026-10-11T11:16:51.667Z"
+    "started_at": "2026-10-11T11:16:51.667Z",
+    "env_class": "local:darwin-arm64",
+    "comparison": {
+      "status": "compared",
+      "env_class": "local:darwin-arm64",
+      "baseline_release": "initial-main-6e5d2db",
+      "baseline_run_id": "20261011T082949Z-f948648",
+      "baseline_commit_sha": "f948648c016644d20f24a1138866199b948382f2",
+      "baseline_measured_at": "2026-10-11T08:30:06.457Z",
+      "baseline_env_class": "local:darwin-arm64",
+      "env_class_match": true,
+      "reason": "同じ env_class の基準と比べた"
+    },
+    "server_metrics_unavailable": [
+      {
+        "source": "apm_agent",
+        "reason": "APM エージェント・トレース基盤は未導入（個人用・本番なし。ACT-025 で導入要否を決める）。health 応答時間（proxy）で代用"
+      },
+      {
+        "source": "db_query",
+        "reason": "SQLite は組み込みで、問い合わせ時間・接続数・ロック待ちを外から取れない（DB ファイルのサイズだけ proxy で取る）"
+      },
+      {
+        "source": "queue",
+        "reason": "構成にキューが無い（frontend → backend → SQLite のみ）"
+      },
+      {
+        "source": "external_dependency",
+        "reason": "外部依存（外部 API・外部 DB）が無い"
+      }
+    ]
   }
 ]

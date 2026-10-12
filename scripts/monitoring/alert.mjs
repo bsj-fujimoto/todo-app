@@ -13,6 +13,8 @@ import { parseArgs, requireArg } from "../lib/cli.mjs";
 import { defaultOwner, metaResult } from "./lib/alert-core.mjs";
 import { escalate, processResults, verifyDrillIssue } from "./lib/alert-run.mjs";
 import { buildDrillRecord, renderDrillMarkdown } from "./lib/drill-record.mjs";
+import { describeDeployment, resolveDeployment } from "./lib/deployment.mjs";
+import { makeDeploymentDeps } from "./deployment-source.mjs";
 import { makeGh } from "./gh-client.mjs";
 
 const readYaml = (p) => parse(readFileSync(p, "utf8"));
@@ -38,6 +40,16 @@ function buildCtx(args, out) {
     nowMs: () => Date.now(),
     repo,
   };
+}
+
+// 起票時の「直前のデプロイ」。この run のマーカー、無ければ（アプリを起動していない実行は）直近の synthetic 実行のマーカー。取れなければ理由を書く
+async function attachDeployment(ctx, args, out) {
+  const markers = args.markers || join(out, "deployment-markers.jsonl");
+  const deps = makeDeploymentDeps(ctx.repo, markers);
+  const d = await resolveDeployment(deps, { fromLastRun: Boolean(args.meta) });
+  ctx.marker = d.marker;
+  ctx.deploymentText = describeDeployment({ ...d, run: ctx.run });
+  console.log(`[alert] deployment_ref: ${ctx.deploymentText}`);
 }
 
 function recordEvents(out, events, drill) {
@@ -129,6 +141,7 @@ async function metaMain(args, ctx, out) {
     version: null,
   };
   await ctx.gh.ensureLabels();
+  await attachDeployment(ctx, args, out);
   recordEvents(out, await processResults(ctx, [result]), ctx.drill);
 }
 
@@ -140,6 +153,7 @@ async function main() {
   const results = JSON.parse(readFileSync(requireArg(args, "results"), "utf8"));
   ctx.run = { ...results.run, run_url: args["run-url"] || null };
   await ctx.gh.ensureLabels();
+  await attachDeployment(ctx, args, out);
   if (args["drill-phase"] === "recover") ctx.knownOpen = knownDrillIssues(out);
   const events = await processResults(ctx, results.results);
   if (args.escalate) events.push(...(await escalate(ctx)));

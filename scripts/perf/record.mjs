@@ -9,6 +9,7 @@ import { join, relative } from "node:path";
 import { parse } from "yaml";
 import { parseArgs, requireArg } from "../lib/cli.mjs";
 import { flattenMetrics } from "./lib/metrics.mjs";
+import { comparisonInfo } from "./lib/compare-rules.mjs";
 import { buildRuns, environmentLabel } from "./lib/record-build.mjs";
 
 const SCENARIOS = ["load", "stress", "spike", "soak", "capacity", "screen"];
@@ -50,6 +51,18 @@ function loadAnalyses(runDir, scenarios) {
   return out;
 }
 
+// 画面計測は反復ディレクトリを持たず、サーバ観測の分析は screen/analysis.json の 1 件（verdict.mjs が書く）
+function loadScreenAnalysis(runDir) {
+  const p = join(runDir, "screen", "analysis.json");
+  return existsSync(p) ? [readJson(p)] : [];
+}
+
+// この run を比べる基準（同じ env_class のもの）。baseline.json が無ければ null
+function comparisonOf(run) {
+  const path = "perf/baseline.json";
+  return existsSync(path) ? comparisonInfo(readJson(path).baselines, run.env_class) : null;
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const runDir = requireArg(args, "run-dir");
@@ -61,6 +74,7 @@ function main() {
     runDir,
     verdicts.map((v) => v.scenario).filter((s) => s !== "screen"),
   );
+  if (verdicts.some((v) => v.scenario === "screen")) analyses.screen = loadScreenAnalysis(runDir);
   const metrics = flattenMetrics(verdicts);
   const envDoc = parse(readFileSync("perf/environment.yaml", "utf8"));
   const head = {
@@ -70,7 +84,10 @@ function main() {
     env_class: run.env_class,
   };
   writeJson(join(runDir, "metrics.json"), { ...head, environment: environmentLabel(run), metrics });
-  writeJson(join(runDir, "perf-runs.json"), buildRuns({ run, envDoc, metrics, analyses }, verdicts));
+  writeJson(
+    join(runDir, "perf-runs.json"),
+    buildRuns({ run, envDoc, metrics, analyses, comparison: comparisonOf(run) }, verdicts),
+  );
   writeJson(join(runDir, "manifest.json"), manifest(runDir));
   console.log(
     `[record] ${run.run_id}: metrics ${Object.keys(metrics).length} 件、記録 ${verdicts.length} 件`,

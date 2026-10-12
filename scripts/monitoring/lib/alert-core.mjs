@@ -62,7 +62,9 @@ function deploymentRef(marker) {
   return `version ${marker.version}、commit ${marker.commit_sha}${tag}（観測 ${marker.at}）`;
 }
 
-function overview(result, run, marker) {
+const deploymentLine = (text, marker) => text || deploymentRef(marker);
+
+function overview(result, run, marker, deploymentText) {
   return [
     "## 概要",
     `- 開始時刻（UTC）: ${result.at}`,
@@ -73,7 +75,7 @@ function overview(result, run, marker) {
     `- 失敗の詳細: ${result.failure_detail}`,
     `- 試行回数: ${result.attempts}（定義の retry どおり）`,
     `- 対象: ${run.mode}、版 ${result.version || run.version || (marker ? marker.version : null) || "不明"}、環境 ${run.region}`,
-    `- 直前のデプロイ（deployment_ref）: ${deploymentRef(marker)}`,
+    `- 直前のデプロイ（deployment_ref）: ${deploymentLine(deploymentText, marker)}`,
     `- 実行: ${run.run_url || run.run_id}`,
   ];
 }
@@ -98,13 +100,13 @@ const PREVENTION = [
   "- [ ] runbook 更新",
 ];
 
-export function issueBody({ result, run, route, owner, marker, drill }) {
+export function issueBody({ result, run, route, owner, marker, deploymentText, drill }) {
   const head = drill
     ? ["> **通知試験（drill）**: 意図的な障害注入による通知経路の確認。自動で close します。", ""]
     : [];
   const lines = [
     ...head,
-    ...overview(result, run, marker),
+    ...overview(result, run, marker, deploymentText),
     "",
     ...response(result, route, owner),
     "",

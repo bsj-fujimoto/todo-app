@@ -92,7 +92,9 @@ jobs:
             if [ -f "$dir/compare.json" ]; then
               mise x -- node -e '
                 const c = JSON.parse(require("fs").readFileSync(process.argv[1] + "/compare.json", "utf8"));
-                console.log("- baseline 比較: " + (c.baseline ? "基準 " + c.baseline + "、比較 " + c.compared + " 指標、退行 " + c.regressions.length + " 件" : c.note));
+                const k = c.comparison;
+                const cond = k ? "（env_class: 今回 " + k.env_class + " / 基準 " + (k.baseline_env_class || "なし") + " → " + (k.env_class_match === true ? "一致" : "比較せず") + "）" : "";
+                console.log("- baseline 比較" + cond + ": " + (c.baseline ? "基準 " + c.baseline + "、比較 " + c.compared + " 指標、退行 " + c.regressions.length + " 件" : c.note));
                 for (const r of c.regressions) console.log("  - " + r.key + ": " + r.baseline + " → " + r.current + "（" + r.change_pct + "%）");
               ' "$dir"
             fi

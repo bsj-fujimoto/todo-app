@@ -224,6 +224,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      actions: read # 起票する incident の直前のデプロイ（deployment_ref）に、直近の synthetic 実行のマーカー（artifact）を読む
       issues: write # MON-META の incident Issue の作成・コメント。このジョブだけ
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

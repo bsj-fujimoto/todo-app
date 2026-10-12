@@ -1,6 +1,7 @@
 // 監視設定（Monitoring as Code）の整合性検査。純関数。問題を文字列の配列で返す（空なら OK）。
 // 検査: 必須項目、slo_ref が perf/slo.yaml に存在、通知経路が全監視を覆う、重要ジャーニーが http/api/browser で守られている、
 //       runbook が重要監視を覆い 4 節（一次対応・切り分け・rollback・連絡経路）がある、無効な監視に理由がある。
+import { checkIncidents } from "./incident-ledger.mjs";
 import { THRESHOLD_MARGIN_HOURS, intervalsSec, slotsOfAll, stats } from "./cadence.mjs";
 
 const REQUIRED = [
@@ -181,6 +182,11 @@ export function checkConfig({ monitorsDoc, routes, runbooksDoc, slo, journeys, r
     ...checkRunbooks(monitors, runbooksDoc.runbooks, read),
     ...checkLimits(monitors, read),
     ...checkCadence(monitorsDoc, workflowDoc, read),
+    ...checkIncidents({
+      incidentsCsv: read("monitoring/incidents.csv"),
+      drillCsv: read("monitoring/drill-issues.csv"),
+      markersJsonl: read("monitoring/markers/deployment-markers.jsonl"),
+    }),
   );
   return problems;
 }
