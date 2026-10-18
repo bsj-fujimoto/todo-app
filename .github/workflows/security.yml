@@ -72,12 +72,12 @@ jobs:
           install: "false"
       - name: ジョブ開始時刻（scan-run 用）
         run: echo "SCAN_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
-      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+      - uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           languages: javascript-typescript
           build-mode: none
           config-file: ./security/codeql-config.yml
-      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+      - uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           category: /language:javascript-typescript
           output: sarif-results
@@ -189,19 +189,19 @@ jobs:
         run: bash scripts/security/scan.sh trivy-image frontend todo-app-frontend:ci
       - name: Code Scanning に SARIF を上げる（trivy fs）
         if: github.event.pull_request.head.repo.fork != true
-        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           sarif_file: security-results/trivy-fs/trivy-fs.sarif
           category: trivy-fs
       - name: Code Scanning に SARIF を上げる（trivy iac。Dockerfile・compose・workflow の設定誤り）
         if: github.event.pull_request.head.repo.fork != true
-        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           sarif_file: security-results/trivy-iac/trivy-iac.sarif
           category: trivy-iac
       - name: Code Scanning に SARIF を上げる（hadolint）
         if: github.event.pull_request.head.repo.fork != true
-        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           sarif_file: security-results/hadolint/hadolint.sarif
           category: hadolint
@@ -327,7 +327,7 @@ jobs:
           install: "false"
       - name: ジョブ開始時刻（scan-run 用）
         run: echo "SCAN_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
-      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+      - uses: ossf/scorecard-action@fa7117db83c52d787ae5a89f350999701505d78e # v2.5.0
         with:
           results_file: results.sarif
           results_format: sarif
@@ -341,7 +341,7 @@ jobs:
             --started "$SCAN_STARTED_AT" --exit-code 0 --ok-codes 0 --coverage-path "リポジトリの設定・運用（GitHub API）" \
             --rules "OpenSSF Scorecard の組み込みのチェック（Branch-Protection・Code-Review・Pinned-Dependencies など）" --threshold "ゲートに含めない（情報提供）" \
             --note "情報提供（リポジトリ運用の成熟度）。コードの脆弱性ではないのでゲートには含めない" --out-dir security-results/scorecard
-      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+      - uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0
         with:
           sarif_file: security-results/scorecard/scorecard.sarif
           category: scorecard
