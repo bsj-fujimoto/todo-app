@@ -5,7 +5,7 @@
 # 更新手順: docker buildx imagetools inspect node:24-alpine で Digest を確認して下の 2 か所を書き換える。
 
 # ---- 本番依存だけを入れる段 ----
-FROM node:24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS deps
+FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS deps
 WORKDIR /app
 # ルートの package.json（workspaces 定義）・lock と backend の package.json だけで依存を解決する。
 # 他の workspace（frontend・e2e）のファイルはコンテキストに無くても構わない。
@@ -14,7 +14,7 @@ COPY backend/package.json backend/
 RUN npm ci -w backend --omit=dev --ignore-scripts && npm cache clean --force
 
 # ---- 実行イメージ ----
-FROM node:24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
+FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS runtime
 ARG COMMIT_SHA=unknown
 ENV NODE_ENV=production \
     COMMIT_SHA=${COMMIT_SHA} \
