@@ -10,6 +10,6 @@
   },
   "devDependencies": {
     "@pact-foundation/pact": "17.1.4",
-    "happy-dom": "20.14.6"
+    "happy-dom": "21.0.1"
   }
 }
