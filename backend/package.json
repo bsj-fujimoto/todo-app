@@ -20,7 +20,7 @@
     "contract:consumer": "node scripts/run-tests.js consumer-contract"
   },
   "dependencies": {
-    "fastify": "5.12.5"
+    "fastify": "5.12.6"
   },
   "devDependencies": {
     "@pact-foundation/pact": "17.1.4",
