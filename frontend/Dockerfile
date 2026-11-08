@@ -3,7 +3,7 @@
 # ベースイメージはダイジェストで固定する（更新: docker buildx imagetools inspect nginxinc/nginx-unprivileged:stable-alpine-slim）。
 # slim 版を使う理由: 画像・XSLT 用のモジュール（libgd・libtiff など）を含まず、本アプリ（静的配信と /api の中継だけ）に要らない
 # ライブラリの勧告（libtiff の high など）を持ち込まない。
-FROM nginxinc/nginx-unprivileged:stable-alpine-slim@sha256:3af0c10d960cc2502427fe1219c52989d309e7d65596869c60a34fd2fa2406f0
+FROM nginxinc/nginx-unprivileged:stable-alpine-slim@sha256:5d8bb9437d74a600ec5dbf90c035451c724dc33eac8d3a71078f6f8612c345f6
 
 # zlib は Alpine の修正版（1.3.2-r1。CVE-2026-85091）に上げる。固定したベースイメージの digest（2026-10-12 時点の最新）はまだ r0 のため、
 # root で apk upgrade してから非 root に戻す（ベースイメージが r1 以上になれば何も変わらない no-op。ベースイメージ更新時に見直す）。
